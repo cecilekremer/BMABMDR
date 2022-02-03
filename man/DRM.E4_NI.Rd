@@ -100,7 +100,7 @@ DRM.P4_LND(par, x, q)
 DRM.L4_LND(par, x, q)
 }
 \arguments{
-\item{par}{parameters in the order a, c, d, b}
+\item{par}{parameters in the order background, BMD, fold change, log(d), invsigma2}
 
 \item{x}{unique ordered dose levels}
 

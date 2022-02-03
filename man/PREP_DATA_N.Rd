@@ -10,13 +10,12 @@ PREP_DATA_N(
   geom.stats = FALSE,
   sd = TRUE,
   q,
-  prior = "PERT",
   bkg = NULL,
   maxy = NULL,
   prior.BMD = NULL,
   shape.a = 4,
   shape.c = 4,
-  shape.BMD = 4
+  shape.BMD = 1e-04
 )
 }
 \arguments{
@@ -30,8 +29,6 @@ PREP_DATA_N(
 
 \item{q}{specified BMR}
 
-\item{prior}{which prior distribution will be used, defaults to "PERT" (and currently this is the only one implemented)}
-
 \item{bkg}{vector containing minimum, most likely, and maximum value for the background response}
 
 \item{maxy}{vector containing minimum, most likely, and maximum value for the response at dose infinity}
@@ -42,7 +39,7 @@ PREP_DATA_N(
 
 \item{shape.c}{shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution}
 
-\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution}
+\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 (implies a uniform distribution)}
 }
 \value{
 List with data and start values in correct format to be directly used within the BMA functions.

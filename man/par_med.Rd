@@ -4,10 +4,12 @@
 \alias{par_med}
 \title{Function for internal use}
 \usage{
-par_med(mod.obj)
+par_med(mod.obj, type = c("continuous", "quantal"))
 }
 \arguments{
 \item{mod.obj}{value}
+
+\item{type}{value}
 }
 \value{
 .

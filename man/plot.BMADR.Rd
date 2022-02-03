@@ -2,10 +2,11 @@
 % Please edit documentation in R/plottingfunctions.R
 \name{plot.BMADR}
 \alias{plot.BMADR}
-\title{Function for internal use}
+\title{Function to plot the results for continuous endpoints}
 \usage{
 plot.BMADR(
   mod.obj,
+  type = c("increasing", "decreasing"),
   weight_type = c("BS", "LP"),
   include_data = TRUE,
   all = TRUE,
@@ -15,9 +16,11 @@ plot.BMADR(
 \arguments{
 \item{mod.obj}{fitted models}
 
-\item{weight_type}{BS or LP}
+\item{type}{'increasing' or 'decreasing'}
 
-\item{include_data}{include data points in plot}
+\item{weight_type}{'BS' or 'LP'}
+
+\item{include_data}{whether to include data points in plot}
 
 \item{all}{all 4 plots in one plot}
 
@@ -27,5 +30,5 @@ plot.BMADR(
 .
 }
 \description{
-Function for internal use
+Function to plot the results for continuous endpoints
 }

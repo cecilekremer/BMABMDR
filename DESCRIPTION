@@ -1,6 +1,6 @@
 Package: BMABMDR
-Title: What the Package Does (One Line, Title Case)
-Version: 0.0.0.9003
+Title: Preliminary R package for Bayesian benchmark dose estimation
+Version: 0.0.0.9010
 Authors@R: 
     person(given = "First",
            family = "Last",

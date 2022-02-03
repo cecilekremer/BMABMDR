@@ -4,10 +4,12 @@
 \alias{BMDWeights}
 \title{Function for internal use}
 \usage{
-BMDWeights(mod.obj)
+BMDWeights(mod.obj, type = c("continuous", "quantal"))
 }
 \arguments{
 \item{mod.obj}{is the result of pars_med}
+
+\item{type}{value}
 }
 \value{
 .

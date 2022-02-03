@@ -7,10 +7,13 @@
 full.laplace_MA(
   data.N,
   data.LN,
-  prior.weights,
-  priordist = "PERT",
-  prior.BMD = FALSE,
+  prior.weights = rep(1, 16),
   ndraws = 30000,
+  nrchains = 3,
+  nriterations = 3000,
+  warmup = 1000,
+  delta = 0.8,
+  treedepth = 10,
   seed = 123,
   pvec = c(0.05, 0.5, 0.95),
   plot = FALSE
@@ -23,17 +26,23 @@ full.laplace_MA(
 
 \item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
 
-\item{priordist}{which prior distribution should be used (currently only "PERT" is implemented)}
-
-\item{prior.BMD}{logical indicating whether an informative prior for the BMD is used (currently not implemented)}
-
 \item{ndraws}{the number of draws, default 30000}
+
+\item{nrchains}{the number of chains to be used in the MCMC}
+
+\item{nriterations}{the number of iterations per chain}
+
+\item{warmup}{the number of iterations per chain to be discarded as burnin}
+
+\item{delta}{default 0.8}
+
+\item{treedepth}{default 10}
 
 \item{seed}{default 123}
 
 \item{pvec}{vector specifying the three BMD quantiles of interest}
 
-\item{plot}{logical indicating whether a simple plot of model fits should be shown}
+\item{plot}{logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)}
 }
 \value{
 List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.

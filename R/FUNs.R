@@ -71,7 +71,9 @@ fun.alpha = function(a,b,c,g){
     c = c + 0.0001
   }
   m = (a + g*b + c)/(g + 2)
-  return(((m - a)*(2*b - a - c))/((b - m)*(c - a)))
+  s = ((m - a)*(2*b - a - c))/((b - m)*(c - a))
+  if(s<0) stop("Specified values lead to negative shape parameter for the PERT distribution; try increasing the prior range")
+  return(s)
   # return((shape*b + c - 5*a)/(c-a))
 }
 #' @rdname fun.alpha
@@ -81,71 +83,39 @@ fun.beta = function(a,b,c,g){
   }
   m = (a + g*b + c)/(g + 2)
   alpha = fun.alpha(a,b,c,g)
-  return(
-    (alpha * (c - m))/(m - a)
-  )
+  s = (alpha * (c - m))/(m - a)
+  if(s<0) stop("Specified values lead to negative shape parameter for the PERT distribution; try increasing the prior range")
+  return(s)
   # return((5*c - a - shape*b)/(c-a))
 }
 #' @rdname fun.alpha
 pert_dist = function(x,lb,ub,s1,s2){
-  return(
-    dbeta((x-lb)/(ub-lb), shape1 = s1, shape2 = s2, log = T) - log((ub - lb))
-  )
+  # return(
+  # dbeta((x-lb)/(ub-lb), shape1 = s1, shape2 = s2, log = T) - log((ub - lb))
+  x1 = (s1-1) * log((x - lb))
+  x2 = (s2-1) * log((ub - x))
+  x3 = (s1+s2-1) * log((ub - lb))
+  x4 = lbeta(s1, s2)
+  return( x1 + x2 - x3 - x4)
+
+  # )
 }
 
-
-#' Function to check if the mean for the Dose-Response data is approaching or at its asymptote
-#' for internal use
+#' Bartlett function for testing constant variance and co-efficient of variation; H0 equal variances
 #'
-#' @param dose value
-#' @param response value
-#' @param h step size for the derivative
-#' @param B number of bootstraps
+#' @param sd standard deviation per dose group
+#' @param n number of observations per dose group
 #'
 #' @return .
 #'
-#'
-flat2 <- function(dose, response, h = 1/1000, B = 200) {
+bartlett <- function(sd,n){
+  N<-sum(n);k<-length(n)
 
-  md_data <- data.frame(dose = (dose/max(dose)) + 1.0e-5,
-                        response = response)
-
-  pseudo_dose <- seq(0, 1, by = h) + 1.0e-5
-
-  dd <- matrix(NA, nrow = length(pseudo_dose)-1, ncol = B)
-
-  for(i in 1:B) {
-    ss <- sample(1:nrow(md_data), replace = TRUE)
-
-    p_data <- md_data[ss,]
-
-    fpm <- try(gamlss::gamlss(response ~ fp(dose),
-                              data = p_data, family = NO,
-                              control = gamlss::gamlss.control(trace = FALSE)),
-               silent = TRUE)
-
-
-    if(class(fpm)[1] != 'try-error') {
-
-      ffp_pred2 <- try(predict(fpm, what = 'mu',
-                               newdata = data.frame(dose = pseudo_dose),
-                               data = p_data), silent = TRUE)
-      #compute the diff
-      dd[,i] <- diff(ffp_pred2, lag = 1, differences = 1)/h
-
-    } else dd[,i] <- NA
-
-  }
-
-  #compute the quantiles of h
-  qdiff <- apply(dd, 1, quantile, probs = c(0.025, 0.975), na.rm = TRUE)
-  #check if the quantile range contains 0
-  test <- apply(qdiff, 2, function(x) {
-    return(x[1] <= 0 & x[2] >= 0)
-  })
-  flat <- ifelse(sum(test)==ncol(qdiff), T, F)
-  return(list(last3_derivative = dd, qts =  qdiff, decision = flat))
-
+  sp2<-sum((n-1)*sd^2)/(N-k)
+  B<-(
+    (N-k)*log(sp2)-sum((n-1)*log(sd^2))
+  )/(
+    1+(sum(1/(n-1))-1/(N-k))/(3*(k-1))
+  )
+  c(B,pchisq(B,df=(k-1),lower.tail = F))
 }
-
-
