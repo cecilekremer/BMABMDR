@@ -4,7 +4,7 @@
 \alias{plot_prior}
 \title{Function to plot prior vs posterior distribution}
 \usage{
-plot_prior(mod.obj, data, model_name, parms, priordist, priorbmd)
+plot_prior(mod.obj, data, model_name, parms = T)
 }
 \arguments{
 \item{mod.obj}{the model object returned by full laplace or sampling method}
@@ -13,9 +13,7 @@ plot_prior(mod.obj, data, model_name, parms, priordist, priorbmd)
 
 \item{model_name}{the model for which plots should be generated}
 
-\item{priordist}{the prior distribution used}
-
-\item{priorbmd}{logical indicating if informative prior for BMD was used}
+\item{parms}{if TRUE, model parameters (background, fold change, BMD, d) are shown; if FALSE, background, maximum response, BMD and d are shown}
 }
 \value{
 .

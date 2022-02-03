@@ -4,12 +4,14 @@
 \alias{BMDLU}
 \title{Function for internal use}
 \usage{
-BMDLU(mod.obj, pvec = c(0.05, 0.5, 0.95))
+BMDLU(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c("continuous", "quantal"))
 }
 \arguments{
 \item{mod.obj}{value}
 
 \item{pvec}{value}
+
+\item{type}{value}
 }
 \value{
 .

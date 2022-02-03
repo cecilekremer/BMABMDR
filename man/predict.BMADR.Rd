@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{predict.BMADR}
 \alias{predict.BMADR}
-\title{Function for internal use}
+\title{Function to get predicted values from the DRMS}
 \usage{
 predict.BMADR(
   mod.obj,
@@ -16,6 +16,8 @@ predict.BMADR(
 \arguments{
 \item{mod.obj}{is the result of pars_med}
 
+\item{dose}{dose}
+
 \item{type}{dose response model type}
 
 \item{what}{prediction of interest}
@@ -28,5 +30,5 @@ predict.BMADR(
 .
 }
 \description{
-Function for internal use
+Function to get predicted values from the DRMS
 }

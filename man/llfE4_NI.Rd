@@ -8,6 +8,7 @@
 \alias{llfG4_NI}
 \alias{llfQE4_NI}
 \alias{llfP4_NI}
+\alias{llfSM_N}
 \alias{llfL4_NI}
 \alias{llfE4_LNI}
 \alias{llfIE4_LNI}
@@ -17,6 +18,7 @@
 \alias{llfQE4_LNI}
 \alias{llfP4_LNI}
 \alias{llfL4_LNI}
+\alias{llfSM_LN}
 \alias{llfE4_ND}
 \alias{llfIE4_ND}
 \alias{llfH4_ND}
@@ -33,7 +35,7 @@
 \alias{llfQE4_LND}
 \alias{llfP4_LND}
 \alias{llfL4_LND}
-\title{Loglikelihood functions for the different dose response models}
+\title{Loglikelihood functions for the different dose response models for Continuous data}
 \usage{
 llfE4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -48,6 +50,8 @@ llfG4_NI(x, nvec, dvec, mvec, s2vec, qval)
 llfQE4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
 llfP4_NI(x, nvec, dvec, mvec, s2vec, qval)
+
+llfSM_N(x, nvec, dvec, mvec, s2vec)
 
 llfL4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -66,6 +70,8 @@ llfQE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 llfP4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
 llfL4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+
+llfSM_LN(x, nvec, dvec, mvec, s2vec)
 
 llfE4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -116,5 +122,5 @@ llfL4_LND(x, nvec, dvec, mvec, s2vec, qval)
 .
 }
 \description{
-Loglikelihood functions for the different dose response models
+Loglikelihood functions for the different dose response models for Continuous data
 }

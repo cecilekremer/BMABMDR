@@ -6,8 +6,7 @@
 \usage{
 par_extract(
   mod_obj,
-  pars = c(letters[1:4], "BMD", paste0("par[", 1:5, "]"), "invsigma2", "min_response",
-    "max_response"),
+  pars = c(letters[1:4], "k", paste0("par", 1:5, ""), "invsigma2", "mu_inf", "mu_0"),
   model_name
 )
 }
@@ -15,6 +14,8 @@ par_extract(
 \item{mod_obj}{value}
 
 \item{pars}{value}
+
+\item{model_name}{model name}
 }
 \value{
 .
