@@ -1,31 +1,41 @@
+
 #' Function to set data in the correct format
 #'
 #' This function also generates appropriate start values and uninformative priors for each model
+#' Input should be given as arithmetic mean and standard deviation on the original scale
 #'
-#' @param data a dataframe with input data, order of columns should be: dose, response, sd (or se), n
-#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
-#' @param q specified BMR
-#' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution
-#' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 (implies a uniform distribution)
-#' @param cluster logical indicating if data is clustered (defaults to FALSE)
-#' @param bkg vector containing minimum, most likely, and maximum value for the background response
-#' @param BMD_p vector containing minimum, most likely, and maximum value for the BMD
+#' @param data dataframe with input data, order of columns should be: dose, response.
+#' @param sumstats number of observations per dose level
+#' @param q the specified BMR
+#' @param bkg vector containing informative prior for the background.
+#'            It should be specified as minimum, most likely and maximum. Defaults to NULL.
+#' @param prior.BMD vector containing informative prior for the BMD.
+#'                  It should be specified as minimum, most likely and maximum. Defaults to NULL.
+#' @param shape.a shape parameter that determines the flatness of the Pert prior for the background.
+#'                 Defaults to 4, which implies a peak at the most likely value.
+#' @param shape.BMD shape parameter that determines the flatness of the Pert prior for the BMD.
+#'                  Defaults to 0.0001, which implies a flat prior.
+#' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
+#'
+#' @examples
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
-#' @export
+#' @export PREP_DATA_QA
 #'
 PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns should be: dose, response, n
                          sumstats = TRUE, # TRUE if summary data, FALSE if individual data
                          q, # the BMR,
+                         bkg = NULL, # possible expert info on background response (a),
+                         prior.BMD = NULL, # possible expert prior on the BMD,
                          shape.a = 4, #scale parameter for Pert priors for a
                          shape.BMD = 0.0001, #scale parameter for the Pert priors for BMD
-                         cluster = FALSE, # indicate if data is clustered
-                         bkg = NULL, # possible expert info on background response (a),
-                         BMD_p = NULL # possible expert prior on the BMD,
+                         cluster = FALSE # indicate if data is clustered
+
 ){
 
   if(sumstats == TRUE){
+    data = data[order(data[, 1]), ]
     dose.a = data[, 1]
     maxDose = max(dose.a)
     y.a = data[, 2]
@@ -55,6 +65,9 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   } else if(cluster == TRUE) {
     fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BB,
                    sigma.formula = ~1,data=datf)
+    fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
+                  silent = TRUE)
+    rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
 
   } else stop('provide cluster to be TRUE or FALSE')
 
@@ -80,10 +93,13 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 
 
   ## Default range on background
-  a.min <- ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
+  mindose.a <- which(dose.a == min(dose.a))
+  miny.a <- sum(y.a[mindose.a])
+  minn.a <- sum(n.a[mindose.a])
+  a.min <- ifelse(miny.a != 0, max(c(prop.test(miny.a, minn.a)$conf.int[1]/2, 1/(10*minn.a))),
                   .Machine$double.xmin)
-  a.max <- min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1])))
-  a.mode <-  max(c(y.a[1]/n.a[1], 1/(5*n.a[1])))
+  a.max <- min(c(3*prop.test(miny.a, minn.a)$conf.int[2]/2, 1 - 1/(10*minn.a)))
+  a.mode <-  max(c(miny.a/minn.a, 1/(5*minn.a)))
 
   ## If info on background is given
   if(!is.null(bkg)){
@@ -115,16 +131,16 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   BMD.mode <- 0.5
 
   ## If info on BMD is given
-  if(!is.null(BMD_p)){
+  if(!is.null(prior.BMD)){
 
-    if(!is.na(BMD_p[2])){
-      BMD.mode = BMD_p[2]/maxDose
+    if(!is.na(prior.BMD[2])){
+      BMD.mode = prior.BMD[2]/maxDose
     }
-    if(!is.na(BMD_p[1])){
-      BMD.min = BMD_p[1]/maxDose
+    if(!is.na(prior.BMD[1])){
+      BMD.min = prior.BMD[1]/maxDose
     }
-    if(!is.na(BMD_p[3])){
-      BMD.max = BMD_p[3]/maxDose
+    if(!is.na(prior.BMD[3])){
+      BMD.max = prior.BMD[3]/maxDose
     }
 
     is_informative_BMD = 1
@@ -140,23 +156,24 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 
   #prvar.k=1; prmean.k=1
   # family 1a
-  priormu1a <- c(a.vec[2], BMD.vec[2], prmean.d)
+  priormu1a <- c(a.vec[2], BMD.vec[2], prmean.d, ifelse(is_betabin==1, rhohat, 0))
   priorSigma1a <- diag(c(1, 1, prvar.d))
   priorlb1a <- c(a.vec[1], BMD.vec[1])
   priorub1a <- c(a.vec[3], BMD.vec[3])
 
   if(is_bin==1) {
     start = list(par1 = priormu1a[1], par2 = bmd.sv, par3 = priormu1a[3])
-  } else if(is_betabin == 1) {
-    etarho <- 0.6; dim(etarho) <- 1
+  } else {
+    rho <- rhohat; dim(rho) <- 1
     start = list(par1 = priormu1a[1], par2 = bmd.sv, par3 = priormu1a[3],
-                 etarho = etarho )
+                 rho = rho )
   }
 
 
   return(list(
     # data and priors
-    data = list(N = N, n = n.a, x = dose.a, y = y.a, maxD = maxDose, q = q, priormu = priormu1a,
+    data = list(N = N, n = n.a, x = dose.a, y = y.a, yint = y.a, nint = n.a, maxD = maxDose,
+                q = q, priormu = priormu1a,
                 priorlb = priorlb1a, priorub = priorub1a, priorSigma = priorSigma1a,
                 eps = .Machine$double.xmin, priorgama = c(shape.a, shape.BMD),
                 init_b = 1, is_informative_a = is_informative_a, is_informative_BMD = is_informative_BMD,

@@ -23,7 +23,7 @@ data{
   vector[N] x;  // the dose level of each dose group
   vector[N] y;  // the number of adverse events for each dose group
   real q;       // the BMR
-  vector[3] priormu;
+  vector[4] priormu;
   real priorlb[2]; //lower bound
   real priorub[2]; //upper bound
   real priorgama[2];
@@ -33,11 +33,10 @@ data{
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
 }
 parameters{
-  //vector[3] par; // at=a, BMD on log-scale, dt=log(d), invsigma2t=log(invsigma2)
   real<lower=0, upper=1> par1; //a
   real<lower=0> par2; //BMD
   real par3; // d on a log scale
-  real etarho[is_betabin];
+  real rho[is_betabin];
 }
 transformed parameters{
   real a;
@@ -46,11 +45,9 @@ transformed parameters{
   real k;
   real expr;
   real m[N];
-  real rho[is_betabin];
   real abet[N];
   real bbet[N];
   real<lower=0> BMD;
-
   BMD = par2;
   a = par1;
   d = exp(par3);
@@ -71,22 +68,19 @@ transformed parameters{
   }
 
 
-  if(is_betabin == 1) {
-    rho[is_betabin] = (exp(etarho[is_betabin])-1)/(exp(etarho[is_betabin])+1);
+  if(is_bin == 0) {
     for(i in 1:N){
       abet[i] = m[i]*((1/rho[is_betabin])-1);
       bbet[i] = (1.0 - m[i])*((1/rho[is_betabin])-1);
     }
-  } else if(is_bin == 1) {
+  } else {
     for(i in 1:N){
       abet[i] = 0.0;
       bbet[i] = 0.0;
     }
   }
-
 }
 model{
-
     par1 ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama[1]); //prior for a
     par2 ~ pert_dist(priorlb[2], priormu[2], priorub[2], priorgama[2]); //prior for BMD
     par3 ~ normal(priormu[3], priorSigma[3,3]); //prior for d
@@ -97,12 +91,13 @@ model{
         target += lchoose(n[i], y[i]) + y[i]*log(m[i]+eps) + (n[i] - y[i])*log(1 - m[i]+eps);
       }
 
-    } else if(is_betabin==1){
-      etarho ~ normal(0,1);
+    } else {
+
+      rho[is_betabin] ~ pert_dist(0.0, priormu[4], 1.0, 4.0);
       for(i in 1:N){
-        target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]) + lgamma(bbet[i]+n[i]-y[i]) -
-                  lgamma(abet[i]+bbet[i]+n[i]) - lgamma(abet[i]) - lgamma(bbet[i]) +
-                  lgamma(abet[i]+bbet[i]);
+        target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
+                  lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+                  lgamma(abet[i]+bbet[i]+eps);
       }
     }
 }

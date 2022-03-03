@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{predict.BMADR}
 \alias{predict.BMADR}
-\title{Function to get predicted values from the DRMS}
+\title{function to get predicted values from the DRMS}
 \usage{
 predict.BMADR(
   mod.obj,
@@ -14,21 +14,23 @@ predict.BMADR(
 )
 }
 \arguments{
-\item{mod.obj}{is the result of pars_med}
+\item{mod.obj}{BMDBMA model object}
 
-\item{dose}{dose}
+\item{dose}{vector of dose values to use for prediction}
 
 \item{type}{dose response model type}
 
-\item{what}{prediction of interest}
+\item{what}{prediction of interest. It can either be "predicted" or "response_at_BMD"}
 
-\item{model_averaged}{option to compute model averaged prediction}
+\item{model_averaged}{option to compute model averaged prediction. Defaults to FALSE}
 
-\item{weight_type}{type of weight to be used}
+\item{weight_type}{type of weight to be used. It can either be "BS" for bridge sampling or
+"LP" for Laplace approximation}
 }
 \value{
-.
+dataframe of model prediction per model or
+list with dataframe of model preditions and model-averaged predictions
 }
 \description{
-Function to get predicted values from the DRMS
+function to get predicted values from the DRMS
 }

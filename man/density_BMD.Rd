@@ -17,7 +17,7 @@ density_BMD(
 
 \item{BMD.true}{true value for BMD. Only necessary if such exist}
 
-\item{to_plot}{which quantity to plot}
+\item{to_plot}{which value to plot}
 
 \item{xlab}{x-axis label}
 

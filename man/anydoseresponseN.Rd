@@ -2,7 +2,7 @@
 % Please edit documentation in R/anydoseresponse.R
 \name{anydoseresponseN}
 \alias{anydoseresponseN}
-\title{Function to determine if there is a dose-response effect}
+\title{Function to determine if there is a dose-response effect (continuous data version)}
 \usage{
 anydoseresponseN(dose.a, mean.a, sd.a, n.a)
 }
@@ -16,8 +16,8 @@ anydoseresponseN(dose.a, mean.a, sd.a, n.a)
 \item{n.a}{number of observations per dose level}
 }
 \value{
-text
+list containing Baye's factor and decision.
 }
 \description{
-Function to determine if there is a dose-response effect
+Function to determine if there is a dose-response effect (continuous data version)
 }

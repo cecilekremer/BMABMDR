@@ -10,7 +10,7 @@
 \alias{llfP42_Q}
 \alias{llfL42_Q}
 \alias{llfSM2_Q}
-\title{Loglikelihood functions for the different dose response models for Clustered Quantal data}
+\title{Loglikelihood functions for the different dose response models (Beta-Binomial)}
 \usage{
 llfE42_Q(x, nvec, dvec, yvec, qval, rho)
 
@@ -41,11 +41,11 @@ llfSM2_Q(x, nvec, dvec, yvec, qval, rho)
 
 \item{qval}{BMR}
 
-\item{rho}{correlation parameter}
+\item{rho}{intra-cluster correlation parameter}
 }
 \value{
-.
+loglikelihood value at x.
 }
 \description{
-Loglikelihood functions for the different dose response models for Clustered Quantal data
+Loglikelihood functions for the different dose response models (Beta-Binomial)
 }

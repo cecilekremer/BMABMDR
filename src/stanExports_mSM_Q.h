@@ -33,7 +33,7 @@ static int current_statement_begin__;
 stan::io::program_reader prog_reader__() {
     stan::io::program_reader reader;
     reader.add_event(0, 0, "start", "model_mSM_Q");
-    reader.add_event(105, 103, "end", "model_mSM_Q");
+    reader.add_event(95, 93, "end", "model_mSM_Q");
     return reader;
 }
 template <bool propto, typename T0__, typename T1__, typename T2__, typename T3__, typename T4__>
@@ -131,7 +131,7 @@ private:
         vector_d n;
         vector_d y;
         vector_d priormu;
-        double priorlb;
+        vector_d priorlb;
         vector_d priorub;
         double priorgama;
         double eps;
@@ -194,28 +194,32 @@ public:
                 y(j_1__) = vals_r__[pos__++];
             }
             current_statement_begin__ = 24;
-            validate_non_negative_index("priormu", "N", N);
-            context__.validate_dims("data initialization", "priormu", "vector_d", context__.to_vec(N));
-            priormu = Eigen::Matrix<double, Eigen::Dynamic, 1>(N);
+            validate_non_negative_index("priormu", "(N + 1)", (N + 1));
+            context__.validate_dims("data initialization", "priormu", "vector_d", context__.to_vec((N + 1)));
+            priormu = Eigen::Matrix<double, Eigen::Dynamic, 1>((N + 1));
             vals_r__ = context__.vals_r("priormu");
             pos__ = 0;
-            size_t priormu_j_1_max__ = N;
+            size_t priormu_j_1_max__ = (N + 1);
             for (size_t j_1__ = 0; j_1__ < priormu_j_1_max__; ++j_1__) {
                 priormu(j_1__) = vals_r__[pos__++];
             }
             current_statement_begin__ = 25;
-            context__.validate_dims("data initialization", "priorlb", "double", context__.to_vec());
-            priorlb = double(0);
+            validate_non_negative_index("priorlb", "N", N);
+            context__.validate_dims("data initialization", "priorlb", "vector_d", context__.to_vec(N));
+            priorlb = Eigen::Matrix<double, Eigen::Dynamic, 1>(N);
             vals_r__ = context__.vals_r("priorlb");
             pos__ = 0;
-            priorlb = vals_r__[pos__++];
+            size_t priorlb_j_1_max__ = N;
+            for (size_t j_1__ = 0; j_1__ < priorlb_j_1_max__; ++j_1__) {
+                priorlb(j_1__) = vals_r__[pos__++];
+            }
             current_statement_begin__ = 26;
-            validate_non_negative_index("priorub", "2", 2);
-            context__.validate_dims("data initialization", "priorub", "vector_d", context__.to_vec(2));
-            priorub = Eigen::Matrix<double, Eigen::Dynamic, 1>(2);
+            validate_non_negative_index("priorub", "N", N);
+            context__.validate_dims("data initialization", "priorub", "vector_d", context__.to_vec(N));
+            priorub = Eigen::Matrix<double, Eigen::Dynamic, 1>(N);
             vals_r__ = context__.vals_r("priorub");
             pos__ = 0;
-            size_t priorub_j_1_max__ = 2;
+            size_t priorub_j_1_max__ = N;
             for (size_t j_1__ = 0; j_1__ < priorub_j_1_max__; ++j_1__) {
                 priorub(j_1__) = vals_r__[pos__++];
             }
@@ -257,7 +261,7 @@ public:
             validate_non_negative_index("par", "N", N);
             num_params_r__ += N;
             current_statement_begin__ = 34;
-            validate_non_negative_index("etarho", "is_betabin", is_betabin);
+            validate_non_negative_index("rho", "is_betabin", is_betabin);
             num_params_r__ += (1 * is_betabin);
         } catch (const std::exception& e) {
             stan::lang::rethrow_located(e, current_statement_begin__, prog_reader__());
@@ -294,23 +298,23 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable par: ") + e.what()), current_statement_begin__, prog_reader__());
         }
         current_statement_begin__ = 34;
-        if (!(context__.contains_r("etarho")))
-            stan::lang::rethrow_located(std::runtime_error(std::string("Variable etarho missing")), current_statement_begin__, prog_reader__());
-        vals_r__ = context__.vals_r("etarho");
+        if (!(context__.contains_r("rho")))
+            stan::lang::rethrow_located(std::runtime_error(std::string("Variable rho missing")), current_statement_begin__, prog_reader__());
+        vals_r__ = context__.vals_r("rho");
         pos__ = 0U;
-        validate_non_negative_index("etarho", "is_betabin", is_betabin);
-        context__.validate_dims("parameter initialization", "etarho", "double", context__.to_vec(is_betabin));
-        std::vector<double> etarho(is_betabin, double(0));
-        size_t etarho_k_0_max__ = is_betabin;
-        for (size_t k_0__ = 0; k_0__ < etarho_k_0_max__; ++k_0__) {
-            etarho[k_0__] = vals_r__[pos__++];
+        validate_non_negative_index("rho", "is_betabin", is_betabin);
+        context__.validate_dims("parameter initialization", "rho", "double", context__.to_vec(is_betabin));
+        std::vector<double> rho(is_betabin, double(0));
+        size_t rho_k_0_max__ = is_betabin;
+        for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
+            rho[k_0__] = vals_r__[pos__++];
         }
-        size_t etarho_i_0_max__ = is_betabin;
-        for (size_t i_0__ = 0; i_0__ < etarho_i_0_max__; ++i_0__) {
+        size_t rho_i_0_max__ = is_betabin;
+        for (size_t i_0__ = 0; i_0__ < rho_i_0_max__; ++i_0__) {
             try {
-                writer__.scalar_unconstrain(etarho[i_0__]);
+                writer__.scalar_lub_unconstrain(0, 1, rho[i_0__]);
             } catch (const std::exception& e) {
-                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable etarho: ") + e.what()), current_statement_begin__, prog_reader__());
+                stan::lang::rethrow_located(std::runtime_error(std::string("Error transforming variable rho: ") + e.what()), current_statement_begin__, prog_reader__());
             }
         }
         params_r__ = writer__.data_r();
@@ -346,14 +350,14 @@ public:
             else
                 par = in__.vector_constrain(N);
             current_statement_begin__ = 34;
-            std::vector<local_scalar_t__> etarho;
-            size_t etarho_d_0_max__ = is_betabin;
-            etarho.reserve(etarho_d_0_max__);
-            for (size_t d_0__ = 0; d_0__ < etarho_d_0_max__; ++d_0__) {
+            std::vector<local_scalar_t__> rho;
+            size_t rho_d_0_max__ = is_betabin;
+            rho.reserve(rho_d_0_max__);
+            for (size_t d_0__ = 0; d_0__ < rho_d_0_max__; ++d_0__) {
                 if (jacobian__)
-                    etarho.push_back(in__.scalar_constrain(lp__));
+                    rho.push_back(in__.scalar_lub_constrain(0, 1, lp__));
                 else
-                    etarho.push_back(in__.scalar_constrain());
+                    rho.push_back(in__.scalar_lub_constrain(0, 1));
             }
             // transformed parameters
             current_statement_begin__ = 37;
@@ -362,79 +366,69 @@ public:
             stan::math::initialize(a, DUMMY_VAR__);
             stan::math::fill(a, DUMMY_VAR__);
             current_statement_begin__ = 38;
-            validate_non_negative_index("rho", "is_betabin", is_betabin);
-            std::vector<local_scalar_t__> rho(is_betabin, local_scalar_t__(0));
-            stan::math::initialize(rho, DUMMY_VAR__);
-            stan::math::fill(rho, DUMMY_VAR__);
-            current_statement_begin__ = 39;
             validate_non_negative_index("abet", "N", N);
             std::vector<local_scalar_t__> abet(N, local_scalar_t__(0));
             stan::math::initialize(abet, DUMMY_VAR__);
             stan::math::fill(abet, DUMMY_VAR__);
-            current_statement_begin__ = 40;
+            current_statement_begin__ = 39;
             validate_non_negative_index("bbet", "N", N);
             std::vector<local_scalar_t__> bbet(N, local_scalar_t__(0));
             stan::math::initialize(bbet, DUMMY_VAR__);
             stan::math::fill(bbet, DUMMY_VAR__);
             // transformed parameters block statements
-            current_statement_begin__ = 43;
+            current_statement_begin__ = 42;
             stan::model::assign(a, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
                         get_base1(par, 1, "par", 1), 
                         "assigning variable a");
-            current_statement_begin__ = 44;
+            current_statement_begin__ = 43;
             for (int k = 2; k <= N; ++k) {
-                current_statement_begin__ = 45;
+                current_statement_begin__ = 44;
                 stan::model::assign(a, 
                             stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
                             (get_base1(a, (k - 1), "a", 1) + get_base1(par, k, "par", 1)), 
                             "assigning variable a");
-                current_statement_begin__ = 46;
+                current_statement_begin__ = 45;
                 if (as_bool(logical_lte(get_base1(a, k, "a", 1), 0))) {
-                    current_statement_begin__ = 47;
+                    current_statement_begin__ = 46;
                     stan::model::assign(a, 
                                 stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
-                                0.01, 
+                                0.0001, 
                                 "assigning variable a");
                 }
-                current_statement_begin__ = 49;
+                current_statement_begin__ = 48;
                 if (as_bool(logical_gte(get_base1(a, k, "a", 1), 1))) {
-                    current_statement_begin__ = 50;
+                    current_statement_begin__ = 49;
                     stan::model::assign(a, 
                                 stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
-                                0.99, 
+                                0.9999, 
                                 "assigning variable a");
                 }
             }
-            current_statement_begin__ = 55;
-            if (as_bool(logical_eq(is_betabin, 1))) {
+            current_statement_begin__ = 54;
+            if (as_bool(logical_eq(is_bin, 0))) {
                 current_statement_begin__ = 56;
-                stan::model::assign(rho, 
-                            stan::model::cons_list(stan::model::index_uni(is_betabin), stan::model::nil_index_list()), 
-                            ((stan::math::exp(get_base1(etarho, is_betabin, "etarho", 1)) - 1.0) / (stan::math::exp(get_base1(etarho, is_betabin, "etarho", 1)) + 1.0)), 
-                            "assigning variable rho");
-                current_statement_begin__ = 57;
                 for (int i = 1; i <= N; ++i) {
-                    current_statement_begin__ = 58;
+                    current_statement_begin__ = 57;
                     stan::model::assign(abet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 (get_base1(a, i, "a", 1) * ((1 / get_base1(rho, is_betabin, "rho", 1)) - 1.0)), 
                                 "assigning variable abet");
-                    current_statement_begin__ = 59;
+                    current_statement_begin__ = 58;
                     stan::model::assign(bbet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 ((1.0 - get_base1(a, i, "a", 1)) * ((1.0 / get_base1(rho, is_betabin, "rho", 1)) - 1)), 
                                 "assigning variable bbet");
                 }
-            } else if (as_bool(logical_eq(is_bin, 1))) {
-                current_statement_begin__ = 62;
+            } else {
+                current_statement_begin__ = 61;
                 for (int i = 1; i <= N; ++i) {
-                    current_statement_begin__ = 63;
+                    current_statement_begin__ = 62;
                     stan::model::assign(abet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 0.0, 
                                 "assigning variable abet");
-                    current_statement_begin__ = 64;
+                    current_statement_begin__ = 63;
                     stan::model::assign(bbet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 0.0, 
@@ -454,15 +448,6 @@ public:
                 }
             }
             current_statement_begin__ = 38;
-            size_t rho_k_0_max__ = is_betabin;
-            for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
-                if (stan::math::is_uninitialized(rho[k_0__])) {
-                    std::stringstream msg__;
-                    msg__ << "Undefined transformed parameter: rho" << "[" << k_0__ << "]";
-                    stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable rho: ") + msg__.str()), current_statement_begin__, prog_reader__());
-                }
-            }
-            current_statement_begin__ = 39;
             size_t abet_k_0_max__ = N;
             for (size_t k_0__ = 0; k_0__ < abet_k_0_max__; ++k_0__) {
                 if (stan::math::is_uninitialized(abet[k_0__])) {
@@ -471,7 +456,7 @@ public:
                     stan::lang::rethrow_located(std::runtime_error(std::string("Error initializing variable abet: ") + msg__.str()), current_statement_begin__, prog_reader__());
                 }
             }
-            current_statement_begin__ = 40;
+            current_statement_begin__ = 39;
             size_t bbet_k_0_max__ = N;
             for (size_t k_0__ = 0; k_0__ < bbet_k_0_max__; ++k_0__) {
                 if (stan::math::is_uninitialized(bbet[k_0__])) {
@@ -481,34 +466,27 @@ public:
                 }
             }
             // model body
+            current_statement_begin__ = 69;
+            lp_accum__.add(pert_dist_lpdf<propto__>(get_base1(par, 1, "par", 1), get_base1(priorlb, 1, "priorlb", 1), get_base1(priormu, 1, "priormu", 1), get_base1(priorub, 1, "priorub", 1), priorgama, pstream__));
             current_statement_begin__ = 71;
+            for (int k = 2; k <= N; ++k) {
+                current_statement_begin__ = 72;
+                lp_accum__.add(pert_dist_lpdf<propto__>(get_base1(par, k, "par", 1), get_base1(priorlb, k, "priorlb", 1), get_base1(priormu, k, "priormu", 1), get_base1(priorub, k, "priorub", 1), 4, pstream__));
+            }
+            current_statement_begin__ = 74;
             if (as_bool(logical_eq(is_bin, 1))) {
-                current_statement_begin__ = 73;
+                current_statement_begin__ = 76;
                 for (int i = 1; i <= N; ++i) {
-                    current_statement_begin__ = 74;
-                    lp_accum__.add(pert_dist_lpdf<propto__>(get_base1(par, 1, "par", 1), priorlb, get_base1(priormu, 1, "priormu", 1), get_base1(priorub, 1, "priorub", 1), priorgama, pstream__));
-                    current_statement_begin__ = 76;
-                    for (int k = 2; k <= N; ++k) {
-                        current_statement_begin__ = 78;
-                        lp_accum__.add(uniform_log<propto__>(get_base1(par, k, "par", 1), -(get_base1(priorub, 2, "priorub", 1)), get_base1(priorub, 2, "priorub", 1)));
-                    }
-                    current_statement_begin__ = 82;
+                    current_statement_begin__ = 78;
                     lp_accum__.add(((binomial_coefficient_log(get_base1(n, i, "n", 1), get_base1(y, i, "y", 1)) + (get_base1(y, i, "y", 1) * stan::math::log((get_base1(a, i, "a", 1) + eps)))) + ((get_base1(n, i, "n", 1) - get_base1(y, i, "y", 1)) * stan::math::log(((1 - get_base1(a, i, "a", 1)) + eps)))));
                 }
-            } else if (as_bool(logical_eq(is_betabin, 1))) {
-                current_statement_begin__ = 87;
-                lp_accum__.add(normal_log<propto__>(etarho, 0, 1));
-                current_statement_begin__ = 88;
+            } else {
+                current_statement_begin__ = 84;
+                lp_accum__.add(pert_dist_lpdf<propto__>(get_base1(rho, is_betabin, "rho", 1), 0.0, get_base1(priormu, (N + 1), "priormu", 1), 1.0, 4.0, pstream__));
+                current_statement_begin__ = 85;
                 for (int i = 1; i <= N; ++i) {
-                    current_statement_begin__ = 89;
-                    lp_accum__.add(pert_dist_lpdf<propto__>(get_base1(par, 1, "par", 1), priorlb, get_base1(priormu, 1, "priormu", 1), get_base1(priorub, 1, "priorub", 1), priorgama, pstream__));
-                    current_statement_begin__ = 91;
-                    for (int k = 2; k <= N; ++k) {
-                        current_statement_begin__ = 93;
-                        lp_accum__.add(uniform_log<propto__>(get_base1(par, k, "par", 1), -(get_base1(priorub, 2, "priorub", 1)), get_base1(priorub, 2, "priorub", 1)));
-                    }
-                    current_statement_begin__ = 96;
-                    lp_accum__.add(((((((binomial_coefficient_log(get_base1(n, i, "n", 1), get_base1(y, i, "y", 1)) + stan::math::lgamma((get_base1(abet, i, "abet", 1) + get_base1(y, i, "y", 1)))) + stan::math::lgamma(((get_base1(bbet, i, "bbet", 1) + get_base1(n, i, "n", 1)) - get_base1(y, i, "y", 1)))) - stan::math::lgamma(((get_base1(abet, i, "abet", 1) + get_base1(bbet, i, "bbet", 1)) + get_base1(n, i, "n", 1)))) - stan::math::lgamma(get_base1(abet, i, "abet", 1))) - stan::math::lgamma(get_base1(bbet, i, "bbet", 1))) + stan::math::lgamma((get_base1(abet, i, "abet", 1) + get_base1(bbet, i, "bbet", 1)))));
+                    current_statement_begin__ = 86;
+                    lp_accum__.add(((((((binomial_coefficient_log(get_base1(n, i, "n", 1), get_base1(y, i, "y", 1)) + stan::math::lgamma(((get_base1(abet, i, "abet", 1) + get_base1(y, i, "y", 1)) + eps))) + stan::math::lgamma((((get_base1(bbet, i, "bbet", 1) + get_base1(n, i, "n", 1)) - get_base1(y, i, "y", 1)) + eps))) - stan::math::lgamma((((get_base1(abet, i, "abet", 1) + get_base1(bbet, i, "bbet", 1)) + get_base1(n, i, "n", 1)) + eps))) - stan::math::lgamma((get_base1(abet, i, "abet", 1) + eps))) - stan::math::lgamma((get_base1(bbet, i, "bbet", 1) + eps))) + stan::math::lgamma(((get_base1(abet, i, "abet", 1) + get_base1(bbet, i, "bbet", 1)) + eps))));
                 }
             }
         } catch (const std::exception& e) {
@@ -532,9 +510,8 @@ public:
     void get_param_names(std::vector<std::string>& names__) const {
         names__.resize(0);
         names__.push_back("par");
-        names__.push_back("etarho");
-        names__.push_back("a");
         names__.push_back("rho");
+        names__.push_back("a");
         names__.push_back("abet");
         names__.push_back("bbet");
     }
@@ -549,9 +526,6 @@ public:
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(N);
-        dimss__.push_back(dims__);
-        dims__.resize(0);
-        dims__.push_back(is_betabin);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(N);
@@ -579,15 +553,15 @@ public:
         for (size_t j_1__ = 0; j_1__ < par_j_1_max__; ++j_1__) {
             vars__.push_back(par(j_1__));
         }
-        std::vector<double> etarho;
-        size_t etarho_d_0_max__ = is_betabin;
-        etarho.reserve(etarho_d_0_max__);
-        for (size_t d_0__ = 0; d_0__ < etarho_d_0_max__; ++d_0__) {
-            etarho.push_back(in__.scalar_constrain());
+        std::vector<double> rho;
+        size_t rho_d_0_max__ = is_betabin;
+        rho.reserve(rho_d_0_max__);
+        for (size_t d_0__ = 0; d_0__ < rho_d_0_max__; ++d_0__) {
+            rho.push_back(in__.scalar_lub_constrain(0, 1));
         }
-        size_t etarho_k_0_max__ = is_betabin;
-        for (size_t k_0__ = 0; k_0__ < etarho_k_0_max__; ++k_0__) {
-            vars__.push_back(etarho[k_0__]);
+        size_t rho_k_0_max__ = is_betabin;
+        for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
+            vars__.push_back(rho[k_0__]);
         }
         double lp__ = 0.0;
         (void) lp__;  // dummy to suppress unused var warning
@@ -603,79 +577,69 @@ public:
             stan::math::initialize(a, DUMMY_VAR__);
             stan::math::fill(a, DUMMY_VAR__);
             current_statement_begin__ = 38;
-            validate_non_negative_index("rho", "is_betabin", is_betabin);
-            std::vector<double> rho(is_betabin, double(0));
-            stan::math::initialize(rho, DUMMY_VAR__);
-            stan::math::fill(rho, DUMMY_VAR__);
-            current_statement_begin__ = 39;
             validate_non_negative_index("abet", "N", N);
             std::vector<double> abet(N, double(0));
             stan::math::initialize(abet, DUMMY_VAR__);
             stan::math::fill(abet, DUMMY_VAR__);
-            current_statement_begin__ = 40;
+            current_statement_begin__ = 39;
             validate_non_negative_index("bbet", "N", N);
             std::vector<double> bbet(N, double(0));
             stan::math::initialize(bbet, DUMMY_VAR__);
             stan::math::fill(bbet, DUMMY_VAR__);
             // do transformed parameters statements
-            current_statement_begin__ = 43;
+            current_statement_begin__ = 42;
             stan::model::assign(a, 
                         stan::model::cons_list(stan::model::index_uni(1), stan::model::nil_index_list()), 
                         get_base1(par, 1, "par", 1), 
                         "assigning variable a");
-            current_statement_begin__ = 44;
+            current_statement_begin__ = 43;
             for (int k = 2; k <= N; ++k) {
-                current_statement_begin__ = 45;
+                current_statement_begin__ = 44;
                 stan::model::assign(a, 
                             stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
                             (get_base1(a, (k - 1), "a", 1) + get_base1(par, k, "par", 1)), 
                             "assigning variable a");
-                current_statement_begin__ = 46;
+                current_statement_begin__ = 45;
                 if (as_bool(logical_lte(get_base1(a, k, "a", 1), 0))) {
-                    current_statement_begin__ = 47;
+                    current_statement_begin__ = 46;
                     stan::model::assign(a, 
                                 stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
-                                0.01, 
+                                0.0001, 
                                 "assigning variable a");
                 }
-                current_statement_begin__ = 49;
+                current_statement_begin__ = 48;
                 if (as_bool(logical_gte(get_base1(a, k, "a", 1), 1))) {
-                    current_statement_begin__ = 50;
+                    current_statement_begin__ = 49;
                     stan::model::assign(a, 
                                 stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
-                                0.99, 
+                                0.9999, 
                                 "assigning variable a");
                 }
             }
-            current_statement_begin__ = 55;
-            if (as_bool(logical_eq(is_betabin, 1))) {
+            current_statement_begin__ = 54;
+            if (as_bool(logical_eq(is_bin, 0))) {
                 current_statement_begin__ = 56;
-                stan::model::assign(rho, 
-                            stan::model::cons_list(stan::model::index_uni(is_betabin), stan::model::nil_index_list()), 
-                            ((stan::math::exp(get_base1(etarho, is_betabin, "etarho", 1)) - 1.0) / (stan::math::exp(get_base1(etarho, is_betabin, "etarho", 1)) + 1.0)), 
-                            "assigning variable rho");
-                current_statement_begin__ = 57;
                 for (int i = 1; i <= N; ++i) {
-                    current_statement_begin__ = 58;
+                    current_statement_begin__ = 57;
                     stan::model::assign(abet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 (get_base1(a, i, "a", 1) * ((1 / get_base1(rho, is_betabin, "rho", 1)) - 1.0)), 
                                 "assigning variable abet");
-                    current_statement_begin__ = 59;
+                    current_statement_begin__ = 58;
                     stan::model::assign(bbet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 ((1.0 - get_base1(a, i, "a", 1)) * ((1.0 / get_base1(rho, is_betabin, "rho", 1)) - 1)), 
                                 "assigning variable bbet");
                 }
-            } else if (as_bool(logical_eq(is_bin, 1))) {
-                current_statement_begin__ = 62;
+            } else {
+                current_statement_begin__ = 61;
                 for (int i = 1; i <= N; ++i) {
-                    current_statement_begin__ = 63;
+                    current_statement_begin__ = 62;
                     stan::model::assign(abet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 0.0, 
                                 "assigning variable abet");
-                    current_statement_begin__ = 64;
+                    current_statement_begin__ = 63;
                     stan::model::assign(bbet, 
                                 stan::model::cons_list(stan::model::index_uni(i), stan::model::nil_index_list()), 
                                 0.0, 
@@ -691,10 +655,6 @@ public:
                 size_t a_j_1_max__ = N;
                 for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                     vars__.push_back(a(j_1__));
-                }
-                size_t rho_k_0_max__ = is_betabin;
-                for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
-                    vars__.push_back(rho[k_0__]);
                 }
                 size_t abet_k_0_max__ = N;
                 for (size_t k_0__ = 0; k_0__ < abet_k_0_max__; ++k_0__) {
@@ -742,10 +702,10 @@ public:
             param_name_stream__ << "par" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t etarho_k_0_max__ = is_betabin;
-        for (size_t k_0__ = 0; k_0__ < etarho_k_0_max__; ++k_0__) {
+        size_t rho_k_0_max__ = is_betabin;
+        for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "etarho" << '.' << k_0__ + 1;
+            param_name_stream__ << "rho" << '.' << k_0__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
         if (!include_gqs__ && !include_tparams__) return;
@@ -754,12 +714,6 @@ public:
             for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "a" << '.' << j_1__ + 1;
-                param_names__.push_back(param_name_stream__.str());
-            }
-            size_t rho_k_0_max__ = is_betabin;
-            for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
-                param_name_stream__.str(std::string());
-                param_name_stream__ << "rho" << '.' << k_0__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
             size_t abet_k_0_max__ = N;
@@ -787,10 +741,10 @@ public:
             param_name_stream__ << "par" << '.' << j_1__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
-        size_t etarho_k_0_max__ = is_betabin;
-        for (size_t k_0__ = 0; k_0__ < etarho_k_0_max__; ++k_0__) {
+        size_t rho_k_0_max__ = is_betabin;
+        for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
             param_name_stream__.str(std::string());
-            param_name_stream__ << "etarho" << '.' << k_0__ + 1;
+            param_name_stream__ << "rho" << '.' << k_0__ + 1;
             param_names__.push_back(param_name_stream__.str());
         }
         if (!include_gqs__ && !include_tparams__) return;
@@ -799,12 +753,6 @@ public:
             for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "a" << '.' << j_1__ + 1;
-                param_names__.push_back(param_name_stream__.str());
-            }
-            size_t rho_k_0_max__ = is_betabin;
-            for (size_t k_0__ = 0; k_0__ < rho_k_0_max__; ++k_0__) {
-                param_name_stream__.str(std::string());
-                param_name_stream__ << "rho" << '.' << k_0__ + 1;
                 param_names__.push_back(param_name_stream__.str());
             }
             size_t abet_k_0_max__ = N;

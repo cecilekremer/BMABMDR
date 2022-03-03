@@ -8,33 +8,41 @@ PREP_DATA_QA(
   data,
   sumstats = TRUE,
   q,
+  bkg = NULL,
+  prior.BMD = NULL,
   shape.a = 4,
   shape.BMD = 1e-04,
-  cluster = FALSE,
-  bkg = NULL,
-  BMD_p = NULL
+  cluster = FALSE
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, response, sd (or se), n}
+\item{data}{dataframe with input data, order of columns should be: dose, response.}
 
-\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
+\item{sumstats}{number of observations per dose level}
 
-\item{q}{specified BMR}
+\item{q}{the specified BMR}
 
-\item{shape.a}{shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution}
+\item{bkg}{vector containing informative prior for the background.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 (implies a uniform distribution)}
+\item{prior.BMD}{vector containing informative prior for the BMD.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{cluster}{logical indicating if data is clustered (defaults to FALSE)}
+\item{shape.a}{shape parameter that determines the flatness of the Pert prior for the background.
+Defaults to 4, which implies a peak at the most likely value.}
 
-\item{bkg}{vector containing minimum, most likely, and maximum value for the background response}
+\item{shape.BMD}{shape parameter that determines the flatness of the Pert prior for the BMD.
+Defaults to 0.0001, which implies a flat prior.}
 
-\item{BMD_p}{vector containing minimum, most likely, and maximum value for the BMD}
+\item{cluster}{logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE}
 }
 \value{
 List with data and start values in correct format to be directly used within the BMA functions.
 }
 \description{
 This function also generates appropriate start values and uninformative priors for each model
+Input should be given as arithmetic mean and standard deviation on the original scale
+}
+\examples{
+
 }

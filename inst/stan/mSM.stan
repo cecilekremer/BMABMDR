@@ -22,6 +22,7 @@ data{
   vector[N] n;  // the sample size for each dose group
   vector[N] m;  // the arithmetic mean of the response values for each dose group
   vector[N] s2;  // the arithmetic variance of the response values for each dose group
+  real shift; // data are shifted if different from 0
   real priorlb;
   real priorg;
   vector[2] priorub;
@@ -47,7 +48,7 @@ transformed parameters{
   if(data_type == 1 || data_type == 3){ // normal dist
     a = mu;
   }else if(data_type == 2 || data_type == 4){ // lognormal dist
-    a = log(mu);
+    a = log(mu) - shift;
   }
 
   invsigma2=exp(par[N+1]);
@@ -74,3 +75,4 @@ model{
   }
 
 }
+

@@ -21,9 +21,9 @@ data{
   int N;  // the total number of distinct dose group
   vector[N] n;  // the sample size for each dose group
   vector[N] y;  // the arithmetic mean of the response values for each dose group
-  vector[N] priormu;
-  real priorlb; //lower bound
-  vector[2] priorub; //upper bound
+  vector[N+1] priormu;
+  vector[N] priorlb; //lower bound
+  vector[N] priorub; //upper bound
   real priorgama;
   real eps;
   int<lower=0, upper=1> is_bin;  //model type 1 = Binomial 0 = otherwise
@@ -31,11 +31,10 @@ data{
 }
 parameters{
   vector[N] par; // par[1]=background, par[2:N]=increment per dose group
-  real etarho[is_betabin]; //will be defined if beta-binomial is to be fitted
+  real<lower=0, upper=1> rho[is_betabin]; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
   vector[N] a;
-  real rho[is_betabin];
   real abet[N];
   real bbet[N];
 
@@ -44,21 +43,21 @@ transformed parameters{
   for(k in 2:N){
       a[k] = a[k-1] + par[k];
       if(a[k] <= 0){
-        a[k] = 0.01;
+        a[k] = 0.0001;
       }
       if(a[k] >= 1){
-        a[k] = 0.99;
+        a[k] = 0.9999;
       }
   }
 
 
-  if(is_betabin == 1) {
-    rho[is_betabin] = (exp(etarho[is_betabin])-1.0)/(exp(etarho[is_betabin])+1.0);
+  if(is_bin == 0) {
+
     for(i in 1:N){
       abet[i] = a[i]*((1/rho[is_betabin])-1.0);
       bbet[i] = (1.0 - a[i])*((1.0/rho[is_betabin])-1);
     }
-  } else if(is_bin == 1) {
+  } else {
     for(i in 1:N){
       abet[i] = 0.0;
       bbet[i] = 0.0;
@@ -67,35 +66,26 @@ transformed parameters{
 }
 model{
 
+  par[1] ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama);
+
+  for(k in 2:N)
+        par[k] ~ pert_dist(priorlb[k], priormu[k], priorub[k], 4);
 
     if(is_bin==1) {
 
       for (i in 1:N){
-       par[1] ~ pert_dist(priorlb, priormu[1], priorub[1], priorgama);
-
-         for(k in 2:N){
-
-            par[k] ~ uniform(-priorub[2], priorub[2]);
-
-            }
 
        target += lchoose(n[i], y[i]) + y[i]*log(a[i]+eps) + (n[i] - y[i])*log(1 - a[i]+eps);
 
       }
 
-    } else if(is_betabin==1){
-    etarho ~ normal(0,1);
+    } else {
+
+    rho[is_betabin] ~ pert_dist(0.0, priormu[N+1], 1.0, 4.0);
       for (i in 1:N){
-       par[1] ~ pert_dist(priorlb, priormu[1], priorub[1], priorgama);
-
-         for(k in 2:N){
-
-            par[k] ~ uniform(-priorub[2], priorub[2]);
-
-            }
-        target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]) + lgamma(bbet[i]+n[i]-y[i]) -
-                  lgamma(abet[i]+bbet[i]+n[i]) - lgamma(abet[i]) - lgamma(bbet[i]) +
-                  lgamma(abet[i]+bbet[i]);
+             target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
+                lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+                lgamma(abet[i]+bbet[i]+eps);
       }
     }
 

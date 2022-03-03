@@ -1,25 +1,27 @@
-#' Test whether the best fit model fits equally well as the saturated ANOVA model
+#'  function to perform MCMC sampling for all the dose-response model.
+#'
+#' @param best.fit best fitting model name
+#' @param data.N list containing data values for the normal models
+#' @param data.LN list containing data values for the lognormal models
+#' @param stanBest stan object for the best fitting model
+#' @param type estimation type. Laplace approximation or McMC
+#' @param ndraws number of draws to be made from the posterior distribution. Defaults to 30000
+#' @param nrchains number of MCMC chains. Defaults to 3
+#' @param nriterations number of MCMC iterations.Defaults to 3000
+#' @param warmup  number of MCMC iterations for warmup. Defaults to 1000
+#' @param delta adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
+#'              Defaults to 0.8.
+#' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
+#'                  Defaults to 10.
+#' @param seed random seed for reproducibility. Defaults to 123
+#'
+#' @examples
 #'
 #'
-#' More detailed descriprion
-#' @param best.fit name of the best fitting model
-#' @param data.N the input data as returned by function PREP_DATA_N
-#' @param data.LN the input data as returned by function PREP_DATA_LN
-#' @param stanBest fit of the best fitting model as returned by rstan's optimizing or sampling routine
-#' @param type either 'MCMC' or 'Laplace'
-#' @param seed default 123
-#' @param ndraws the number of draws from the posterior, default 30000
-#' @param nrchains the number of chains to be used in the MCMC
-#' @param nriterations the number of iterations per chain
-#' @param warmup the number of iterations per chain to be discarded as burnin
-#' @param delta default 0.8
-#' @param treedepth default 10
+#' @export modelTest
 #'
-#' @return Bayes factor for the best fitting model compared to the saturated ANOVA model. A Bayes factor < 10 indicates the best fitting model fits equally well as the ANOVA model.
-#'
-#' @export
-#'
-modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed, ndraws, nrchains, nriterations, warmup, delta, treedepth){
+modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
+                      ndraws, nrchains, nriterations, warmup, delta, treedepth){
 
   if(grepl('_N', best.fit)){
 
@@ -39,7 +41,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed, ndraws, n
       )
     )
 
-    data.modstanSM=list(N=data.N$data$N, n=data.N$data$n, m=data.N$data$m, s2=data.N$data$s2,
+    data.modstanSM=list(N=data.N$data$N, n=data.N$data$n, m=data.N$data$m, s2=data.N$data$s2, shift=data.N$data$shift,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                         data_type=data.N$data$data_type, priorg = data.N$data$shape.a
@@ -101,27 +103,27 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed, ndraws, n
     }
 
 
-  #############--LOGNORMAL--##################################
+    #############--LOGNORMAL--##################################
 
   }else if(grepl('_LN', best.fit)){
 
-    svSM=list(par = c(exp(data.LN$data$m[1]), # background
-                      diff(exp(data.LN$data$m)),
+    svSM=list(par = c(exp(data.LN$data$m.org[1]), # background
+                      diff(exp(data.LN$data$m.org)),
                       log(1/mean(data.LN$data$s2))) # invsigma2
     )
 
     priorSM = list(
-      priormu = c(exp(data.LN$data$m[1]),
-                  diff(exp(data.LN$data$m)),
+      priormu = c(exp(data.LN$data$m.org[1]),
+                  diff(exp(data.LN$data$m.org)),
                   -2*log(1.5*mean(sqrt(data.LN$data$s2)))),
       priorSigma = diag(c(1, rep(1, data.LN$data$N-1), 1)),
       priorlb = data.LN$data$priorlb[1],
       priorub = c(data.LN$data$priorub[1],
-                  max(abs(diff(exp(data.LN$data$m))))*10
+                  max(abs(diff(exp(data.LN$data$m.org))))*10
       )
     )
 
-    data.modstanSM=list(N=data.LN$data$N, n=data.LN$data$n, m=data.LN$data$m, s2=data.LN$data$s2,
+    data.modstanSM=list(N=data.LN$data$N, n=data.LN$data$n, m=data.LN$data$m, s2=data.LN$data$s2, shift=data.LN$data$shift,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                         data_type=data.LN$data$data_type, priorg = data.LN$data$shape.a
@@ -166,9 +168,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed, ndraws, n
       llfun = paste0('llf',best.fit,'D')
     }
     llBestfitf = get(llfun)
-    llBestfit = llBestfitf(x = pars.bestfit, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$q)
+    llBestfit = llBestfitf(x = pars.bestfit, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$q, data.LN$data$shift)
 
-    llSM = llfSM_LN(x = pars.SM, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2)
+    llSM = llfSM_LN(x = pars.SM, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$shift)
 
     BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.LN$data$n)))
     BIC.SM = - 2 * llSM + ((data.LN$data$N + 1) * log(sum(data.LN$data$n)))

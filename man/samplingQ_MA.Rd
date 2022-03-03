@@ -2,11 +2,11 @@
 % Please edit documentation in R/fun_SamplingQ.R
 \name{samplingQ_MA}
 \alias{samplingQ_MA}
-\title{Perform model averaging using MCMC methods (Bridge sampling & Partial Laplace)}
+\title{function to fit the BMD model using MCMC}
 \usage{
 samplingQ_MA(
   data.Q,
-  prior.weights,
+  prior.weights = rep(1, 8),
   ndraws = 30000,
   nrchains = 3,
   nriterations = 5000,
@@ -18,36 +18,51 @@ samplingQ_MA(
 )
 }
 \arguments{
-\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
+\item{data.Q}{list containing the data, prior parameters and the starting values}
 
-\item{ndraws}{the number of draws from the posterior, default 30000}
+\item{prior.weights}{a vector of prior weights for the models. 1 imply a model should be used, 0 otherwise.
+Defaults to rep(1, 8).}
 
-\item{nrchains}{the number of chains to be used in the MCMC}
+\item{ndraws}{number of draws from the . Defaults to 30000.}
 
-\item{nriterations}{the number of iterations per chain}
+\item{nrchains}{number of MCMC chains to run. Defaults to 3.}
 
-\item{warmup}{the number of iterations per chain to be discarded as burnin}
+\item{nriterations}{total number of MCMC iterations. Defaults to 5000.}
 
-\item{delta}{default 0.8}
+\item{warmup}{total number of MCMC iterations to be used as warmup. Defaults to 1000.}
 
-\item{treedepth}{default 10}
+\item{delta}{adapt value for the MCMC chain. See \code{\link[rstan]{sampling}} for more.}
 
-\item{seed}{default 123}
+\item{treedepth}{adapt value for the MCMC chain. See \code{\link[rstan]{sampling}} for more.}
 
-\item{pvec}{vector specifying the three BMD quantiles of interest}
+\item{seed}{random seed for reproducibility}
 
-\item{data.N}{the input data as returned by function PREP_DATA_N}
-
-\item{data.LN}{the input data as returned by function PREP_DATA_LN}
-
-\item{plot}{logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)}
+\item{pvec}{probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).}
 }
 \value{
-List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+list containing the following results
+\enumerate{
+\item E4_Q parameter estimates from the exponential model
+\item IE4_Q parameter estimates from the inverse-exponential model
+\item H4_Q parameter estimates from the Hill model
+\item LN4_Q parameter estimates from the lognormal model
+\item G4_Q parameter estimates from the gamma model
+\item QE4_Q parameter estimates from the quadratic-exponential model
+\item P4_Q parameter estimates from the probit model
+\item L4_Q parameter estimates from the logit model
+\item MA_laplace Laplace approximation model averaged BMD estimates using all the models
+\item MA_bs Bridge sampling model averaged BMD estimates using all the models
+\item MA_bs_conv Bridge sampling model averaged BMD estimates using only converged models
+\item weights_laplace model weights using Laplace approximation to the posterior
+\item weights_bs model weights computed using bridge sampling
+\item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+\item llQ vector of model likelihoods
+\item bf Bayes factor comparing the best model against saturated ANOVA model
+}
 }
 \description{
-This method assumed data for continuous endpoints.
+function to fit the BMD model using MCMC
 }
-\details{
-More detailed descriprion
+\examples{
+
 }

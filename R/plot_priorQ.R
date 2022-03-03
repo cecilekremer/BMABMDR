@@ -1,13 +1,13 @@
-#' Function to plot prior vs posterior distribution
+#' Function to plot the prior and posterior distributions of the BMD and parameter estimates
 #'
-#' @param mod.obj the model object returned by full laplace or sampling method
-#' @param data the data for a specific model used by the above method
-#' @param model_name the model for which plots should be generated
-#' @param parms if TRUE, model parameters (background, fold change, BMD, d) are shown; if FALSE, background, maximum response, BMD and d are shown
+#' @param mod.obj BMDBMA model object
+#' @param data data list from the \code{\link{PREP_DATA_Q}}
+#' @param model_name name of the model whose parameters are to be plotted. It can be eiter of
+#'                   c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
 #'
-#' @return .
+#' @return object of class ggplot
 #'
-#' @export
+#' @export plot_priorQ
 #'
 plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F for background & fold change
 
@@ -27,9 +27,9 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
 
     obs.a <- mod.obj$data$y[1]/mod.obj$data$n[1]
 
-    a.prior <- rpert(dim(df.mod)[1], min = data$priorlb[1],
-                     mode = data$priormu[1], max = data$priorub[1],
-                     shape = data$priorgama[1])
+    a.prior <- mc2d::rpert(dim(df.mod)[1], min = data$priorlb[1],
+                           mode = data$priormu[1], max = data$priorub[1],
+                           shape = data$priorgama[1])
 
     a.post <- df.mod$a[df.mod$ModelName == model_name]
     d.post <- df.mod$d[df.mod$ModelName == model_name]
@@ -54,9 +54,9 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
       scale_fill_manual(name = "", breaks = c("posterior","prior"),
                         labels = c("Posterior","Prior"), values = c("coral","lightblue"),
                         aesthetics = 'fill') +
-      # coord_cartesian(xlim = c(quantile(c(a.prior, a.post), 0.01), quantile(c(a.prior, a.post), 0.99)),
-      # ylim = NULL)+
-      xlim(c(quantile(c(a.prior, a.post), 0.01), quantile(c(a.prior, a.post), 0.99))) +
+      coord_cartesian(xlim = c(quantile(c(a.prior, a.post), 0.01), quantile(c(a.prior, a.post), 0.99)),
+                      ylim = NULL)+
+      #xlim(c(quantile(c(a.prior, a.post), 0.01), quantile(c(a.prior, a.post), 0.99))) +
       theme_minimal()
 
     dens.d.post <- density(d.post, from = min(d.post), to = max(d.post))
@@ -70,8 +70,8 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
       xlab("Parameter d") + ylab("Density") +
       scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
                         values = c("coral","lightblue")) +
-      # coord_cartesian(xlim = c(quantile(c(d.prior, d.post), 0.01), quantile(d.prior, 0.99))) +
-      xlim(quantile(d.prior, 0.01), quantile(d.prior, 0.99)) +
+      coord_cartesian(xlim = c(quantile(c(d.prior, d.post), 0.01), quantile(d.prior, 0.99))) +
+      #xlim(quantile(d.prior, 0.01), quantile(d.prior, 0.99)) +
       theme_minimal()
 
 
@@ -92,9 +92,9 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
       xlab("Parameter BMD") + ylab("Density") +
       scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
                         values = c("coral","lightblue")) +
-      # coord_cartesian(xlim = c(quantile(c(BMD.prior*mod.obj$max.dose, BMD.post*mod.obj$max.dose), 0.01),
-      # quantile(BMD.prior*mod.obj$max.dose, 0.99))) +
-      xlim(min(BMD.prior*mod.obj$max.dose), max(BMD.prior*mod.obj$max.dose)) +
+      coord_cartesian(xlim = c(quantile(c(BMD.prior*mod.obj$max.dose, BMD.post*mod.obj$max.dose), 0.01),
+                               quantile(BMD.prior*mod.obj$max.dose, 0.99))) +
+      #xlim(min(BMD.prior*mod.obj$max.dose), max(BMD.prior*mod.obj$max.dose)) +
       theme_minimal()
 
   } else stop('model_name not correct. Please check model_name')
@@ -108,21 +108,34 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
 
     return(ggpubr::annotate_figure(pts, top = text_grob(paste0("Model ", model_name),
                                                         color = "red", face = "bold", size = 14)))
-  } else if(mod.obj$isbetabin == 1){
+  } else if(mod.obj$is_bin == 0){
 
+    rho.prior <- mc2d::rpert(dim(df.mod)[1], min = 0,
+                             mode = data$priormu[4], max = 1,
+                             shape = 4)
+    dens.rho.prior <- density(rho.prior, from = min(rho.prior), to = max(rho.prior))
+
+
+    df.mod <- (as.data.frame(pars[[model_name]]))[, c("ModelName","a","d","BMD", "rho")]
     rho.post <- df.mod$rho[df.mod$ModelName == model_name]
-    dens.rho.post <- density(rho.post*mod.obj$max.dose,
-                             from = min(rho.post*mod.obj$max.dose),
-                             to = max(rho.post*mod.obj$max.dose))
-    # dens.rho.prior <- density(rho.prior*mod.obj$max.dose,
-    #                           from = min(rho.prior*mod.obj$max.dose),
-    #                           to = max(rho.prior*mod.obj$max.dose))
-    df.par.rho <- data.frame(dist = "posterior",
-                             x = dens.rho.post$x,
-                             value = dens.rho.post$y)
-    # df.par.rho <- data.frame(dist = rep(c("posterior", "prior"), each = length(dens.rho.post$x)),
-    #                          x = c(dens.rho.post$x, dens.rho.prior$x),
-    #                          value = c(dens.rho.post$y, dens.rho.prior$y))
+    dens.rho.post <- density(rho.post,
+                             from = min(rho.post),
+                             to = max(rho.post))
+
+    df.par.rho <- data.frame(dist = rep(c("posterior", "prior"), each = length(dens.rho.post$x)),
+                             x = c(dens.rho.post$x, dens.rho.prior$x),
+                             value = c(dens.rho.post$y, dens.rho.prior$y))
+
+    plot.rho <- ggplot(data = df.par.rho,
+                       aes(x = x, y = value, fill = dist)) +
+      geom_area(alpha = .3) +
+      xlab("Parameter rho") + ylab("Density") +
+      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
+                        values = c("coral","lightblue")) +
+      coord_cartesian(xlim = c(quantile(c(rho.prior, rho.post), 0.01),
+                               quantile(rho.prior, 0.99))) +
+      #xlim(min(BMD.prior*mod.obj$max.dose), max(BMD.prior*mod.obj$max.dose)) +
+      theme_minimal()
 
     pts <- ggpubr::ggarrange(plot.a,
                              plot.d, plot.BMD, plot.rho,

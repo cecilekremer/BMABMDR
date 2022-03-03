@@ -14,17 +14,17 @@ plot.BMADR(
 )
 }
 \arguments{
-\item{mod.obj}{fitted models}
+\item{mod.obj}{BMDBMA model object}
 
-\item{type}{'increasing' or 'decreasing'}
+\item{type}{dose-response type. It can either be "increasing" or "decreasing"}
 
-\item{weight_type}{'BS' or 'LP'}
+\item{weight_type}{type of model weight to be plotted. It can either be "BS" or "LP"}
 
-\item{include_data}{whether to include data points in plot}
+\item{include_data}{logical argument to indicate if data should be included in the plots. Defaults to TRUE}
 
-\item{all}{all 4 plots in one plot}
+\item{all}{logical argument to indicate if all plots should be displayed}
 
-\item{title}{title for plot if all = TRUE}
+\item{title}{title of the plot}
 }
 \value{
 .

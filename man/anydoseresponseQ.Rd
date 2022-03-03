@@ -2,20 +2,22 @@
 % Please edit documentation in R/anydoseresponseQ.R
 \name{anydoseresponseQ}
 \alias{anydoseresponseQ}
-\title{Function to determine if there is a dose-response effect}
+\title{Function to determine if there is a dose-response effect, based on Bayes Factor (Quantal data version)}
 \usage{
-anydoseresponseQ(dose.a, y.a, n.a)
+anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE)
 }
 \arguments{
 \item{dose.a}{dose levels}
 
-\item{y.a}{number of adverse events per dose level}
+\item{y.a}{mean response}
 
 \item{n.a}{number of observations per dose level}
+
+\item{cluster}{logical variable indicating if the data is clustered or not.}
 }
 \value{
-text
+list containing estimated Bayes factor and the decision.
 }
 \description{
-Function to determine if there is a dose-response effect
+Function to determine if there is a dose-response effect, based on Bayes Factor (Quantal data version)
 }

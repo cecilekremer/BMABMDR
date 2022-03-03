@@ -19,6 +19,7 @@ data{
   vector[N] m;  // the arithmetic mean of the response values for each dose group
   vector[N] s2;  // the arithmetic variance of the response values for each dose group
   real q;       // the BMR
+  real shift; // data are shifted if different from 0
   vector[5] priormu;
   vector[5] priorlb;
   vector[5] priorub;
@@ -64,13 +65,13 @@ transformed parameters{
     if(data_type == 1){
       a = mu_inf;
     }else if(data_type == 2){
-      a = log(mu_inf);
+      a = log(mu_inf) - shift;
     }
   }else if(data_type == 3 || data_type == 4){
     if(data_type == 3){
       a = mu_0;
     }else if(data_type == 4){
-      a = log(mu_0);
+      a = log(mu_0) - shift;
     }
   }
 
@@ -78,13 +79,13 @@ transformed parameters{
     if(data_type == 1){
       c = pow(3,0.5)/pi()*logit(mu_0/mu_inf);
     }else if(data_type == 2){
-      c = pow(3,0.5)/pi()*logit(log(mu_0)/log(mu_inf));
+      c = pow(3,0.5)/pi()*logit((log(mu_0)-shift)/(log(mu_inf)-shift));
     }
   }else if(data_type == 3 || data_type == 4){
     if(data_type == 3){
       c = pow(3,0.5)/pi()*logit(mu_inf/mu_0);
     }else if(data_type == 4){
-      c = pow(3,0.5)/pi()*logit(log(mu_inf)/log(mu_0));
+      c = pow(3,0.5)/pi()*logit((log(mu_inf)-shift)/(log(mu_0)-shift));
     }
   }
 

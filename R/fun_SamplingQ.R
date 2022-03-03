@@ -1,77 +1,94 @@
-#' Perform model averaging using MCMC methods (Bridge sampling & Partial Laplace)
+
+#' function to fit the BMD model using MCMC
 #'
-#' This method assumed data for continuous endpoints.
+#' @param data.Q list containing the data, prior parameters and the starting values
+#' @param prior.weights a vector of prior weights for the models. 1 imply a model should be used, 0 otherwise.
+#'                      Defaults to rep(1, 8).
+#' @param ndraws number of draws from the . Defaults to 30000.
+#' @param nrchains number of MCMC chains to run. Defaults to 3.
+#' @param nriterations total number of MCMC iterations. Defaults to 5000.
+#' @param warmup total number of MCMC iterations to be used as warmup. Defaults to 1000.
+#' @param delta adapt value for the MCMC chain. See \code{\link[rstan]{sampling}} for more.
+#' @param treedepth adapt value for the MCMC chain. See \code{\link[rstan]{sampling}} for more.
+#' @param seed random seed for reproducibility
+#' @param pvec probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).
 #'
-#' More detailed descriprion
-#' @param data.N the input data as returned by function PREP_DATA_N
-#' @param data.LN the input data as returned by function PREP_DATA_LN
-#' @param prior.weights a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)
-#' @param ndraws the number of draws from the posterior, default 30000
-#' @param nrchains the number of chains to be used in the MCMC
-#' @param nriterations the number of iterations per chain
-#' @param warmup the number of iterations per chain to be discarded as burnin
-#' @param delta default 0.8
-#' @param treedepth default 10
-#' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
-#' @param plot logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)
+#' @examples
 #'
-#' @return List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+#' @return list containing the following results
+#' \enumerate{
+#'   \item E4_Q parameter estimates from the exponential model
+#'   \item IE4_Q parameter estimates from the inverse-exponential model
+#'   \item H4_Q parameter estimates from the Hill model
+#'   \item LN4_Q parameter estimates from the lognormal model
+#'   \item G4_Q parameter estimates from the gamma model
+#'   \item QE4_Q parameter estimates from the quadratic-exponential model
+#'   \item P4_Q parameter estimates from the probit model
+#'   \item L4_Q parameter estimates from the logit model
+#'   \item MA_laplace Laplace approximation model averaged BMD estimates using all the models
+#'   \item MA_bs Bridge sampling model averaged BMD estimates using all the models
+#'   \item MA_bs_conv Bridge sampling model averaged BMD estimates using only converged models
+#'   \item weights_laplace model weights using Laplace approximation to the posterior
+#'   \item weights_bs model weights computed using bridge sampling
+#'   \item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+#'   \item llQ vector of model likelihoods
+#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
+#' }
 #'
-#' @export
-#'
-samplingQ_MA=function(data.Q,prior.weights,
+#' @export samplingQ_MA
+
+samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       ndraws = 30000,nrchains=3,
                       nriterations=5000,warmup=1000,
                       delta=0.8,treedepth=10,seed=123,pvec=c(0.025,0.5,0.975)){
-  
+
   data=data.Q$data
   start=data.Q$start
-  
+
   BMDL=c(); BMD=c(); BMDU=c()
   converged=c()
-  
+
   ## Obtain model parameters via MCMC sampling
   if(prior.weights[1]>0){
     print(1)
-    fitstanE4_Q = fun_samplingQ(stanmodels$mE4_Q, data, start, 
+    fitstanE4_Q = fun_samplingQ(stanmodels$mE4_Q, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
     if(data$is_bin == 1) {
-      parsE4Q <- parq_extract(fitstanE4_Q, model_name = "E4_Q", 
+      parsE4Q <- parq_extract(fitstanE4_Q, model_name = "E4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsE4Q <- parq_extract(fitstanE4_Q, model_name = "E4_Q", 
+      parsE4Q <- parq_extract(fitstanE4_Q, model_name = "E4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                               rho = TRUE)
     }
     E4resQ <-  quantile(parsE4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(E4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       E4outQ <- outLPQ(parsE4Q, pvec, data$maxD)
     } else {
       E4outQ <- outLPQ(parsE4Q, pvec, data$maxD, rho=TRUE)
     }
-    
+
     DRM_E4_Q = DRM.E4_Q(E4resQ[names(E4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
-    
-    E4covQ = c(cov(as.matrix(fitstanE4_Q)[,c("b","d")], use="complete.obs")["b","d"], 
+
+    E4covQ = c(cov(as.matrix(fitstanE4_Q)[,c("b","d")], use="complete.obs")["b","d"],
                cov(as.matrix(fitstanE4_Q)[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    E4corrQ = c(cor(as.matrix(fitstanE4_Q)[,c("b","d")], use="complete.obs")["b","d"], 
+
+    E4corrQ = c(cor(as.matrix(fitstanE4_Q)[,c("b","d")], use="complete.obs")["b","d"],
                 cor(as.matrix(fitstanE4_Q)[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     BMDL=c(BMDL, E4resQ[1]); BMD=c(BMD, E4resQ[2]); BMDU=c(BMDU, E4resQ[3])
     bridgeE4Q = bridgesampling::bridge_sampler(fitstanE4_Q, silent = T)
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanE4_Q)
     convergence_stat <- convergence_deci(model_stan = fitstanE4_Q, nrchains = nrchains,
@@ -80,17 +97,17 @@ samplingQ_MA=function(data.Q,prior.weights,
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
     # conv_a_r = 0; if(convergence_stat['a', 'Rhat_Convergence'] == "Convergence") conv_a_r = 1
-    
+
     # divergent transitions
-    div_E4_Q <- sum(sapply(rstan::get_sampler_params(fitstanE4_Q, inc_warmup = F), 
+    div_E4_Q <- sum(sapply(rstan::get_sampler_params(fitstanE4_Q, inc_warmup = F),
                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
+
     # parsE4Q[,"BMD"] <- parsE4Q[,"BMD"]*data$maxD # BMD on original scale
     # Covariance between b-d and between BMD-d
     # compute log marginal likelihood
-    
-  }else{E4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); 
-  BMDU=c(BMDU,NA); bridgeE4Q=NA; converged=c(converged, NA); 
+
+  }else{E4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA);
+  BMDU=c(BMDU,NA); bridgeE4Q=NA; converged=c(converged, NA);
   E4covQ=rep(NA,2); E4corrQ=rep(NA,2); DRM_E4_Q=rep(NA,length(data$x))
   parsE4Q <- NA
   div_E4_Q <- NA
@@ -113,49 +130,49 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[2]>0){
     print(2)
-    fitstanIE4_Q = fun_samplingQ(stanmodels$mIE4_Q, data, start, 
+    fitstanIE4_Q = fun_samplingQ(stanmodels$mIE4_Q, data, start,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsIE4Q <- parq_extract(fitstanIE4_Q, model_name = "IE4_Q", 
+      parsIE4Q <- parq_extract(fitstanIE4_Q, model_name = "IE4_Q",
                                pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsIE4Q <- parq_extract(fitstanIE4_Q, model_name = "E4_Q", 
+      parsIE4Q <- parq_extract(fitstanIE4_Q, model_name = "IE4_Q",
                                pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                rho = TRUE)
     }
     IE4resQ <-  quantile(parsIE4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(IE4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       IE4outQ <- outLPQ(parsIE4Q, pvec, data$maxD)
     } else {
       IE4outQ <- outLPQ(parsIE4Q, pvec, data$maxD, rho=TRUE)
     }
-    
-    DRM_IE4_Q <- DRM.IE4_Q(IE4resQ[names(IE4resQ) %in% c('p1', 'p2', 'p3')], 
+
+    DRM_IE4_Q <- DRM.IE4_Q(IE4resQ[names(IE4resQ) %in% c('p1', 'p2', 'p3')],
                            data$x, data$q)
-    
+
     # Covariance between b-d and between BMD-d
-    IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
                  cov(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
                   cor(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
     BMDL=c(BMDL, IE4resQ[1]); BMD=c(BMD, IE4resQ[2]); BMDU=c(BMDU, IE4resQ[3])
     bridgeIE4Q = bridgesampling::bridge_sampler(fitstanIE4_Q, silent = T)
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanIE4_N)
     convergence_stat <- convergence_deci(model_stan = fitstanIE4_Q, nrchains = nrchains,
@@ -163,16 +180,16 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_IE4_Q <- sum(sapply(rstan::get_sampler_params(fitstanIE4_Q, inc_warmup = F), 
+    div_IE4_Q <- sum(sapply(rstan::get_sampler_params(fitstanIE4_Q, inc_warmup = F),
                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
-  }else{IE4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeIE4Q=NA; 
+
+  }else{IE4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeIE4Q=NA;
   converged=c(converged, NA); IE4covQ=rep(NA,2); IE4corrQ=rep(NA,2); DRM_IE4_Q=rep(NA,length(data$x))
   parsIE4Q <- NA
   div_IE4_Q <- NA
-  
+
   IE4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -192,50 +209,50 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[3]>0){
     print(3)
-    fitstanH4_Q = fun_samplingQ(stanmodels$mH4_Q, data, start, 
+    fitstanH4_Q = fun_samplingQ(stanmodels$mH4_Q, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsH4Q <- parq_extract(fitstanH4_Q, model_name = "H4_Q", 
+      parsH4Q <- parq_extract(fitstanH4_Q, model_name = "H4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsH4Q <- parq_extract(fitstanH4_Q, model_name = "E4_Q", 
+      parsH4Q <- parq_extract(fitstanH4_Q, model_name = "H4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                               rho = TRUE)
     }
     H4resQ <-  quantile(parsH4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(H4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       H4outQ <- outLPQ(parsH4Q, pvec, data$maxD)
     } else {
       H4outQ <- outLPQ(parsH4Q, pvec, data$maxD, rho=TRUE)
     }
-    
-    DRM_H4_Q = DRM.H4_Q(H4resQ[names(H4resQ) %in% c('p1', 'p2', 'p3')], 
+
+    DRM_H4_Q = DRM.H4_Q(H4resQ[names(H4resQ) %in% c('p1', 'p2', 'p3')],
                         data$x, data$q)
-    
+
     # Covariance between b-d and between BMD-d
-    H4covQ = c(cov(parsH4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    H4covQ = c(cov(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
                cov(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
                 cor(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     bridgeH4Q = bridge_sampler(fitstanH4_Q, silent = T)
     BMDL = c(BMDL, H4resQ[1]); BMD=c(BMD, H4resQ[2]); BMDU=c(BMDU, H4resQ[3])
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanH4_N)
     convergence_stat <- convergence_deci(model_stan = fitstanH4_Q, nrchains = nrchains,
@@ -243,17 +260,17 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_H4_Q <- sum(sapply(rstan::get_sampler_params(fitstanH4_Q, inc_warmup = F), 
+    div_H4_Q <- sum(sapply(rstan::get_sampler_params(fitstanH4_Q, inc_warmup = F),
                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
-    
-  }else{H4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeH4Q=NA; 
+
+
+  }else{H4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeH4Q=NA;
   converged=c(converged, NA); H4covQ=rep(NA,2); H4corrQ=rep(NA,2); DRM_H4_Q=rep(NA,length(data$x))
   parsH4Q <- NA
   div_H4_Q <- NA
-  
+
   H4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -273,50 +290,50 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[4]>0){
     print(4)
-    fitstanLN4_Q = fun_samplingQ(stanmodels$mLN4_Q, data, start, 
+    fitstanLN4_Q = fun_samplingQ(stanmodels$mLN4_Q, data, start,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsLN4Q <- parq_extract(fitstanLN4_Q, model_name = "LN4_Q", 
+      parsLN4Q <- parq_extract(fitstanLN4_Q, model_name = "LN4_Q",
                                pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsLN4Q <- parq_extract(fitstanLN4_Q, model_name = "E4_Q", 
+      parsLN4Q <- parq_extract(fitstanLN4_Q, model_name = "LN4_Q",
                                pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                rho = TRUE)
     }
     LN4resQ <-  quantile(parsLN4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(LN4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       LN4outQ <- outLPQ(parsLN4Q, pvec, data$maxD)
     } else {
       LN4outQ <- outLPQ(parsLN4Q, pvec, data$maxD, rho=TRUE)
     }
-    
+
     DRM_LN4_Q = DRM.LN4_Q(LN4resQ[names(LN4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
-    
+
     BMDL=c(BMDL, LN4resQ[1]); BMD=c(BMD, LN4resQ[2]); BMDU=c(BMDU, LN4resQ[3])
     bridgeLN4Q = bridgesampling::bridge_sampler(fitstanLN4_Q, silent = T)
-    
-    
+
+
     # Covariance between b-d and between BMD-d
-    LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
                 cov(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
                  cor(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanLN4_N)
     convergence_stat <- convergence_deci(model_stan = fitstanLN4_Q, nrchains = nrchains,
@@ -324,18 +341,18 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_LN4_Q <- sum(sapply(rstan::get_sampler_params(fitstanLN4_Q, inc_warmup = F), 
+    div_LN4_Q <- sum(sapply(rstan::get_sampler_params(fitstanLN4_Q, inc_warmup = F),
                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
-    
-  }else{LN4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); 
-  bridgeLN4Q=NA; converged=c(converged, NA); LN4covQ=rep(NA,2); LN4corrQ=rep(NA,2); 
+
+
+  }else{LN4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
+  bridgeLN4Q=NA; converged=c(converged, NA); LN4covQ=rep(NA,2); LN4corrQ=rep(NA,2);
   DRM_LN4_Q=rep(NA,length(data$x))
   parsLN4Q <- NA
   div_LN4_Q <- NA
-  
+
   LN4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -355,50 +372,50 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[5]>0){
     print(5)
-    
-    fitstanG4_Q <- fun_samplingQ(stanmodels$mG4_Q, data, start, 
+
+    fitstanG4_Q <- fun_samplingQ(stanmodels$mG4_Q, data, start,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsG4Q <- parq_extract(fitstanG4_Q, model_name = "G4_Q", 
+      parsG4Q <- parq_extract(fitstanG4_Q, model_name = "G4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsG4Q <- parq_extract(fitstanG4_Q, model_name = "G4_Q", 
+      parsG4Q <- parq_extract(fitstanG4_Q, model_name = "G4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                               rho = TRUE)
     }
     G4resQ <-  quantile(parsG4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(G4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       G4outQ <- outLPQ(parsG4Q, pvec, data$maxD)
     } else {
       G4outQ <- outLPQ(parsG4Q, pvec, data$maxD, rho=TRUE)
     }
-    
+
     DRM_G4_Q = DRM.G4_Q(G4resQ[names(G4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
-    
+
     # Covariance between b-d and between BMD-d
-    G4covQ = c(cov(parsG4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    G4covQ = c(cov(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
                cov(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    G4corrQ = c(cor(parsG4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    G4corrQ = c(cor(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
                 cor(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     BMDL=c(BMDL, G4resQ[1]); BMD=c(BMD, G4resQ[2]); BMDU=c(BMDU, G4resQ[3])
     bridgeG4Q <- bridgesampling::bridge_sampler(fitstanG4_Q, silent = TRUE)
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanG4_N)
     convergence_stat <- convergence_deci(model_stan = fitstanG4_Q, nrchains = nrchains,
@@ -406,17 +423,17 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_G4_Q <- sum(sapply(rstan::get_sampler_params(fitstanG4_Q, inc_warmup = F), 
+    div_G4_Q <- sum(sapply(rstan::get_sampler_params(fitstanG4_Q, inc_warmup = F),
                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
-    
-  }else{G4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeG4Q=NA; 
+
+
+  }else{G4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeG4Q=NA;
   converged=c(converged, NA); G4covQ=rep(NA,2); G4corrQ=rep(NA,2); DRM_G4_Q=rep(NA,length(data$x))
   parsG4Q <- NA
   div_G4_Q <- NA
-  
+
   G4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -436,49 +453,49 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[6]>0){
     print(6)
-    fitstanQE4_Q = fun_samplingQ(stanmodels$mQE4_Q, data, start, 
+    fitstanQE4_Q = fun_samplingQ(stanmodels$mQE4_Q, data, start,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsQE4Q <- parq_extract(fitstanQE4_Q, model_name = "QE4_Q", 
+      parsQE4Q <- parq_extract(fitstanQE4_Q, model_name = "QE4_Q",
                                pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsQE4Q <- parq_extract(fitstanQE4_Q, model_name = "QE4_Q", 
+      parsQE4Q <- parq_extract(fitstanQE4_Q, model_name = "QE4_Q",
                                pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'))
     }
     QE4resQ <-  quantile(parsQE4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(QE4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       QE4outQ <- outLPQ(parsQE4Q, pvec, data$maxD)
     } else {
       QE4outQ <- outLPQ(parsQE4Q, pvec, data$maxD, rho=TRUE)
     }
-    
-    DRM_QE4_Q = DRM.QE4_Q(QE4resQ[names(QE4resQ) %in% c('p1', 'p2', 'p3')], 
+
+    DRM_QE4_Q = DRM.QE4_Q(QE4resQ[names(QE4resQ) %in% c('p1', 'p2', 'p3')],
                           data$x, data$q)
-    
+
     # Covariance between b-d and between BMD-d
-    QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
                 cov(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
                  cor(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     BMDL=c(BMDL, QE4resQ[1]); BMD=c(BMD, QE4resQ[2]); BMDU=c(BMDU, QE4resQ[3])
     bridgeQE4Q = bridgesampling::bridge_sampler(fitstanQE4_Q, silent = T)
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanQE4_N)
     convergence_stat <- convergence_deci(model_stan = fitstanQE4_Q, nrchains = nrchains,
@@ -486,16 +503,16 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_QE4_Q <- sum(sapply(rstan::get_sampler_params(fitstanQE4_Q, inc_warmup = F), 
+    div_QE4_Q <- sum(sapply(rstan::get_sampler_params(fitstanQE4_Q, inc_warmup = F),
                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
-  }else{QE4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeQE4Q=NA; 
+
+  }else{QE4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeQE4Q=NA;
   converged=c(converged, NA); QE4covQ=rep(NA,2); QE4corrQ=rep(NA,2); DRM_QE4_Q=rep(NA,length(data$x))
   parsQE4Q <- NA
   div_QE4_Q <- NA
-  
+
   QE4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -515,46 +532,46 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[7]>0){
     print(7)
-    fitstanP4_Q = fun_samplingQ(stanmodels$mP4_Q, data, start, 
+    fitstanP4_Q = fun_samplingQ(stanmodels$mP4_Q, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsP4Q <- parq_extract(fitstanP4_Q, model_name = "P4_Q", 
+      parsP4Q <- parq_extract(fitstanP4_Q, model_name = "P4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsP4Q <- parq_extract(fitstanP4_Q, model_name = "P4_Q", 
+      parsP4Q <- parq_extract(fitstanP4_Q, model_name = "P4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                               rho = TRUE)
     }
     P4resQ <-  quantile(parsP4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(P4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       P4outQ <- outLPQ(parsP4Q, pvec, data$maxD)
     } else {
       P4outQ <- outLPQ(parsP4Q, pvec, data$maxD, rho=TRUE)
     }
-    
+
     DRM_P4_Q <- DRM.P4_Q(E4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
-    
+
     # Covariance between b-d and between BMD-d
-    P4covQ = c(cov(parsP4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    P4covQ = c(cov(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
                cov(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    P4corrQ = c(cor(parsP4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    P4corrQ = c(cor(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
                 cor(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     BMDL=c(BMDL, P4resQ[1]); BMD=c(BMD, P4resQ[2]); BMDU=c(BMDU, P4resQ[3])
     bridgeP4Q = bridge_sampler(fitstanP4_Q, silent = T)
     #diagnostics here
@@ -564,18 +581,18 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_P4_Q <- sum(sapply(rstan::get_sampler_params(fitstanP4_Q, inc_warmup = F), 
+    div_P4_Q <- sum(sapply(rstan::get_sampler_params(fitstanP4_Q, inc_warmup = F),
                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
-  }else{P4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); 
-  bridgeP4Q=NA; converged=c(converged, NA); 
-  P4covQ=rep(NA,2); P4corrQ=rep(NA,2); 
+
+  }else{P4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
+  bridgeP4Q=NA; converged=c(converged, NA);
+  P4covQ=rep(NA,2); P4corrQ=rep(NA,2);
   DRM_P4_Q=rep(NA,length(data$x))
   parsP4Q <- NA
   div_P4_Q <- NA
-  
+
   P4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -595,51 +612,51 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   if(prior.weights[8]>0){
     print(8)
-    fitstanL4_Q = fun_samplingQ(stanmodels$mL4_Q, data, start, 
+    fitstanL4_Q = fun_samplingQ(stanmodels$mL4_Q, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
-    
+
     if(data$is_bin == 1) {
-      parsL4Q <- parq_extract(fitstanL4_Q, model_name = "L4_Q", 
+      parsL4Q <- parq_extract(fitstanL4_Q, model_name = "L4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
     } else {
-      parsL4Q <- parq_extract(fitstanL4_Q, model_name = "L4_Q", 
+      parsL4Q <- parq_extract(fitstanL4_Q, model_name = "L4_Q",
                               pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                               rho = TRUE)
     }
     L4resQ <-  quantile(parsL4Q$BMD, pvec)*data$maxD
-    
+
     if(data$is_bin == 1){
       L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
     } else {
       L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd', 'rho', 'p1', 'p2', 'p3')], 2, median))
     }
     names(L4resQ)[1:3] <- c("BMDL","BMD","BMDU")
-    
+
     if(data$is_bin == 1){
       L4outQ <- outLPQ(parsL4Q, pvec, data$maxD)
     } else {
       L4outQ <- outLPQ(parsL4Q, pvec, data$maxD, rho=TRUE)
     }
-    
-    DRM_L4_Q <- DRM.L4_Q(E4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')], 
+
+    DRM_L4_Q <- DRM.L4_Q(E4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')],
                          data$x, data$q)
-    
+
     # Covariance between b-d and between BMD-d
-    L4covQ = c(cov(parsL4Q[,c("b","d")], use="complete.obs")["b","d"], 
+    L4covQ = c(cov(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
                cov(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
-    L4corrQ = c(cor(parsL4Q[,c("b","d")], use="complete.obs")["b","d"], 
+
+    L4corrQ = c(cor(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
                 cor(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-    
+
     BMDL=c(BMDL, L4resQ[1]); BMD=c(BMD, L4resQ[2]); BMDU=c(BMDU, L4resQ[3])
     bridgeL4Q = bridgesampling::bridge_sampler(fitstanL4_Q, silent = T)
     # save(fitstanL4_N, file = "fitL4N.RData")
-    
+
     #diagnostics here
     # posterior_diag(model_stan = fitstanL4_N)
     convergence_stat <- convergence_deci(model_stan = fitstanL4_Q, nrchains = nrchains,
@@ -647,17 +664,17 @@ samplingQ_MA=function(data.Q,prior.weights,
     conv_lp = 0
     if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
     converged = c(converged, conv_lp)
-    
+
     # divergent transitions
-    div_L4_Q <- sum(sapply(rstan::get_sampler_params(fitstanL4_Q, inc_warmup = F), 
+    div_L4_Q <- sum(sapply(rstan::get_sampler_params(fitstanL4_Q, inc_warmup = F),
                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
-    
+
   }else{L4resQ=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
   bridgeL4Q=NA; converged=c(converged, NA); L4covQ=rep(NA,2); L4corrQ=rep(NA,2);
   DRM_L4_Q=rep(NA,length(data$x))
   parsL4Q <- NA
   div_L4_Q <- NA
-  
+
   L4outQ <- t(data.frame(
     # transformed parameters
     par.at = rep(NA,3),
@@ -677,37 +694,37 @@ samplingQ_MA=function(data.Q,prior.weights,
     max.resp = rep(NA,3)
   ))
   }
-  
+
   divergences <- c(div_E4_Q, div_IE4_Q, div_H4_Q, div_LN4_Q, div_G4_Q, div_QE4_Q, div_P4_Q, div_L4_Q)
-  
-  
+
+
   #-----------------------------------
-  
+
   ### Weights based on bridge sampling are obtained by computing posterior model probabilities from the marginal likelihoods
   p.weights = prior.weights/sum(prior.weights==1)
-  
+
   # lpwb = bridgesampling::post_prob(bridgeE4N, bridgeIE4N, bridgeH4N, bridgeLN4N, bridgeG4N, bridgeQE4N, bridgeP4N, bridgeL4N,
   #                  bridgeE4LN, bridgeIE4LN, bridgeH4LN, bridgeLN4LN, bridgeG4LN, bridgeQE4LN, bridgeP4LN, bridgeL4LN,
   #                  prior_prob = p.weights[p.weights>0],
   #                  model_names = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
   #                                  "E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")[p.weights>0])
-  
-  
-  bridge.mods = c(if(p.weights[1]>0) bridgeE4Q$logml, 
-                  if(p.weights[2]>0) bridgeIE4Q$logml, 
-                  if(p.weights[3]>0) bridgeH4Q$logml, 
-                  if(p.weights[4]>0) bridgeLN4Q$logml, 
-                  if(p.weights[5]>0) bridgeG4Q$logml, 
-                  if(p.weights[6]>0) bridgeQE4Q$logml, 
-                  if(p.weights[7]>0) bridgeP4Q$logml, 
+
+
+  bridge.mods = c(if(p.weights[1]>0) bridgeE4Q$logml,
+                  if(p.weights[2]>0) bridgeIE4Q$logml,
+                  if(p.weights[3]>0) bridgeH4Q$logml,
+                  if(p.weights[4]>0) bridgeLN4Q$logml,
+                  if(p.weights[5]>0) bridgeG4Q$logml,
+                  if(p.weights[6]>0) bridgeQE4Q$logml,
+                  if(p.weights[7]>0) bridgeP4Q$logml,
                   if(p.weights[8]>0) bridgeL4Q$logml)
-  
+
   model_names = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")[p.weights>0]
-  
+
   lpwb = bridgesampling::post_prob(bridge.mods,
                                    prior_prob = p.weights[p.weights>0],
                                    model_names = model_names)
-  
+
   # # the model average posterior as a mixture
   count=round(lpwb*ndraws)
   names(count) = names(lpwb)
@@ -719,53 +736,53 @@ samplingQ_MA=function(data.Q,prior.weights,
     if("G4_Q" %in% names(count)) sample(as.matrix(fitstanG4_Q)[,2],count[names(count)=="G4_Q"],replace=T),
     if("QE4_Q" %in% names(count)) sample(as.matrix(fitstanQE4_Q)[,2],count[names(count)=="QE4_Q"],replace=T),
     if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,2],count[names(count)=="P4_Q"],replace=T),
-    if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)          
+    if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
   ))
   macib=quantile(mabmd,pvec)*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
-  
+
   BMDq_bs = quantile(mabmd, seq(0,1,0.005))*data$maxD
-  
+
   mods = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
   w.bs = rep(0, length(mods))
   names(w.bs) = mods
   for(i in mods[mods%in%names(lpwb)]){
     w.bs[i] = lpwb[i]
   }
-  
+
   ### Model-averaged response per dose level
   dr.MA.bs <- c()
   for(i in 1:length(data$x)){
-    xx <- c(DRM_E4_Q[i],DRM_IE4_Q[i],DRM_H4_Q[i],DRM_LN4_Q[i],DRM_G4_Q[i],DRM_QE4_Q[i], 
+    xx <- c(DRM_E4_Q[i],DRM_IE4_Q[i],DRM_H4_Q[i],DRM_LN4_Q[i],DRM_G4_Q[i],DRM_QE4_Q[i],
             DRM_P4_Q[i], DRM_L4_Q[i])
     dr.MA.bs[i] = weighted.mean(x = xx[!is.na(xx)],
                                 w = w.bs[!is.na(xx)],
                                 na.rm = T)
-    
+
   }
-  
+
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
   if(0 %in% converged){
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
     p.weights.new = prior.weights.new/sum(prior.weights.new==1)
-    
-    bridge.mods = c(if(p.weights.new[1]>0) bridgeE4Q$logml, 
-                    if(p.weights.new[2]>0) bridgeIE4Q$logml, 
-                    if(p.weights.new[3]>0) bridgeH4Q$logml, 
-                    if(p.weights.new[4]>0) bridgeLN4Q$logml, 
-                    if(p.weights.new[5]>0) bridgeG4Q$logml, 
-                    if(p.weights.new[6]>0) bridgeQE4Q$logml, 
-                    if(p.weights.new[7]>0) bridgeP4Q$logml, 
+
+    bridge.mods = c(if(p.weights.new[1]>0) bridgeE4Q$logml,
+                    if(p.weights.new[2]>0) bridgeIE4Q$logml,
+                    if(p.weights.new[3]>0) bridgeH4Q$logml,
+                    if(p.weights.new[4]>0) bridgeLN4Q$logml,
+                    if(p.weights.new[5]>0) bridgeG4Q$logml,
+                    if(p.weights.new[6]>0) bridgeQE4Q$logml,
+                    if(p.weights.new[7]>0) bridgeP4Q$logml,
                     if(p.weights.new[8]>0) bridgeL4Q$logml)
-    
+
     model_names = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")[p.weights.new>0]
-    
+
     lpwb.conv = bridgesampling::post_prob(bridge.mods,
                                           prior_prob = p.weights.new[p.weights.new>0],
                                           model_names = model_names)
-    
+
     # # the model average posterior as a mixture
     count=round(lpwb.conv*ndraws)
     names(count) = names(lpwb.conv)
@@ -777,21 +794,21 @@ samplingQ_MA=function(data.Q,prior.weights,
       if("G4_Q" %in% names(count)) sample(as.matrix(fitstanG4_Q)[,2],count[names(count)=="G4_Q"],replace=T),
       if("QE4_Q" %in% names(count)) sample(as.matrix(fitstanQE4_Q)[,2],count[names(count)=="QE4_Q"],replace=T),
       if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,2],count[names(count)=="P4_Q"],replace=T),
-      if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)         
+      if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
     ))
     macib.conv <- quantile(mabmd.conv,pvec)*data$maxD
     names(macib.conv) <- c("BMDL","BMD","BMDU")
-    
+
     BMDq_bs_conv <- quantile(mabmd.conv, seq(0,1,0.005))*data$maxD
-    
-    
+
+
     mods = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
     w.bs.conv = rep(0, length(mods))
     names(w.bs.conv) = mods
     for(i in mods[mods%in%names(lpwb.conv)]){
       w.bs.conv[i] = lpwb.conv[i]
     }
-    
+
     ### Model-averaged response per dose level
     dr.MA.bs.conv <- c()
     for(i in 1:length(data$x)){
@@ -801,21 +818,21 @@ samplingQ_MA=function(data.Q,prior.weights,
                                        w = w.bs.conv[!is.na(xx)],
                                        na.rm = T)
     }
-    
+
   }else{
     w.bs.conv = NULL; macib.conv = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
   }
-  
+
   #----------------------------------
   ### weights based on laplace approximation
-  
+
   llQ = c() # likelihoods
-  
+
   # getting the posterior modes and the hessian and the model specific posterior distributions
   if(prior.weights[1]>0){
     print("pw1")
     optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
-    
+
     llE4Q <- ifelse(data$is_bin == 1,
                     llfE4_Q(optE4_Q$par[1:3],
                             nvec=data$n,
@@ -826,17 +843,17 @@ samplingQ_MA=function(data.Q,prior.weights,
                              nvec=data$n,
                              dvec=data$x,
                              yvec=data$y,
-                             qval=data$q, 
+                             qval=data$q,
                              rho = optE4_Q$par[stringr::str_detect(names(optE4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llE4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[2]>0){
     print("pw2")
     optIE4_Q = fun_optimQ(stanmodels$mIE4_Q, data, start, ndraws, 123, pvec)
-    
+
     llIE4Q <- ifelse(data$is_bin == 1,
                      llfIE4_Q(optIE4_Q$par[1:3],
                               nvec=data$n,
@@ -847,19 +864,19 @@ samplingQ_MA=function(data.Q,prior.weights,
                                nvec=data$n,
                                dvec=data$x,
                                yvec=data$y,
-                               qval=data$q, 
+                               qval=data$q,
                                rho = optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llIE4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[3]>0){
     print("pw3")
     optH4_Q = fun_optimQ(stanmodels$mH4_Q, data, start, ndraws, 123, pvec)
-    
-    
-    
+
+
+
     llH4Q <- ifelse(data$is_bin == 1,
                     llfH4_Q(optH4_Q$par[1:3],
                             nvec=data$n,
@@ -870,17 +887,17 @@ samplingQ_MA=function(data.Q,prior.weights,
                              nvec=data$n,
                              dvec=data$x,
                              yvec=data$y,
-                             qval=data$q, 
+                             qval=data$q,
                              rho = optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llH4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[4]>0){
     print("pw4")
     optLN4_Q = fun_optimQ(stanmodels$mLN4_Q, data, start, ndraws, 123, pvec)
-    
+
     llLN4Q <- ifelse(data$is_bin == 1,
                      llfLN4_Q(optLN4_Q$par[1:3],
                               nvec=data$n,
@@ -891,17 +908,18 @@ samplingQ_MA=function(data.Q,prior.weights,
                               nvec=data$n,
                               dvec=data$x,
                               yvec=data$y,
-                              qval=data$q, 
+                              qval=data$q,
                               rho = optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llLN4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[5]>0){
     print("pw5")
+    # optG4_NI = fun_optimQ_G4(modN, mG4_NI, stv = start, data, ndraws, 123, pvec)
     optG4_Q = fun_optimQ(stanmodels$mG4_Q, data, start, ndraws, 123, pvec)
-    
+
     llG4Q <- ifelse(data$is_bin == 1,
                     llfG4_Q(optG4_Q$par[1:3],
                             nvec=data$n,
@@ -912,17 +930,17 @@ samplingQ_MA=function(data.Q,prior.weights,
                              nvec=data$n,
                              dvec=data$x,
                              yvec=data$y,
-                             qval=data$q, 
+                             qval=data$q,
                              rho = optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llG4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[6]>0){
     print("pw6")
     optQE4_Q = fun_optimQ(stanmodels$mQE4_Q, data, start, ndraws, 123, pvec)
-    
+
     llQE4Q <- ifelse(data$is_bin == 1,
                      llfQE4_Q(optQE4_Q$par[1:3],
                               nvec=data$n,
@@ -933,17 +951,17 @@ samplingQ_MA=function(data.Q,prior.weights,
                                nvec=data$n,
                                dvec=data$x,
                                yvec=data$y,
-                               qval=data$q, 
+                               qval=data$q,
                                rho = optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llQE4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[7]>0){
     print("pw7")
     optP4_Q = fun_optimQ(stanmodels$mP4_Q, data, start, ndraws, 123, pvec)
-    
+
     llP4Q <- ifelse(data$is_bin == 1,
                     llfP4_Q(optP4_Q$par[1:3],
                             nvec=data$n,
@@ -954,17 +972,17 @@ samplingQ_MA=function(data.Q,prior.weights,
                              nvec=data$n,
                              dvec=data$x,
                              yvec=data$y,
-                             qval=data$q, 
+                             qval=data$q,
                              rho = optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llP4Q)
   }else{llQ = c(llQ,NA)}
   #
   if(prior.weights[8]>0){
     print("pw8")
     optL4_Q = fun_optimQ(stanmodels$mL4_Q, data, start, ndraws, 123, pvec)
-    
+
     llL4Q <- ifelse(data$is_bin == 1,
                     llfL4_Q(optL4_Q$par[1:3],
                             nvec=data$n,
@@ -975,19 +993,19 @@ samplingQ_MA=function(data.Q,prior.weights,
                              nvec=data$n,
                              dvec=data$x,
                              yvec=data$y,
-                             qval=data$q, 
+                             qval=data$q,
                              rho = optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'rho')])
     )
-    
+
     llQ = c(llQ, llL4Q)
   }else{llQ = c(llQ,NA)}
-  
+
   minll = min(llQ, na.rm=T)
-  
+
   # the weights
   w=c()
-  
-  
+
+
   if(prior.weights[1]>0){
     DIHE4h=det(-solve(optE4_Q$hessian))
     DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
@@ -996,233 +1014,225 @@ samplingQ_MA=function(data.Q,prior.weights,
       w=c(w,(2*pi)^(2.5)*sqrt(DIHE4)*exp(llE4Q-minll)*
             dnorm(optE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHE4)*exp(llE4Q-minll)*
             dnorm(optE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[2]>0){
     DIHIE4h=det(-solve(optIE4_Q$hessian))
     DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHIE4)*exp(llIE4Q-minll)*
             dnorm(optIE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else{
       w=c(w,(2*pi)^(2.5)*sqrt(DIHIE4)*exp(llIE4Q-minll)*
             dnorm(optIE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[3]>0){
     DIHH4h=det(-solve(optH4_Q$hessian))
     DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHH4)*exp(llH4Q-minll)*
             dnorm(optH4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHH4)*exp(llH4Q-minll)*
             dnorm(optH4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[4]>0){
     DIHLN4h=det(-solve(optLN4_Q$hessian))
     DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHLN4)*exp(llLN4Q-minll)*
             dnorm(optLN4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHLN4)*exp(llLN4Q-minll)*
             dnorm(optLN4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[5]>0){
     DIHG4h=det(-solve(optG4_Q$hessian))
     DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHG4)*exp(llG4Q-minll)*
             dnorm(optG4_Q$par[3], mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHG4)*exp(llG4Q-minll)*
             dnorm(optG4_Q$par[3], mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[6]>0){
     DIHQE4h=det(-solve(optQE4_Q$hessian))
     DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4Q-minll)*
             dnorm(optQE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1) {
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4Q-minll)*
             dnorm(optQE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[7]>0){
     DIHP4h=det(-solve(optP4_Q$hessian))
     DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHP4)*exp(llP4Q-minll)*
             dnorm(optP4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1) {
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHP4)*exp(llP4Q-minll)*
             dnorm(optP4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   if(prior.weights[8]>0){
     DIHL4h=det(-solve(optL4_Q$hessian))
     DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
-    
+
     if(data$is_bin==1) {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHL4)*exp(llL4Q-minll)*
             dnorm(optL4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1) {
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHL4)*exp(llL4Q-minll)*
             dnorm(optL4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2], 
+            mc2d::dpert(optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
+            mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1], 
+            mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
-      ) 
+      )
     }
-    
+
   }else{w=c(w,0)}
-  
+
   lpwlp=(prior.weights*w)/sum(prior.weights*w)
   names(lpwlp) = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
-  
+
   # the model average posterior as a mixture
   count=round(lpwlp*ndraws)
   mabmd=(c(# normal
@@ -1234,14 +1244,14 @@ samplingQ_MA=function(data.Q,prior.weights,
     if(prior.weights[6]>0) sample(as.matrix(fitstanQE4_Q)[,2],count[6],replace=T),
     if(prior.weights[7]>0) sample(as.matrix(fitstanP4_Q)[,2],count[7],replace=T),
     if(prior.weights[8]>0) sample(as.matrix(fitstanL4_Q)[,2],count[8],replace=T)
-    
+
   ))
   macilp=quantile(mabmd,pvec)*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
-  
+
   BMDq_ls = quantile(mabmd, seq(0,1,0.005))*data$maxD
-  
-  
+
+
   ### Model-averaged response per dose level
   dr.MA.ls <- c()
   for(i in 1:length(data$x)){
@@ -1251,19 +1261,19 @@ samplingQ_MA=function(data.Q,prior.weights,
                                 w = lpwlp,
                                 na.rm = T)
   }
-  
-  
+
+
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
   if(0 %in% converged){
-    
+
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
     p.weights.new = prior.weights.new/sum(prior.weights.new==1)
-    
+
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights
-    
+
     # the model average posterior as a mixture
     count=round(lpwlp.conv*ndraws)
     mabmd.conv=(c(# normal
@@ -1278,10 +1288,10 @@ samplingQ_MA=function(data.Q,prior.weights,
     ))
     macilp.conv = quantile(mabmd.conv,pvec)*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
-    
+
     BMDq_ls_conv = quantile(mabmd.conv, seq(0,1,0.005))*data$maxD
-    
-    
+
+
     ### Model-averaged response per dose level
     dr.MA.ls.conv <- c()
     for(i in 1:length(data$x)){
@@ -1291,30 +1301,30 @@ samplingQ_MA=function(data.Q,prior.weights,
                                        w = lpwlp.conv,
                                        na.rm = T)
     }
-    
-    
+
+
   }else{
     lpwlp.conv = NULL; macilp.conv = NULL; BMDq_ls_conv = NULL; dr.MA.ls.conv = NULL; mabmd.conv = NA;
   }
-  
+
   ## Plot with weights bridge sampling
   BMDL = c(BMDL, macib[1]); BMD = c(BMD, macib[2]); BMDU = c(BMDU, macib[3]) # all on original scale
-  
+
   names(BMDL) <- c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q", "MA")
   model = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q", "MA")
   model = as.factor(model)
-  
+
   weight = c(rep(0,16),1)
   names(weight) = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q","MA")
   for(i in names(lpwb)){
     weight[names(weight)==i] = lpwb[names(lpwb)==i]
   }
-  
+
   modelnames <- c("E4","IE4","H4","LN4","G4","QE4","P4","L4")
-  
+
   ### Some additional checks
-  
-  
+
+
   if(macib[2]/macib[1] > 20){
     print(warning('BMD/BMDL is larger than 20 for bridge sampling'))
   }
@@ -1333,14 +1343,14 @@ samplingQ_MA=function(data.Q,prior.weights,
   if(macilp[2] < (data.Q$data$x[2]*data.Q$data$maxD/10)){
     print(warning('BMD is 10 times lower than the lowest non-zero dose for hybrid Laplace'))
   }
-  
+
   ### best fitting model vs saturated ANOVA model
-  best.fit = modelnames[which(weight[1:8] == max(weight[1:8]))]
-  
-  bfTest <- modelTestQ(best.fit, data.Q, get(paste0('fitstan', best.fit, '_Q')), type = 'MCMC',
-                       seed, ndraws, nrchains, nriterations, warmup, delta, treedepth) 
-  print(warning(bfTest$warn.bf))
-  
+  #best.fit = modelnames[which(weight[1:8] == max(weight[1:8]))]
+
+  #bfTest <- modelTestQ(best.fit, data.Q, get(paste0('fitstan', best.fit, '_Q')), type = 'MCMC',
+  #                    seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
+  #print(warning(bfTest$warn.bf))
+
   ## Covariances
   covs = t(data.frame(
     E4_Q = E4covQ,
@@ -1353,7 +1363,7 @@ samplingQ_MA=function(data.Q,prior.weights,
     L4_Q = L4covQ
   ))
   colnames(covs) = c("b-d", "BMD-d")
-  
+
   corrs = t(data.frame(
     E4_Q = E4corrQ,
     IE4_Q = IE4corrQ,
@@ -1365,49 +1375,49 @@ samplingQ_MA=function(data.Q,prior.weights,
     L4_Q = L4corrQ
   ))
   colnames(corrs) = c("b-d", "BMD-d")
-  
-  
+
+
   ret_results <- list(E4_Q=E4outQ,IE4_Q=IE4outQ,H4_Q=H4outQ,LN4_Q=LN4outQ,
                       G4_Q=G4outQ,QE4_Q=QE4outQ,P4_Q=P4outQ,L4_Q=L4outQ,
                       covs = covs, corrs = corrs,
-                      weights_bridge_sampling=w.bs, 
+                      weights_bridge_sampling=w.bs,
                       weights_laplace=lpwlp,
-                      MA_bridge_sampling=macib, 
+                      MA_bridge_sampling=macib,
                       MA_laplace=macilp,
                       llQ=llQ,
-                      convergence=converged, bs_weights_conv=w.bs.conv, 
+                      convergence=converged, bs_weights_conv=w.bs.conv,
                       ls_weights_conv=lpwlp.conv,
-                      MA_bs_conv=macib.conv, 
+                      MA_bs_conv=macib.conv,
                       MA_ls_conv=macilp.conv,
-                      MA_post_bs = BMDq_bs, 
+                      MA_post_bs = BMDq_bs,
                       MA_post_ls = BMDq_ls,
-                      MA_post_bs_conv = BMDq_bs_conv, 
+                      MA_post_bs_conv = BMDq_bs_conv,
                       MA_post_ls_conv = BMDq_ls_conv,
-                      MA_dr_bs = dr.MA.bs, 
+                      MA_dr_bs = dr.MA.bs,
                       MA_dr_ls = dr.MA.ls,
                       MA_dr_bs_conv = dr.MA.bs.conv,
                       MA_dr_ls_conv = dr.MA.ls.conv,
-                      parsQ = list(parsE4Q, parsIE4Q, parsH4Q, parsLN4Q, parsG4Q, 
+                      parsQ = list(parsE4Q, parsIE4Q, parsH4Q, parsLN4Q, parsG4Q,
                                    parsQE4Q, parsP4Q, parsL4Q),
                       BMDMixture = mabmd*data$maxD,
                       BMDMixture.conv = mabmd.conv*data$maxD,
                       divergences = divergences,
                       data = data.frame(
                         dose = c(data.Q$data$x),
-                        y = data.Q$data$y, 
+                        y = data.Q$data$y,
                         n = data.Q$data$n),
                       max.dose = data.Q$data$maxD,
                       q = data.Q$data$q,
                       is_bin = data.Q$data$is_bin,
-                      is_betabin = data.Q$data$is_betabin,
-                      bf = bfTest$bayesFactor, 
-                      means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-                      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
+                      is_betabin = data.Q$data$is_betabin#,
+                      #bf = bfTest$bayesFactor,
+                      #means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+                      #BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
   )
-  
+
   attr(ret_results, "class") <- c("BMADRQ", "BS")
-  
+
   return(ret_results)
-  
+
 }
 

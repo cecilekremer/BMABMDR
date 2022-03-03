@@ -22,6 +22,7 @@ data{
   vector[N] n;  // the sample size for each dose group
   vector[N] m;  // the arithmetic mean of the response values for each dose group
   vector[N] s2;  // the arithmetic variance of the response values for each dose group
+  real shift; // data are shifted if different from 0
   vector[2] priormu;
   cov_matrix[2] priorSigma;
   real priorlb; //lower bound
@@ -39,7 +40,7 @@ transformed parameters{
   if(data_type == 1 || data_type == 3){
     a = par[1];
   }else if(data_type == 2 || data_type == 4){
-    a = log(par[1]);
+    a = log(par[1]) - shift;
   }
 
   invsigma2=exp(par[2]);

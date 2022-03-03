@@ -2,22 +2,21 @@
 % Please edit documentation in R/plot_priorQ.R
 \name{plot_priorQ}
 \alias{plot_priorQ}
-\title{Function to plot prior vs posterior distribution}
+\title{Function to plot the prior and posterior distributions of the BMD and parameter estimates}
 \usage{
 plot_priorQ(mod.obj, data, model_name)
 }
 \arguments{
-\item{mod.obj}{the model object returned by full laplace or sampling method}
+\item{mod.obj}{BMDBMA model object}
 
-\item{data}{the data for a specific model used by the above method}
+\item{data}{data list from the \code{\link{PREP_DATA_Q}}}
 
-\item{model_name}{the model for which plots should be generated}
-
-\item{parms}{if TRUE, model parameters (background, fold change, BMD, d) are shown; if FALSE, background, maximum response, BMD and d are shown}
+\item{model_name}{name of the model whose parameters are to be plotted. It can be eiter of
+c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")}
 }
 \value{
-.
+object of class ggplot
 }
 \description{
-Function to plot prior vs posterior distribution
+Function to plot the prior and posterior distributions of the BMD and parameter estimates
 }

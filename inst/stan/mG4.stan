@@ -1,4 +1,4 @@
- functions{
+functions{
    vector algebra_system(vector y,        // unknowns
                vector theta,    // parameters
                real[] x_r,      // data (real)
@@ -42,6 +42,7 @@ data{
    vector[N] m;  // the arithmetic mean of the response values for each dose group
    vector[N] s2;  // the arithmetic variance of the response values for each dose group
    real q;       // the BMR
+   real shift; // data are shifted if different from 0
    real init_b; // initial value for b
    vector[5] priormu;
    vector[5] priorlb;
@@ -86,7 +87,7 @@ data{
   if(data_type == 1 || data_type == 3){
     a = par1;
   }else if(data_type == 2 || data_type == 4){
-    a = log(par1);
+    a = log(par1) - shift;
   }
 
   if(is_increasing){
@@ -99,7 +100,7 @@ data{
   if(data_type == 1 || data_type == 3){
     c = mu_inf/mu_0;
   }else if(data_type == 2 || data_type == 4){
-    c = log(mu_inf)/log(mu_0);
+    c = (log(mu_inf)-shift)/(log(mu_0)-shift);
   }
   d = exp(par4);
   k = log(par2);

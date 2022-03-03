@@ -1,13 +1,13 @@
-#' Function to determine if there is a dose-response effect
+#' Function to determine if there is a dose-response effect (continuous data version)
 #'
 #' @param dose.a dose levels
 #' @param mean.a mean response
 #' @param sd.a standard deviation
 #' @param n.a number of observations per dose level
 #'
-#' @return text
+#' @return list containing Baye's factor and decision.
 #'
-#' @export
+#' @export anydoseresponseN
 #'
 anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
@@ -39,13 +39,13 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
   svH0 = list(par = c(mean.a[1], log(1/mean(sd.a^2))))
 
-  data.modstanSM = list(N=N,n=n.a,m=mean.a,s2=sd.a^2,
+  data.modstanSM = list(N=N,n=n.a,m=mean.a,s2=sd.a^2,shift=0,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                         data_type=1, priorg = 4
   )
 
-  data.modstanH0 = list(N=N,n=n.a,m=mean.a,s2=sd.a^2,
+  data.modstanH0 = list(N=N,n=n.a,m=mean.a,s2=sd.a^2,shift=0,
                         priormu=priorH0$priormu, priorSigma=priorH0$priorSigma,
                         priorlb=priorH0$priorlb, priorub=priorH0$priorub,
                         data_type=1, priorg = 4
@@ -105,23 +105,23 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
   #   return("there is insufficient evidence that there is any dose-effect; therefore no models are fitted and the BMDL is not calculated")
   # }
 }
-#' Function to determine if there is a dose-response effect
+#' Function to determine if there is a dose-response effect (Lognormal version)
 #'
-#' @param dose.a dose levels
+#' @param dose.a ordered dose levels
 #' @param mean.a mean response
 #' @param sd.a standard deviation
 #' @param n.a number of observations per dose level
 #'
-#' @return text
+#' @return list containing Baye's factor and decision.
 #'
-#' @export
+#' @export anydoseresponseLN
 #'
 anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
 
   N = length(dose.a)
-  shift=F
+  shift=0
   gmean.a2 = log(NtoLN(mean.a,sd.a))[1:N]
-  if (min(gmean.a2)<0) {gmean.a = gmean.a2-1.5*min(gmean.a2); shift=T}
+  if (min(gmean.a2)<0) {gmean.a = gmean.a2-20*min(gmean.a2); shift=20*min(gmean.a2)}
   if (min(gmean.a2)>=0) gmean.a = gmean.a2
   gsd.a = log(NtoLN(mean.a,sd.a))[(N+1):(2*N)]
 
@@ -129,37 +129,37 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   N = length(dose.a)
 
   priorH0 = list(
-    priormu = c(exp(gmean.a[1]), -2*log(1.5*mean(sd.a))),
+    priormu = c(exp(gmean.a2[1]), -2*log(1.5*mean(sd.a))),
     priorSigma = diag(c(1,1)),
     priorlb = 0.001,
-    priorub = 2*exp(gmean.a[1])
+    priorub = 2*exp(gmean.a2[1])
   )
 
   priorSM = list(
-    priormu = c(exp(gmean.a[1]),
-                diff(exp(gmean.a)),
+    priormu = c(exp(gmean.a2[1]),
+                diff(exp(gmean.a2)),
                 -2*log(1.5*mean(sd.a))),
     priorSigma = diag(c(1, rep(1, length(dose.a)-1), 1)),
     priorlb = 0.001,
-    priorub = c(2*exp(gmean.a[1]),
-                max(abs(diff(exp(gmean.a))))*10
+    priorub = c(2*exp(gmean.a2[1]),
+                max(abs(diff(exp(gmean.a2))))*10
     )
   )
 
-  svSM = list(par = c(exp(gmean.a[1]), # background
-                      diff(exp(gmean.a)),
+  svSM = list(par = c(exp(gmean.a2[1]), # background
+                      diff(exp(gmean.a2)),
                       log(1/mean(sd.a^2))) # invsigma2
   )
 
-  svH0 = list(par = c(exp(gmean.a[1]), log(1/mean(sd.a^2))))
+  svH0 = list(par = c(exp(gmean.a2[1]), log(1/mean(sd.a^2))))
 
-  data.modstanSM = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,
+  data.modstanSM = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,shift=shift,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                         data_type=2, priorg = 4
   )
 
-  data.modstanH0 = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,
+  data.modstanH0 = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,shift=shift,
                         priormu=priorH0$priormu, priorSigma=priorH0$priorSigma,
                         priorlb=priorH0$priorlb, priorub=priorH0$priorub,
                         data_type=2, priorg = 4

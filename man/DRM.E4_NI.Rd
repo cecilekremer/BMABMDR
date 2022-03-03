@@ -35,72 +35,72 @@
 \alias{DRM.L4_LND}
 \title{The dose response models}
 \usage{
-DRM.E4_NI(par, x, q)
+DRM.E4_NI(par, x, q, shift = 0)
 
-DRM.IE4_NI(par, x, q)
+DRM.IE4_NI(par, x, q, shift = 0)
 
-DRM.H4_NI(par, x, q)
+DRM.H4_NI(par, x, q, shift = 0)
 
-DRM.LN4_NI(par, x, q)
+DRM.LN4_NI(par, x, q, shift = 0)
 
-DRM.G4_NI(par, x, q)
+DRM.G4_NI(par, x, q, shift = 0)
 
-DRM.QE4_NI(par, x, q)
+DRM.QE4_NI(par, x, q, shift = 0)
 
-DRM.P4_NI(par, x, q)
+DRM.P4_NI(par, x, q, shift = 0)
 
-DRM.L4_NI(par, x, q)
+DRM.L4_NI(par, x, q, shift = 0)
 
-DRM.E4_LNI(par, x, q)
+DRM.E4_LNI(par, x, q, shift)
 
-DRM.IE4_LNI(par, x, q)
+DRM.IE4_LNI(par, x, q, shift)
 
-DRM.H4_LNI(par, x, q)
+DRM.H4_LNI(par, x, q, shift)
 
-DRM.LN4_LNI(par, x, q)
+DRM.LN4_LNI(par, x, q, shift)
 
-DRM.G4_LNI(par, x, q)
+DRM.G4_LNI(par, x, q, shift)
 
-DRM.QE4_LNI(par, x, q)
+DRM.QE4_LNI(par, x, q, shift)
 
-DRM.P4_LNI(par, x, q)
+DRM.P4_LNI(par, x, q, shift)
 
-DRM.L4_LNI(par, x, q)
+DRM.L4_LNI(par, x, q, shift)
 
-DRM.E4_ND(par, x, q)
+DRM.E4_ND(par, x, q, shift = 0)
 
-DRM.IE4_ND(par, x, q)
+DRM.IE4_ND(par, x, q, shift = 0)
 
-DRM.H4_ND(par, x, q)
+DRM.H4_ND(par, x, q, shift = 0)
 
-DRM.LN4_ND(par, x, q)
+DRM.LN4_ND(par, x, q, shift = 0)
 
-DRM.G4_ND(par, x, q)
+DRM.G4_ND(par, x, q, shift = 0)
 
-DRM.QE4_ND(par, x, q)
+DRM.QE4_ND(par, x, q, shift = 0)
 
-DRM.P4_ND(par, x, q)
+DRM.P4_ND(par, x, q, shift = 0)
 
-DRM.L4_ND(par, x, q)
+DRM.L4_ND(par, x, q, shift = 0)
 
-DRM.E4_LND(par, x, q)
+DRM.E4_LND(par, x, q, shift)
 
-DRM.IE4_LND(par, x, q)
+DRM.IE4_LND(par, x, q, shift)
 
-DRM.H4_LND(par, x, q)
+DRM.H4_LND(par, x, q, shift)
 
-DRM.LN4_LND(par, x, q)
+DRM.LN4_LND(par, x, q, shift)
 
-DRM.G4_LND(par, x, q)
+DRM.G4_LND(par, x, q, shift)
 
-DRM.QE4_LND(par, x, q)
+DRM.QE4_LND(par, x, q, shift)
 
-DRM.P4_LND(par, x, q)
+DRM.P4_LND(par, x, q, shift)
 
-DRM.L4_LND(par, x, q)
+DRM.L4_LND(par, x, q, shift)
 }
 \arguments{
-\item{par}{parameters in the order background, BMD, fold change, log(d), invsigma2}
+\item{par}{parameters in the order a, c, d, b}
 
 \item{x}{unique ordered dose levels}
 

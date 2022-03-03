@@ -1,28 +1,37 @@
-#' Perform model averaging using Full Laplace method
+
+#' function to fit the BMD model using Laplace approximation
 #'
-#' This method assumed data for continuous endpoints.
+#' @param data.Q list containing data values as given by \link{PREP_DATA_QA}
+#' @param prior.weights model weights determining if a model is to be included in the model averaging or not.
+#'                      1 implies model is included, 0 otherwise. Defaults to rep(1,8).
+#' @param ndraws number of draws to be made from the posterior distribution. Defaults to 30000
+#' @param seed random seed for reproducibility. Defaults to 123
+#' @param pvec probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).
 #'
-#' More detailed descriprion
-#' @param data.N the input data as returned by function PREP_DATA_N
-#' @param data.LN the input data as returned by function PREP_DATA_LN
-#' @param prior.weights a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)
-#' @param ndraws the number of draws, default 30000
-#' @param nrchains the number of chains to be used in the MCMC
-#' @param nriterations the number of iterations per chain
-#' @param warmup the number of iterations per chain to be discarded as burnin
-#' @param delta default 0.8
-#' @param treedepth default 10
-#' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
-#' @param plot logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)
+#' @examples
 #'
-#' @return List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+#' @return list containing the following results
+#' \enumerate{
+#'   \item E4_Q parameter estimates from the exponential model
+#'   \item IE4_Q parameter estimates from the inverse-exponential model
+#'   \item H4_Q parameter estimates from the Hill model
+#'   \item LN4_Q parameter estimates from the lognormal
+#'   \item G4_Q parameter estimates from the gamma model
+#'   \item QE4_Q parameter estimates from the quadratic-exponential model
+#'   \item P4_Q parameter estimates from the probit model
+#'   \item L4_Q parameter estimates from the logit model
+#'   \item MA_laplace Laplace approximation model averaged BMD estimates using all the models
+#'   \item MA_lp_conv Laplace approximation model averaged BMD estimates using only converged models
+#'   \item weights_laplace model weights using Laplace approximation to the posterior
+#'   \item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+#'   \item llQ vector of model likelihoods for normal distribution
+#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
+#' }
 #'
-#' @export
+#' @export full.laplaceQ_MA
 #'
-full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
-                          nriterations=3000,warmup=1000,
-                          delta=0.8,treedepth=10,seed=123,pvec=c(0.05,0.5,0.95)){
+full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
+                          ndraws=30000,seed=123,pvec=c(0.05,0.5,0.95)){
 
   # prior.weights = prior.weights/sum(prior.weights==1) #this is now done below when calculating weights
 
@@ -699,13 +708,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHE4)*exp(llE4Q-minll)*
             dnorm(optE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -728,13 +736,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHIE4)*exp(llIE4Q-minll)*
             dnorm(optIE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -757,13 +764,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHH4)*exp(llH4Q-minll)*
             dnorm(optH4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -786,13 +792,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHLN4)*exp(llLN4Q-minll)*
             dnorm(optLN4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -815,13 +820,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1){
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHG4)*exp(llG4Q-minll)*
             dnorm(optG4_Q$par[3], mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -844,13 +848,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1) {
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4Q-minll)*
             dnorm(optQE4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -873,13 +876,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1) {
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHP4)*exp(llP4Q-minll)*
             dnorm(optP4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -902,13 +904,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
             mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
                         mode = data$priormu[1], shape = data$priorgama[1])
       )
-    } else if(data$is_betabin == 1) {
+    } else {
       w=c(w,(2*pi)^(2.5)*sqrt(DIHL4)*exp(llL4Q-minll)*
             dnorm(optL4_Q$par[3],mean=data$priormu[3],
                   sd=data$priorSigma[3,3])*
-            dnorm(optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'etarho')],
-                  mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
+            mc2d::dpert(optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'rho')],
+                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
             mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
                         mode = data$priormu[2], shape = data$priorgama[2])*
             mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
@@ -975,11 +976,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
   }
 
   ### best fitting model vs saturated ANOVA model
-  best.fit = modelnames[which(weight[1:8] == max(weight[1:8]))]
+  #best.fit = modelnames[which(weight[1:8] == max(weight[1:8]))]
 
-  bfTest <- modelTestQ(best.fit, data.Q, get(paste0('opt', best.fit, '_Q')), type = 'Laplace',
-                      seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
-  print(warning(bfTest$warn.bf))
+  #bfTest <- modelTestQ(best.fit, data.Q, get(paste0('opt', best.fit, '_Q')), type = 'Laplace',
+  #                    seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
+  #warning(bfTest$warn.bf)
 
   ## Covariances
   covs = t(data.frame(
@@ -1006,6 +1007,12 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
   ))
   colnames(corrs) = c("b-d", "BMD-d")
 
+  ###
+  # sd = sqrt(data$s2)
+  # N = data$N
+  # gmean.a = log(NtoLN(data$m,sd))[1:N]
+  # gsd.a = log(NtoLN(data$m,sd))[(N+1):(2*N)]
+
   ret_results <- list(
     # model parameters
     E4_Q=E4outQ,IE4_Q=IE4outQ,H4_Q=H4outQ,LN4_Q=LN4outQ,G4_Q=G4outQ,QE4_Q=QE4outQ,P4_Q=P4outQ,L4_Q=L4outQ,
@@ -1028,10 +1035,10 @@ full.laplaceQ_MA=function(data.Q, prior.weights,ndraws=30000,nrchains=3,
     max.dose = data.Q$data$maxD,
     q = data.Q$data$q,
     is_bin = data.Q$data$is_bin,
-    is_betabin = data.Q$data$is_betabin,
-    bf = bfTest$bayesFactor,
-    means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-    BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
+    is_betabin = data.Q$data$is_betabin#,
+    #bf = bfTest$bayesFactor,
+    #means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+    #BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
   )
 
   attr(ret_results, "class") <- c("BMADRQ", "LP")

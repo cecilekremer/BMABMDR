@@ -2,52 +2,50 @@
 % Please edit documentation in R/fun_LaplaceQ.R
 \name{full.laplaceQ_MA}
 \alias{full.laplaceQ_MA}
-\title{Perform model averaging using Full Laplace method}
+\title{function to fit the BMD model using Laplace approximation}
 \usage{
 full.laplaceQ_MA(
   data.Q,
-  prior.weights,
+  prior.weights = rep(1, 8),
   ndraws = 30000,
-  nrchains = 3,
-  nriterations = 3000,
-  warmup = 1000,
-  delta = 0.8,
-  treedepth = 10,
   seed = 123,
   pvec = c(0.05, 0.5, 0.95)
 )
 }
 \arguments{
-\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
+\item{data.Q}{list containing data values as given by \link{PREP_DATA_QA}}
 
-\item{ndraws}{the number of draws, default 30000}
+\item{prior.weights}{model weights determining if a model is to be included in the model averaging or not.
+1 implies model is included, 0 otherwise. Defaults to rep(1,8).}
 
-\item{nrchains}{the number of chains to be used in the MCMC}
+\item{ndraws}{number of draws to be made from the posterior distribution. Defaults to 30000}
 
-\item{nriterations}{the number of iterations per chain}
+\item{seed}{random seed for reproducibility. Defaults to 123}
 
-\item{warmup}{the number of iterations per chain to be discarded as burnin}
-
-\item{delta}{default 0.8}
-
-\item{treedepth}{default 10}
-
-\item{seed}{default 123}
-
-\item{pvec}{vector specifying the three BMD quantiles of interest}
-
-\item{data.N}{the input data as returned by function PREP_DATA_N}
-
-\item{data.LN}{the input data as returned by function PREP_DATA_LN}
-
-\item{plot}{logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)}
+\item{pvec}{probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).}
 }
 \value{
-List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+list containing the following results
+\enumerate{
+\item E4_Q parameter estimates from the exponential model
+\item IE4_Q parameter estimates from the inverse-exponential model
+\item H4_Q parameter estimates from the Hill model
+\item LN4_Q parameter estimates from the lognormal
+\item G4_Q parameter estimates from the gamma model
+\item QE4_Q parameter estimates from the quadratic-exponential model
+\item P4_Q parameter estimates from the probit model
+\item L4_Q parameter estimates from the logit model
+\item MA_laplace Laplace approximation model averaged BMD estimates using all the models
+\item MA_lp_conv Laplace approximation model averaged BMD estimates using only converged models
+\item weights_laplace model weights using Laplace approximation to the posterior
+\item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+\item llQ vector of model likelihoods for normal distribution
+\item bf Bayes factor comparing the best model against saturated ANOVA model
+}
 }
 \description{
-This method assumed data for continuous endpoints.
+function to fit the BMD model using Laplace approximation
 }
-\details{
-More detailed descriprion
+\examples{
+
 }

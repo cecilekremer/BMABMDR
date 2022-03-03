@@ -19,31 +19,39 @@ PREP_DATA_N(
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, response, sd (or se), n}
+\item{data}{dataframe with input data, order of columns should be: dose, response, sd, n.}
 
-\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
+\item{sumstats}{logical. TRUE indicates summary data is provided while FALSE indicates individual-level data.}
 
-\item{geom.stats}{logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics}
+\item{geom.stats}{logical. TRUE if geometric summary data is provided.}
 
-\item{sd}{logical indicating whether standard deviation (T, default) or standard error (F) is provided}
+\item{sd}{logical. TRUE indicates that standard deviation per dose is provided,
+FALSE indicates that standard error per dose level is provided}
 
-\item{q}{specified BMR}
+\item{q}{the specified BMR}
 
-\item{bkg}{vector containing minimum, most likely, and maximum value for the background response}
+\item{bkg}{vector containing informative prior for the background.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{maxy}{vector containing minimum, most likely, and maximum value for the response at dose infinity}
+\item{maxy}{vector containing informative prior for the maximum response.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{prior.BMD}{vector containing minimum, most likely, and maximum value for the BMD}
+\item{prior.BMD}{vector containing informative prior for the BMD.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{shape.a}{shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution}
+\item{shape.a}{shape parameter that determines the flatness of the Pert prior for the background.
+Defaults to 4, which implies a peak at the most likely value.}
 
-\item{shape.c}{shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution}
+\item{shape.c}{shape parameter that determines the flatness of the Pert prior for c.
+Defaults to 4, which implies a peak at the most likely value.}
 
-\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 (implies a uniform distribution)}
+\item{shape.BMD}{shape parameter that determines the flatness of the Pert prior for the BMD.
+Defaults to 0.0001, which implies a flat prior.}
 }
 \value{
 List with data and start values in correct format to be directly used within the BMA functions.
 }
 \description{
 This function also generates appropriate start values and uninformative priors for each model
+Input should be given as arithmetic mean and standard deviation on the original scale
 }
