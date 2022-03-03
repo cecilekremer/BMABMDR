@@ -35,7 +35,7 @@
 \alias{llfQE4_LND}
 \alias{llfP4_LND}
 \alias{llfL4_LND}
-\title{Loglikelihood functions for the different dose response models for Continuous data}
+\title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -55,23 +55,23 @@ llfSM_N(x, nvec, dvec, mvec, s2vec)
 
 llfL4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfE4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfIE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfIE4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfH4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfH4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfLN4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfLN4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfG4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfG4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfQE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfQE4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfP4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfP4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfL4_LNI(x, nvec, dvec, mvec, s2vec, qval)
+llfL4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfSM_LN(x, nvec, dvec, mvec, s2vec)
+llfSM_LN(x, nvec, dvec, mvec, s2vec, shift)
 
 llfE4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -89,38 +89,43 @@ llfP4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
 llfL4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfE4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfIE4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfIE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfH4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfH4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfLN4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfLN4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfG4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfG4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfQE4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfQE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfP4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfP4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfL4_LND(x, nvec, dvec, mvec, s2vec, qval)
+llfL4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 }
 \arguments{
 \item{x}{parameter values}
 
-\item{nvec}{number of observations}
+\item{nvec}{vector containing the number of observations at each dose level}
 
-\item{dvec}{dose levels}
+\item{dvec}{unique ordered dose levels}
 
-\item{mvec}{response}
+\item{mvec}{vector containing the response at each dose level}
 
 \item{s2vec}{variance}
 
 \item{qval}{BMR}
+
+\item{shift}{value of the shift for negative geometric means}
 }
 \value{
 .
 }
 \description{
-Loglikelihood functions for the different dose response models for Continuous data
+Loglikelihood functions for the different dose response models
+}
+\examples{
+
 }

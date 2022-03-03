@@ -2,7 +2,7 @@
 % Please edit documentation in R/plottingfunctions.R
 \name{plot.BMADRQ}
 \alias{plot.BMADRQ}
-\title{Function to plot the results for quantal endpoints}
+\title{plot function for the BMD estimates, model weights, model predictions and model average predictions (Quantal dat)}
 \usage{
 plot.BMADRQ(
   mod.obj,
@@ -13,19 +13,19 @@ plot.BMADRQ(
 )
 }
 \arguments{
-\item{mod.obj}{fitted models}
+\item{mod.obj}{BMDBMA model object}
 
-\item{weight_type}{'BS' or 'LP'}
+\item{weight_type}{type of model weight to be plotted. It can either be "BS" or "LP"}
 
-\item{include_data}{whether to include data points in plot}
+\item{include_data}{logical argument to indicate if data should be included in the plots. Defaults to TRUE}
 
-\item{all}{all 4 plots in one plot}
+\item{all}{logical argument to indicate if all plots should be displayed}
 
-\item{title}{title for plot if all = TRUE}
+\item{title}{title of the plot}
 }
 \value{
-.
+object of class ggplot
 }
 \description{
-Function to plot the results for quantal endpoints
+plot function for the BMD estimates, model weights, model predictions and model average predictions (Quantal dat)
 }

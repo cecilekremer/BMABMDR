@@ -4,6 +4,8 @@
 #'
 #' @return .
 #'
+#' @export expit
+#'
 expit=function(x) 1/(1+exp(-pi*x/sqrt(3)))
 
 #' Function for internal use
@@ -11,6 +13,8 @@ expit=function(x) 1/(1+exp(-pi*x/sqrt(3)))
 #' @param x value
 #'
 #' @return .
+#'
+#' @export logit
 #'
 logit=function(x) sqrt(3)/pi*log(x/(1-x))
 
@@ -20,15 +24,18 @@ logit=function(x) sqrt(3)/pi*log(x/(1-x))
 #'
 #' @return .
 #'
+#' @export rnd
+#'
 rnd=function(p) (p<0.5)*round(p,1)+(p>=0.5)*floor(p*10)/10
 
 #' Function for internal use
 #'
 #' @param dose value
 #' @param mean value
-#' @param inc logical
+#' @param inc logical variable to indicate if the dose-resonse curve is increasing or decreasing
+#' @return .logical value indicating if the dose-response curve is flat or not
 #'
-#' @return .
+#' @export flat
 #'
 flat = function(dose,mean,inc){ # To determine if DR curve flattens or not
   flat=F
@@ -55,16 +62,16 @@ flat = function(dose,mean,inc){ # To determine if DR curve flattens or not
   }
 
 }
-
-
 #' Functions to get parameters for PERT prior
 #'
 #' @param a minimum
 #' @param b most likely value
 #' @param c maximum
-#' @param g shape of modified PERT
+#' @param g shape
 #'
 #' @return .
+#'
+#' @export fun.alpha
 #'
 fun.alpha = function(a,b,c,g){
   if((b-a) == (c-b)){
@@ -76,7 +83,17 @@ fun.alpha = function(a,b,c,g){
   return(s)
   # return((shape*b + c - 5*a)/(c-a))
 }
-#' @rdname fun.alpha
+#' Functions to get parameters for PERT prior
+#'
+#' @param a minimum
+#' @param b most likely value
+#' @param c maximum
+#' @param g shape
+#'
+#' @return .
+#'
+#' @export fun.beta
+#'
 fun.beta = function(a,b,c,g){
   if((b-a) == (c-b)){
     c = c + 0.0001
@@ -88,7 +105,18 @@ fun.beta = function(a,b,c,g){
   return(s)
   # return((5*c - a - shape*b)/(c-a))
 }
-#' @rdname fun.alpha
+#' Functions to get parameters for PERT prior
+#'
+#' @param x value
+#' @param lb lower bound
+#' @param ub upper bound
+#' @param s1 shape
+#' @param s2 shape
+#'
+#' @return .
+#'
+#' @export fun.alpha
+#'
 pert_dist = function(x,lb,ub,s1,s2){
   # return(
   # dbeta((x-lb)/(ub-lb), shape1 = s1, shape2 = s2, log = T) - log((ub - lb))
@@ -101,12 +129,14 @@ pert_dist = function(x,lb,ub,s1,s2){
   # )
 }
 
+
 #' Bartlett function for testing constant variance and co-efficient of variation; H0 equal variances
 #'
 #' @param sd standard deviation per dose group
 #' @param n number of observations per dose group
 #'
-#' @return .
+#' @return pvalue for the Bartlett's test
+#' @export bartlett
 #'
 bartlett <- function(sd,n){
   N<-sum(n);k<-length(n)
@@ -119,3 +149,45 @@ bartlett <- function(sd,n){
   )
   c(B,pchisq(B,df=(k-1),lower.tail = F))
 }
+
+#' Obtain a list of all available models
+#'
+#' @param type one of 'continuous' or 'quantal'
+#'
+#' @return .
+#' @export get_models
+#'
+get_models <- function(type = c('continuous', 'quantal')){
+  if(type == 'continuous'){
+    mods <- c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+    names(mods) <- c('Exponential Normal',
+                     'Inverse Exponential Normal',
+                     'Hill Normal',
+                     'Lognormal Normal',
+                     'Gamma Normal',
+                     'Quadratic Exponential Normal',
+                     'Probit Normal',
+                     'Logit Normal',
+                     'Exponential Lognormal',
+                     'Inverse Exponential Lognormal',
+                     'Hill Lognormal',
+                     'Lognormal Lognormal',
+                     'Gamma Lognormal',
+                     'Quadratic Exponential Lognormal',
+                     'Probit Lognormal',
+                     'Logit Lognormal')
+  }else if(type == 'quantal'){
+    mods <- c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
+    names(mods) <- c('Exponential',
+                     'Inverse Exponential',
+                     'Hill',
+                     'Lognormal',
+                     'Gamma',
+                     'Quadratic Exponential',
+                     'Probit',
+                     'Logit')
+  }
+  return(mods)
+}
+
+

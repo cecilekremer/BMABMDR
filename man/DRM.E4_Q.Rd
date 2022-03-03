@@ -9,7 +9,7 @@
 \alias{DRM.QE4_Q}
 \alias{DRM.P4_Q}
 \alias{DRM.L4_Q}
-\title{The dose response models}
+\title{These are the dose response models used internally in the BMA functions.}
 \usage{
 DRM.E4_Q(par, x, q)
 
@@ -28,7 +28,7 @@ DRM.P4_Q(par, x, q)
 DRM.L4_Q(par, x, q)
 }
 \arguments{
-\item{par}{parameters in the order background, BMD, log(d)}
+\item{par}{parameters in the order a, c, d, b}
 
 \item{x}{unique ordered dose levels}
 

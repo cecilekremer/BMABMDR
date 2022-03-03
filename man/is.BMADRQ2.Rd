@@ -10,12 +10,12 @@ is.BMADRQ2(x)
 \item{x}{any R object}
 }
 \value{
-TRUE if object is of class stanfitOptim. FALSE otherwise
+1, 2 or 3 if object is of class BMABMDRQ using Laplace or BMABMDRQ using MCMC.
 }
 \description{
 function to check if object is of class BMADR and its subcalsses
 }
 \examples{
  x <- c(1, 5, 4)
- is.BMADR2(x)
+ is.BMADRQ2(x)
 }

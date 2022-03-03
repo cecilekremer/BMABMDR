@@ -1,13 +1,17 @@
-#' Function for internal use
+#'  function to perform Laplace approximation for a given dose-response model.
 #'
 #' @param mod stan model
-#' @param data input data
-#' @param stv start values
-#' @param ndraws ndraws
-#' @param seed seed
-#' @param pvec pvec
+#' @param data list containing data values to be passed to the stan model file
+#' @param stv list of starting values
+#' @param ndraws number of draws to be made from the posterior distribution
+#' @param seed random seed for reproducibility
+#' @param pvec probability vector to compute credible interval for the BMD
 #'
-#' @return .
+#' @examples
+#'
+#' @return a stan results object
+#'
+#' @export fun_optim
 #'
 fun_optim = function(mod, data, stv,
                      ndraws = ndraws,seed=seed,pvec){
@@ -38,12 +42,21 @@ fun_optim = function(mod, data, stv,
     }else{
       par[3] = par[3] + rnorm(1, sd = 0.01*abs(par[3]))
     }
+
+    ## for decreasing, par[3] < 1
+    if(data$is_decreasing == 1 & par[3] > 1){
+      par[3] = 0.9999
+    }
+
     if(data$is_informative_BMD == 1){
       par[2] = runif(1, data$priorlb[2], data$priorub[2])
     }else{
       par[2] = par[2] + rnorm(1, sd = 0.01*abs(par[2]))
     }
     par[4:5] = par[4:5] + rnorm(2, sd = 0.01*abs(par[4:5]))
+
+    ## BMD between 0 and 1
+    if(par[2] > 1) par[2] = 0.9
 
     if(data$data_type==1|data$data_type==2){
       pars3d = numeric()

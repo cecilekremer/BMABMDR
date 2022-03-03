@@ -2,12 +2,12 @@
 % Please edit documentation in R/anydoseresponse.R
 \name{anydoseresponseLN}
 \alias{anydoseresponseLN}
-\title{Function to determine if there is a dose-response effect}
+\title{Function to determine if there is a dose-response effect (Lognormal version)}
 \usage{
 anydoseresponseLN(dose.a, mean.a, sd.a, n.a)
 }
 \arguments{
-\item{dose.a}{dose levels}
+\item{dose.a}{ordered dose levels}
 
 \item{mean.a}{mean response}
 
@@ -16,8 +16,8 @@ anydoseresponseLN(dose.a, mean.a, sd.a, n.a)
 \item{n.a}{number of observations per dose level}
 }
 \value{
-text
+list containing Baye's factor and decision.
 }
 \description{
-Function to determine if there is a dose-response effect
+Function to determine if there is a dose-response effect (Lognormal version)
 }

@@ -23,7 +23,7 @@ data{
   vector[N] x;  // the dose level of each dose group
   vector[N] y;  // the number of adverse events for each dose group
   real q;       // the BMR
-  vector[3] priormu;
+  vector[4] priormu;
   real priorlb[2]; //lower bound
   real priorub[2]; //upper bound
   real priorgama[2];
@@ -37,20 +37,17 @@ parameters{
   real<lower=0, upper=1> par1; //a
   real<lower=0> par2; //BMD
   real par3; // d on a log scale
-  real etarho[is_betabin]; //will be defined if beta-binomial is to be fitted
+  real rho[is_betabin]; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
-
   real a;
   real b;
   real d;
   real k;
   real m[N];
-  real rho[is_betabin];
   real abet[N];
   real bbet[N];
   real<lower=0> BMD;
-
   BMD = par2;
   a = par1;
   k = log(par2);
@@ -66,13 +63,13 @@ transformed parameters{
   }
 
 
-  if(is_betabin == 1) {
-    rho[is_betabin] = (exp(etarho[is_betabin])-1.0)/(exp(etarho[is_betabin])+1.0);
+  if(is_bin == 0) {
+
     for(i in 1:N){
       abet[i] = m[i]*((1.0/rho[is_betabin])-1.0);
       bbet[i] = (1.0 - m[i])*((1/rho[is_betabin])-1);
     }
-  } else if(is_bin == 1) {
+  } else {
     for(i in 1:N){
       abet[i] = 0.0;
       bbet[i] = 0.0;
@@ -91,12 +88,13 @@ model{
 
       }
 
-    } else if(is_betabin==1){
-      etarho ~ normal(0,1);
+    } else {
+
+      rho[is_betabin] ~ pert_dist(0.0, priormu[4], 1.0, 4.0);
       for(i in 1:N){
-        target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]) + lgamma(bbet[i]+n[i]-y[i]) -
-                  lgamma(abet[i]+bbet[i]+n[i]) - lgamma(abet[i]) - lgamma(bbet[i]) +
-                  lgamma(abet[i]+bbet[i]);
+        target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
+                  lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+                  lgamma(abet[i]+bbet[i]+eps);
       }
     }
 }

@@ -92,15 +92,14 @@ DR_scatter <- function(DR_df = NULL, DRM_df = NULL,
 
 }
 
-
 #' Function for internal use
 #'
 #' @param BMD_DF dataframe containing BMD, BMDL and BMDU
 #' @param BMD.true true value for BMD. Only necessary if such exist
-#' @param x doses
-#' @param BMD column name for BMD
-#' @param BMDL column name for BMDL
-#' @param BMDU column name for BMDU.
+#' @param x value?
+#' @param xlab x-axis label
+#' @param ylab y-axis label
+#' @param title title
 #'
 #' @return .
 #'
@@ -142,12 +141,11 @@ plot_BMD <- function(BMD_DF, BMD.true = NULL,
 
   return(p1)
 }
-
 #' Function for internal use
 #'
 #' @param BMD_DF dataframe containing BMD, BMDL and BMDU
 #' @param BMD.true true value for BMD. Only necessary if such exist
-#' @param to_plot which quantity to plot
+#' @param to_plot which value to plot
 #' @param xlab x-axis label
 #' @param title title
 #'
@@ -194,6 +192,7 @@ density_BMD <- function(BMD_DF, BMD.true = NULL,
   return(p1)
 
 }
+
 
 #' Function for internal use
 #'
@@ -270,12 +269,12 @@ DRM <- function(Model, type = c("increasing", "decreasing", "quantal")) {
 
 #' Function to plot the results for continuous endpoints
 #'
-#' @param mod.obj fitted models
-#' @param type 'increasing' or 'decreasing'
-#' @param weight_type 'BS' or 'LP'
-#' @param include_data whether to include data points in plot
-#' @param all all 4 plots in one plot
-#' @param title title for plot if all = TRUE
+#' @param mod.obj BMDBMA model object
+#' @param type dose-response type. It can either be "increasing" or "decreasing"
+#' @param weight_type type of model weight to be plotted. It can either be "BS" or "LP"
+#' @param include_data logical argument to indicate if data should be included in the plots. Defaults to TRUE
+#' @param all logical argument to indicate if all plots should be displayed
+#' @param title title of the plot
 #'
 #' @return .
 #'
@@ -327,25 +326,37 @@ plot.BMADR <- function(mod.obj,
 
   BMDW <- BMDWeights(mod.obj)
   BMDBMA <- BMDMA_extract(mod.obj, conv = FALSE)
+  mod.obj$data <- mod.obj$data[order(mod.obj$data$dose), ] #order the data by dose
 
-  dose <- mod.obj$data$dose
-  lg10d <- c(log10(dose[2]/4), log10(mod.obj$data$dose[2:nrow(mod.obj$data)]))
+  dose <- sort(unique(mod.obj$data$dose))
+  ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
+  lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
   bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
+  bmdlo <- BMDW$BMDL/mod.obj$max.dose
   lg10d[1] <- ifelse(min(bmdl, na.rm=T) < lg10d[1],
                      log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
-                     log10(dose[2]/4))
+                     log10(min(dose[dose > 0])/4))
+  ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+                   min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                   min(dose[dose > 0])/4)
+
   orig.y <- log(NtoLN(mod.obj$data$m,mod.obj$data$sd))[1:length(mod.obj$data$dose)]
   orig.s <- log(NtoLN(mod.obj$data$m,mod.obj$data$sd))[(length(mod.obj$data$dose)+1):(2*length(mod.obj$data$dose))]
   orig_ptdata <- data.frame(dose = (mod.obj$data$dose),
-                            lg10d = (lg10d), m = (mod.obj$data$m),
+                            dose2 = rep(ddd, times = table(mod.obj$data$dose)),
+                            lg10d = rep(lg10d, times = table(mod.obj$data$dose)),
+                            m = (mod.obj$data$m),
                             sd = (mod.obj$data$sd),
                             log10m = log10(exp(orig.y)),
                             log10s = log10(exp(orig.s))
   )
 
-  mod.obj$data$lg10d <- lg10d
+  mod.obj$data$lg10d <- rep(lg10d, times = table(mod.obj$data$dose))
+  mod.obj$data$dose2 <- rep(ddd, times = table(mod.obj$data$dose))
+
   mod.obj$data$lg10m <- log10(exp(orig.y))
   mod.obj$data$lg10s <- log10(exp(orig.s))
+
   dgr <- seq(min(lg10d), abs(min(lg10d)), by=0.01)
   dose2 <- 10^dgr[(dgr > (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]
   preds <- predict.BMADR(mod.obj, dose = dose2,
@@ -356,13 +367,14 @@ plot.BMADR <- function(mod.obj,
   preds$predicted$dgr <- dgr[(dgr > (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]
   preds$model_averaged$dgr <- dgr[(dgr > (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]
 
-  preds$predicted$lg10pred = log10(preds$predicted$predicted)
+  preds$predicted$lg10pred <- log10(preds$predicted$predicted)
 
   dgrprime <- dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]
   preds_min <- tidyr::nest(dplyr::group_by(dplyr::filter(preds$predicted, Dose == min(Dose)), Model))
   as_per_model <- dplyr::select(par_med(mod.obj), Model, min_response)
   preds_min$data <- lapply(preds_min$data, function(x) data.frame(dgrprime = dgrprime,
-                                                                  Dose = x$Dose,
+                                                                  Dose = 10^dgrprime,
+                                                                  #Dose = x$Dose,
                                                                   predicted = x$predicted,
                                                                   lg10predicted = x$lg10pred))
   preds_min <- tidyr::unnest(preds_min, cols = c('data'))
@@ -370,10 +382,15 @@ plot.BMADR <- function(mod.obj,
   preds_min$min_response[stringr::str_detect(preds_min$Model, "_LN")] <- (
     preds_min$min_response[stringr::str_detect(preds_min$Model, "_LN")])
 
-  preds_min2 <- data.frame(Dose = dgrprime,
+  preds_min2 <- data.frame(lg10d = dgrprime,
+                           Dose = 10^dgrprime,
                            log10MA = rep(log10(preds$model_averaged$model_averaged[
                              preds$model_averaged$Dose==min(preds$model_averaged$Dose)]),
-                             length(dgrprime)))
+                             length(dgrprime)),
+                           MA = rep(preds$model_averaged$model_averaged[
+                             preds$model_averaged$Dose==min(preds$model_averaged$Dose)],
+                             length(dgrprime))
+  )
 
   #preds$predicted$Dose <- preds$predicted$Dose*mod.obj$max.dose
   #preds$model_averaged$Dose <- preds$model_averaged$Dose*mod.obj$max.dose
@@ -390,12 +407,20 @@ plot.BMADR <- function(mod.obj,
   BMDMixture <- BMDmixture_extract(mod.obj, conv=FALSE) # BMD values
   BMDMixture$BMDMixture2 <- log10(BMDMixture$BMDMixture/mod.obj$max.dose)
 
-  BMDMixtureD <- density(BMDMixture$BMDMixture2, # density of BMD mixture on 0-1 scale
+  BMDMixtureD <- density(BMDMixture$BMDMixture2, # density of BMD mixture on log10 scale
                          from = min(BMDMixture$BMDMixture2),
                          to = max(BMDMixture$BMDMixture2))
+
+  BMDMixtureD2 <- density(BMDMixture$BMDMixture, # density of BMD mixture on 0-1 scale
+                          from = min(BMDMixture$BMDMixture),
+                          to = max(BMDMixture$BMDMixture))
+
   BMDMixture <- data.frame(Model = unique(BMDMixture$Model), # y = Density
-                           Dose = BMDMixtureD$x,
-                           y = BMDMixtureD$y)
+                           Dose10 = BMDMixtureD$x,
+                           Dose102 = 10^BMDMixtureD$x,
+                           y10 = BMDMixtureD$y,
+                           Dose = BMDMixtureD2$x,
+                           y = BMDMixtureD2$y)
   #BMDMixture <- refactor(BMDMixture)
 
   #BMDs and Weights
@@ -523,22 +548,22 @@ plot.BMADR <- function(mod.obj,
   }
 
   ##### Mixture Distribution
-  needed_data3 <- needed_data2[which(needed_data2$CWeights <= 0.85), ]
-  needed_data3$mod_dist <- paste(needed_data3$Model, needed_data3$Distribution, sep = '_')
-
-  names(mod.obj$parsN) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N")
-  names(mod.obj$parsLN) = c("E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
-
-  pars = c(mod.obj$parsN, mod.obj$parsLN)
-
-  ddens <- lapply(needed_data3$mod_dist, function(i){
-    xx <- pars[[i]][,c("ModelName","BMD")]
-    yy <- density(xx$BMD)
-    data.frame(x = yy$x, y = yy$y,
-               yw = yy$y*needed_data3$Weights[needed_data3$mod_dist==i],
-               ModelName = i)
-  })
-  df.mod <- do.call(rbind.data.frame, ddens)
+  # needed_data3 <- needed_data2[which(needed_data2$CWeights <= 0.85), ]
+  # needed_data3$mod_dist <- paste(needed_data3$Model, needed_data3$Distribution, sep = '_')
+  #
+  # names(mod.obj$parsN) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N")
+  # names(mod.obj$parsLN) = c("E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+  #
+  # pars = c(mod.obj$parsN, mod.obj$parsLN)
+  #
+  # ddens <- lapply(needed_data3$mod_dist, function(i){
+  #   xx <- pars[[i]][,c("ModelName","BMD")]
+  #   yy <- density(xx$BMD)
+  #   data.frame(x = yy$x, y = yy$y,
+  #              yw = yy$y*needed_data3$Weights[needed_data3$mod_dist==i],
+  #              ModelName = i)
+  # })
+  # df.mod <- do.call(rbind.data.frame, ddens)
 
 
 
@@ -578,51 +603,60 @@ plot.BMADR <- function(mod.obj,
                       "LN4", "G4", "QE4",
                       "P4", "L4")
 
-  ymin = min(mod.obj$data$lg10m - 2*mod.obj$data$lg10s, na.rm=T)
-  ymax = max(mod.obj$data$lg10m + 2*mod.obj$data$lg10s, na.rm=T)
+  ymin = 10^min(mod.obj$data$lg10m - 2*mod.obj$data$lg10s, na.rm=T)
+  ymax = 10^max(mod.obj$data$lg10m + 2*mod.obj$data$lg10s, na.rm=T)
 
   # plot for Normal distribution
   pplotN <- ggplot(data = preds2[preds2$Distribution=="N",],
-                   aes(x = dgr, y = lg10pred, group = Model,
+                   aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                        color = Model)) +
     geom_line(alpha = 0.6,
               size = 1,
               show.legend = TRUE, linetype = 1) +
-    labs(color = "Model", x = expression(log[10](dose)),
-         y = expression(log[10](response)), title = "Normal distribution",
+    labs(color = "Model", x = expression(dose),
+         y = expression(response), title = "Normal distribution",
          caption = "data and vertical bars based on arithmetic sample means and standard deviations") +
 
     geom_segment(data = preds_min[preds_min$Distribution=="N",],
-                 mapping = aes(x = dgr[1], y = log10(min_response),
-                               xend = max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
-                               yend = lg10predicted,
+                 mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
+                               xend = max(Dose*mod.obj$max.dose),#max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
+                               yend = predicted,
                                group = interaction(Model, Distribution),
                                color = Model),
                  linetype = "dotted", alpha = 0.6,
                  size = 0.8, inherit.aes = FALSE, show.legend = FALSE) +
-    ylim(ymin, ymax) +
+    #ylim(ymin, ymax) +
     geom_errorbar(data = orig_ptdata,
-                  mapping = aes(x = lg10d, ymin = log10(m-sd),
-                                ymax = log10(m+sd)),
+                  mapping = aes(x = dose2*mod.obj$max.dose, ymin = m-sd,
+                                ymax = m+sd),
                   width = NA, position = pd, size = 1,
                   inherit.aes = FALSE) +
-    geom_point(data = orig_ptdata, mapping = aes(x = lg10d, y = log10(m)) ,
+    geom_point(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = m) ,
                size = 2, color = 1, shape = 21,
                fill = brewer.pal(9, "Set1")[2],
                inherit.aes = FALSE) +
+    # geom_jitter(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = m) ,
+    #              size = 2, color = 1, shape = 21,
+    #              fill = brewer.pal(9, "Set1")[2], position = position_jitter(h = 0.01, width = 0),
+    #              inherit.aes = FALSE) +
     geom_errorbarh(data = dplyr::filter(BMDBMA, Type == weight_type),
-                   aes(xmin = log10(BMDL/mod.obj$max.dose), xmax = log10(BMDU/mod.obj$max.dose),
-                       y = log10(Response),
+                   aes(xmin = BMDL, xmax = BMDU,
+                       y = Response,
                        group = Model),
                    linetype = "solid", show.legend = FALSE,
-                   size = 2, height = 0.03, inherit.aes = FALSE,
+                   size = 2, height = 0.01*mean(mod.obj$data$m), inherit.aes = FALSE,
                    color = brewer.pal(9, "Set1")[3]) +
     geom_point(data = dplyr::filter(BMDBMA, Type == weight_type),
-               aes(x = log10(BMD/mod.obj$max.dose), y = log10(Response), group = Model),
+               aes(x = BMD, y = Response, group = Model),
                size = 5, shape = 19,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
                inherit.aes = FALSE) +
+    coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
+                             2*mod.obj$max.dose) ) +
+    scale_x_continuous(trans = 'log10', labels = scales::comma,
+                       breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
+    scale_y_continuous(trans = 'log10', labels = scales::comma) +
     # scale_linetype_manual(values = lty,
     # labels = c('LogNormal', 'Normal')) +
     scale_color_manual(values = md_cls,
@@ -641,47 +675,53 @@ plot.BMADR <- function(mod.obj,
 
   # plot for LogNormal distribution
   pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN",],
-                    aes(x = dgr, y = lg10pred, group = Model,
+                    aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                         color = Model)) +
     geom_line(alpha = 0.6,
               size = 1,
               show.legend = TRUE, linetype = 2) +
-    labs(color = "Model", title = "LogNormal distribution", x = expression(log[10](dose)),
-         y = expression(log[10](response)),
+    labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
+         y = expression(response),
          caption = "data and vertical bars based on geometric sample means and standard deviations") +
 
-    geom_segment(data = preds_min[preds_min$Distribution=="LN",], mapping = aes(x = dgr[1], y = log10(min_response),
-                                                                                xend = max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
-                                                                                yend = lg10predicted,
-                                                                                group = interaction(Model, Distribution),
-                                                                                color = Model),
+    geom_segment(data = preds_min[preds_min$Distribution=="LN",],
+                 mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
+                               xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
+                               yend = predicted,
+                               group = interaction(Model, Distribution),
+                               color = Model),
                  linetype = "dotted", alpha = 0.6,
                  size = 0.8, inherit.aes = FALSE, show.legend = FALSE) +
-    ylim(ymin, ymax) +
+    #ylim(ymin, ymax) +
     geom_errorbar(data = orig_ptdata,
-                  mapping = aes(x = lg10d, ymin = log10m-log10s,
-                                ymax = log10m+log10s),
+                  mapping = aes(x = dose2*mod.obj$max.dose, ymin = 10^(log10m-log10s),
+                                ymax = 10^(log10m+log10s)),
                   width = NA, position = pd, size = 1,
                   inherit.aes = FALSE) +
-    geom_point(data = orig_ptdata, mapping = aes(x = lg10d, y = log10m) ,
+    geom_point(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = 10^log10m) ,
                size = 2, color = 1, shape = 21,
                fill = brewer.pal(9, "Set1")[2],
                inherit.aes = FALSE) +
     geom_errorbarh(data = dplyr::filter(BMDBMA, Type == weight_type),
-                   aes(xmin = log10(BMDL/mod.obj$max.dose), xmax = log10(BMDU/mod.obj$max.dose),
-                       y = log10(Response),
+                   aes(xmin = BMDL, xmax = BMDU,
+                       y = Response,
                        group = Model),
                    linetype = "solid", show.legend = FALSE,
-                   size = 2, height = 0.03, inherit.aes = FALSE,
+                   size = 2, height = 0.01*mean(mod.obj$data$m), inherit.aes = FALSE,
                    color = brewer.pal(9, "Set1")[3]) +
     geom_point(data = dplyr::filter(BMDBMA, Type == weight_type),
-               aes(x = log10(BMD/mod.obj$max.dose), y = log10(Response), group = Model),
+               aes(x = BMD, y = Response, group = Model),
                size = 5, shape = 19,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
                inherit.aes = FALSE) +
     # scale_linetype_manual(values = lty,
     # labels = c('LogNormal')) +
+    coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
+                             2*mod.obj$max.dose) ) +
+    scale_x_continuous(trans = 'log10', labels = scales::comma,
+                       breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
+    scale_y_continuous(trans = 'log10', labels = scales::comma) +
     scale_color_manual(values = md_cls,
                        labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
                                   "QuadExp", "Probit", "Logistic")) +
@@ -698,17 +738,17 @@ plot.BMADR <- function(mod.obj,
 
   ## Plot for both distributions
   pplot <- ggplot(data = preds2,
-                  aes(x = dgr, y = lg10pred, group = interaction(Model, Distribution),
+                  aes(x = Dose*mod.obj$max.dose, y = predicted, group = interaction(Model, Distribution),
                       color = Model, linetype = Distribution)) +
     geom_line(alpha = 0.6,
               size = 1,
               show.legend = TRUE) +
-    labs(color = "Model", linetype = "Distribution", x = expression(log[10](dose)),
-         y = expression(log[10](response)), title = "") +
+    labs(color = "Model", linetype = "Distribution", x = expression(dose),
+         y = expression(response), title = "") +
 
-    geom_segment(data = preds_min, mapping = aes(x = dgr[1], y = log10(min_response),
-                                                 xend = max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
-                                                 yend = lg10predicted,
+    geom_segment(data = preds_min, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
+                                                 xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
+                                                 yend = predicted,
                                                  group = interaction(Model, Distribution),
                                                  color = Model),
                  linetype = "dotted", alpha = 0.6,
@@ -719,16 +759,16 @@ plot.BMADR <- function(mod.obj,
     #                                           color = Model),
     #           linetype = "dotted", alpha = 0.6,
     #           size = 0.8, inherit.aes = FALSE, show.legend = FALSE) +
-    ylim(ymin, ymax) +
+    #ylim(ymin, ymax) +
     geom_errorbarh(data = dplyr::filter(BMDBMA, Type == weight_type),
-                   aes(xmin = log10(BMDL/mod.obj$max.dose), xmax = log10(BMDU/mod.obj$max.dose),
-                       y = log10(Response),
+                   aes(xmin = BMDL, xmax = BMDU,
+                       y = Response,
                        group = Model),
                    linetype = "solid", show.legend = FALSE,
-                   size = 2, height = 0.03, inherit.aes = FALSE,
+                   size = 2, height = 0.01*mean(mod.obj$data$m), inherit.aes = FALSE,
                    color = brewer.pal(9, "Set1")[3]) +
     geom_point(data = dplyr::filter(BMDBMA, Type == weight_type),
-               aes(x = log10(BMD/mod.obj$max.dose), y = log10(Response), group = Model),
+               aes(x = BMD, y = Response, group = Model),
                size = 5, shape = 19,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
@@ -739,6 +779,11 @@ plot.BMADR <- function(mod.obj,
                        labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
                                   "QuadExp", "Probit", "Logistic")) +
     theme_minimal() +
+    coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
+                             2*mod.obj$max.dose) ) +
+    scale_x_continuous(trans = 'log10', labels = scales::comma,
+                       breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
+    scale_y_continuous(trans = 'log10', labels = scales::comma) +
     theme(strip.text = element_text(size = 15, face = "bold"),
           axis.text = element_text(size = 10, face = "bold"),
           axis.title = element_text(size = 15, face = "bold"),
@@ -750,8 +795,8 @@ plot.BMADR <- function(mod.obj,
           title = element_text(size = 15, face = "bold"))
 
 
-  cmax <- log10(max(preds$model_averaged$model_averaged))
-  cmin <- log10(min(preds$model_averaged$model_averaged))
+  cmax <- max(preds$model_averaged$model_averaged)
+  cmin <- min(preds$model_averaged$model_averaged)
   # BMDMixture$yres <- (BMDMixture$y/max(BMDMixture$y)) * (cmax * 1.2) # Density rescaled
 
   ylim.prim <- c(cmin, cmax)
@@ -761,7 +806,7 @@ plot.BMADR <- function(mod.obj,
 
   BMDMixture$yres = a + BMDMixture$y*b
 
-  dplot <- ggplot(data = preds$model_averaged, aes(x = dgr, y = log10(model_averaged),
+  dplot <- ggplot(data = preds$model_averaged, aes(x = Dose*mod.obj$max.dose, y = model_averaged,
                                                    group = 1)) +
     geom_line(show.legend = FALSE, linetype = "dashed", size = 3) +
     # geom_area(data = BMDMixture,
@@ -778,36 +823,42 @@ plot.BMADR <- function(mod.obj,
     #           linetype = "dotted", alpha = 1,
     #           size = 3, inherit.aes = FALSE, show.legend = FALSE) +
 
-    geom_segment(data = preds_min2, mapping = aes(x = dgr[1], y = log10MA,
-                                                  xend = max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
-                                                  yend = log10(preds$model_averaged$model_averaged[1]),
+    geom_segment(data = preds_min2, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = MA,
+                                                  xend = max(Dose*mod.obj$max.dose),
+                                                  #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
+                                                  yend = preds$model_averaged$model_averaged[1],
                                                   # group = interaction(Model, Distribution),
                                                   # color = Model
     ),
     linetype = "dotted",
     size = 3, inherit.aes = FALSE, show.legend = FALSE) +
     geom_errorbarh(data = dplyr::filter(BMDBMA, Type == weight_type),
-                   aes(xmin = log10(BMDL/mod.obj$max.dose), xmax = log10(BMDU/mod.obj$max.dose),
-                       y = log10(min(preds$model_averaged$model_averaged)),
+                   aes(xmin = BMDL, xmax = BMDU,
+                       y = min(preds$model_averaged$model_averaged),
                        group = Model),
                    linetype = "solid", show.legend = FALSE,
-                   size = 2, height = 0.01, inherit.aes = FALSE,
+                   size = 2, height = 0.01*mean(mod.obj$data$m), inherit.aes = FALSE,
                    color = brewer.pal(9, "Set1")[3]) +
     geom_point(data = dplyr::filter(BMDBMA, Type == weight_type),
-               aes(x = log10(BMD/mod.obj$max.dose),
-                   y = log10(min(preds$model_averaged$model_averaged)), group = Model),
+               aes(x = BMD,
+                   y = min(preds$model_averaged$model_averaged), group = Model),
                size = 5, shape = 19,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
                inherit.aes = FALSE)  +
-    scale_y_continuous(expression(log[10](response)),
+    scale_y_continuous(expression(response),
                        sec.axis = sec_axis(#~.*1.2,
                          # ~ ((. /max(BMDMixture$y)) *(cmax*1.2)),
                          ~ (. - a)/b,
-                         name = "Rescaled Density")
+                         name = "Rescaled Density", #trans = 'log10',
+                         labels = scales::comma)
     ) +
-    labs(x = expression(log[10](dose))) +
+    labs(x = expression(dose)) +
     theme_minimal() +
+    coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
+                             2*mod.obj$max.dose) ) +
+    scale_x_continuous(trans = 'log10', labels = scales::comma,
+                       breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
     theme(strip.text = element_text(size = 15, face = "bold"),
           axis.text = element_text(size = 10, face = "bold"),
           axis.title = element_text(size = 15, face = "bold"),
@@ -839,51 +890,31 @@ plot.BMADR <- function(mod.obj,
     # decide which data to show based on highest weights
     if(weightsDist[1] > weightsDist[2]){
       data.plot <- data.frame(dose = orig_ptdata$dose,
+                              dose2 = orig_ptdata$dose2,
                               lg10d = orig_ptdata$lg10d,
-                              m = log10(orig_ptdata$m),
-                              min.y = log10(orig_ptdata$m - orig_ptdata$sd),
-                              max.y = log10(orig_ptdata$m + orig_ptdata$sd)
+                              m = orig_ptdata$m,
+                              min.y = orig_ptdata$m - orig_ptdata$sd,
+                              max.y = orig_ptdata$m + orig_ptdata$sd
       )
       w.data = "arithmetic"
     }else if(weightsDist[2] > weightsDist[1]){
       data.plot <- data.frame(dose = orig_ptdata$dose,
+                              dose2 = orig_ptdata$dose2,
                               lg10d = orig_ptdata$lg10d,
-                              m = orig_ptdata$log10m,
-                              min.y = orig_ptdata$log10m - orig_ptdata$log10s,
-                              max.y = orig_ptdata$log10m + orig_ptdata$log10s
+                              m = 10^orig_ptdata$log10m,
+                              min.y = 10^(orig_ptdata$log10m - orig_ptdata$log10s),
+                              max.y = 10^(orig_ptdata$log10m + orig_ptdata$log10s)
       )
       w.data = "geometric"
     }
 
-    # pplot2 <- pplot + ylim(0,6) +
-    #   # geom_point(data = orig_ptdata, mapping = aes(x = lg10d, y = log10m, group = type) ,
-    #   #            size = 2, color = 1, shape = 21, position = position_dodge(width = 0.3),
-    #   #            fill = c(rep(brewer.pal(9, "Set1")[2], length(mod.obj$data$m)), rep(NA, length(mod.obj$data$m))),
-    #   #            inherit.aes = FALSE) +
-    #   # geom_errorbar(data = orig_ptdata,
-    #   #               mapping = aes(x = lg10d, y = log10m, ymin = log10m - log10s,
-    #   #                             ymax = log10m + log10s, group = type),
-    #   #               # linetype = c(rep("solid", length(mod.obj$data$m), rep("dashed", length(mod.obj$data$m)))),
-    #   #               width = NA, size = 1, position = position_dodge(width = 0.3),
-    #   #               inherit.aes = FALSE)
-    #   geom_point(data = data, mapping = aes(x = lg10d, y = m),
-    #              size = 2, color = 1, shape = 21,
-    #              fill = brewer.pal(9, "Set1")[2],
-    #              inherit.aes = FALSE) +
-    #   geom_errorbar(data = data,
-    #                 mapping = aes(x = lg10d, y = m, ymin = min.y,
-    #                               ymax = max.y),
-    #                 # linetype = c(rep("solid", length(mod.obj$data$m), rep("dashed", length(mod.obj$data$m)))),
-    #                 width = NA, size = 1, position = pd,
-    #                 inherit.aes = FALSE)
-
     dplot2 <- dplot +
       geom_errorbar(data = data.plot,
-                    mapping = aes(x = lg10d, ymin = min.y,
+                    mapping = aes(x = dose2*mod.obj$max.dose, ymin = min.y,
                                   ymax = max.y),
                     width = NA, position = pd, size = 1,
                     inherit.aes = FALSE) +
-      geom_point(data = data.plot, mapping = aes(x = lg10d, y = m) ,
+      geom_point(data = data.plot, mapping = aes(x = dose2*mod.obj$max.dose, y = m) ,
                  size = 2, color = 1, shape = 21,
                  fill = brewer.pal(9, "Set1")[2],
                  inherit.aes = FALSE) +
@@ -908,9 +939,11 @@ plot.BMADR <- function(mod.obj,
     return(pts2)
   }else{
     if(include_data == TRUE){
-      return(list(BMDs = pBMDs, weights = pWeights, model_fit_N = pplotN, model_fit_LN = pplotLN, model_fit = pplot, MA_fit = dplot2))
+      return(list(BMDs = pBMDs, weights = pWeights, model_fit_N = pplotN,
+                  model_fit_LN = pplotLN, model_fit = pplot, MA_fit = dplot2))
     }else{
-      return(list(BMDs = pBMDs, weights = pWeights, model_fit_N = pplotN, model_fit_LN = pplotLN, model_fit = pplot, MA_fit = dplot))
+      return(list(BMDs = pBMDs, weights = pWeights, model_fit_N = pplotN,
+                  model_fit_LN = pplotLN, model_fit = pplot, MA_fit = dplot))
     }
   }
 
@@ -918,18 +951,17 @@ plot.BMADR <- function(mod.obj,
 
 
 
-#' Function to plot the results for quantal endpoints
+#' plot function for the BMD estimates, model weights, model predictions and model average predictions (Quantal dat)
 #'
-#' @param mod.obj fitted models
-#' @param weight_type 'BS' or 'LP'
-#' @param include_data whether to include data points in plot
-#' @param all all 4 plots in one plot
-#' @param title title for plot if all = TRUE
+#' @param mod.obj BMDBMA model object
+#' @param weight_type type of model weight to be plotted. It can either be "BS" or "LP"
+#' @param include_data logical argument to indicate if data should be included in the plots. Defaults to TRUE
+#' @param all logical argument to indicate if all plots should be displayed
+#' @param title title of the plot
 #'
-#' @return .
-#'
+#' @return object of class ggplot
 #' @export
-#'
+
 plot.BMADRQ <- function(mod.obj,
                         weight_type = c("BS", "LP"),
                         include_data = TRUE,
@@ -955,8 +987,9 @@ plot.BMADRQ <- function(mod.obj,
 
   BMDW <- BMDWeights(mod.obj, type = type)
   BMDBMA <- BMDMAQ_extract(mod.obj, conv = FALSE)
+  mod.obj$data <- mod.obj$data[order(mod.obj$data$dose), ]
 
-  dose <- unique(mod.obj$data$dose)
+  dose <- sort(unique(mod.obj$data$dose))
   ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
   lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
   bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
@@ -973,8 +1006,8 @@ plot.BMADRQ <- function(mod.obj,
   orig.ps <- log(orig.p + .Machine$double.xmin)
   orig.s <- log(sqrt(orig.p*(1-orig.p)/mod.obj$data$n))
   orig_ptdata <- data.frame(dose = dose,
-                            dose2 = ddd,
-                            lg10d = lg10d,
+                            dose2 = rep(ddd, times = table(mod.obj$data$dose)),
+                            lg10d = rep(lg10d, times = table(mod.obj$data$dose)),
                             dplyr::summarise(dplyr::group_by(mod.obj$data, dose), mp = sum(y)/sum(n)),
                             dplyr::summarise(dplyr::group_by(mod.obj$data, dose), n = sum(n))
   )
@@ -982,7 +1015,7 @@ plot.BMADRQ <- function(mod.obj,
   mod.obj$data$dose2 <- rep(ddd, times = table(mod.obj$data$dose))
 
   dgr <- seq(min(lg10d), abs(min(lg10d)), by=0.01)
-  dgr2 <- seq(min(ddd), abs(max(ddd)), by=0.01)
+  #dgr2 <- seq(min(ddd), abs(max(ddd)), by=0.01)
   dose2 <- 10^dgr[(dgr > (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]
   preds <- predict.BMADRQ(mod.obj, dose = dose2,
                           what = "predicted",
@@ -1216,10 +1249,13 @@ plot.BMADRQ <- function(mod.obj,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
                inherit.aes = FALSE) +
+    coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
+                             2*mod.obj$max.dose)) +
     scale_color_manual(values = md_cls,
                        labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
                                   "QuadExp", "Probit", "Logistic")) +
-    scale_x_continuous(trans = 'log10', labels = scales::comma) +
+    scale_x_continuous(trans = 'log10', labels = scales::comma,
+                       breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
     theme_minimal() +
     theme(strip.text = element_text(size = 15, face = "bold"),
           axis.text = element_text(size = 10, face = "bold"),
@@ -1248,9 +1284,9 @@ plot.BMADRQ <- function(mod.obj,
     geom_ribbon(data = BMDMixture, aes(x = Dose,
                                        y = yres, ymin = min(yres), ymax = yres, fill = Model),
                 color=NA, alpha = 0.5) +
-    geom_segment(data = preds_min2, mapping = aes(x = Dose[1], y = MA,
-                                                  xend = max(Dose[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
-                                                  yend = preds$model_averaged$model_averaged[1],
+    geom_segment(data = preds_min2, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = MA,
+                                                  xend = max(Dose*mod.obj$max.dose),
+                                                  yend = preds$model_averaged$model_averaged[1]
                                                   # group = interaction(Model, Distribution),
                                                   # color = Model
     ),
@@ -1277,7 +1313,10 @@ plot.BMADRQ <- function(mod.obj,
                          ~ (. - a)/b,
                          name = "Rescaled Density")
     ) +
-    scale_x_continuous(trans = 'log10', labels = scales::comma) +
+    scale_x_continuous(trans = 'log10', labels = scales::comma,
+                       breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
+    coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
+                             2*mod.obj$max.dose) ) +
     labs(x = expression(dose)) +
     theme_minimal() +
     theme(strip.text = element_text(size = 15, face = "bold"),
@@ -1294,39 +1333,53 @@ plot.BMADRQ <- function(mod.obj,
 
   if(include_data == TRUE) {
 
-    #mod.obj$data$p <- orig_ptdata$p
 
-    orig_ptdata$ymin <- orig_ptdata$mp - sqrt(orig_ptdata$mp*(1-orig_ptdata$mp)/orig_ptdata$n)
-    orig_ptdata$ymax <- orig_ptdata$mp + sqrt(orig_ptdata$mp*(1-orig_ptdata$mp)/orig_ptdata$n)
+    orig_ptdata$ymin <- orig_ptdata$mp - sqrt(orig_ptdata$mp*(1-orig_ptdata$mp))
+    orig_ptdata$ymax <- orig_ptdata$mp + sqrt(orig_ptdata$mp*(1-orig_ptdata$mp))
 
 
     pplot2 <- pplot +
-      geom_errorbar(data = orig_ptdata,
-                    mapping = aes(x = dose2*mod.obj$max.dose, ymin = ymin,
-                                  ymax = ymax),
-                    width = NA, position = pd, size = 1.5,
-                    inherit.aes = FALSE) +
-      geom_point(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = mp) ,
+      geom_point(data = orig_ptdata, mapping = aes(x = (dose2*mod.obj$max.dose)+.Machine$double.xmin, y = mp) ,
                  size = 4, color = 1, shape = 21,
                  fill = brewer.pal(9, "Set1")[2],
                  inherit.aes = FALSE)
 
     dplot2 <- dplot +
-      geom_errorbar(data = orig_ptdata,
-                    mapping = aes(x = dose2*mod.obj$max.dose, ymin = ymin,
-                                  ymax = ymax),
-                    width = NA, position = pd, size = 1,
-                    inherit.aes = FALSE) +
-      geom_point(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = mp) ,
-                 size = 4, color = 1, shape = 21,
+      geom_point(data = orig_ptdata, mapping = aes(x = (dose2*mod.obj$max.dose)+.Machine$double.xmin, y = mp) ,
+                 size = 6, color = 1, shape = 21,
                  fill = brewer.pal(9, "Set1")[2],
                  inherit.aes = FALSE)
 
-    pts1 <- ggpubr::ggarrange(pBMDs, pWeights, pplot2,
-                              dplot2,
-                              nrow = 2, ncol = 2)
-    pts2 <- ggpubr::annotate_figure(pts1, top = text_grob(title,
-                                                          color = "red", face = "bold", size = 14))
+    if(mod.obj$is_bin == 0){
+
+      pplot3 <- pplot2 +
+        geom_jitter(data = mod.obj$data, mapping = aes(x = dose2*mod.obj$max.dose, y = y/n) ,
+                    size = 2.5, color = 1, shape = 23,
+                    fill = brewer.pal(9, "Set1")[3], width = 0.1,
+                    inherit.aes = FALSE)
+
+      dplot3 <- dplot2 +
+        geom_jitter(data = mod.obj$data, mapping = aes(x = dose2*mod.obj$max.dose, y = y/n) ,
+                    size = 2.5, color = 1, shape = 23,
+                    fill = brewer.pal(9, "Set1")[3], width = 0.1,
+                    inherit.aes = FALSE)
+
+      pts1 <- ggpubr::ggarrange(pBMDs, pWeights, pplot2, pplot3,
+                                dplot2, dplot3,
+                                nrow = 2, ncol = 2)
+      pts2 <- ggpubr::annotate_figure(pts1, top = text_grob(title,
+                                                            color = "red", face = "bold", size = 14))
+
+    } else {
+      pts1 <- ggpubr::ggarrange(pBMDs, pWeights, pplot2,
+                                dplot2,
+                                nrow = 2, ncol = 2)
+      pts2 <- ggpubr::annotate_figure(pts1, top = text_grob(title,
+                                                            color = "red", face = "bold", size = 14))
+    }
+
+
+
 
   } else {
 
@@ -1339,9 +1392,12 @@ plot.BMADRQ <- function(mod.obj,
   if(all == TRUE){
     return(pts2)
   }else{
-    if(include_data == TRUE){
+    if(include_data == TRUE & mod.obj$is_bin == 0){
+      return(list(BMDs = pBMDs, weights = pWeights, model_fit = pplot2, model_fit2 = pplot3,
+                  MA_fit = dplot2, MA_fit2 = dplot3))
+    } else if(include_data == TRUE & mod.obj$is_bin != 0){
       return(list(BMDs = pBMDs, weights = pWeights, model_fit = pplot2, MA_fit = dplot2))
-    }else{
+    } else {
       return(list(BMDs = pBMDs, weights = pWeights, model_fit = pplot, MA_fit = dplot))
     }
   }

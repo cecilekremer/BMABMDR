@@ -1,11 +1,14 @@
-#' Loglikelihood functions for the different dose response models for Continuous data
+#' Loglikelihood functions for the different dose response models
 #'
 #' @param x parameter values
-#' @param nvec number of observations
-#' @param dvec dose levels
-#' @param mvec response
+#' @param nvec vector containing the number of observations at each dose level
+#' @param dvec unique ordered dose levels
+#' @param mvec vector containing the response at each dose level
 #' @param s2vec variance
 #' @param qval BMR
+#' @param shift value of the shift for negative geometric means
+#'
+#' @examples
 #'
 #' @return .
 #'
@@ -56,48 +59,48 @@ llfL4_NI=function(x,nvec,dvec,mvec,s2vec,qval){
 }
 #' @rdname llfE4_NI
 #' @export
-llfE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.E4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.E4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfIE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.IE4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfIE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.IE4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfH4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.H4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfH4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.H4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfLN4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.LN4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfLN4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.LN4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfG4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.G4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfG4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.G4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfQE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.QE4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfQE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.QE4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfP4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.P4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfP4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.P4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfL4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.L4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfL4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.L4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfSM_LN=function(x,nvec,dvec,mvec,s2vec){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[length(dvec)+1]-0.5*(nvec-1)*s2vec*exp(x[length(dvec)+1])-0.5*nvec*((mvec-x[1:length(dvec)])^2)*exp(x[length(dvec)+1])) - sum(mvec*nvec)
+llfSM_LN=function(x,nvec,dvec,mvec,s2vec,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[length(dvec)+1]-0.5*(nvec-1)*s2vec*exp(x[length(dvec)+1])-0.5*nvec*(((mvec+shift)-(x[1:length(dvec)]+shift))^2)*exp(x[length(dvec)+1])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
@@ -141,46 +144,47 @@ llfL4_ND=function(x,nvec,dvec,mvec,s2vec,qval){
 }
 #' @rdname llfE4_NI
 #' @export
-llfE4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.E4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfE4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.E4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfIE4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.IE4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfIE4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.IE4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfH4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.H4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfH4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.H4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfLN4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.LN4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfLN4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.LN4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfG4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.G4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfG4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.G4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfQE4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.QE4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfQE4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.QE4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfP4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.P4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfP4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.P4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
-llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.L4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.L4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 
-#' Loglikelihood functions for the different dose response models for Quantal data
+
+#' Loglikelihood functions for the different dose response models
 #'
 #' @param x parameter values
 #' @param nvec number of observations
@@ -188,10 +192,11 @@ llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
 #' @param yvec response
 #' @param qval BMR
 #'
-#' @return .
+#' @return loglikelihood value at x.
 #'
 #' @export
 #'
+### Binomial
 llfE4_Q=function(x,nvec,dvec,yvec,qval){
   sum(lchoose(nvec, yvec) + yvec*log(DRM.E4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
         (nvec - yvec)*log(1 - DRM.E4_Q(x, dvec, qval) + .Machine$double.xmin))
@@ -245,17 +250,16 @@ llfSM_Q=function(x,nvec,dvec,yvec,qval){
         (nvec - yvec)*log(1 - x[1:length(dvec)] + .Machine$double.xmin))
 }
 
-
-#' Loglikelihood functions for the different dose response models for Clustered Quantal data
+#' Loglikelihood functions for the different dose response models (Beta-Binomial)
 #'
 #' @param x parameter values
 #' @param nvec number of observations
 #' @param dvec dose levels
 #' @param yvec response
 #' @param qval BMR
-#' @param rho correlation parameter
+#' @param rho intra-cluster correlation parameter
 #'
-#' @return .
+#' @return loglikelihood value at x.
 #'
 #' @export
 #'
@@ -264,9 +268,10 @@ llfE42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -276,9 +281,10 @@ llfIE42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -287,9 +293,10 @@ llfH42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -298,9 +305,10 @@ llfLN42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -309,9 +317,10 @@ llfG42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -320,9 +329,10 @@ llfQE42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -331,9 +341,10 @@ llfP42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -342,9 +353,10 @@ llfL42_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
 #' @rdname llfE42_Q
 #' @export
@@ -353,7 +365,9 @@ llfSM2_Q=function(x,nvec,dvec,yvec,qval,rho){
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec) + lgamma(bbet+nvec-yvec) -
-        lgamma(abet+bbet+nvec) - lgamma(abet) - lgamma(bbet) +
-        lgamma(abet+bbet))
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }
+

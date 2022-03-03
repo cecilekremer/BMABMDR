@@ -5,6 +5,8 @@
 #'
 #' @return .
 #'
+#' @export
+#'
 posterior_diag <- function(model_stan,
                            pars = c('par1', "par2", "par3", "d",
                                     "invsigma2", "lp__")) {
@@ -121,6 +123,8 @@ posterior_diag <- function(model_stan,
 #' @param pars parameters
 #'
 #' @return .
+#'
+#' @export
 #'
 convergence_deci <- function(model_stan,
                              nrchains = 3,

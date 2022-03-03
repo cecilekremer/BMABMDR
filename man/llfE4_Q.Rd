@@ -10,7 +10,7 @@
 \alias{llfP4_Q}
 \alias{llfL4_Q}
 \alias{llfSM_Q}
-\title{Loglikelihood functions for the different dose response models for Quantal data}
+\title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE4_Q(x, nvec, dvec, yvec, qval)
 
@@ -42,8 +42,8 @@ llfSM_Q(x, nvec, dvec, yvec, qval)
 \item{qval}{BMR}
 }
 \value{
-.
+loglikelihood value at x.
 }
 \description{
-Loglikelihood functions for the different dose response models for Quantal data
+Loglikelihood functions for the different dose response models
 }

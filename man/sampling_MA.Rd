@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_Sampling.R
 \name{sampling_MA}
 \alias{sampling_MA}
-\title{Perform model averaging using MCMC methods (Bridge sampling & Partial Laplace)}
+\title{function to perform model-averaging using MCMC sampling}
 \usage{
 sampling_MA(
   data.N,
@@ -20,36 +20,85 @@ sampling_MA(
 )
 }
 \arguments{
-\item{data.N}{the input data as returned by function PREP_DATA_N}
+\item{data.N}{list containing data values for the models assuming a normal distribution}
 
-\item{data.LN}{the input data as returned by function PREP_DATA_LN}
+\item{data.LN}{list containing data values for the models assuming a lognormal distribution}
 
-\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
+\item{prior.weights}{indicator determining if a model is to be included in the model averaging or not.
+1 implies model is included, 0 otherwise. Defaults to rep(1,16).}
 
-\item{ndraws}{the number of draws from the posterior, default 30000}
+\item{ndraws}{number of draws to be made from the posterior distribution. Defaults to 30000}
 
-\item{nrchains}{the number of chains to be used in the MCMC}
+\item{nrchains}{number of MCMC chains. Defaults to 3}
 
-\item{nriterations}{the number of iterations per chain}
+\item{nriterations}{number of MCMC iterations. Defaults to 3000}
 
-\item{warmup}{the number of iterations per chain to be discarded as burnin}
+\item{warmup}{number of MCMC iterations discarded as warmup. Defaults to 1000}
 
-\item{delta}{default 0.8}
+\item{delta}{adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more details.
+Defaults to 0.8.}
 
-\item{treedepth}{default 10}
+\item{treedepth}{tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more details.
+Defaults to 10.}
 
-\item{seed}{default 123}
+\item{seed}{random seed for reproducibility. Defaults to 123}
 
-\item{pvec}{vector specifying the three BMD quantiles of interest}
+\item{pvec}{probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).}
 
-\item{plot}{logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)}
+\item{plot}{logical variable to determine if the results should be plotted}
 }
 \value{
-List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+list containing the following results
+\enumerate{
+\item E4_N parameter estimates from the exponential model with normal distribution assumed
+\item IE4_N parameter estimates from the inverse-exponential model with normal distribution assumed
+\item H4_N parameter estimates from the Hill model with normal distribution assumed
+\item LN4_N parameter estimates from the lognormal model with normal distribution assumed
+\item G4_N parameter estimates from the gamma model with normal distribution assumed
+\item QE4_N parameter estimates from the quadratic-exponential model with normal distribution assumed
+\item P4_N parameter estimates from the probit model with normal distribution assumed
+\item L4_N parameter estimates from the logit model with normal distribution assumed
+\item E4_LN parameter estimates from the exponential model with lognormal distribution assumed
+\item IE4_LN parameter estimates from the inverse exponential model with lognormal distribution assumed
+\item H4_LN parameter estimates from the Hill model with lognormal distribution assumed
+\item LN4_LN parameter estimates from the lognormal model with lognormal distribution assumed
+\item G4_LN parameter estimates from the gamma model with lognormal distribution assumed
+\item QE4_LN parameter estimates from the quadratic exponential model with lognormal distribution assumed
+\item P4_LN parameter estimates from the probit model with lognormal distribution assumed
+\item L4_LN parameter estimates from the logit model with lognormal distribution assumed
+\item covs covariance between parameter b and BMD for each model
+\item corrs correlation between parameter b and BMD for each model
+\item weights_bridge_sampling model weights computed using bridge sampling
+\item weights_laplace model weights computed using Laplace approximation
+\item bs_weights_conv model weights computed using bridge sampling only for convergent models
+\item ls_weights_conv model weights computed using Laplace approximation only for convergent models
+\item MA_bridge_sampling model averaged BMD estimates based on bridge sampling weights
+\item MA_laplace model averaged BMD estimates based on Laplace weights
+\item MA_bs_conv model averaged BMD estimates based on bridge sampling weights only for convergent models
+\item MA_ls_conv model averaged BMD estimates based on Laplace weights only for convergent models
+\item MA_post_bs model averaged posterior for the BMD based on bridge sampling
+\item MA_post_ls model averaged posterior for the BMD based on Laplace
+\item MA_post_bs_conv model averaged posterior for the BMD based on bridge sampling only for convergent models
+\item MA_post_ls_conv model averaged posterior for the BMD based on Laplace only for convergent models
+\item MA_dr_bs model averaged dose-response curve based on bridge sampling
+\item MA_dr_ls model averaged dose-response curve based on Laplace
+\item MA_dr_bs_conv model averaged dose-response curve based on bridge sampling only for convergent models
+\item MA_dr_ls_conv model averaged dose-response curve based on Laplace only for convergent models
+\item parsN list containing the posterior for all parameters of the normal models
+\item parsLN list containing the posterior for all parameters of the lognormal models
+\item data the arithmetic summary data that was passed to the function
+\item q the BMR that was passed to the function
+\item models_included the dose-response models that were included in the analysis#'
+\item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+\item divergences vector indicating the proportion of divergent transitions that occurred during MCMC
+\item llN vector of model likelihoods for normal distribution
+\item llLN vector of model likelihoods for lognonormal distribution
+\item bf Bayes factor comparing the best model against saturated ANOVA model
+}
 }
 \description{
-This method assumed data for continuous endpoints.
+function to perform model-averaging using MCMC sampling
 }
-\details{
-More detailed descriprion
+\examples{
+
 }

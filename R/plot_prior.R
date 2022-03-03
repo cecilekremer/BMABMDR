@@ -1,15 +1,19 @@
-#' Function to plot prior vs posterior distribution
+#' plot function for the prior and posterior distributio of parameter estimates
 #'
-#' @param mod.obj the model object returned by full laplace or sampling method
-#' @param data the data for a specific model used by the above method
-#' @param model_name the model for which plots should be generated
-#' @param parms if TRUE, model parameters (background, fold change, BMD, d) are shown; if FALSE, background, maximum response, BMD and d are shown
+#' @param mod.obj BMDBMA model object
+#' @param data data list from the \code{\link{PREP_DATA_N}} or \code{\link{PREP_DATA_LN}}
+#' @param model_name name of the model whose parameters are to be plotted
+#' @param parms logical indicating if foldchange or maximum response should be plotted.
+#'              It can be either of c("E4_N","IE4_N","H4_N","LN4_N","G4_N",
+#'                                    "QE4_N","P4_N","L4_N",
+#'                                     "E4_LN","IE4_LN","H4_LN","LN4_LN",
+#'                                     "G4_LN","QE4_LN","P4_LN","L4_LN")
+#' @return object of class ggplot
 #'
-#' @return .
+#' @export plot_prior
 #'
-#' @export
-#'
-plot_prior <- function(mod.obj, data, model_name, parms = T){ # pars = T for parameters, F for background & fold change
+plot_prior <- function(mod.obj, data, model_name,
+                       parms = TRUE){ # pars = T for parameters, F for background & fold change
 
   if(model_name %in% mod.obj$models_included){
 
@@ -66,8 +70,10 @@ plot_prior <- function(mod.obj, data, model_name, parms = T){ # pars = T for par
       geom_density(alpha = .3, color = NA) +
       geom_vline(xintercept = obs.bkg, linetype = "dashed", alpha = 0.5) +
       xlab("Background response") + ylab("Density") +
-      xlim(quantile(bkg.prior, 0.01), quantile(bkg.prior, 0.99)) +
-      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"), values = c("coral","lightblue")) +
+      #xlim(quantile(bkg.prior, 0.01), quantile(bkg.prior, 0.99)) +
+      coord_cartesian(xlim = c(quantile(bkg.prior, 0.01), quantile(bkg.prior, 0.99))) +
+      scale_fill_manual(name = "", breaks = c("posterior","prior"),
+                        labels = c("Posterior","Prior"), values = c("coral","lightblue")) +
       theme_minimal()
 
     df.par.max <- data.frame(dist = c(rep("posterior",length(max.post)), rep("prior", length(max.prior))),
@@ -78,8 +84,13 @@ plot_prior <- function(mod.obj, data, model_name, parms = T){ # pars = T for par
       geom_density(alpha = .3, color = NA) +
       geom_vline(xintercept = obs.max, linetype = "dashed", alpha = 0.5) +
       xlab("Maximum response") + ylab("Density") +
-      xlim(min(c(quantile(max.post, 0),quantile(max.prior, 0.01))), min(c(quantile(max.post,0.99),quantile(max.prior, 0.99)))) +
-      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"), values = c("coral","lightblue")) +
+      #xlim(min(c(quantile(max.post, 0),quantile(max.prior, 0.01))), min(c(quantile(max.post,0.99),
+      #                                                                    quantile(max.prior, 0.99)))) +
+      coord_cartesian(xlim = c(min(c(quantile(max.post, 0),quantile(max.prior, 0.01))),
+                               min(c(quantile(max.post,0.99),
+                                     quantile(max.prior, 0.99))))) +
+      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
+                        values = c("coral","lightblue")) +
       theme_minimal()
 
     df.par.fold <- data.frame(dist = c(rep("posterior",length(fold.post)), rep("prior", length(fold.prior))),
@@ -90,8 +101,10 @@ plot_prior <- function(mod.obj, data, model_name, parms = T){ # pars = T for par
       geom_density(alpha = .3, color = NA) +
       geom_vline(xintercept = obs.fold, linetype = "dashed", alpha = 0.5) +
       xlab("Fold change") + ylab("Density") +
-      xlim(quantile(fold.prior, 0.01), quantile(fold.prior, 0.99)) +
-      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"), values = c("coral","lightblue")) +
+      #xlim(quantile(fold.prior, 0.01), quantile(fold.prior, 0.99)) +
+      coord_cartesian(xlim = c(quantile(fold.prior, 0.01), quantile(fold.prior, 0.99))) +
+      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
+                        values = c("coral","lightblue")) +
       theme_minimal()
 
     df.par.d <- data.frame(dist = c(rep("posterior",length(d.post)), rep("prior", length(d.prior))),
@@ -101,7 +114,8 @@ plot_prior <- function(mod.obj, data, model_name, parms = T){ # pars = T for par
                      aes(x = value, group = as.factor(dist), fill = as.factor(dist))) +
       geom_density(alpha = .3, color = NA) +
       xlab("Parameter d") + ylab("Density") +
-      xlim(quantile(d.prior, 0.01), quantile(d.prior, 0.99)) +
+      #xlim(quantile(d.prior, 0.01), quantile(d.prior, 0.99)) +
+      coord_cartesian(xlim = c(quantile(d.prior, 0.01), quantile(d.prior, 0.99))) +
       scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"), values = c("coral","lightblue")) +
       theme_minimal()
 
@@ -113,8 +127,10 @@ plot_prior <- function(mod.obj, data, model_name, parms = T){ # pars = T for par
       # geom_density(aes(x=value, y=..scaled.., group = as.factor(dist), fill = as.factor(dist)), alpha = .3, color = NA) +
       geom_density(alpha = .3, color = NA) +
       xlab("BMD") + ylab("Density") +
-      xlim(0,mod.obj$max.dose) +
-      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"), values = c("coral","lightblue")) +
+      #xlim(0,mod.obj$max.dose) +
+      coord_cartesian(xlim = c(0,mod.obj$max.dose)) +
+      scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
+                        values = c("coral","lightblue")) +
       theme_minimal()
 
     if(parms == T){

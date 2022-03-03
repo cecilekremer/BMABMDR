@@ -1,13 +1,17 @@
-#' Function for internal use
+#'  function to perform Laplace approximation for each of the dose-response model.
 #'
-#' @param mod stan model
-#' @param data input data
-#' @param stv start values
-#' @param ndraws ndraws
-#' @param seed seed
-#' @param pvec pvec
+#' @param mod stan model file
+#' @param data list containing data values to be passed to the stan model file
+#' @param stv list of starting values
+#' @param ndraws number of draws to be made from the posterior distribution
+#' @param seed random seed for reproducibility
+#' @param pvec probability vector to compute credible interval for the BMD
 #'
-#' @return .
+#' @examples
+#'
+#' @return a stan results object
+#'
+#' @export fun_optim
 #'
 fun_optimQ = function(mod, data, stv,
                       ndraws = ndraws,seed=seed,pvec){

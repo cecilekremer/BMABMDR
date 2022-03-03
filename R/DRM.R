@@ -2,7 +2,7 @@
 #'
 #' These are the dose response models used internally in the BMA functions.
 #'
-#' @param par parameters in the order background, BMD, fold change, log(d), invsigma2
+#' @param par parameters in the order a, c, d, b
 #' @param x unique ordered dose levels
 #' @param q specified BMR
 #'
@@ -10,7 +10,7 @@
 #'
 #' @export
 #'
-DRM.E4_NI=function(par,x,q){
+DRM.E4_NI=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -21,7 +21,7 @@ DRM.E4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.IE4_NI=function(par,x,q){
+DRM.IE4_NI=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -32,7 +32,7 @@ DRM.IE4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.H4_NI=function(par,x,q){
+DRM.H4_NI=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -43,7 +43,7 @@ DRM.H4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.LN4_NI=function(par,x,q){
+DRM.LN4_NI=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -54,7 +54,7 @@ DRM.LN4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.G4_NI=function(par,x,q){
+DRM.G4_NI=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -65,7 +65,7 @@ DRM.G4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.QE4_NI=function(par,x,q){
+DRM.QE4_NI=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -76,7 +76,7 @@ DRM.QE4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.P4_NI=function(par,x,q){
+DRM.P4_NI=function(par,x,q,shift=0){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
   a = mu_inf
@@ -88,7 +88,7 @@ DRM.P4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.L4_NI=function(par,x,q){
+DRM.L4_NI=function(par,x,q,shift=0){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
   a = mu_inf
@@ -100,98 +100,98 @@ DRM.L4_NI=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.E4_LNI=function(par,x,q){
-  a = log(par[1])
+DRM.E4_LNI=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=-exp(-k*d)*log(1-(log(1+q)/(a*(c-1))))
-  a*(1+(c-1)*(1-exp(-b*x^d)))
+  a*(1+(c-1)*(1-exp(-b*x^d))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.IE4_LNI=function(par,x,q){
-  a = log(par[1])
+DRM.IE4_LNI=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=-exp(k*d)*log((log(1+q))/(a*(c-1)))
-  a*(1+(c-1)*exp(-b*x^(-d)))
+  a*(1+(c-1)*exp(-b*x^(-d))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.H4_LNI=function(par,x,q){
-  a = log(par[1])
+DRM.H4_LNI=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=exp(k*d)*(((a*(c-1))/log(1+q))-1)
-  a*(1+(c-1)*(1-(b/(b+x^d))))
+  a*(1+(c-1)*(1-(b/(b+x^d)))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.LN4_LNI=function(par,x,q){
-  a = log(par[1])
+DRM.LN4_LNI=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=exp(qnorm((log(1+q))/(a*(c-1)))-(k*d))
-  a*(1+(c-1)*pnorm(log(b)+(d*log(x))))
+  a*(1+(c-1)*pnorm(log(b)+(d*log(x)))) + shift
 }
 
 #' @rdname DRM.E4_NI
 #' @export
-DRM.G4_LNI=function(par,x,q){
-  a = log(par[1])
+DRM.G4_LNI=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=qgamma(log(1+q)/(a*(c-1)), rate=1.0, shape=d)/exp(k)
-  a*(1+(c-1)*pgamma(x,shape=d,rate=b))
+  a*(1+(c-1)*pgamma(x,shape=d,rate=b)) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.QE4_LNI=function(par,x,q){
-  a = log(par[1])
+DRM.QE4_LNI=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=(-log(1-(log(1+q)/(a*(c-1))))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)))
-  a*(1+(c-1)*(1-exp((-b*x)-(b/exp(d)*x*(x-1)))))
+  a*(1+(c-1)*(1-exp((-b*x)-(b/exp(d)*x*(x-1))))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.P4_LNI=function(par,x,q){
+DRM.P4_LNI=function(par,x,q,shift){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
-  a = log(mu_inf)
-  c = qnorm(log(mu_0)/log(mu_inf));
+  a = log(mu_inf)-shift
+  c = qnorm((log(mu_0)-shift)/(log(mu_inf)-shift));
   d = exp(par[4])
   k = log(par[2])
   b=exp(-k*d)*(qnorm(pnorm(c)+log(1+q)/a)-c)
-  a*pnorm(c+(b*(x^d)))
+  a*pnorm(c+(b*(x^d))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.L4_LNI=function(par,x,q){
+DRM.L4_LNI=function(par,x,q,shift){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
-  a = log(mu_inf)
-  c = logit(log(mu_0)/log(mu_inf));
+  a = log(mu_inf)-shift
+  c = logit((log(mu_0)-shift)/(log(mu_inf)-shift));
   d = exp(par[4])
   k = log(par[2])
   b=exp(-k*d)*(logit(expit(c)+log(1+q)/a)-c)
-  a*expit(c+(b*(x^d)))
+  a*expit(c+(b*(x^d))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.E4_ND=function(par,x,q){
+DRM.E4_ND=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -202,7 +202,7 @@ DRM.E4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.IE4_ND=function(par,x,q){
+DRM.IE4_ND=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -213,7 +213,7 @@ DRM.IE4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.H4_ND=function(par,x,q){
+DRM.H4_ND=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -224,7 +224,7 @@ DRM.H4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.LN4_ND=function(par,x,q){
+DRM.LN4_ND=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -235,7 +235,7 @@ DRM.LN4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.G4_ND=function(par,x,q){
+DRM.G4_ND=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -246,7 +246,7 @@ DRM.G4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.QE4_ND=function(par,x,q){
+DRM.QE4_ND=function(par,x,q,shift=0){
   a = par[1]
   mu_inf = par[1]*par[3];
   c = mu_inf/par[1];
@@ -261,7 +261,7 @@ DRM.QE4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.P4_ND=function(par,x,q){
+DRM.P4_ND=function(par,x,q,shift=0){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
   a = mu_0
@@ -273,7 +273,7 @@ DRM.P4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.L4_ND=function(par,x,q){
+DRM.L4_ND=function(par,x,q,shift=0){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
   a = mu_0
@@ -285,100 +285,98 @@ DRM.L4_ND=function(par,x,q){
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.E4_LND=function(par,x,q){
-  a = log(par[1])
+DRM.E4_LND=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=-exp(-k*d)*log(1-(log(1-q)/(a*(c-1))))
-  a*(1+(c-1)*(1-exp(-b*x^d))) # DR model on log scale
+  a*(1+(c-1)*(1-exp(-b*x^d))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.IE4_LND=function(par,x,q){
-  a = log(par[1])
+DRM.IE4_LND=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=-exp(k*d)*log((log(1-q))/(a*(c-1)))
-  a*(1+(c-1)*exp(-b*x^(-d)))
+  a*(1+(c-1)*exp(-b*x^(-d))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.H4_LND=function(par,x,q){
-  a = log(par[1])
+DRM.H4_LND=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=exp(k*d)*(((a*(c-1))/log(1-q))-1)
-  a*(1+(c-1)*(1-(b/(b+x^d))))
+  a*(1+(c-1)*(1-(b/(b+x^d)))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.LN4_LND=function(par,x,q){
-  a = log(par[1])
+DRM.LN4_LND=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=exp(qnorm((log(1-q))/(a*(c-1)))-(k*d))
-  a*(1+(c-1)*pnorm(log(b)+(d*log(x))))
+  a*(1+(c-1)*pnorm(log(b)+(d*log(x)))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.G4_LND=function(par,x,q){
-  a = log(par[1])
+DRM.G4_LND=function(par,x,q,shift){
+  a = log(par[1]) - shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=qgamma(log(1-q)/(a*(c-1)), rate=1.0, shape=d)/exp(k)
-  a*(1+(c-1)*pgamma(x,shape=d,rate=b))
+  a*(1+(c-1)*pgamma(x,shape=d,rate=b)) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.QE4_LND=function(par,x,q){
-  a = log(par[1])
+DRM.QE4_LND=function(par,x,q,shift){
+  a = log(par[1])-shift
   mu_inf = par[1]*par[3];
-  c = log(mu_inf)/a;
+  c = (log(mu_inf)-shift)/a;
   d = exp(par[4])
   k = log(par[2])
   b=(-log(1-(log(1-q)/(a*(c-1))))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)))
-  a*(1+(c-1)*(1-exp((-b*x)-(b/exp(d)*x*(x-1)))))
+  a*(1+(c-1)*(1-exp((-b*x)-(b/exp(d)*x*(x-1))))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.P4_LND=function(par,x,q){
+DRM.P4_LND=function(par,x,q,shift){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
-  a = log(mu_0)
-  c = qnorm(log(mu_inf)/log(mu_0));
+  a = log(mu_0)-shift
+  c = qnorm((log(mu_inf)-shift)/(log(mu_0)-shift));
   d = exp(par[4])
   k = log(par[2])
   b=exp(-k*d)*(qnorm(pnorm(c)-(log(1-q)/a))-c)
-  (a*(1+pnorm(c)))-(a*pnorm(c+(b*(x^d))))
+  (a*(1+pnorm(c)))-(a*pnorm(c+(b*(x^d)))) + shift
 }
 #' @rdname DRM.E4_NI
 #' @export
-DRM.L4_LND=function(par,x,q){
+DRM.L4_LND=function(par,x,q,shift){
   mu_0 = par[1]
   mu_inf = par[1]*par[3]
-  a = log(mu_0)
-  c = logit(log(mu_inf)/log(mu_0));
+  a = log(mu_0) - shift
+  c = logit((log(mu_inf)-shift)/(log(mu_0)-shift));
   d = exp(par[4])
   k = log(par[2])
   b=exp(-k*d)*(logit(expit(c)-log(1-q)/a)-c)
-  (a*(1+expit(c)))-(a*expit(c+(b*(x^d))))
+  (a*(1+expit(c)))-(a*expit(c+(b*(x^d)))) + shift
 }
 
-#' The dose response models
-#'
 #' These are the dose response models used internally in the BMA functions.
 #'
-#' @param par parameters in the order background, BMD, log(d)
+#' @param par parameters in the order a, c, d, b
 #' @param x unique ordered dose levels
 #' @param q specified BMR
 #'
@@ -393,8 +391,10 @@ DRM.E4_Q=function(par,x,q){
   b = -exp(-k*d)*log(1-q) # k is k (BMD)
   a + (1 - a)*(1 - exp(-b*x^d)) - .Machine$double.xmin
 }
+
 #' @rdname DRM.E4_Q
 #' @export
+#'
 DRM.IE4_Q=function(par,x,q){
   a = par[1]
   d = exp(par[3])
@@ -459,4 +459,26 @@ DRM.L4_Q=function(par,x,q){
 
 }
 
+#' Function to select a dose response model based on model name
+#'
+#' @param Model a character for the model name.It can be either of E4_Q, IE4_Q, H4_Q, LN4_Q, G4_Q, QE4_Q,
+#'              P4_Q or L4_Q
+#'
+#' @return a corresponding DRM function
+#'
+#' @export DRMQ
+#'
+DRMQ <- function(Model) {
 
+  DRM <- switch (Model,
+                 E4_Q = DRM.E4_Q,
+                 IE4_Q = DRM.IE4_Q,
+                 H4_Q = DRM.H4_Q,
+                 LN4_Q = DRM.LN4_Q,
+                 G4_Q = DRM.G4_Q,
+                 QE4_Q = DRM.QE4_Q,
+                 P4_Q = DRM.P4_Q,
+                 L4_Q = DRM.L4_Q
+  )
+  return(DRM)
+}

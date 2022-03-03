@@ -1,33 +1,45 @@
 #' Function to set data in the correct format
 #'
 #' This function also generates appropriate start values and uninformative priors for each model
+#' Input should be given as arithmetic mean and standard deviation on the original scale
 #'
-#' @param data a dataframe with input data, order of columns should be: dose, response, sd (or se), n
-#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
-#' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics
-#' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
-#' @param q specified BMR
-#' @param bkg vector containing minimum, most likely, and maximum value for the background response
-#' @param maxy vector containing minimum, most likely, and maximum value for the response at dose infinity
-#' @param prior.BMD vector containing minimum, most likely, and maximum value for the BMD
-#' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution
-#' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution
-#' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 (implies a uniform distribution)
+#' @param data dataframe with input data, order of columns should be: dose, response, sd, n.
+#' @param sumstats logical. TRUE indicates summary data is provided while FALSE indicates individual-level data.
+#' @param geom.stats logical. TRUE if geometric summary data is provided.
+#' @param sd logical. TRUE indicates that standard deviation per dose is provided,
+#'           FALSE indicates that standard error per dose level is provided
+#' @param q the specified BMR
+#' @param bkg vector containing informative prior for the background.
+#'            It should be specified as minimum, most likely and maximum. Defaults to NULL.
+#' @param maxy vector containing informative prior for the maximum response.
+#'             It should be specified as minimum, most likely and maximum. Defaults to NULL.
+#' @param prior.BMD vector containing informative prior for the BMD.
+#'                  It should be specified as minimum, most likely and maximum. Defaults to NULL.
+#' @param shape.a shape parameter that determines the flatness of the Pert prior for the background.
+#'                 Defaults to 4, which implies a peak at the most likely value.
+#' @param shape.c shape parameter that determines the flatness of the Pert prior for c.
+#'                Defaults to 4, which implies a peak at the most likely value.
+#' @param shape.BMD shape parameter that determines the flatness of the Pert prior for the BMD.
+#'                  Defaults to 0.0001, which implies a flat prior.
+#'
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
-#' @export
+#' @export PREP_DATA_N
 #'
 PREP_DATA_N <- function(data, # a dataframe with input data, order of columns should be: dose, response, sd, n
                         sumstats = TRUE, # TRUE if summary data, FALSE if individual data
                         geom.stats = FALSE, # TRUE if geometric summary data is provided
                         sd = TRUE, # TRUE if sd per dose group is given, FALSE is se is given
                         q, # the BMR
-                        bkg = NULL, maxy = NULL, prior.BMD = NULL, # possible expert info on background and max response
+                        bkg = NULL,
+                        maxy = NULL,
+                        prior.BMD = NULL, # possible expert info on background and max response
                         shape.a = 4, shape.c = 4, shape.BMD = 0.0001 # shape for the PERT distribution
 ){
 
   if(sumstats == TRUE & geom.stats == FALSE){
+    data = data[order(data[, 1]), ]
     dose.a = data[, 1]
     maxDose = max(dose.a)
     mean.a = data[, 2]
@@ -42,6 +54,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   }else if(sumstats == TRUE & geom.stats == TRUE){
 
   }else if(sumstats == FALSE){
+    data = data[order(data[, 1]), ]
     doses = data[, 1]
     maxDose = max(doses)
     dose.a=sort(unique(doses))
@@ -89,10 +102,13 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   ## Default range on background and max response
 
   if(mean.a[1] < mean.a[N]){
+
+    # for a
     min.min = 0.001
     mode.min = obs.min
     max.min = 2*obs.min
 
+    # for c
     min.max = mean.a[1]*(1.01+q)
     max.max = 2*mean.a[N]
     mode.max = obs.max
@@ -102,10 +118,10 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
       min.max  = mean.a[1]*(1.01+q)
       max.max = 2*mode.max
 
-      warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been set to 3 times the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
-      )
+      # warning(
+      #   "The data do not contain information on the asymptote, and the default prior for fold change has been set to 3 times the observed maximum.
+      #       Please provide prior input on the maximum response by specifying 'maxy', if available."
+      # )
     }
 
     # start value BMD
@@ -116,6 +132,13 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     bmd.svh=try(uniroot(RISK, interval=c(-5, 0))$root,silent=T)
     bmd.sv=ifelse((mode(bmd.svh)=="numeric"),exp(bmd.svh),0.05)
 
+    ## Check appropriateness of BMR value
+    if(mean.a[1]*(1+q) > mean.a[N]){
+      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+    }
+
+
+
   }else if(mean.a[1] > mean.a[N]){
     min.min = 0.5*obs.min
     mode.min = obs.min
@@ -123,17 +146,19 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
     min.max = 0.5*obs.max
     max.max = obs.min*(1-q-0.01)
+    # max.max = obs.min
     mode.max = obs.max
 
     if(flat(dose.a, mean.a,inc=F) == F & is.null(maxy)){
       mode.max = 0.5*obs.max
       min.max  = 0.1*obs.max
       max.max = obs.min*(1-q-0.01)
+      # max.max = obs.min
 
-      warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been set to 0.1 times the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
-      )
+      # warning(
+      #   "The data do not contain information on the asymptote, and the default prior for fold change has been set to 3 times the observed maximum.
+      #       Please provide prior input on the maximum response by specifying 'maxy', if available."
+      # )
     }
 
     # start value BMD
@@ -143,6 +168,11 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
       (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))+q
     bmd.svh=try(uniroot(RISK, interval=c(-5, 0))$root,silent=T)
     bmd.sv=ifelse((mode(bmd.svh)=="numeric"),exp(bmd.svh),0.05)
+
+    ## Check appropriateness of BMR value
+    if(mean.a[1]*(1-q) < mean.a[N]){
+      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+    }
 
   }
 
@@ -209,7 +239,23 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
 
+  # if(!is.null(prior.BMD)){
+  #   mode.BMD = prior.BMD[2]/maxDose
+  #   min.BMD = prior.BMD[1]/maxDose
+  #   if(min.BMD == 0) min.BMD = 0.0001
+  #   max.BMD = prior.BMD[3]/maxDose
+  # }
+  #
+  # # Default (normal) priors on k, d, sigma
+  # # prvar.k=1; prmean.k=1
+  # if(!is.null(prior.BMD)){
+  #   BMD.vec = c(min.BMD, mode.BMD, max.BMD)
+  # }else{
+  #   BMD.vec = c(0,0.5,1)
+  #   message("Default prior choices used on BMD")
+  # }
   prvar.d=1; prmean.d=0
+  # prvar.d=(exp(sqrt(0.18)))^2; prmean.d=2
   prvar.s=1; prmean.s=-2*log(1.5*mean(sd.a))
 
   # Prior on background
@@ -218,6 +264,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   # Prior on mu(inf)
   c.vec = c(min.max/mode.min, mode.max/mode.min, max.max/mode.min)
   if(c.vec[1] == 0) c.vec[1] = 0.0001
+  if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
   priorSigma1a=diag(c(1,1,1,prvar.d,prvar.s))
@@ -231,6 +278,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   if(mean.a[1] < mean.a[N]){ # increasing
     is_increasing = 1
     L = 1+q+0.01
+    # L = 1.01
     U = 0
     data_type = 1
     pars3d = numeric()
@@ -241,6 +289,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     is_decreasing = 1
     L = 0.01
     U = 1-q-0.01
+    # U = 0.95
     data_type = 3
     pars3d = priormu1a[3] / U
     pars3i = numeric()
@@ -250,7 +299,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
   ## Data in correct format
 
-  ret.list <- list(data = list(N=N,n=n.a,x=dose.a,m=mean.a,s2=sd.a^2,maxD=maxDose,q=q,priormu=priormu1a,
+  ret.list <- list(data = list(N=N,n=n.a,x=dose.a,m=mean.a,shift=0,s2=sd.a^2,maxD=maxDose,q=q,priormu=priormu1a,
                                shape1 = c(fun.alpha(a = priorlb1a[1], b = priormu1a[1], c = priorub1a[1], g = shape.a),
                                           fun.alpha(a = priorlb1a[2], b = priormu1a[2], c = priorub1a[2], g = shape.BMD),
                                           fun.alpha(a = priorlb1a[3], b = priormu1a[3], c = priorub1a[3], g = shape.c), 0, 0),
@@ -265,6 +314,12 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
                    start=list(par1=priormu1a[1],par2=bmd.sv,pars3i=pars3i,pars3d=pars3d,par4=0,par5=log(1/mean(sd.a^2))),
                    test.var = test.var
   )
+
+
+
+
+  # test for dose-response effect
+  # DR.effect = anydoseresponseNI(dose.a,mean.a,sd.a,n.a)
 
   # data in correct format
   return(ret.list)

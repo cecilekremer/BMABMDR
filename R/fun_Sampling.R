@@ -1,24 +1,76 @@
-#' Perform model averaging using MCMC methods (Bridge sampling & Partial Laplace)
+# Sampling based methods: bridge sampling and laplace approximation
+##################################################################################################
+
+#'  function to perform model-averaging using MCMC sampling
 #'
-#' This method assumed data for continuous endpoints.
+#' @param data.N list containing data values for the models assuming a normal distribution
+#' @param data.LN list containing data values for the models assuming a lognormal distribution
+#' @param prior.weights indicator determining if a model is to be included in the model averaging or not.
+#'                      1 implies model is included, 0 otherwise. Defaults to rep(1,16).
+#' @param ndraws number of draws to be made from the posterior distribution. Defaults to 30000
+#' @param nrchains number of MCMC chains. Defaults to 3
+#' @param nriterations number of MCMC iterations. Defaults to 3000
+#' @param warmup  number of MCMC iterations discarded as warmup. Defaults to 1000
+#' @param delta adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more details.
+#'              Defaults to 0.8.
+#' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more details.
+#'                  Defaults to 10.
+#' @param seed random seed for reproducibility. Defaults to 123
+#' @param pvec probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).
+#' @param plot logical variable to determine if the results should be plotted
 #'
-#' More detailed descriprion
-#' @param data.N the input data as returned by function PREP_DATA_N
-#' @param data.LN the input data as returned by function PREP_DATA_LN
-#' @param prior.weights a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)
-#' @param ndraws the number of draws from the posterior, default 30000
-#' @param nrchains the number of chains to be used in the MCMC
-#' @param nriterations the number of iterations per chain
-#' @param warmup the number of iterations per chain to be discarded as burnin
-#' @param delta default 0.8
-#' @param treedepth default 10
-#' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
-#' @param plot logical indicating whether a simple plot of model fits should be shown (defaults to FALSE)
+#' @examples
 #'
-#' @return List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+#' @return list containing the following results
+#' \enumerate{
+#'   \item E4_N parameter estimates from the exponential model with normal distribution assumed
+#'   \item IE4_N parameter estimates from the inverse-exponential model with normal distribution assumed
+#'   \item H4_N parameter estimates from the Hill model with normal distribution assumed
+#'   \item LN4_N parameter estimates from the lognormal model with normal distribution assumed
+#'   \item G4_N parameter estimates from the gamma model with normal distribution assumed
+#'   \item QE4_N parameter estimates from the quadratic-exponential model with normal distribution assumed
+#'   \item P4_N parameter estimates from the probit model with normal distribution assumed
+#'   \item L4_N parameter estimates from the logit model with normal distribution assumed
+#'   \item E4_LN parameter estimates from the exponential model with lognormal distribution assumed
+#'   \item IE4_LN parameter estimates from the inverse exponential model with lognormal distribution assumed
+#'   \item H4_LN parameter estimates from the Hill model with lognormal distribution assumed
+#'   \item LN4_LN parameter estimates from the lognormal model with lognormal distribution assumed
+#'   \item G4_LN parameter estimates from the gamma model with lognormal distribution assumed
+#'   \item QE4_LN parameter estimates from the quadratic exponential model with lognormal distribution assumed
+#'   \item P4_LN parameter estimates from the probit model with lognormal distribution assumed
+#'   \item L4_LN parameter estimates from the logit model with lognormal distribution assumed
+#'   \item covs covariance between parameter b and BMD for each model
+#'   \item corrs correlation between parameter b and BMD for each model
+#'   \item weights_bridge_sampling model weights computed using bridge sampling
+#'   \item weights_laplace model weights computed using Laplace approximation
+#'   \item bs_weights_conv model weights computed using bridge sampling only for convergent models
+#'   \item ls_weights_conv model weights computed using Laplace approximation only for convergent models
+#'   \item MA_bridge_sampling model averaged BMD estimates based on bridge sampling weights
+#'   \item MA_laplace model averaged BMD estimates based on Laplace weights
+#'   \item MA_bs_conv model averaged BMD estimates based on bridge sampling weights only for convergent models
+#'   \item MA_ls_conv model averaged BMD estimates based on Laplace weights only for convergent models
+#'   \item MA_post_bs model averaged posterior for the BMD based on bridge sampling
+#'   \item MA_post_ls model averaged posterior for the BMD based on Laplace
+#'   \item MA_post_bs_conv model averaged posterior for the BMD based on bridge sampling only for convergent models
+#'   \item MA_post_ls_conv model averaged posterior for the BMD based on Laplace only for convergent models
+#'   \item MA_dr_bs model averaged dose-response curve based on bridge sampling
+#'   \item MA_dr_ls model averaged dose-response curve based on Laplace
+#'   \item MA_dr_bs_conv model averaged dose-response curve based on bridge sampling only for convergent models
+#'   \item MA_dr_ls_conv model averaged dose-response curve based on Laplace only for convergent models
+#'   \item parsN list containing the posterior for all parameters of the normal models
+#'   \item parsLN list containing the posterior for all parameters of the lognormal models
+#'   \item data the arithmetic summary data that was passed to the function
+#'   \item q the BMR that was passed to the function
+#'   \item models_included the dose-response models that were included in the analysis#'
+#'   \item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+#'   \item divergences vector indicating the proportion of divergent transitions that occurred during MCMC
+#'   \item llN vector of model likelihoods for normal distribution
+#'   \item llLN vector of model likelihoods for lognonormal distribution
+#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
+#' }
 #'
-#' @export
+#'
+#' @export sampling_MA
 #'
 sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                      ndraws = 30000,nrchains=3,
@@ -577,9 +629,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     E4outLNI <- outLP(parsE4LN, pvec, data$maxD)
 
     if(data$data_type == 2){
-      DRM_E4_LN = exp(DRM.E4_LNI(E4resLNI[4:7], data$x, data$q))
+      DRM_E4_LN = exp(DRM.E4_LNI(E4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_E4_LN = exp(DRM.E4_LND(E4resLNI[4:7], data$x, data$q))
+      DRM_E4_LN = exp(DRM.E4_LND(E4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     # Covariance between b-d and between BMD-d
@@ -641,9 +693,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
     if(data$data_type == 2){
-      DRM_IE4_LN = exp(DRM.IE4_LNI(IE4resLNI[4:7], data$x, data$q))
+      DRM_IE4_LN = exp(DRM.IE4_LNI(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_IE4_LN = exp(DRM.IE4_LND(IE4resLNI[4:7], data$x, data$q))
+      DRM_IE4_LN = exp(DRM.IE4_LND(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -703,9 +755,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     H4outLNI <- outLP(parsH4LN, pvec, data$maxD)
 
     if(data$data_type == 2){
-      DRM_H4_LN = exp(DRM.H4_LNI(H4resLNI[4:7], data$x, data$q))
+      DRM_H4_LN = exp(DRM.H4_LNI(H4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_H4_LN = exp(DRM.H4_LND(H4resLNI[4:7], data$x, data$q))
+      DRM_H4_LN = exp(DRM.H4_LND(H4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -766,9 +818,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
     if(data$data_type == 2){
-      DRM_LN4_LN = exp(DRM.LN4_LNI(LN4resLNI[4:7], data$x, data$q))
+      DRM_LN4_LN = exp(DRM.LN4_LNI(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_LN4_LN = exp(DRM.LN4_LND(LN4resLNI[4:7], data$x, data$q))
+      DRM_LN4_LN = exp(DRM.LN4_LND(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -830,9 +882,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
     if(data$data_type == 2){
-      DRM_G4_LN = exp(DRM.G4_LNI(G4resLNI[4:7], data$x, data$q))
+      DRM_G4_LN = exp(DRM.G4_LNI(G4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_G4_LN = exp(DRM.G4_LND(G4resLNI[4:7], data$x, data$q))
+      DRM_G4_LN = exp(DRM.G4_LND(G4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -892,9 +944,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     QE4outLNI <- outLP(parsQE4LN, pvec, data$maxD)
 
     if(data$data_type == 2){
-      DRM_QE4_LN = exp(DRM.QE4_LNI(QE4resLNI[4:7], data$x, data$q))
+      DRM_QE4_LN = exp(DRM.QE4_LNI(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_QE4_LN = exp(DRM.QE4_LND(QE4resLNI[4:7], data$x, data$q))
+      DRM_QE4_LN = exp(DRM.QE4_LND(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -955,9 +1007,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
     if(data$data_type == 2){
-      DRM_P4_LN = exp(DRM.P4_LNI(P4resLNI[4:7], data$x, data$q))
+      DRM_P4_LN = exp(DRM.P4_LNI(P4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_P4_LN = exp(DRM.P4_LND(P4resLNI[4:7], data$x, data$q))
+      DRM_P4_LN = exp(DRM.P4_LND(P4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -1020,9 +1072,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
     if(data$data_type == 2){
-      DRM_L4_LN = exp(DRM.L4_LNI(L4resLNI[4:7], data$x, data$q))
+      DRM_L4_LN = exp(DRM.L4_LNI(L4resLNI[4:7], data$x, data$q, shift=data$shift))
     }else if(data$data_type == 4){
-      DRM_L4_LN = exp(DRM.L4_LND(L4resLNI[4:7], data$x, data$q))
+      DRM_L4_LN = exp(DRM.L4_LND(L4resLNI[4:7], data$x, data$q, shift=data$shift))
     }
 
     L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
@@ -1403,11 +1455,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llE4LN=llfE4_LNI(optE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llE4LN=llfE4_LND(optE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
 
@@ -1423,11 +1475,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llIE4LN=llfIE4_LNI(optIE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                          dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q)
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llIE4LN=llfIE4_LND(optIE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                          dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q)
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
 
@@ -1442,11 +1494,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llH4LN=llfH4_LNI(optH4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llH4LN=llfH4_LND(optH4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
     llLN = c(llLN, llH4LN)
@@ -1460,11 +1512,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llLN4LN=llfLN4_LNI(optLN4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                          dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q)
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llLN4LN=llfLN4_LND(optLN4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                          dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q)
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
     llLN = c(llLN, llLN4LN)
@@ -1479,11 +1531,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llG4LN=llfG4_LNI(optG4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llG4LN=llfG4_LND(optG4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
     llLN = c(llLN, llG4LN)
@@ -1497,11 +1549,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llQE4LN=llfQE4_LNI(optQE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                          dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q)
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llQE4LN=llfQE4_LND(optQE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                          dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q)
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
     llLN = c(llLN, llQE4LN)
@@ -1515,11 +1567,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llP4LN=llfP4_LNI(optP4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llP4LN=llfP4_LND(optP4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
     llLN = c(llLN, llP4LN)
@@ -1533,11 +1585,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(data$data_type == 2){
       llL4LN=llfL4_LNI(optL4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }else if(data$data_type == 4){
       llL4LN=llfL4_LND(optL4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
                        dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+                       s2vec=data$s2,qval=data$q, shift=data$shift)
     }
 
     llLN = c(llLN, llL4LN)
@@ -1874,58 +1926,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           segments(x0=dgr[1], y0=log10((parL4[1])), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRML4[1],lty=3,col=8)
         }
 
+        data = data.LN$data
+
         # lognormal distribution
         if(prior.weights[9]>0){
           parE4 = E4resLNI[4:7]
           a=(parE4[1])
-          DRME4 = log10(exp(DRM.E4_LNI(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRME4 = log10(exp(DRM.E4_LNI(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parE4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRME4 = log10(exp(DRM.E4_LNI(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRME4 = log10(exp(DRM.E4_LNI(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parE4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRME4,lwd=1, lty=2, col=1)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRME4),lty=3,col=1)
         }
         if(prior.weights[10]>0){
           parIE4 = IE4resLNI[4:7]
           a=(parIE4[1])
-          DRMIE4 = log10(exp(DRM.IE4_LNI(par=parIE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMIE4 = log10(exp(DRM.IE4_LNI(par=parIE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parIE4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMIE4 = log10(exp(DRM.IE4_LNI(par=parIE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMIE4 = log10(exp(DRM.IE4_LNI(par=parIE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parIE4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMIE4,lwd=1, lty=2, col=2)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRMIE4),lty=3,col=2)
         }
         if(prior.weights[11]>0){
           parH4 = H4resLNI[4:7]
           a=(parH4[1])
-          DRMH4 = log10(exp(DRM.H4_LNI(par=parH4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMH4 = log10(exp(DRM.H4_LNI(par=parH4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parH4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMH4 = log10(exp(DRM.H4_LNI(par=parH4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMH4 = log10(exp(DRM.H4_LNI(par=parH4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parH4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMH4,lwd=1, lty=2, col=3)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRMH4),lty=3,col=3)
         }
         if(prior.weights[12]>0){
           parLN4 = LN4resLNI[4:7]
           a=(parLN4[1])
-          DRMLN4 = log10(exp(DRM.LN4_LNI(par=parLN4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMLN4 = log10(exp(DRM.LN4_LNI(par=parLN4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parLN4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMLN4 = log10(exp(DRM.LN4_LNI(par=parLN4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMLN4 = log10(exp(DRM.LN4_LNI(par=parLN4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parLN4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMLN4,lwd=1, lty=2, col=4)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRMLN4),lty=3,col=4)
         }
         if(prior.weights[13]>0){
           parG4 = G4resLNI[4:7]
           a=(parG4[1])
-          DRMG4 = log10(exp(DRM.G4_LNI(par=parG4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMG4 = log10(exp(DRM.G4_LNI(par=parG4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parG4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMG4 = log10(exp(DRM.G4_LNI(par=parG4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMG4 = log10(exp(DRM.G4_LNI(par=parG4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parG4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMG4,lwd=1, lty=2, col=5)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRMG4),lty=3,col=5)
         }
         if(prior.weights[14]>0){
           parQE4 = QE4resLNI[4:7]
           a=(parQE4[1])
-          DRMQE4 = log10(exp(DRM.QE4_LNI(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMQE4 = log10(exp(DRM.QE4_LNI(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parQE4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMQE4 = log10(exp(DRM.QE4_LNI(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMQE4 = log10(exp(DRM.QE4_LNI(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parQE4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMQE4,lwd=1, lty=2, col=6)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRMQE4),lty=3,col=6)
         }
@@ -1933,9 +1987,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           parP4 = P4resLNI[4:7]
           # a=exp(parP4[1])*pnorm(parP4[3])
           a=(parP4[1])
-          DRMP4 = log10(exp(DRM.P4_LNI(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMP4 = log10(exp(DRM.P4_LNI(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parP4[1])*pnorm(parP4[3]) + 1.5*min(data.LN$data$m.org)}
+          DRMP4 = log10(exp(DRM.P4_LNI(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMP4 = log10(exp(DRM.P4_LNI(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parP4[1])*pnorm(parP4[3]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMP4,lwd=1, lty=2, col=7)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRMP4),lty=3,col=7)
         }
@@ -1943,9 +1997,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           parL4 = L4resLNI[4:7]
           # a=exp(parL4[1])*expit(parL4[3])
           a=(parL4[1])
-          DRML4 = log10(exp(DRM.L4_LNI(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRML4 = log10(exp(DRM.L4_LNI(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parL4[1])*expit(parL4[3]) + 1.5*min(data.LN$data$m.org)}
+          DRML4 = log10(exp(DRM.L4_LNI(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRML4 = log10(exp(DRM.L4_LNI(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parL4[1])*expit(parL4[3]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRML4,lwd=1, lty=2, col=8)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=min(DRML4),lty=3,col=8)
         }
@@ -2032,25 +2086,27 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           # y1=DRML4[1],lty=3,col=8)
         }
 
+        data = data.LN$data
+
         # lognormal distribution
         if(prior.weights[9]>0){
           parE4 = E4resLNI[4:7]
           a=(parE4[1])
-          DRME4 = log10(exp(DRM.E4_LND(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRME4 = log10(exp(DRM.E4_LND(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parE4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRME4 = log10(exp(DRM.E4_LND(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRME4 = log10(exp(DRM.E4_LND(par=parE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parE4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRME4,lwd=1, lty=2, col=1)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRME4[1],lty=3,col=1)
         }
         if(prior.weights[10]>0){
           parIE4 = IE4resLNI[4:7]
           a=(parIE4[1])
-          DRMIE4 = log10(exp(DRM.IE4_LND(par=parIE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMIE4 = log10(exp(DRM.IE4_LND(par=parIE4,
-                                                                    x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
-                                                                    q=data$q))) +
-            log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parIE4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMIE4 = log10(exp(DRM.IE4_LND(par=parIE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMIE4 = log10(exp(DRM.IE4_LND(par=parIE4,
+          # x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
+          # q=data$q))) +
+          # log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parIE4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMIE4,lwd=1, lty=2, col=2)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRMIE4[1],
                    lty=3, col=2)
@@ -2058,45 +2114,45 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         if(prior.weights[11]>0){
           parH4 = H4resLNI[4:7]
           a=(parH4[1])
-          DRMH4 = log10(exp(DRM.H4_LND(par=parH4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMH4 = log10(exp(DRM.H4_LND(par=parH4,
-                                                                  x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
-                                                                  q=data$q))) +
-            log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parH4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMH4 = log10(exp(DRM.H4_LND(par=parH4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMH4 = log10(exp(DRM.H4_LND(par=parH4,
+          # x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
+          # q=data$q))) +
+          # log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parH4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMH4,lwd=1, lty=2, col=3)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRMH4[1],lty=3,col=3)
         }
         if(prior.weights[12]>0){
           parLN4 = LN4resLNI[4:7]
           a=(parLN4[1])
-          DRMLN4 = log10(exp(DRM.LN4_LND(par=parLN4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMLN4 = log10(exp(DRM.LN4_LND(par=parLN4,
-                                                                    x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
-                                                                    q=data$q))) +
-            log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parLN4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMLN4 = log10(exp(DRM.LN4_LND(par=parLN4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMLN4 = log10(exp(DRM.LN4_LND(par=parLN4,
+          # x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
+          # q=data$q))) +
+          # log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parLN4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMLN4,lwd=1, lty=2, col=4)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRMLN4[1],lty=3,col=4)
         }
         if(prior.weights[13]>0){
           parG4 = G4resLNI[4:7]
           a=(parG4[1])
-          DRMG4 = log10(exp(DRM.G4_LND(par=parG4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMG4 = log10(exp(DRM.G4_LND(par=parG4,
-                                                                  x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
-                                                                  q=data$q))) +
-            log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parG4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMG4 = log10(exp(DRM.G4_LND(par=parG4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMG4 = log10(exp(DRM.G4_LND(par=parG4,
+          # x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),
+          # q=data$q))) +
+          # log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parG4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMG4,lwd=1, lty=2, col=5)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRMG4[1],lty=3,col=5)
         }
         if(prior.weights[14]>0){
           parQE4 = QE4resLNI[4:7]
           a=(parQE4[1])
-          DRMQE4 = log10(exp(DRM.QE4_LND(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMQE4 = log10(exp(DRM.QE4_LND(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parQE4[1]) + 1.5*min(data.LN$data$m.org)}
+          DRMQE4 = log10(exp(DRM.QE4_LND(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMQE4 = log10(exp(DRM.QE4_LND(par=parQE4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parQE4[1]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMQE4,lwd=1, lty=2, col=6)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRMQE4[1],lty=3,col=6)
         }
@@ -2104,9 +2160,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           parP4 = P4resLNI[4:7]
           a=(parP4[1])
           # a=exp(parP4[1])*pnorm(parP4[3])
-          DRMP4 = log10(exp(DRM.P4_LND(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRMP4 = log10(exp(DRM.P4_LND(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parP4[1])*pnorm(parP4[3]) + 1.5*min(data.LN$data$m.org)}
+          DRMP4 = log10(exp(DRM.P4_LND(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRMP4 = log10(exp(DRM.P4_LND(par=parP4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parP4[1])*pnorm(parP4[3]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRMP4,lwd=1, lty=2, col=7)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRMP4[1],lty=3,col=7)
         }
@@ -2114,9 +2170,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           parL4 = L4resLNI[4:7]
           # a=exp(parL4[1])*expit(parL4[3])
           a=(parL4[1])
-          DRML4 = log10(exp(DRM.L4_LND(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q)))
-          if(data.LN$data$shift==T) {DRML4 = log10(exp(DRM.L4_LND(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
-          a = (parL4[1])*expit(parL4[3]) + 1.5*min(data.LN$data$m.org)}
+          DRML4 = log10(exp(DRM.L4_LND(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q, shift=data$shift)))
+          # if(data.LN$data$shift==T) {DRML4 = log10(exp(DRM.L4_LND(par=parL4,x=10^(dgr[dgr>(x[2]-((x[2]-x[1])/2))]),q=data$q))) + log10(exp(1.5*min(data.LN$data$m.org)))
+          # a = (parL4[1])*expit(parL4[3]) + 1.5*min(data.LN$data$m.org)}
           lines(dgr[dgr>(x[2]-((x[2]-x[1])/2))],DRML4,lwd=1, lty=2, col=8)
           segments(x0=dgr[1], y0=log10((a)), x1=max(dgr[dgr<=(x[2]-((x[2]-x[1])/2))]), y1=DRML4[1],lty=3,col=8)
         }
@@ -2253,10 +2309,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       q = data.N$data$q,
                       # increasing = T,
                       models_included = modelnames[prior.weights > 0],
-                      bf = bfTest$bayesFactor
-                      # ,
-                      # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-                      # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
+                      bf = bfTest$bayesFactor,
+                      means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+                      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+                      shift = data.LN$data$shift
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")

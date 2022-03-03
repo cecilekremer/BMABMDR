@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{par_extract}
 \alias{par_extract}
-\title{Function for internal use}
+\title{function to extract the sampled values for the model parameters and the BMD}
 \usage{
 par_extract(
   mod_obj,
@@ -11,15 +11,15 @@ par_extract(
 )
 }
 \arguments{
-\item{mod_obj}{value}
+\item{mod_obj}{model object either of class stanfit or stanfitOptim}
 
-\item{pars}{value}
+\item{pars}{parameters to be extracted.}
 
-\item{model_name}{model name}
+\item{model_name}{name of the model to be extracted}
 }
 \value{
-.
+dataframe containing model estimates
 }
 \description{
-Function for internal use
+function to extract the sampled values for the model parameters and the BMD
 }

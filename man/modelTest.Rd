@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_modelTest.R
 \name{modelTest}
 \alias{modelTest}
-\title{Test whether the best fit model fits equally well as the saturated ANOVA model}
+\title{function to perform MCMC sampling for all the dose-response model.}
 \usage{
 modelTest(
   best.fit,
@@ -20,33 +20,36 @@ modelTest(
 )
 }
 \arguments{
-\item{best.fit}{name of the best fitting model}
+\item{best.fit}{best fitting model name}
 
-\item{data.N}{the input data as returned by function PREP_DATA_N}
+\item{data.N}{list containing data values for the normal models}
 
-\item{data.LN}{the input data as returned by function PREP_DATA_LN}
+\item{data.LN}{list containing data values for the lognormal models}
 
-\item{stanBest}{fit of the best fitting model as returned by rstan's optimizing or sampling routine}
+\item{stanBest}{stan object for the best fitting model}
 
-\item{type}{either 'MCMC' or 'Laplace'}
+\item{type}{estimation type. Laplace approximation or McMC}
 
-\item{seed}{default 123}
+\item{seed}{random seed for reproducibility. Defaults to 123}
 
-\item{ndraws}{the number of draws from the posterior, default 30000}
+\item{ndraws}{number of draws to be made from the posterior distribution. Defaults to 30000}
 
-\item{nrchains}{the number of chains to be used in the MCMC}
+\item{nrchains}{number of MCMC chains. Defaults to 3}
 
-\item{nriterations}{the number of iterations per chain}
+\item{nriterations}{number of MCMC iterations.Defaults to 3000}
 
-\item{warmup}{the number of iterations per chain to be discarded as burnin}
+\item{warmup}{number of MCMC iterations for warmup. Defaults to 1000}
 
-\item{delta}{default 0.8}
+\item{delta}{adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
+Defaults to 0.8.}
 
-\item{treedepth}{default 10}
-}
-\value{
-Bayes factor for the best fitting model compared to the saturated ANOVA model. A Bayes factor < 10 indicates the best fitting model fits equally well as the ANOVA model.
+\item{treedepth}{tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
+Defaults to 10.}
 }
 \description{
-More detailed descriprion
+function to perform MCMC sampling for all the dose-response model.
+}
+\examples{
+
+
 }
