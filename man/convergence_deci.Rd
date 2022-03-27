@@ -2,18 +2,16 @@
 % Please edit documentation in R/diagnostics.R
 \name{convergence_deci}
 \alias{convergence_deci}
-\title{Function for internal use; decides if model has converged based on Rhat, bulk and tail ESS}
+\title{Function for internal use}
 \usage{
 convergence_deci(
   model_stan,
   nrchains = 3,
-  pars = c("par1", "par2", "par3", "d", "invsigma2", "lp__")
+  pars = c("par[2]", letters[c(1, 3, 4)], "invsigma2", "lp__")
 )
 }
 \arguments{
 \item{model_stan}{stan model}
-
-\item{nrchains}{default 3; number of MCMC chains}
 
 \item{pars}{parameters}
 }
@@ -21,5 +19,5 @@ convergence_deci(
 .
 }
 \description{
-Function for internal use; decides if model has converged based on Rhat, bulk and tail ESS
+Function for internal use
 }

@@ -5,10 +5,8 @@
 #'
 #' @return .
 #'
-#' @export
-#'
 posterior_diag <- function(model_stan,
-                           pars = c('par1', "par2", "par3", "d",
+                           pars = c('par[2]', letters[c(1, 3, 4)],
                                     "invsigma2", "lp__")) {
 
   color_scheme_set("darkgray")
@@ -115,20 +113,17 @@ posterior_diag <- function(model_stan,
 
 }
 
-
-#' Function for internal use; decides if model has converged based on Rhat, bulk and tail ESS
+#' Function for internal use
 #'
 #' @param model_stan stan model
-#' @param nrchains default 3; number of MCMC chains
 #' @param pars parameters
 #'
 #' @return .
 #'
-#' @export
-#'
 convergence_deci <- function(model_stan,
                              nrchains = 3,
-                             pars = c('par1', "par2", "par3", "d",
+                             pars = c('par[2]', letters[c(1, 3, 4)],
+
                                       "invsigma2", "lp__")) {
 
 
@@ -293,3 +288,9 @@ convergence_deci <- function(model_stan,
 
 
 }
+
+
+
+
+
+

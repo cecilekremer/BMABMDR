@@ -2,19 +2,18 @@
 % Please edit documentation in R/output.R
 \name{BMDmixture_extract}
 \alias{BMDmixture_extract}
-\title{function to extract BMD mixture}
+\title{Function for internal use}
 \usage{
 BMDmixture_extract(mod.obj, conv = FALSE)
 }
 \arguments{
-\item{conv}{logical to indicate if mixture should be only based on converged
-models or all the models regardless of the convergence status}
+\item{mod.obj}{value}
 
-\item{mod_obj}{BMDBMA model object}
+\item{conv}{value}
 }
 \value{
-dataframe containing Mixture per model
+.
 }
 \description{
-function to extract BMD mixture
+Function for internal use
 }

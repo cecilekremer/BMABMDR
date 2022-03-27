@@ -6,7 +6,7 @@
 \usage{
 posterior_diag(
   model_stan,
-  pars = c("par1", "par2", "par3", "d", "invsigma2", "lp__")
+  pars = c("par[2]", letters[c(1, 3, 4)], "invsigma2", "lp__")
 )
 }
 \arguments{

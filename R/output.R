@@ -1,53 +1,46 @@
-
-#' output function for estimated model parameter from each model
+#' Function for internal use
 #'
-#' @param par_obj list containing parameter draws from either Laplace or MCMC fit
-#' @param pvec probability vector to compute credible interval for the BMD.
-#' @param max.dose maximum dose tested
+#' @param par_obj value
+#' @param pvec value
+#' @param max.dose logical
 #'
-#' @return dataframe containing model estimates
+#' @return .
 #'
-#'
-#' @export outLP
-#'
-outLP <- function(par_obj, pvec, max.dose){
+outLP <- function(par_obj, pvec, max.dose) {
   ret <- t(data.frame(
-    # model parameters
-    # transformed
+    # transformed parameters
+    par.at = quantile(par_obj$p1, c(0.025,0.5,0.975), na.rm=T),
+    par.ct = quantile(par_obj$p3, c(0.025,0.5,0.975), na.rm=T),
     par.dt = quantile(par_obj$p4, c(0.025,0.5,0.975), na.rm=T),
     par.is2t = quantile(par_obj$is2t, c(0.025,0.5,0.975), na.rm=T),
-    par.k = quantile(par_obj$k, pvec, na.rm=T),
-    # original scale
+    par.k = quantile(par_obj$p2, pvec, na.rm=T),
+    # parameters on original scale
     par.a = quantile(par_obj$a, c(0.025,0.5,0.975), na.rm=T),
     par.b = quantile(par_obj$b, c(0.025,0.5,0.975), na.rm=T),
     par.c = quantile(par_obj$c, c(0.025,0.5,0.975), na.rm=T),
     par.d = quantile(par_obj$d, c(0.025,0.5,0.975), na.rm=T),
     par.s2 = quantile(par_obj$s2, c(0.025,0.5,0.975), na.rm=T),
     # natural parameters
-    BMD = quantile(par_obj$BMD*max.dose, pvec, na.rm=T),
+    BMD = quantile(par_obj$BMD, pvec, na.rm=T)*max.dose,
     min.resp = quantile(par_obj$min_response, c(0.025,0.5,0.975), na.rm=T),
-    max.resp = quantile(par_obj$max_response, c(0.025,0.5,0.975), na.rm=T),
-    fold.change = quantile(par_obj$p3, c(0.025, 0.5, 0.975), na.rm=T)
+    max.resp = quantile(par_obj$max_response, c(0.025,0.5,0.975), na.rm=T)
   ))
 
   return(ret)
 }
 
 
-#### function to extract the sampled values for the model parameters and the BMD
-#' function to extract the sampled values for the model parameters and the BMD
+#' Function for internal use
 #'
-#' @param mod_obj model object either of class stanfit or stanfitOptim
-#' @param pars parameters to be extracted.
-#' @param model_name name of the model to be extracted
+#' @param mod_obj value
+#' @param pars value
 #'
-#' @return dataframe containing model estimates
+#' @return .
 #'
-#' @export par_extract
-#'
-par_extract <- function(mod_obj, pars = c(letters[1:4],"k",
-                                          paste0("par",1:5,""),
-                                          "invsigma2","mu_inf","mu_0"), model_name) {
+par_extract <- function(mod_obj, pars = c(letters[1:4], "BMD",
+                                          paste0("par[",1:5,"]"),
+                                          "invsigma2", "min_response",
+                                          "max_response"), model_name) {
 
   if(is.stanfit(mod_obj)){
 
@@ -57,16 +50,15 @@ par_extract <- function(mod_obj, pars = c(letters[1:4],"k",
                                 b = pars_samples$b,
                                 c = pars_samples$c,
                                 d = pars_samples$d,
-                                k = pars_samples$k,
-                                BMD = pars_samples$`par2`,
-                                p1 = pars_samples$`par1`, # mu(0)
-                                p2 = pars_samples$`par2`, # BMD
-                                p3 = pars_samples$`par3`, # fold change
-                                p4 = pars_samples$`par4`, # log(d)
-                                is2t = pars_samples$`par5`,
+                                BMD = pars_samples$BMD,
+                                p1 = pars_samples$`par[1]`,
+                                p2 = pars_samples$`par[2]`,
+                                p3 = pars_samples$`par[3]`,
+                                p4 = pars_samples$`par[4]`,
+                                is2t = pars_samples$`par[5]`,
                                 s2 = 1/pars_samples$invsigma2,
-                                min_response = pars_samples$`mu_0`,
-                                max_response = pars_samples$`mu_inf`
+                                min_response = pars_samples$min_response,
+                                max_response = pars_samples$max_response
     )
 
   } else if(is.stanfitOptim(mod_obj)) {
@@ -77,16 +69,15 @@ par_extract <- function(mod_obj, pars = c(letters[1:4],"k",
                                 b = pars_samples[,"b"],
                                 c = pars_samples[,"c"],
                                 d = pars_samples[,"d"],
-                                k = pars_samples[,"k"],
-                                BMD = pars_samples[,"par2"],
-                                p1 = pars_samples[,"par1"],
-                                p2 = pars_samples[,"par2"],
-                                p3 = pars_samples[,"par3"],
-                                p4 = pars_samples[,"par4"],
-                                is2t = pars_samples[,"par5"],
+                                BMD = pars_samples[,"BMD"],
+                                p1 = pars_samples[,"par[1]"],
+                                p2 = pars_samples[,"par[2]"],
+                                p3 = pars_samples[,"par[3]"],
+                                p4 = pars_samples[,"par[4]"],
+                                is2t = pars_samples[,"par[5]"],
                                 s2 = 1/pars_samples[,"invsigma2"],
-                                min_response = pars_samples[,"mu_0"],
-                                max_response = pars_samples[,"mu_inf"]
+                                min_response = pars_samples[,"min_response"],
+                                max_response = pars_samples[,"max_response"]
     )
 
     return(pars_samplesd)
@@ -97,17 +88,12 @@ par_extract <- function(mod_obj, pars = c(letters[1:4],"k",
 
 }
 
-# function to turn the vector of weights into dataframe
-#' function to extract the sampled values for the model parameters and the BMD
+#' Function for internal use
 #'
-#' @param mod_obj model object either of class stanfit or stanfitOptim
-#' @param type type of weight to be extracted. It can be either of BS (bridge sampling), LP (Laplace) and
-#'             both to extract bridge sampling and laplace approximation.
-#' @param model_name name of the model to be extracted
+#' @param mod.obj value
+#' @param type value
 #'
-#' @return dataframe containing model estimates
-#'
-#' @export weights_extract
+#' @return .
 #'
 weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
   type <- match.arg(type)
@@ -136,14 +122,12 @@ weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 
 }
 
-# function to extract mixture
-#' function to extract BMD mixture
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
-#' @param conv logical to indicate if mixture should be only based on converged
-#'             models or all the models regardless of the convergence status
-#' @return dataframe containing Mixture per model
-#' @export BMDmixture_extract
+#' @param mod.obj value
+#' @param conv value
+#'
+#' @return .
 #'
 BMDmixture_extract <- function(mod.obj, conv = FALSE){
 
@@ -167,14 +151,12 @@ BMDmixture_extract <- function(mod.obj, conv = FALSE){
 
 }
 
-
-#' function to extract model averaged BMD
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
-#' @param conv logical to indicate if mixture should be only based on converged
-#'             models or all the models regardless of the convergence status
-#' @return dataframe containing BMDL, BMD and BMDU
-#' @export BMDMA_extract
+#' @param mod.obj value
+#' @param conv value
+#'
+#' @return .
 #'
 BMDMA_extract <- function(mod.obj, conv = FALSE) {
 
@@ -207,83 +189,58 @@ BMDMA_extract <- function(mod.obj, conv = FALSE) {
 
 }
 
-#' function to get the median of the needed parameters for predicted values. This is done over all
-#' fitted models
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
-#' @return dataframe containing parameter estimates per model
-#' @export par_med
+#' @param mod.obj value
 #'
-par_med <- function(mod.obj, type = c('continuous', 'quantal')) {
+#' @return .
+#'
+par_med <- function(mod.obj) {
 
-  type <- match.arg(type)
-  if(type == 'continuous') {
+  model.listN <- mod.obj$parsN
+  model.listLN <- mod.obj$parsLN
 
-    model.listN <- mod.obj$parsN
-    model.listLN <- mod.obj$parsLN
+  md_N <- vapply(model.listN[!is.na(model.listN)], function(x){
+    y <- apply(x[,-c(1)], 2, median, na.rm = TRUE)
+    yy <- data.frame(t(y))
+    names(yy) <- names(x)[-1]
+    return(yy)
+  }, data.frame(a=1,b=2,c=3,d=4,BMD=5,p1=6,p2=7,p3=8,p4=9,
+                is2t=10, s2=11, min_response=12, max_response=13))
 
-    md_N <- vapply(model.listN[!is.na(model.listN)], function(x){
-      y <- apply(x[,-c(1)], 2, median, na.rm = TRUE)
-      yy <- data.frame(t(y))
-      names(yy) <- names(x)[-1]
-      return(yy)
-    }, data.frame(a=1,b=2,c=3,d=4,k=5,BMD=6,p1=7,p2=8,p3=9,p4=10,
-                  is2t=11, s2=12, min_response=13, max_response=14))
+  mdnames_N <- vapply(model.listN[!is.na(model.listN)], function(x){
+    unique(x[,"ModelName"])
+  }, character(1))
 
-    mdnames_N <- vapply(model.listN[!is.na(model.listN)], function(x){
-      unique(x[,"ModelName"])
-    }, character(1))
+  md_N <- cbind(Model = mdnames_N, as.data.frame(t(md_N)))
 
-    md_N <- cbind(Model = mdnames_N, as.data.frame(t(md_N)))
+  md_LN <- vapply(model.listLN[!is.na(model.listLN)], function(x){
+    y <- apply(x[,-c(1)], 2, median, na.rm = TRUE)
+    yy <- data.frame(t(y))
+    names(yy) <- names(x)[-1]
+    return(yy)
+  }, data.frame(a=1,b=2,c=3,d=4,BMD=5,p1=6,p2=7,p3=8,p4=9,
+                is2t=10, s2=11, min_response=12, max_response=13))
 
-    md_LN <- vapply(model.listLN[!is.na(model.listLN)], function(x){
-      y <- apply(x[,-c(1)], 2, median, na.rm = TRUE)
-      yy <- data.frame(t(y))
-      names(yy) <- names(x)[-1]
-      return(yy)
-    }, data.frame(a=1,b=2,c=3,d=4,k=5,BMD=6,p1=7,p2=8,p3=9,p4=10,
-                  is2t=11, s2=12, min_response=13, max_response=14))
-
-    mdnames_LN <- vapply(model.listLN[!is.na(model.listLN)], function(x){
-      unique(x[,"ModelName"])
-    }, character(1))
+  mdnames_LN <- vapply(model.listLN[!is.na(model.listLN)], function(x){
+    unique(x[,"ModelName"])
+  }, character(1))
 
 
-    md_LN <- cbind(Model = mdnames_LN, as.data.frame(t(md_LN)))
-    ret <- rbind(md_N, md_LN)
-
-  } else if(type == 'quantal') {
-
-    model.listQ <- mod.obj$parsQ
-
-    md_Q <- vapply(model.listQ[!is.na(model.listQ)], function(x){
-      y <- apply(x[,-c(1)], 2, median, na.rm = TRUE)
-      yy <- data.frame(t(y))
-      names(yy) <- names(x)[-1]
-      return(yy)
-    }, data.frame(a=1,b=2,d=3,BMD=4,rho=0,p1=5,p2=6,p3=7))
-
-    mdnames_Q <- vapply(model.listQ[!is.na(model.listQ)], function(x){
-      unique(x[,"ModelName"])
-    }, character(1))
-
-    md_Q <- cbind(Model = mdnames_Q, as.data.frame(t(md_Q)))
-    ret <- md_Q
-  } else stop('supply data type to be quantal or continuous')
-
+  md_LN <- cbind(Model = mdnames_LN, as.data.frame(t(md_LN)))
+  ret <- rbind(md_N, md_LN)
   ret2 <- do.call(cbind.data.frame,
                   apply(ret, 2, function(x)unlist(x),
                         simplify = FALSE))
   return(ret2)
 }
 
-
-
-#' function to extract the BMDL,BMD and BMDU
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
-#' @return datatframe containing BMDLs, BMDs and BMDUs per model
-#' @export BMDLU
+#' @param mod.obj value
+#' @param pvec value
+#'
+#' @return .
 #'
 BMDLU <- function(mod.obj, pvec = c(0.05, 0.5, 0.95)) {
 
@@ -319,17 +276,16 @@ BMDLU <- function(mod.obj, pvec = c(0.05, 0.5, 0.95)) {
   return(ret2)
 }
 
-#' function to get predicted values from the DRMS
+#' Function for internal use
 #'
-#' @param mod.obj BMDBMA model object
-#' @param dose vector of dose values to use for prediction
+#' @param mod.obj is the result of pars_med
 #' @param type dose response model type
-#' @param what prediction of interest. It can either be "predicted" or "response_at_BMD"
-#' @param model_averaged option to compute model averaged prediction. Defaults to FALSE
-#' @param weight_type type of weight to be used. It can either be "BS" for bridge sampling or
-#'              "LP" for Laplace approximation
-#' @return dataframe of model prediction per model or
-#'         list with dataframe of model preditions and model-averaged predictions
+#' @param what prediction of interest
+#' @param model_averaged option to compute model averaged prediction
+#' @param weight_type type of weight to be used
+#'
+#' @return .
+#'
 #' @export predict.BMADR
 #'
 predict.BMADR <- function(mod.obj, dose,
@@ -342,7 +298,6 @@ predict.BMADR <- function(mod.obj, dose,
   type <- match.arg(type)
   what <- match.arg(what)
   q <- mod.obj$q
-  shift <- mod.obj$shift
 
 
   if(what == "predicted") {
@@ -353,7 +308,7 @@ predict.BMADR <- function(mod.obj, dose,
       ps <- unlist(pars[i,paste0("p", 1:4)])
       rpd <- data.frame(Model = pars$Model[i],
                         Dose = dose,
-                        predicted = DRMP(ps, dose, q, shift))
+                        predicted = DRMP(ps, dose, q))
       rpd <- dplyr::mutate(rpd,
                            predicted = replace(predicted,
                                                stringr::str_detect(Model, "_LN"),
@@ -407,7 +362,7 @@ predict.BMADR <- function(mod.obj, dose,
       ps <- unlist(pars[i,paste0("p", 1:4)])
       rpd <- data.frame(Model = pars$Model[i],
                         BMD = pars$BMD[i]*mod.obj$max.dose,
-                        resp_at_BMD = DRMP(ps, pars$BMD[i], q, shift))
+                        resp_at_BMD = DRMP(ps, pars$BMD[i], q))
       rpd <- dplyr::mutate(rpd,
                            resp_at_BMD = replace(resp_at_BMD,
                                                  stringr::str_detect(Model, "_LN"),
@@ -457,59 +412,35 @@ predict.BMADR <- function(mod.obj, dose,
 
 }
 
-#' function to get BMDs and weights
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
+#' @param mod.obj is the result of pars_med
 #'
-#' @return datatframe containing BMDs and weights per model
+#' @return .
 #'
-#' @export BMDWeights
-#'
-BMDWeights <- function(mod.obj, type = c('continuous', 'quantal')) {
-  type <-  match.arg(type)
-  BMDs <- BMDLU(mod.obj, type = type)
-  if(type == 'continuous') {
+BMDWeights <- function(mod.obj) {
 
-    if(is.BMADR2(mod.obj)[3] == 2 ) {
-      wts_BS <- weights_extract(mod.obj, type = "BS")
-      wts_LP <- weights_extract(mod.obj, type = "LP")
+  BMDs <- BMDLU(mod.obj)
+  if(is.BMADR2(mod.obj)[3] == 2) {
+    wts_BS <- weights_extract(mod.obj, type = "BS")
+    wts_LP <- weights_extract(mod.obj, type = "LP")
 
-      return(merge(merge(BMDs, wts_BS, by = "Model", sort = FALSE),
-                   wts_LP, by = "Model", sort = FALSE))
-    } else if(is.BMADR2(mod.obj)[2] == 2) {
+    return(merge(merge(BMDs, wts_BS, by = "Model", sort = FALSE),
+                 wts_LP, by = "Model", sort = FALSE))
+  } else if(is.BMADR2(mod.obj)[2] == 2) {
 
-      wts_LP <- weights_extract(mod.obj, type = "LP")
-      return(merge(BMDs, wts_LP, by = "Model", sort = FALSE))
-    }
-
-  } else if(type == 'quantal') {
-
-    if(is.BMADRQ2(mod.obj)[3] == 2 ) {
-      wts_BS <- weightsQ_extract(mod.obj, type = "BS")
-      wts_LP <- weightsQ_extract(mod.obj, type = "LP")
-
-      return(merge(merge(BMDs, wts_BS, by = "Model", sort = FALSE),
-                   wts_LP, by = "Model", sort = FALSE))
-    } else if(is.BMADRQ2(mod.obj)[2] == 2) {
-
-      wts_LP <- weightsQ_extract(mod.obj, type = "LP")
-      return(merge(BMDs, wts_LP, by = "Model", sort = FALSE))
-
-    }
-
-
+    wts_LP <- weights_extract(mod.obj, type = "LP")
+    return(merge(BMDs, wts_LP, by = "Model", sort = FALSE))
   } else stop("please check mod.obj")
 
 
 }
 
-
-#' print function for BMABMDR objects
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
-#' @return datatframe containing BMDs and weights per model
+#' @param mod.obj is the result of pars_med
 #'
-#' @export print.BMADR
+#' @return .
 #'
 print.BMADR <- function(mod.obj) {
   message("Here are the estimated BMDs per model along with their weights")
@@ -517,13 +448,12 @@ print.BMADR <- function(mod.obj) {
                      row.names = FALSE))
 }
 
-#' summary function for BMABMDR objects
+#' Function for internal use
 #'
-#' @param mod_obj BMDBMA model object
-#' @param conv logical indicating if only converged models should be summarized.
-#' @return datatframe containing BMDs, weights and parameters per model
+#' @param mod.obj is the result of pars_med
+#' @param conv
 #'
-#' @export summary.BMADR
+#' @return .
 #'
 summary.BMADR <- function(mod.obj, conv = FALSE) {
   BMDWeights(mod.obj)

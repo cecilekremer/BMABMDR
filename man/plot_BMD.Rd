@@ -21,13 +21,13 @@ plot_BMD(
 
 \item{BMD.true}{true value for BMD. Only necessary if such exist}
 
-\item{x}{value?}
+\item{x}{doses}
 
-\item{xlab}{x-axis label}
+\item{BMD}{column name for BMD}
 
-\item{ylab}{y-axis label}
+\item{BMDL}{column name for BMDL}
 
-\item{title}{title}
+\item{BMDU}{column name for BMDU.}
 }
 \value{
 .

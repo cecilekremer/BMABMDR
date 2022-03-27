@@ -8,7 +8,6 @@
 \alias{llfG4_NI}
 \alias{llfQE4_NI}
 \alias{llfP4_NI}
-\alias{llfSM_N}
 \alias{llfL4_NI}
 \alias{llfE4_LNI}
 \alias{llfIE4_LNI}
@@ -18,7 +17,6 @@
 \alias{llfQE4_LNI}
 \alias{llfP4_LNI}
 \alias{llfL4_LNI}
-\alias{llfSM_LN}
 \alias{llfE4_ND}
 \alias{llfIE4_ND}
 \alias{llfH4_ND}
@@ -51,27 +49,23 @@ llfQE4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
 llfP4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfSM_N(x, nvec, dvec, mvec, s2vec)
-
 llfL4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfE4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfIE4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfIE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfH4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfH4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfLN4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfLN4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfG4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfG4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfQE4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfQE4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfP4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfP4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
-llfL4_LNI(x, nvec, dvec, mvec, s2vec, qval, shift)
-
-llfSM_LN(x, nvec, dvec, mvec, s2vec, shift)
+llfL4_LNI(x, nvec, dvec, mvec, s2vec, qval)
 
 llfE4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -89,43 +83,38 @@ llfP4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
 llfL4_ND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfE4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfIE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfIE4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfH4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfH4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfLN4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfLN4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfG4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfG4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfQE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfQE4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfP4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfP4_LND(x, nvec, dvec, mvec, s2vec, qval)
 
-llfL4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+llfL4_LND(x, nvec, dvec, mvec, s2vec, qval)
 }
 \arguments{
 \item{x}{parameter values}
 
-\item{nvec}{vector containing the number of observations at each dose level}
+\item{nvec}{number of observations}
 
-\item{dvec}{unique ordered dose levels}
+\item{dvec}{dose levels}
 
-\item{mvec}{vector containing the response at each dose level}
+\item{mvec}{response}
 
 \item{s2vec}{variance}
 
 \item{qval}{BMR}
-
-\item{shift}{value of the shift for negative geometric means}
 }
 \value{
 .
 }
 \description{
 Loglikelihood functions for the different dose response models
-}
-\examples{
-
 }

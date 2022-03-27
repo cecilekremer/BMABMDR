@@ -2,12 +2,14 @@
 % Please edit documentation in R/fun_Laplace.R
 \name{full.laplace_MA}
 \alias{full.laplace_MA}
-\title{function to perform model-averaging using Laplace approximation}
+\title{Perform model averaging using Full Laplace method}
 \usage{
 full.laplace_MA(
   data.N,
   data.LN,
-  prior.weights = rep(1, 16),
+  prior.weights,
+  priordist = "PERT",
+  prior.BMD = FALSE,
   ndraws = 30000,
   seed = 123,
   pvec = c(0.05, 0.5, 0.95),
@@ -15,52 +17,30 @@ full.laplace_MA(
 )
 }
 \arguments{
-\item{data.N}{list containing data values for the normal models}
+\item{data.N}{the input data as returned by function PREP_DATA_N}
 
-\item{data.LN}{list containing data values for the lognormal models}
+\item{data.LN}{the input data as returned by function PREP_DATA_LN}
 
-\item{prior.weights}{model weights determining if a model is to be included in the model averaging or not.
-1 implies model is included, 0 otherwise. Defaults to rep(1,16).}
+\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
 
-\item{ndraws}{number of draws to be made from the posterior distribution. Defaults to 30000}
+\item{priordist}{which prior distribution should be used (currently only "PERT" is implemented)}
 
-\item{seed}{random seed for reproducibility. Defaults to 123}
+\item{prior.BMD}{logical indicating whether an informative prior for the BMD is used (currently not implemented)}
 
-\item{pvec}{probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).}
+\item{ndraws}{the number of draws, default 30000}
 
-\item{plot}{logical variable to determine if the results should be plotted. Defaults to FALSE}
+\item{seed}{default 123}
+
+\item{pvec}{vector specifying the three BMD quantiles of interest}
+
+\item{plot}{logical indicating whether a simple plot of model fits should be shown}
 }
 \value{
-list containing the following results
-\enumerate{
-\item E4_N parameter estimates from the exponential model with normal distribution assumed
-\item IE4_N parameter estimates from the inverse-exponential model with normal distribution assumed
-\item H4_N parameter estimates from the Hill model with normal distribution assumed
-\item LN4_N parameter estimates from the lognormal model with normal distribution assumed
-\item G4_N parameter estimates from the gamma model with normal distribution assumed
-\item QE4_N parameter estimates from the quadratic-exponential model with normal distribution assumed
-\item P4_N parameter estimates from the probit model with normal distribution assumed
-\item L4_N parameter estimates from the logit model with normal distribution assumed
-\item E4_LN parameter estimates from the exponential model with lognormal distribution assumed
-\item IE4_LN parameter estimates from the inverse exponential model with lognormal distribution assumed
-\item H4_LN parameter estimates from the Hill model with lognormal distribution assumed
-\item LN4_LN parameter estimates from the lognormal model with lognormal distribution assumed
-\item G4_LN parameter estimates from the gamma model with lognormal distribution assumed
-\item QE4_LN parameter estimates from the quadratic exponential model with lognormal distribution assumed
-\item P4_LN parameter estimates from the probit model with lognormal distribution assumed
-\item L4_LN parameter estimates from the logit model with lognormal distribution assumed
-\item MA_laplace Laplace approximation model averaged BMD estimates using all the models
-\item MA_lp_conv Laplace approximation model averaged BMD estimates using only converged models
-\item weights_laplace model weights using Laplace approximation to the posterior
-\item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
-\item llN vector of model likelihoods for normal distribution
-\item llLN vector of model likelihoods for lognonormal distribution
-\item bf Bayes factor comparing the best model against saturated ANOVA model
-}
+List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
 }
 \description{
-function to perform model-averaging using Laplace approximation
+This method assumed data for continuous endpoints.
 }
-\examples{
-
+\details{
+More detailed descriprion
 }
