@@ -10,7 +10,7 @@
 #' @return .
 #'
 llfE4_NI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.E4_NI(x[1:4],dvec,qval))^2)*exp(x[5])) 
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.E4_NI(x[1:4],dvec,qval))^2)*exp(x[5]))
 }
 #' @rdname llfE4_NI
 llfIE4_NI=function(x,nvec,dvec,mvec,s2vec,qval){
@@ -42,7 +42,7 @@ llfL4_NI=function(x,nvec,dvec,mvec,s2vec,qval){
 }
 #' @rdname llfE4_NI
 llfE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.E4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)  
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.E4_LNI(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
 }
 #' @rdname llfE4_NI
 llfIE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval){
@@ -135,4 +135,176 @@ llfP4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
 #' @rdname llfE4_NI
 llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval){
   sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*((mvec-DRM.L4_LND(x[1:4],dvec,qval))^2)*exp(x[5])) - sum(mvec*nvec)
+}
+
+
+
+
+
+#' Loglikelihood functions for the different dose response models
+#'
+#' @param x parameter values
+#' @param nvec number of observations
+#' @param dvec dose levels
+#' @param yvec response
+#' @param qval BMR
+#'
+#' @return loglikelihood value at x.
+#'
+
+### Binomial
+llfE4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.E4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.E4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfIE4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.IE4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.IE4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfH4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.H4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.H4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfLN4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.LN4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.LN4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfG4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.G4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.G4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfQE4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.QE4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.QE4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfP4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.P4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.P4_Q(x, dvec, qval)))
+}
+#' @rdname llfE4_Q
+llfL4_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.L4_Q(x[1:3], dvec, qval) + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - DRM.L4_Q(x, dvec, qval) + .Machine$double.xmin))
+}
+#' @rdname llfE4_Q
+llfSM_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(x[1:length(dvec)] + .Machine$double.xmin) +
+        (nvec - yvec)*log(1 - x[1:length(dvec)] + .Machine$double.xmin))
+}
+
+
+### Beta-Binomial
+
+#' Loglikelihood functions for the different dose response models (Beta-Binomial)
+#'
+#' @param x parameter values
+#' @param nvec number of observations
+#' @param dvec dose levels
+#' @param yvec response
+#' @param qval BMR
+#' @param rho intra-cluster correlation parameter
+#'
+#' @return loglikelihood value at x.
+
+llfE42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.E4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+#' @rdname llfE42_Q
+llfIE42_Q=function(x,nvec,dvec,yvec,qval,rho){
+
+  m = DRM.IE4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+#' @rdname llfE42_Q
+llfH42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.H4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+#' @rdname llfE42_Q
+llfLN42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.LN4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+#' @rdname llfE42_Q
+llfG42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.G4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+
+#' @rdname llfE42_Q
+llfQE42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.QE4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+llfP42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.P4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
+}
+
+
+#' @rdname llfE42_Q
+llfL42_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = DRM.IE4_Q(x[1:3], dvec, qval)
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+.Machine$double.xmin) + lgamma(bbet+nvec-yvec+.Machine$double.xmin) -
+        lgamma(abet+bbet+nvec+.Machine$double.xmin) - lgamma(abet+.Machine$double.xmin) -
+        lgamma(bbet+.Machine$double.xmin) +
+        lgamma(abet+bbet+.Machine$double.xmin))
 }

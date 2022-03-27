@@ -8,6 +8,8 @@
 
 * Added tests and examples
 
+* Added two internal datasets
+
 
 ## Specific Updates
 
@@ -15,10 +17,9 @@
 
 * Updated methods for continuous endpoints in case of negative geometric means (this change affects almost all files)
 
-* 
+* Internal datsets are now available for testing the functions in the package
 
-
-## Specific Updates
+* The available datasets are: immunotoxicity(continuous-increasing), LearningMemory(continuous-decreasing)
 
 * To get the default prior for the maximum response (similar for LN):
 

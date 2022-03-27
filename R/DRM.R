@@ -88,7 +88,7 @@ DRM.L4_NI=function(par,x,q){
 #' @rdname DRM.E4_NI
 #' @export
 DRM.E4_LNI=function(par,x,q){
-  a=exp(par[1]) 
+  a=exp(par[1])
   c=exp(par[3])+1
   d=exp(par[4])
   b=-exp(-par[2]*d)*log(1-(log(1+q)/(a*(c-1))))
@@ -106,7 +106,7 @@ DRM.IE4_LNI=function(par,x,q){
 #' @rdname DRM.E4_NI
 #' @export
 DRM.H4_LNI=function(par,x,q){
-  a=exp(par[1]) 
+  a=exp(par[1])
   c=exp(par[3])+1
   d=exp(par[4])
   b=exp(par[2]*d)*(((a*(c-1))/log(1+q))-1)
@@ -115,7 +115,7 @@ DRM.H4_LNI=function(par,x,q){
 #' @rdname DRM.E4_NI
 #' @export
 DRM.LN4_LNI=function(par,x,q){
-  a=exp(par[1]) 
+  a=exp(par[1])
   c=exp(par[3])+(1+(log(1+q)/a))
   # c=exp(par[3])+1
   d=exp(par[4])
@@ -247,7 +247,7 @@ DRM.L4_ND=function(par,x,q){
 #' @rdname DRM.E4_NI
 #' @export
 DRM.E4_LND=function(par,x,q){
-  a=exp(par[1]) 
+  a=exp(par[1])
   c=1/(1+exp(-par[3]))
   d=exp(par[4])
   b=-exp(-par[2]*d)*log(1-(log(1-q)/(a*(c-1))))
@@ -274,7 +274,7 @@ DRM.H4_LND=function(par,x,q){
 #' @rdname DRM.E4_NI
 #' @export
 DRM.LN4_LND=function(par,x,q){
-  a=exp(par[1]) 
+  a=exp(par[1])
   c=(1+(log(1-q)/a))*(1/(1+exp(-par[3])))
   # c=1/(1+exp(-par[3]))
   d=exp(par[4])
@@ -322,4 +322,93 @@ DRM.L4_LND=function(par,x,q){
   d=exp(par[4])
   b=exp(-par[2]*d)*(logit(expit(c)-log(1-q)/a)-c)
   (a*(1+expit(c)))-(a*expit(c+(b*(x^d))))
+}
+
+
+
+
+
+#' These are the dose response models used internally in the BMA functions.
+#'
+#' @param par parameters in the order a, c, d, b
+#' @param x unique ordered dose levels
+#' @param q specified BMR
+#'
+#' @return Vector containing the expected response at each dose level
+#'
+#' @export
+#'
+DRM.E4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = -exp(-k*d)*log(1-q) # k is k (BMD)
+  a + (1 - a)*(1 - exp(-b*x^d)) - .Machine$double.xmin
+}
+
+#' @rdname DRM.E4_Q
+#' @export
+#'
+DRM.IE4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = -exp(k*d)*log(q)
+  a + (1 - a)*exp(-b*x^-d) - .Machine$double.xmin
+}
+#' @rdname DRM.E4_Q
+#' @export
+DRM.H4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = exp(k*d)*((1/q)-1)
+  a + (1 - a)*(1 - (b / (b + x^d))) - .Machine$double.xmin
+}
+#' @rdname DRM.E4_Q
+#' @export
+DRM.LN4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = exp(qnorm(q)-(k*d))
+  a + (1 - a)*pnorm(log(b) + d*log(x)) - .Machine$double.xmin
+}
+#' @rdname DRM.E4_Q
+#' @export
+DRM.G4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])+0.000000001
+  k = log(par[2])
+  b = qgamma(q, rate=1.0, shape=d)/exp(k)
+  a + (1 - a)*pgamma(x, shape = d, rate = b) - .Machine$double.xmin
+}
+#' @rdname DRM.E4_Q
+#' @export
+DRM.QE4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = (-log(1-q)) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)))
+  a + (1 - a)*(1 - exp(-b*x - ( (b/exp(d)) * x * (x - 1)))) - .Machine$double.xmin
+}
+#' @rdname DRM.E4_Q
+#' @export
+DRM.P4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = (qnorm(q*(1-a) + a) - qnorm(a))/exp(k*d);
+  pnorm(qnorm(a) + b*x^d) - .Machine$double.xmin
+
+}
+#' @rdname DRM.E4_Q
+#' @export
+DRM.L4_Q=function(par,x,q){
+  a = par[1]
+  d = exp(par[3])
+  k = log(par[2])
+  b = exp(-k*d)*(logit(q*(1-a)+a) - logit(a))
+  expit(logit(a) + b*x^d) - .Machine$double.xmin
+
 }

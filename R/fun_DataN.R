@@ -15,6 +15,24 @@
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution
 #'
+#' @examples
+#'
+#'  load("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = immunotoxicityData[1:5,], sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'
+#'  data_N <- PREP_DATA_N(data = immunotoxicityData[1:5,], sumstats = TRUE,
+#'                        sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
+#'
+#'
+#'  data_N <- PREP_DATA_N(data = immunotoxicityData[1:5,], sumstats = TRUE,
+#'                        sd = TRUE, q = 0.1,
+#'                        prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
+#'
+#'
+#' @description The function takes in the dataset and generates the data list and starting values needed by the stan
+#'              scripts containing the models to be fitted.
+#'
+#'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
 #' @export
