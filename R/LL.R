@@ -7,6 +7,10 @@
 #' @param s2vec variance
 #' @param qval BMR
 #'
+#'
+#' @description These set of functions compute the log-likelihood for a given parameter combinations.
+#'              The functions ending in _NI and _LNI implies log-likelihood for normally and lognormally distributed
+#'              outcomes respectively. Those ending with _Q implies log-likelihood for quantal data.
 #' @return .
 #'
 llfE4_NI=function(x,nvec,dvec,mvec,s2vec,qval){

@@ -15,16 +15,23 @@
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution
 #'
+#' @description The function takes in the dataset and generates the data list and starting values needed by the stan
+#'              scripts containing the models to be fitted. Using the supplied data, we compute starting values for the BMD from a fractional
+#'              polynomial model. The starting values and prior parameters for the background is determined
+#'              using the confidence interval around the mean in the 0-dose group. The starting value for c and d
+#'              are determined using....
+#'
 #' @examples{
 #'
 #'  load("immunotoxicityData.rda")  #load the immunotoxicity data
-#'  data_LN <- PREP_DATA_LN(data = immunotoxicityData[1:5,], sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
 #'
-#'  data_LN <- PREP_DATA_LN(data = immunotoxicityData[1:5,], sumstats = TRUE,
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
 #'                        sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
 #'
 #'
-#'  data_LN <- PREP_DATA_LN(data = immunotoxicityData[1:5,], sumstats = TRUE,
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
 #'                        sd = TRUE, q = 0.1,
 #'                        prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
 #'
@@ -101,8 +108,9 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
     # start values
     datf=data.frame(yy=exp(gmean.a),xx=dose.a+0.00000000000001) # exp(mi) = geometric mean
-    fpfit=gamlss(yy~fp(xx),family=LOGNO(),data=datf)
-    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
+    fpfit=gamlss::gamlss(yy~gamlss::fp(xx),family=gamlss::LOGNO(),data=datf)
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-
+                        predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
       (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))-q
     bmd.svh=try(uniroot(RISK, interval=c(-5, 0))$root,silent=T)
     bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,log(0.05))
@@ -526,8 +534,9 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
     # start value BMD
     datf=data.frame(yy=gmean.a,xx=dose.a+0.00000000000001)
-    fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
+    fpfit=gamlss::gamlss(yy~gamlss::fp(xx),family=gamlss::NO(),data=datf)
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-
+                        predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
       (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))+q
     bmd.svh=try(uniroot(RISK, interval=c(-5, 0))$root,silent=T)
     bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,log(0.05))

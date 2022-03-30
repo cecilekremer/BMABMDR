@@ -17,20 +17,25 @@
 #'
 #' @examples
 #'
-#'  load("immunotoxicityData.rda")  #load the immunotoxicity data
-#'  data_N <- PREP_DATA_N(data = immunotoxicityData[1:5,], sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  # we use the first 5 rows because those are observations from subjects belonging to the same group.
+#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+#'  sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
 #'
-#'  data_N <- PREP_DATA_N(data = immunotoxicityData[1:5,], sumstats = TRUE,
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
 #'                        sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
 #'
 #'
-#'  data_N <- PREP_DATA_N(data = immunotoxicityData[1:5,], sumstats = TRUE,
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
 #'                        sd = TRUE, q = 0.1,
 #'                        prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
 #'
 #'
 #' @description The function takes in the dataset and generates the data list and starting values needed by the stan
-#'              scripts containing the models to be fitted.
+#'              scripts containing the models to be fitted. Using the supplied data, we compute starting values for the BMD from a fractional
+#'              polynomial model. The starting values and prior parameters for the background is determined
+#'              using the confidence interval around the mean in the 0-dose group. The starting value for c and d
+#'              are determined using....
 #'
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
@@ -85,8 +90,9 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
     # start value BMD
     datf=data.frame(yy=mean.a,xx=dose.a+0.00000000000001)
-    fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
+    fpfit=gamlss::gamlss(yy~gamlss::fp(xx),family=gamlss::NO(),data=datf)
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-
+                        predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
       (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))-q
     bmd.svh=try(uniroot(RISK, interval=c(-5, 0))$root,silent=T)
     bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,log(0.05))
@@ -486,8 +492,9 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
     # start value BMD
     datf=data.frame(yy=mean.a,xx=dose.a+0.00000000000001)
-    fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
+    fpfit=gamlss::gamlss(yy~gamlss::fp(xx),family=gamlss::NO(),data=datf)
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(exp(x))))-
+                        predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))/
       (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001))))+q
     bmd.svh=try(uniroot(RISK, interval=c(-6, 0))$root,silent=T)
     bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,log(0.05))

@@ -13,6 +13,8 @@
 #' @param seed random seed for reproducibility
 #' @param pvec probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).
 #'
+#' @description
+#'
 #' @examples
 #'
 #' @return list containing the following results

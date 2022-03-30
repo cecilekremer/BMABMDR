@@ -18,10 +18,56 @@
 #' @param pvec vector specifying the three BMD quantiles of interest
 #' @param plot logical indicating whether a simple plot of model fits should be shown
 #'
-#' @return List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+#' @description Using MCMC, we compute the parameters of each model, perform model averaging using bridge sampling.
+#'              We also implemented a Laplace-MCMC method within this function where the model parameters are estimated
+#'              with MCMC, but the model weights are computed using Laplace approximation.
 #'
-#' @export
+#' @examples
+#'  # we use the first 5 rows because those are observations from subjects belonging to the same group.
+#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                        sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  pvec <- c(0.05, 0.5, 0.95)
+#'  prior.weights = rep(1, 16)
+#'  nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;ndr=30000
+#'  SBMD = sampling_MA(data_N,data_LN,prior.weights,
+#'                     ndraws=ndr,nrchains=nrch,
+#'                     nriterations=nriter,warmup=wu,delta=dl,
+#'                    treedepth=trd,seed=sd,pvec=pvec)
 #'
+#'
+#' @return a list containing the following important entries:
+#' \enumerate{
+#'   \item E4_N parameter estimates from the exponential model
+#'   \item IE4_N parameter estimates from the inverse-exponential model
+#'   \item H4_N parameter estimates from the Hill model
+#'   \item LN4_N parameter estimates from the lognormal model
+#'   \item G4_N parameter estimates from the gamma model
+#'   \item QE4_N parameter estimates from the quadratic-exponential model
+#'   \item P4_N parameter estimates from the probit model
+#'   \item L4_N parameter estimates from the logit model
+#'   \item E4_LN parameter estimates from the exponential model
+#'   \item IE4_LN parameter estimates from the inverse-exponential model
+#'   \item H4_LN parameter estimates from the Hill model
+#'   \item LN4_LN parameter estimates from the lognormal model
+#'   \item G4_LN parameter estimates from the gamma model
+#'   \item QE4_LN parameter estimates from the quadratic-exponential model
+#'   \item P4_LN parameter estimates from the probit model
+#'   \item L4_LN parameter estimates from the logit model
+#'   \item MA_laplace Laplace approximation model averaged BMD estimates using all the models
+#'   \item MA_bs Bridge sampling model averaged BMD estimates using all the models
+#'   \item MA_bs_conv Bridge sampling model averaged BMD estimates using only converged models
+#'   \item weights_laplace model weights using Laplace approximation to the posterior
+#'   \item weights_bs model weights computed using bridge sampling
+#'   \item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
+#'   \item llN vector of model likelihoods when the distribution is assumed normal
+#'    \item llLN vector of model likelihoods when the distribution is assumed lognormal
+#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
+#' }
+#' @export sampling_MA
+
 sampling_MA=function(data.N,data.LN,prior.weights,priordist = "PERT", prior.BMD = FALSE,
                      ndraws = 30000,nrchains=3,
                      nriterations=3000,warmup=1000,

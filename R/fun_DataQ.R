@@ -19,6 +19,12 @@
 #'
 #' @examples
 #'
+#' @description The function takes in the dataset and generates the data list and starting values needed by the stan
+#'              scripts containing the models to be fitted. Using the supplied data, we compute starting values for
+#'              the BMD from a fractional polynomial model. The starting values and prior parameters
+#'              for the background is determined using the confidence interval around the proportion
+#'              in the 0-dose group.
+#'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
 #' @export PREP_DATA_QA

@@ -3,6 +3,8 @@
 #' @param model_stan stan model
 #' @param pars parameters
 #'
+#' @description used internally to check for convergence for MCMC.
+#'
 #' @return .
 #'
 posterior_diag <- function(model_stan,

@@ -13,9 +13,49 @@
 #' @param pvec vector specifying the three BMD quantiles of interest
 #' @param plot logical indicating whether a simple plot of model fits should be shown
 #'
-#' @return List with the model-specific results, model weights, the model averaged BMD, BMDL and BMDU. In addition for each model a matrix with covariance/correlation between parameter b/BMD and parameter d is given. Some additional output used in other external functions is also given.
+#' @examples
+#'  # we use the first 5 rows because those are observations from subjects belonging to the same group.
+#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                        sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
 #'
-#' @export
+#'  pvec <- c(0.05, 0.5, 0.95)
+#'  prior.weights <- rep(1, 16); ndr <- 30000
+#'  FLBMD <- full.laplace_MA(data_N,data_LN,prior.weights,
+#'                        ndraws=ndr,seed=123,pvec=pvec)
+#'
+#' @description Using Laplace approximation, we compute the parameters of each model and compute model weights.
+#'
+#'
+#' @return
+#' \enumerate{
+#'   \item E4_N parameter estimates from the exponential model
+#'   \item IE4_N parameter estimates from the inverse-exponential model
+#'   \item H4_N parameter estimates from the Hill model
+#'   \item LN4_N parameter estimates from the lognormal
+#'   \item G4_N parameter estimates from the gamma model
+#'   \item QE4_N parameter estimates from the quadratic-exponential model
+#'   \item P4_N parameter estimates from the probit model
+#'   \item L4_N parameter estimates from the logit model
+#'   \item E4_LN parameter estimates from the exponential model
+#'   \item IE4_LN parameter estimates from the inverse-exponential model
+#'   \item H4_LN parameter estimates from the Hill model
+#'   \item LN4_LN parameter estimates from the lognormal
+#'   \item G4_LN parameter estimates from the gamma model
+#'   \item QE4_LN parameter estimates from the quadratic-exponential model
+#'   \item P4_LN parameter estimates from the probit model
+#'   \item L4_LN parameter estimates from the logit model
+#'   \item MA_laplace Laplace approximation model averaged BMD estimates using all the models
+#'   \item MA_lp_conv Laplace approximation model averaged BMD estimates using only converged models
+#'   \item weights_laplace model weights using Laplace approximation to the posterior
+#'   \item llN vector of model likelihoods for normal distribution
+#'   \item llLN vector of model likelihoods for lognormal distribution
+#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
+#' }
+#'
+#' @export full.laplace_MA
 #'
 full.laplace_MA=function(data.N, data.LN,
                          prior.weights,
