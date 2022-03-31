@@ -11,10 +11,10 @@ flat(dose, mean, inc)
 
 \item{mean}{value}
 
-\item{inc}{logical}
+\item{inc}{logical variable to indicate if the dose-resonse curve is increasing or decreasing}
 }
 \value{
-.
+.logical value indicating if the dose-response curve is flat or not
 }
 \description{
 Function for internal use

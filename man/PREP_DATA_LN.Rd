@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_DataLN.R
 \name{PREP_DATA_LN}
 \alias{PREP_DATA_LN}
-\title{Function to set data in the correct format}
+\title{Function to set data in the correct format, and also to generate starting values. Lognormal version}
 \usage{
 PREP_DATA_LN(
   data,
@@ -10,61 +10,47 @@ PREP_DATA_LN(
   geom.stats = FALSE,
   sd = TRUE,
   q,
-  prior = "PERT",
   bkg = NULL,
   maxy = NULL,
   prior.BMD = NULL,
   shape.a = 4,
   shape.c = 4,
-  shape.BMD = 4
+  shape.BMD = 1e-04
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, response, sd (or se), n}
+\item{data}{dataframe with input data, order of columns should be: dose, response, sd, n.}
 
-\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
+\item{sumstats}{logical. TRUE indicates summary data is provided while FALSE indicates individual-level data.}
 
-\item{geom.stats}{logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics}
+\item{geom.stats}{logical. TRUE if geometric summary data is provided.}
 
-\item{sd}{logical indicating whether standard deviation (T, default) or standard error (F) is provided}
+\item{sd}{logical. TRUE indicates that standard deviation per dose is provided,
+FALSE indicates that standard error per dose level is provided}
 
-\item{q}{specified BMR}
+\item{q}{the specified BMR}
 
-\item{prior}{which prior distribution will be used, defaults to "PERT" (and currently this is the only one implemented)}
+\item{bkg}{vector containing informative prior for the background.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{bkg}{vector containing minimum, most likely, and maximum value for the background response}
+\item{maxy}{vector containing informative prior for the maximum response.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{maxy}{vector containing minimum, most likely, and maximum value for the response at dose infinity}
+\item{prior.BMD}{vector containing informative prior for the BMD.
+It should be specified as minimum, most likely and maximum. Defaults to NULL.}
 
-\item{prior.BMD}{vector containing minimum, most likely, and maximum value for the BMD}
+\item{shape.a}{shape parameter that determines the flatness of the Pert prior for the background.
+Defaults to 4, which implies a peak at the most likely value.}
 
-\item{shape.a}{shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution}
+\item{shape.c}{shape parameter that determines the flatness of the Pert prior for c.
+Defaults to 4, which implies a peak at the most likely value.}
 
-\item{shape.c}{shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution}
-
-\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution}
+\item{shape.BMD}{shape parameter that determines the flatness of the Pert prior for the BMD.
+Defaults to 0.0001, which implies a flat prior.}
 }
 \value{
 List with data and start values in correct format to be directly used within the BMA functions.
 }
 \description{
 This function also generates appropriate start values and uninformative priors for each model
-}
-\examples{
-{
-
- load("immunotoxicityData.rda")  #load the immunotoxicity data
- data_LN <- PREP_DATA_LN(data = immunotoxicityData[1:5,], sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
-
- data_LN <- PREP_DATA_LN(data = immunotoxicityData[1:5,], sumstats = TRUE,
-                       sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
-
-
- data_LN <- PREP_DATA_LN(data = immunotoxicityData[1:5,], sumstats = TRUE,
-                       sd = TRUE, q = 0.1,
-                       prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
-
-
-}
-
 }

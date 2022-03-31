@@ -2,10 +2,11 @@
 % Please edit documentation in R/plottingfunctions.R
 \name{plot.BMADR}
 \alias{plot.BMADR}
-\title{Function for internal use}
+\title{Function to plot the results for continuous endpoints}
 \usage{
 plot.BMADR(
   mod.obj,
+  type = c("increasing", "decreasing"),
   weight_type = c("BS", "LP"),
   include_data = TRUE,
   all = TRUE,
@@ -13,19 +14,21 @@ plot.BMADR(
 )
 }
 \arguments{
-\item{mod.obj}{fitted models}
+\item{mod.obj}{BMDBMA model object}
 
-\item{weight_type}{BS or LP}
+\item{type}{dose-response type. It can either be "increasing" or "decreasing"}
 
-\item{include_data}{include data points in plot}
+\item{weight_type}{type of model weight to be plotted. It can either be "BS" or "LP"}
 
-\item{all}{all 4 plots in one plot}
+\item{include_data}{logical argument to indicate if data should be included in the plots. Defaults to TRUE}
 
-\item{title}{title for plot if all = TRUE}
+\item{all}{logical argument to indicate if all plots should be displayed}
+
+\item{title}{title of the plot}
 }
 \value{
 .
 }
 \description{
-Function for internal use
+Function to plot the results for continuous endpoints
 }

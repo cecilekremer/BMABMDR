@@ -2,26 +2,22 @@
 % Please edit documentation in R/output.R, R/outputQ.R
 \name{BMDLU}
 \alias{BMDLU}
-\title{Function for internal use}
+\title{function to extract the BMDL,BMD and BMDU}
 \usage{
 BMDLU(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c("continuous", "quantal"))
 
 BMDLU(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c("continuous", "quantal"))
 }
 \arguments{
-\item{mod.obj}{value}
-
-\item{pvec}{value}
-
 \item{mod_obj}{BMDBMA model object}
 }
 \value{
-.
+datatframe containing BMDLs, BMDs and BMDUs per model
 
 datatframe containing BMDLs, BMDs and BMDUs per model
 }
 \description{
-Function for internal use
+function to extract the BMDL,BMD and BMDU
 
 function to extract the BMDL,BMD and BMDU
 }
