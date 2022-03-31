@@ -2,24 +2,24 @@
 % Please edit documentation in R/output.R, R/outputQ.R
 \name{par_med}
 \alias{par_med}
-\title{Function for internal use}
+\title{function to get the median of the needed parameters for predicted values. This is done over all
+fitted models}
 \usage{
 par_med(mod.obj, type = c("continuous", "quantal"))
 
 par_med(mod.obj, type = c("continuous", "quantal"))
 }
 \arguments{
-\item{mod.obj}{value}
-
 \item{mod_obj}{BMDBMA model object}
 }
 \value{
-.
+dataframe containing parameter estimates per model
 
 dataframe containing parameter estimates per model
 }
 \description{
-Function for internal use
+function to get the median of the needed parameters for predicted values. This is done over all
+fitted models
 
 function to get the median of the needed parameters for predicted values. This is done over all
 fitted models

@@ -2,24 +2,22 @@
 % Please edit documentation in R/output.R, R/outputQ.R
 \name{BMDWeights}
 \alias{BMDWeights}
-\title{Function for internal use}
+\title{function to get BMDs and weights}
 \usage{
 BMDWeights(mod.obj, type = c("continuous", "quantal"))
 
 BMDWeights(mod.obj, type = c("continuous", "quantal"))
 }
 \arguments{
-\item{mod.obj}{is the result of pars_med}
-
 \item{mod_obj}{BMDBMA model object}
 }
 \value{
-.
+datatframe containing BMDs and weights per model
 
 datatframe containing BMDs and weights per model
 }
 \description{
-Function for internal use
+function to get BMDs and weights
 
 function to get BMDs and weights
 }
