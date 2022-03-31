@@ -2,29 +2,26 @@
 % Please edit documentation in R/fct_optim.R
 \name{fun_optim}
 \alias{fun_optim}
-\title{function to perform Laplace approximation for a given dose-response model.}
+\title{Function for internal use}
 \usage{
 fun_optim(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
 }
 \arguments{
 \item{mod}{stan model}
 
-\item{data}{list containing data values to be passed to the stan model file}
+\item{data}{input data}
 
-\item{stv}{list of starting values}
+\item{stv}{start values}
 
-\item{ndraws}{number of draws to be made from the posterior distribution}
+\item{ndraws}{ndraws}
 
-\item{seed}{random seed for reproducibility}
+\item{seed}{seed}
 
-\item{pvec}{probability vector to compute credible interval for the BMD}
+\item{pvec}{pvec}
 }
 \value{
-a stan results object
+.
 }
 \description{
-function to perform Laplace approximation for a given dose-response model.
-}
-\examples{
-
+Function for internal use
 }

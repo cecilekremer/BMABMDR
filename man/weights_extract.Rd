@@ -2,21 +2,18 @@
 % Please edit documentation in R/output.R
 \name{weights_extract}
 \alias{weights_extract}
-\title{function to extract the sampled values for the model parameters and the BMD}
+\title{Function for internal use}
 \usage{
 weights_extract(mod.obj, type = c("BS", "LP", "both"))
 }
 \arguments{
-\item{type}{type of weight to be extracted. It can be either of BS (bridge sampling), LP (Laplace) and
-both to extract bridge sampling and laplace approximation.}
+\item{mod.obj}{value}
 
-\item{mod_obj}{model object either of class stanfit or stanfitOptim}
-
-\item{model_name}{name of the model to be extracted}
+\item{type}{value}
 }
 \value{
-dataframe containing model estimates
+.
 }
 \description{
-function to extract the sampled values for the model parameters and the BMD
+Function for internal use
 }

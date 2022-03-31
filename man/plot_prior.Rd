@@ -2,26 +2,24 @@
 % Please edit documentation in R/plot_prior.R
 \name{plot_prior}
 \alias{plot_prior}
-\title{plot function for the prior and posterior distributio of parameter estimates}
+\title{Function to plot prior vs posterior distribution}
 \usage{
-plot_prior(mod.obj, data, model_name, parms = TRUE)
+plot_prior(mod.obj, data, model_name, parms, priordist, priorbmd)
 }
 \arguments{
-\item{mod.obj}{BMDBMA model object}
+\item{mod.obj}{the model object returned by full laplace or sampling method}
 
-\item{data}{data list from the \code{\link{PREP_DATA_N}} or \code{\link{PREP_DATA_LN}}}
+\item{data}{the data for a specific model used by the above method}
 
-\item{model_name}{name of the model whose parameters are to be plotted}
+\item{model_name}{the model for which plots should be generated}
 
-\item{parms}{logical indicating if foldchange or maximum response should be plotted.
-It can be either of c("E4_N","IE4_N","H4_N","LN4_N","G4_N",
-"QE4_N","P4_N","L4_N",
-"E4_LN","IE4_LN","H4_LN","LN4_LN",
-"G4_LN","QE4_LN","P4_LN","L4_LN")}
+\item{priordist}{the prior distribution used}
+
+\item{priorbmd}{logical indicating if informative prior for BMD was used}
 }
 \value{
-object of class ggplot
+.
 }
 \description{
-plot function for the prior and posterior distributio of parameter estimates
+Function to plot prior vs posterior distribution
 }

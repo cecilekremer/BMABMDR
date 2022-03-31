@@ -2,9 +2,15 @@
 % Please edit documentation in R/FUNs.R
 \name{fun.alpha}
 \alias{fun.alpha}
+\alias{fun.beta}
+\alias{pert_dist}
 \title{Functions to get parameters for PERT prior}
 \usage{
 fun.alpha(a, b, c, g)
+
+fun.beta(a, b, c, g)
+
+pert_dist(x, lb, ub, s1, s2)
 }
 \arguments{
 \item{a}{minimum}
@@ -13,7 +19,7 @@ fun.alpha(a, b, c, g)
 
 \item{c}{maximum}
 
-\item{g}{shape}
+\item{g}{shape of modified PERT}
 }
 \value{
 .

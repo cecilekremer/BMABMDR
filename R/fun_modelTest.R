@@ -17,6 +17,23 @@
 #'
 #' @examples
 #'
+#' @description The function compares the best fitting model to the saturated model using the BIC.
+#'
+#' @examples
+#' # we use the first 5 rows because those are observations from subjects belonging to the same group.
+#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                        sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'
+#'  pvec <- c(0.05, 0.5, 0.95)
+#'  nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;ndr=30000
+#'  modelTest(best.fit = 'E4_N', data.N = data_N, data.LN = data_LN,
+#'            stanBest = 'mE4_N', type = 'Laplace',
+#'            seed = 123, ndraws= 30000, nrchains = 3,
+#'            nriterations=nriter, warmup=wu, delta=dl, treedepth=trd)
+#'
 #'
 #' @export modelTest
 #'
@@ -41,7 +58,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       )
     )
 
-    data.modstanSM=list(N=data.N$data$N, n=data.N$data$n, m=data.N$data$m, s2=data.N$data$s2, shift=data.N$data$shift,
+    data.modstanSM=list(N=data.N$data$N, n=data.N$data$n, m=data.N$data$m, s2=data.N$data$s2,
+                        shift=data.N$data$shift,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                         data_type=data.N$data$data_type, priorg = data.N$data$shape.a
@@ -52,7 +70,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
 
       initf2 <- function(chain_id = 1) {
-        list(par=sv[1:(data.N$data$N+1)] + rnorm(data.N$data$N+1, sd = 0.01*abs(sv[1:(data.N$data$N+1)])) ,alpha = chain_id)
+        list(par=sv[1:(data.N$data$N+1)] + rnorm(data.N$data$N+1, sd = 0.01*abs(sv[1:(data.N$data$N+1)])),
+             alpha = chain_id)
       }
       init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
       fitstanSM = rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
@@ -64,7 +83,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
       parsSM = as.matrix(fitstanSM)
       means.SM = apply(parsSM[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
-      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))],
+                      2, median)
 
     }else if(type == 'Laplace'){
 
@@ -85,7 +105,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       llfun = paste0('llf',best.fit,'D')
     }
     llBestfitf = get(llfun)
-    llBestfit = llBestfitf(x = pars.bestfit, data.N$data$n, data.N$data$x, data.N$data$m, data.N$data$s2, data.N$data$q)
+    llBestfit = llBestfitf(x = pars.bestfit, data.N$data$n, data.N$data$x, data.N$data$m,
+                           data.N$data$s2, data.N$data$q)
 
     llSM = llfSM_N(pars.SM, data.N$data$n, data.N$data$x, data.N$data$m, data.N$data$s2)
 
@@ -123,7 +144,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       )
     )
 
-    data.modstanSM=list(N=data.LN$data$N, n=data.LN$data$n, m=data.LN$data$m, s2=data.LN$data$s2, shift=data.LN$data$shift,
+    data.modstanSM=list(N=data.LN$data$N, n=data.LN$data$n, m=data.LN$data$m, s2=data.LN$data$s2,
+                        shift=data.LN$data$shift,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                         data_type=data.LN$data$data_type, priorg = data.LN$data$shape.a
@@ -168,9 +190,11 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       llfun = paste0('llf',best.fit,'D')
     }
     llBestfitf = get(llfun)
-    llBestfit = llBestfitf(x = pars.bestfit, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$q, data.LN$data$shift)
+    llBestfit = llBestfitf(x = pars.bestfit, data.LN$data$n, data.LN$data$x,
+                           data.LN$data$m, data.LN$data$s2, data.LN$data$q, data.LN$data$shift)
 
-    llSM = llfSM_LN(x = pars.SM, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$shift)
+    llSM = llfSM_LN(x = pars.SM, data.LN$data$n, data.LN$data$x,
+                    data.LN$data$m, data.LN$data$s2, data.LN$data$shift)
 
     BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.LN$data$n)))
     BIC.SM = - 2 * llSM + ((data.LN$data$N + 1) * log(sum(data.LN$data$n)))

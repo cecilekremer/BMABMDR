@@ -2,16 +2,16 @@
 % Please edit documentation in R/output.R
 \name{print.BMADR}
 \alias{print.BMADR}
-\title{print function for BMABMDR objects}
+\title{Function for internal use}
 \usage{
 \method{print}{BMADR}(mod.obj)
 }
 \arguments{
-\item{mod_obj}{BMDBMA model object}
+\item{mod.obj}{is the result of pars_med}
 }
 \value{
-datatframe containing BMDs and weights per model
+.
 }
 \description{
-print function for BMABMDR objects
+Function for internal use
 }
