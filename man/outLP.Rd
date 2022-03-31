@@ -2,20 +2,20 @@
 % Please edit documentation in R/output.R
 \name{outLP}
 \alias{outLP}
-\title{output function for estimated model parameter from each model}
+\title{Function for internal use}
 \usage{
 outLP(par_obj, pvec, max.dose)
 }
 \arguments{
-\item{par_obj}{list containing parameter draws from either Laplace or MCMC fit}
+\item{par_obj}{value}
 
-\item{pvec}{probability vector to compute credible interval for the BMD.}
+\item{pvec}{value}
 
-\item{max.dose}{maximum dose tested}
+\item{max.dose}{logical}
 }
 \value{
-dataframe containing model estimates
+.
 }
 \description{
-output function for estimated model parameter from each model
+Function for internal use
 }

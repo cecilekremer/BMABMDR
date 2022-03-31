@@ -4,7 +4,7 @@
 \alias{DRM}
 \title{Function for internal use}
 \usage{
-DRM(Model, type = c("increasing", "decreasing", "quantal"))
+DRM(Model, type = c("increasing", "decreasing"))
 }
 \arguments{
 \item{Model}{which model}

@@ -8,12 +8,18 @@
 
 * Added tests and examples
 
-* Updated methods for continuous endpoints in case of negative geometric means (this change affects almost all files)
-
-* 
+* Added two internal datasets
 
 
 ## Specific Updates
+
+* Added function to get the available models. 
+
+* Updated methods for continuous endpoints in case of negative geometric means (this change affects almost all files)
+
+* Internal datsets are now available for testing the functions in the package
+
+* The available datasets are: immunotoxicity(continuous-increasing), LearningMemory(continuous-decreasing)
 
 * To get the default prior for the maximum response (similar for LN):
 
@@ -24,8 +30,8 @@
     mode.maxresp <- data\_N\$data\$priormu[3]*data\_N\$data\$priormu[1]
     
     max.maxresp <- data\_N\$data\$priorub[3]*data\_N\$data\$priormu[1]
+    
 
 *
 
 *
-

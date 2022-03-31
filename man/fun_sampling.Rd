@@ -2,7 +2,7 @@
 % Please edit documentation in R/fct_mcmc.R
 \name{fun_sampling}
 \alias{fun_sampling}
-\title{Function to perform MCMC sampling for a given dose-response model.}
+\title{Function for internal use}
 \usage{
 fun_sampling(
   mod,
@@ -21,32 +21,29 @@ fun_sampling(
 \arguments{
 \item{mod}{stan model}
 
-\item{data}{list containing data values to be passed to the stan model file}
+\item{data}{input data}
 
-\item{stv}{list of starting values}
+\item{stv}{start values}
 
-\item{ndraws}{number of draws to be made from the posterior distribution}
+\item{ndraws}{ndraws}
 
-\item{nrchains}{number of MCMC chains}
+\item{nrchains}{nrchains}
 
-\item{nriterations}{number of MCMC iterations}
+\item{nriterations}{nriterations}
 
-\item{warmup}{number of MCMC iterations for warmup}
+\item{warmup}{burnin}
 
-\item{delta}{adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.}
+\item{delta}{delta}
 
-\item{treedepth}{tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more}
+\item{treedepth}{treedepth}
 
-\item{seed}{random seed for reproducibility}
+\item{seed}{seed}
 
-\item{pvec}{probability vector to compute credible interval for the BMD}
+\item{pvec}{pvec}
 }
 \value{
-a stan results object
+.
 }
 \description{
-Function to perform MCMC sampling for a given dose-response model.
-}
-\examples{
-
+Function for internal use
 }

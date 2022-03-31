@@ -2,18 +2,18 @@
 % Please edit documentation in R/output.R
 \name{summary.BMADR}
 \alias{summary.BMADR}
-\title{summary function for BMABMDR objects}
+\title{Function for internal use}
 \usage{
 summary.BMADR(mod.obj, conv = FALSE)
 }
 \arguments{
-\item{conv}{logical indicating if only converged models should be summarized.}
+\item{mod.obj}{is the result of pars_med}
 
-\item{mod_obj}{BMDBMA model object}
+\item{conv}{}
 }
 \value{
-datatframe containing BMDs, weights and parameters per model
+.
 }
 \description{
-summary function for BMABMDR objects
+Function for internal use
 }

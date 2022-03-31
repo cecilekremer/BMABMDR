@@ -11,7 +11,7 @@ DR_scatter(
   y_DR_df,
   x_DRM_df,
   y_DRM_df,
-  col_DRM = brewer.pal(3, "Set1")[1]
+  col_DRM = RColorBrewer::brewer.pal(3, "Set1")[1]
 )
 }
 \arguments{

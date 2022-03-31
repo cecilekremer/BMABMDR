@@ -7,9 +7,7 @@
 \alias{llfLN42_Q}
 \alias{llfG42_Q}
 \alias{llfQE42_Q}
-\alias{llfP42_Q}
 \alias{llfL42_Q}
-\alias{llfSM2_Q}
 \title{Loglikelihood functions for the different dose response models (Beta-Binomial)}
 \usage{
 llfE42_Q(x, nvec, dvec, yvec, qval, rho)
@@ -24,11 +22,7 @@ llfG42_Q(x, nvec, dvec, yvec, qval, rho)
 
 llfQE42_Q(x, nvec, dvec, yvec, qval, rho)
 
-llfP42_Q(x, nvec, dvec, yvec, qval, rho)
-
 llfL42_Q(x, nvec, dvec, yvec, qval, rho)
-
-llfSM2_Q(x, nvec, dvec, yvec, qval, rho)
 }
 \arguments{
 \item{x}{parameter values}
