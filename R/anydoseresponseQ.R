@@ -5,10 +5,6 @@
 #' @param n.a number of observations per dose level
 #' @param cluster logical variable indicating if the data is clustered or not.
 #'
-#' @examples
-#'
-#' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compare these two models using model posterior probabilities.
 #' @return list containing estimated Bayes factor and the decision.
 #'
 #' @export anydoseresponseQ

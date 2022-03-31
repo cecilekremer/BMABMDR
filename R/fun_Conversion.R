@@ -1,18 +1,12 @@
 #' Function to convert arithmetic to geometric mean/standard deviation
 #'
-#'
+#' Converst arithmetic mean (sd) on original scale to geometric mean (sd) to be used in LNI method
 #'
 #' @param am Arithmetic means per odered dose level, on original scale
 #' @param asd Arithmetic standard deviations per odered dose level, on original scale
 #'
-#' @description Converst arithmetic mean (sd) on original scale to geometric mean (sd) to be used in LNI method
-#'
-#' @examples
-#'  data("immunotoxicityData.rda")
-#'  NtoLN(am = immunotoxicityData$Mean, asd = immunotoxicityData$SD)
-#'
 #' @return Vector containing the geometric means and standard deviations per ordered dose level.
-#'
+#' @export NtoLN
 #'
 NtoLN=function(am,asd){
   gm=am/sqrt(asd^2/am^2+1)
@@ -27,13 +21,8 @@ NtoLN=function(am,asd){
 #' @param gm Geometric means per odered dose level, on original scale
 #' @param gsd Geometric standard deviations per odered dose level, on original scale
 #'
-#' @description Converst arithmetic mean (sd) on original scale to geometric mean (sd) to be used in LNI method
-#'
-#' @examples
-#'  data("immunotoxicityData.rda")
-#'  LNtoN(gm = immunotoxicityData$Mean, gsd = immunotoxicityData$SD)
-#'
 #' @return Vector containing the arithmetic means and standard deviations per ordered dose level.
+#' @export LNtoN
 #'
 LNtoN=function(gm,gsd){
   am=exp(log(gm)+log(gsd)^2/2)

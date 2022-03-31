@@ -1,26 +1,14 @@
-#' Function to determine if there is a dose-response effect (Normally distributed data version)
+#' Function to determine if there is a dose-response effect (continuous data version)
 #'
 #' @param dose.a dose levels
 #' @param mean.a mean response
 #' @param sd.a standard deviation
 #' @param n.a number of observations per dose level
 #'
-#' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compare these two models using model posterior probabilities.
-#'
-#' @examples
-#'
-#' # we use the first 5 rows because those are observations from subjects belonging to the same group.
-#' data("immunotoxicityData.rda")  #load the immunotoxicity data
-#' anydoseresponseN(dose.a = immunotoxicityData$Dose[1:5],
-#'                  mean.a = immunotoxicityData$Mean[1:5],
-#'                  sd.a = immunotoxicityData$SD[1:5],
-#'                  n.a = immunotoxicityData$n[1:5])
-#'
-#' @return list containing Bayes factor and decision.
+#' @return list containing Baye's factor and decision.
 #'
 #' @export anydoseresponseN
-
+#'
 anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
   nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
@@ -124,15 +112,6 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 #' @param sd.a standard deviation
 #' @param n.a number of observations per dose level
 #'
-#' # we use the first 5 rows because those are observations from subjects belonging to the same group.
-#' data("immunotoxicityData.rda")  #load the immunotoxicity data
-#' anydoseresponseLN(dose.a = immunotoxicityData$Dose[1:5],
-#'                  mean.a = immunotoxicityData$Mean[1:5],
-#'                  sd.a = immunotoxicityData$SD[1:5],
-#'                  n.a = immunotoxicityData$n.a[1:5])
-#'
-#' @description This function tests for dose response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compare these two models using model posterior probabilities.
 #' @return list containing Baye's factor and decision.
 #'
 #' @export anydoseresponseLN
