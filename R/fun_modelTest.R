@@ -17,6 +17,23 @@
 #'
 #' @examples
 #'
+#' @description The function compares the best fitting model to the saturated model using the BIC.
+#'
+#' @examples
+#' # we use the first 5 rows because those are observations from subjects belonging to the same group.
+#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                        sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'
+#'  pvec <- c(0.05, 0.5, 0.95)
+#'  nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;ndr=30000
+#'  modelTest(best.fit = 'E4_N', data.N = data_N, data.LN = data_LN,
+#'            stanBest = 'mE4_N', type = 'Laplace',
+#'            seed = 123, ndraws= 30000, nrchains = 3,
+#'            nriterations=nriter, warmup=wu, delta=dl, treedepth=trd)
+#'
 #'
 #' @export modelTest
 #'
