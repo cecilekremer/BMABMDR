@@ -246,21 +246,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
 
-  # if(!is.null(prior.BMD)){
-  #   mode.BMD = prior.BMD[2]/maxDose
-  #   min.BMD = prior.BMD[1]/maxDose
-  #   if(min.BMD == 0) min.BMD = 0.0001
-  #   max.BMD = prior.BMD[3]/maxDose
-  # }
-  #
-  # # Default (normal) priors on k, d, sigma
-  # # prvar.k=1; prmean.k=1
-  # if(!is.null(prior.BMD)){
-  #   BMD.vec = c(min.BMD, mode.BMD, max.BMD)
-  # }else{
-  #   BMD.vec = c(0,0.5,1)
-  #   message("Default prior choices used on BMD")
-  # }
   prvar.d=1; prmean.d=0
   # prvar.d=(exp(sqrt(0.18)))^2; prmean.d=2
   prvar.s=1; prmean.s=-2*log(1.5*mean(gsd.a))
@@ -272,7 +257,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   c.vec = c(min.max/mode.min, mode.max/mode.min, max.max/mode.min)
   if(c.vec[1] == 0) c.vec[1] = 0.0001
   if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
-  # if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[1] + (c.vec[3] - c.vec[1])/2 - 0.01
 
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
@@ -322,11 +306,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
                    test.var = test.var
   )
 
-
-
-
-  # test for dose-response effect
-  # DR.effect = anydoseresponseNI(dose.a,mean.a,sd.a,n.a)
 
   # data in correct format
   return(ret.list)
