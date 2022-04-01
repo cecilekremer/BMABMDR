@@ -1,32 +1,47 @@
 #' Function to set data in the correct format
 #'
 #' This function also generates appropriate start values and uninformative priors for each model
-#' Input should be given as arithmetic mean and standard deviation on the original scale
 #'
-#' @param data dataframe with input data, order of columns should be: dose, response, sd, n.
-#' @param sumstats logical. TRUE indicates summary data is provided while FALSE indicates individual-level data.
-#' @param geom.stats logical. TRUE if geometric summary data is provided.
-#' @param sd logical. TRUE indicates that standard deviation per dose is provided,
-#'           FALSE indicates that standard error per dose level is provided
-#' @param q the specified BMR
-#' @param bkg vector containing informative prior for the background.
-#'            It should be specified as minimum, most likely and maximum. Defaults to NULL.
-#' @param maxy vector containing informative prior for the maximum response.
-#'             It should be specified as minimum, most likely and maximum. Defaults to NULL.
-#' @param prior.BMD vector containing informative prior for the BMD.
-#'                  It should be specified as minimum, most likely and maximum. Defaults to NULL.
-#' @param shape.a shape parameter that determines the flatness of the Pert prior for the background.
-#'                 Defaults to 4, which implies a peak at the most likely value.
-#' @param shape.c shape parameter that determines the flatness of the Pert prior for c.
-#'                Defaults to 4, which implies a peak at the most likely value.
-#' @param shape.BMD shape parameter that determines the flatness of the Pert prior for the BMD.
-#'                  Defaults to 0.0001, which implies a flat prior.
+#' @param data a dataframe with input data, order of columns should be: dose, response, sd (or se), n
+#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
+#' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics
+#' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
+#' @param q specified BMR
+#' @param prior which prior distribution will be used, defaults to "PERT" (and currently this is the only one implemented)
+#' @param bkg vector containing minimum, most likely, and maximum value for the background response
+#' @param maxy vector containing minimum, most likely, and maximum value for the response at dose infinity
+#' @param prior.BMD vector containing minimum, most likely, and maximum value for the BMD
+#' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution
+#' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution
+#' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution
+#'
+#' @examples
+#'
+#'  # we use the first 5 rows because those are observations from subjects belonging to the same group.
+#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+#'  sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+#'                        sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
+#'
+#'
+#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+#'                        sd = TRUE, q = 0.1,
+#'                        prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
+#'
+#'
+#' @description The function takes in the dataset and generates the data list and starting values needed by the stan
+#'              scripts containing the models to be fitted. Using the supplied data, we compute starting values for the BMD from a fractional
+#'              polynomial model. The starting values and prior parameters for the background is determined
+#'              using the confidence interval around the mean in the 0-dose group. The starting value for c and d
+#'              are determined using....
 #'
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
-#' @export PREP_DATA_N
-#'
+#' @export
+
 PREP_DATA_N <- function(data, # a dataframe with input data, order of columns should be: dose, response, sd, n
                         sumstats = TRUE, # TRUE if summary data, FALSE if individual data
                         geom.stats = FALSE, # TRUE if geometric summary data is provided
