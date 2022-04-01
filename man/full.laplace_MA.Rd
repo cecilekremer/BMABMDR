@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_Laplace.R
 \name{full.laplace_MA}
 \alias{full.laplace_MA}
-\title{function to perform model-averaging using Laplace approximation}
+\title{Perform model averaging using Full Laplace method}
 \usage{
 full.laplace_MA(
   data.N,
@@ -15,52 +15,69 @@ full.laplace_MA(
 )
 }
 \arguments{
-\item{data.N}{list containing data values for the normal models}
+\item{data.N}{the input data as returned by function PREP_DATA_N}
 
-\item{data.LN}{list containing data values for the lognormal models}
+\item{data.LN}{the input data as returned by function PREP_DATA_LN}
 
-\item{prior.weights}{model weights determining if a model is to be included in the model averaging or not.
-1 implies model is included, 0 otherwise. Defaults to rep(1,16).}
+\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
 
-\item{ndraws}{number of draws to be made from the posterior distribution. Defaults to 30000}
+\item{ndraws}{the number of draws, default 30000}
 
-\item{seed}{random seed for reproducibility. Defaults to 123}
+\item{seed}{default 123}
 
-\item{pvec}{probability vector to compute credible interval for the BMD. Defaults to c(0.05,0.5,0.95).}
+\item{pvec}{vector specifying the three BMD quantiles of interest}
 
-\item{plot}{logical variable to determine if the results should be plotted. Defaults to FALSE}
+\item{plot}{logical indicating whether a simple plot of model fits should be shown}
+
+\item{priordist}{which prior distribution should be used (currently only "PERT" is implemented)}
+
+\item{prior.BMD}{logical indicating whether an informative prior for the BMD is used (currently not implemented)}
 }
 \value{
-list containing the following results
 \enumerate{
-\item E4_N parameter estimates from the exponential model with normal distribution assumed
-\item IE4_N parameter estimates from the inverse-exponential model with normal distribution assumed
-\item H4_N parameter estimates from the Hill model with normal distribution assumed
-\item LN4_N parameter estimates from the lognormal model with normal distribution assumed
-\item G4_N parameter estimates from the gamma model with normal distribution assumed
-\item QE4_N parameter estimates from the quadratic-exponential model with normal distribution assumed
-\item P4_N parameter estimates from the probit model with normal distribution assumed
-\item L4_N parameter estimates from the logit model with normal distribution assumed
-\item E4_LN parameter estimates from the exponential model with lognormal distribution assumed
-\item IE4_LN parameter estimates from the inverse exponential model with lognormal distribution assumed
-\item H4_LN parameter estimates from the Hill model with lognormal distribution assumed
-\item LN4_LN parameter estimates from the lognormal model with lognormal distribution assumed
-\item G4_LN parameter estimates from the gamma model with lognormal distribution assumed
-\item QE4_LN parameter estimates from the quadratic exponential model with lognormal distribution assumed
-\item P4_LN parameter estimates from the probit model with lognormal distribution assumed
-\item L4_LN parameter estimates from the logit model with lognormal distribution assumed
+\item E4_N parameter estimates from the exponential model
+\item IE4_N parameter estimates from the inverse-exponential model
+\item H4_N parameter estimates from the Hill model
+\item LN4_N parameter estimates from the lognormal
+\item G4_N parameter estimates from the gamma model
+\item QE4_N parameter estimates from the quadratic-exponential model
+\item P4_N parameter estimates from the probit model
+\item L4_N parameter estimates from the logit model
+\item E4_LN parameter estimates from the exponential model
+\item IE4_LN parameter estimates from the inverse-exponential model
+\item H4_LN parameter estimates from the Hill model
+\item LN4_LN parameter estimates from the lognormal
+\item G4_LN parameter estimates from the gamma model
+\item QE4_LN parameter estimates from the quadratic-exponential model
+\item P4_LN parameter estimates from the probit model
+\item L4_LN parameter estimates from the logit model
 \item MA_laplace Laplace approximation model averaged BMD estimates using all the models
 \item MA_lp_conv Laplace approximation model averaged BMD estimates using only converged models
 \item weights_laplace model weights using Laplace approximation to the posterior
-\item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
 \item llN vector of model likelihoods for normal distribution
-\item llLN vector of model likelihoods for lognonormal distribution
+\item llLN vector of model likelihoods for lognormal distribution
 \item bf Bayes factor comparing the best model against saturated ANOVA model
 }
 }
 \description{
-function to perform model-averaging using Laplace approximation
+Using Laplace approximation, we compute the parameters and weights of each model.
+}
+\details{
+This method assumed data for continuous endpoints.
+
+More detailed descriprion
 }
 \examples{
+ # we use the first 5 rows because those are observations from subjects belonging to the same group.
+ data("immunotoxicityData.rda")  #load the immunotoxicity data
+ data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
+                       sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+ data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+                         sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+
+ pvec <- c(0.05, 0.5, 0.95)
+ prior.weights <- rep(1, 16); ndr <- 30000
+ FLBMD <- full.laplace_MA(data_N,data_LN,prior.weights,
+                       ndraws=ndr,seed=123,pvec=pvec)
 
 }
