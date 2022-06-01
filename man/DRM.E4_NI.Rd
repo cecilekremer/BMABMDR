@@ -110,5 +110,8 @@ DRM.L4_LND(par, x, q, shift)
 Vector containing the expected response at each dose level
 }
 \description{
+the mean/median dose-response model per dose-level.
+}
+\details{
 These are the dose response models used internally in the BMA functions.
 }

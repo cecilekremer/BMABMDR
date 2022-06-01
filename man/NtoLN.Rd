@@ -17,3 +17,8 @@ Vector containing the geometric means and standard deviations per ordered dose l
 \description{
 Converst arithmetic mean (sd) on original scale to geometric mean (sd) to be used in LNI method
 }
+\examples{
+ data("immunotoxicityData.rda")
+ NtoLN(am = immunotoxicityData$Mean, asd = immunotoxicityData$SD)
+
+}
