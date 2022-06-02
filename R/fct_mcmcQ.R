@@ -18,7 +18,6 @@
 #'
 #' @export fun_samplingQ
 #'
-
 fun_samplingQ = function(mod, data, stv,
                          ndraws = ndraws,nrchains=nrchains,
                          nriterations=nriterations,warmup=warmup,
@@ -29,7 +28,8 @@ fun_samplingQ = function(mod, data, stv,
   if(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
-  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
+  n.attempts <- 1
+  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -45,10 +45,17 @@ fun_samplingQ = function(mod, data, stv,
     }
     par[3] = par[3] + rnorm(1, sd = 0.01*abs(par[3]))
 
-    opt=try(rstan::optimizing(mod,data = data,
-                              seed=as.integer(seed),init=svh),silent=T)
+    svh = list(par1 = par[1], par2 = par[2], par3 = par[3])
+
+    #opt=try(rstan::optimizing(mod,data = data,
+    #                          seed=as.integer(seed),init=svh),silent=T)
+    # seed <- runif(1, 1, 10000)
+    opt=try(rstan::optimizing(mod,data = data, init = svh,
+                              seed=as.integer(seed)),silent=T)
+    n.attempts <- n.attempts + 1
   }
 
+  # if(!ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
   if(data$is_bin == 1) {
 
     sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3')]
@@ -93,8 +100,6 @@ fun_samplingQ = function(mod, data, stv,
     }
   }
 
-
-
   init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
   fitstan <- rstan::sampling(mod, data = data,
                              init=init_ll,iter = nriterations,
@@ -104,19 +109,16 @@ fun_samplingQ = function(mod, data, stv,
                                             max_treedepth =treedepth),
                              show_messages = F, refresh = 0)
 
-  while(is.na(dim(fitstan)[1])){
 
-    init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+  if(is.na(dim(fitstan)[1])){
 
-    fitstan=try(rstan::sampling(mod,data = data,
-                                init=init_ll,iter = nriterations,
-                                chains = nrchains,warmup=warmup,seed=123,
-                                control = list(adapt_delta = delta,
-                                               max_treedepth =treedepth),
-                                show_messages = F, refresh = 0),silent=T)
+    fitstan <- NULL
+
   }
+
 
 
   return(fitstan)
 
 }
+

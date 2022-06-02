@@ -30,8 +30,10 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
                          prior.BMD = NULL, # possible expert prior on the BMD,
                          shape.a = 4, #scale parameter for Pert priors for a
                          shape.BMD = 0.0001, #scale parameter for the Pert priors for BMD
-                         cluster = FALSE # indicate if data is clustered
-
+                         cluster = FALSE, # indicate if data is clustered
+                         # prmean.d = 1, prmean.dQE4 = 0
+                         prior.d = c('N11', 'EPA'),
+                         extended = TRUE
 ){
 
   if(sumstats == TRUE){
@@ -127,7 +129,14 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 
   ## Default prior BMD
   BMD.min <- .Machine$double.xmin
-  BMD.max <- 1
+  if(extended == FALSE){
+    BMD.max <- 1
+  }else{
+    BMD.max <- maxDose
+    if(maxDose <= 1){
+      BMD.max <- maxDose*1000
+    }
+  }
   BMD.mode <- 0.5
 
   ## If info on BMD is given
@@ -152,34 +161,53 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
 
   # Default (normal) priors on k, d, Pert on a
-  prvar.d=1; prmean.d=0;
+  # prvar.d=1; prmean.d=1;
+  # prmean.dQE4=0
+  if(prior.d == 'N11'){
+    prvar.d = 1; prmean.d = 1; truncd = 5
+  }else if(prior.d == 'EPA'){
+    # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
+    prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
+    # prvar.d = 1; prmean.d = 1; truncd = 10000
+  }
+  # prvar.d=sqrt(0.5); prmean.d = prmean.d
+  prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
 
   #prvar.k=1; prmean.k=1
   # family 1a
   priormu1a <- c(a.vec[2], BMD.vec[2], prmean.d, ifelse(is_betabin==1, rhohat, 0))
+  priormu1bQ <- c(a.vec[2], BMD.vec[2], prmean.dQE4, ifelse(is_betabin==1, rhohat, 0))
   priorSigma1a <- diag(c(1, 1, prvar.d))
+  priorSigma1bQ <- diag(c(1, 1, prvar.dQE4))
+
   priorlb1a <- c(a.vec[1], BMD.vec[1])
   priorub1a <- c(a.vec[3], BMD.vec[3])
 
   if(is_bin==1) {
     start = list(par1 = priormu1a[1], par2 = bmd.sv, par3 = priormu1a[3])
+    startQ = list(par1 = priormu1a[1], par2 = bmd.sv, par3 = priormu1bQ[3])
+
   } else {
     rho <- rhohat; dim(rho) <- 1
     start = list(par1 = priormu1a[1], par2 = bmd.sv, par3 = priormu1a[3],
                  rho = rho )
+    startQ = list(par1 = priormu1a[1], par2 = bmd.sv, par3 = priormu1bQ[3],
+                  rho = rho )
   }
 
 
   return(list(
     # data and priors
     data = list(N = N, n = n.a, x = dose.a, y = y.a, yint = y.a, nint = n.a, maxD = maxDose,
-                q = q, priormu = priormu1a,
+                q = q, priormu = priormu1a, priormuQ = priormu1bQ, priorSigmaQ=priorSigma1bQ,
+                truncd = truncd, truncdQ = truncdQ,
                 priorlb = priorlb1a, priorub = priorub1a, priorSigma = priorSigma1a,
-                eps = .Machine$double.xmin, priorgama = c(shape.a, shape.BMD),
+                eps = 1.0E-06, priorgama = c(shape.a, shape.BMD),
                 init_b = 1, is_informative_a = is_informative_a, is_informative_BMD = is_informative_BMD,
                 is_bin = is_bin, is_betabin = is_betabin),
     # start values
-    start = start
+    start = start,
+    startQ = startQ
   ))
 
 }

@@ -83,57 +83,70 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   data=data.N$data
   start=data.N$start
+  startQ=data.N$startQ
 
   BMDL=c(); BMD=c(); BMDU=c()
   converged=c()
 
+  nModels = 16
+
   ## Obtain model parameters via MCMC sampling
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[1]))
+  }
   if(prior.weights[1]>0){
-    print(1)
+    # print(1)
 
     fitstanE4_N = fun_sampling(stanmodels$mE4, data, start,
                                ndraws,nrchains,
                                nriterations,warmup,
                                delta,treedepth,seed,pvec)
 
-    parsE4N <- par_extract(fitstanE4_N, model_name = "E4_N")
-    # parsE4N[,"BMD"] <- parsE4N[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanE4_N)){
+      prior.weights[1] <- 0
+      warning('Difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanE4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanE4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
-    # conv_a_r = 0; if(convergence_stat['a', 'Rhat_Convergence'] == "Convergence") conv_a_r = 1
+      parsE4N <- par_extract(fitstanE4_N, model_name = "E4_N")
+      # parsE4N[,"BMD"] <- parsE4N[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_E4_N <- sum(sapply(rstan::get_sampler_params(fitstanE4_N, inc_warmup = F),
-                           function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanE4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanE4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
+      # conv_a_r = 0; if(convergence_stat['a', 'Rhat_Convergence'] == "Convergence") conv_a_r = 1
 
-    E4resNI=quantile(as.matrix(fitstanE4_N)[,"par2"]*data$maxD,pvec)
-    E4resNI=c(E4resNI,apply(as.matrix(fitstanE4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(E4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_E4_N <- sum(sapply(rstan::get_sampler_params(fitstanE4_N, inc_warmup = F),
+                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    E4outNI <- outLP(parsE4N, pvec, data$maxD)
+      E4resNI=quantile(as.matrix(fitstanE4_N)[,"par2"]*data$maxD,pvec)
+      E4resNI=c(E4resNI,apply(as.matrix(fitstanE4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(E4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 1){
-      DRM_E4_N = DRM.E4_NI(E4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_E4_N = DRM.E4_ND(E4resNI[4:7], data$x, data$q)
+      E4outNI <- outLP(parsE4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_E4_N = DRM.E4_NI(E4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_E4_N = DRM.E4_ND(E4resNI[4:7], data$x, data$q)
+      }
+
+
+      # Covariance between b-d and between BMD-d
+      E4covNI = c(cov(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      E4corrNI = c(cor(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, E4resNI[1]); BMD=c(BMD, E4resNI[2]); BMDU=c(BMDU, E4resNI[3])
+      bridgeE4N = bridgesampling::bridge_sampler(fitstanE4_N, silent = T) # compute log marginal likelihood
     }
-
-
-    # Covariance between b-d and between BMD-d
-    E4covNI = c(cov(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                cov(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    E4corrNI = c(cor(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, E4resNI[1]); BMD=c(BMD, E4resNI[2]); BMDU=c(BMDU, E4resNI[3])
-    bridgeE4N = bridgesampling::bridge_sampler(fitstanE4_N, silent = T) # compute log marginal likelihood
-  }else{E4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeE4N=NA; converged=c(converged, NA); E4covNI=rep(NA,2); E4corrNI=rep(NA,2); DRM_E4_N=rep(NA,length(data$x))
+  }
+  if(prior.weights[1] == 0){E4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeE4N=NA; converged=c(converged, NA); E4covNI=rep(NA,2); E4corrNI=rep(NA,2); DRM_E4_N=rep(NA,length(data$x))
   parsE4N <- NA
   div_E4_N <- NA
   E4outNI <- t(data.frame(
@@ -152,51 +165,61 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[2]))
+  }
   if(prior.weights[2]>0){
-    print(2)
+    # print(2)
 
     fitstanIE4_N = fun_sampling(stanmodels$mIE4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsIE4N <- par_extract(fitstanIE4_N, model_name = "IE4_N")
-    # parsIE4N[,"BMD"] <- parsIE4N[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanIE4_N)){
+      prior.weights[2] <- 0
+      warning('Difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanIE4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanIE4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsIE4N <- par_extract(fitstanIE4_N, model_name = "IE4_N")
+      # parsIE4N[,"BMD"] <- parsIE4N[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_IE4_N <- sum(sapply(rstan::get_sampler_params(fitstanIE4_N, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanIE4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanIE4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    IE4resNI=(quantile(as.matrix(fitstanIE4_N)[,"par2"],pvec))*data$maxD
-    IE4resNI=c(IE4resNI,apply(as.matrix(fitstanIE4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(IE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_IE4_N <- sum(sapply(rstan::get_sampler_params(fitstanIE4_N, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    IE4outNI <- outLP(parsIE4N, pvec, data$maxD)
+      IE4resNI=(quantile(as.matrix(fitstanIE4_N)[,"par2"],pvec))*data$maxD
+      IE4resNI=c(IE4resNI,apply(as.matrix(fitstanIE4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(IE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 1){
-      DRM_IE4_N = DRM.IE4_NI(IE4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_IE4_N = DRM.IE4_ND(IE4resNI[4:7], data$x, data$q)
+      IE4outNI <- outLP(parsIE4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_IE4_N = DRM.IE4_NI(IE4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_IE4_N = DRM.IE4_ND(IE4resNI[4:7], data$x, data$q)
+      }
+
+      # Covariance between b-d and between BMD-d
+      IE4covNI = c(cov(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      IE4corrNI = c(cor(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, IE4resNI[1]); BMD=c(BMD, IE4resNI[2]); BMDU=c(BMDU, IE4resNI[3])
+      bridgeIE4N = bridgesampling::bridge_sampler(fitstanIE4_N, silent = T)
+
     }
-
-    # Covariance between b-d and between BMD-d
-    IE4covNI = c(cov(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    IE4corrNI = c(cor(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, IE4resNI[1]); BMD=c(BMD, IE4resNI[2]); BMDU=c(BMDU, IE4resNI[3])
-    bridgeIE4N = bridgesampling::bridge_sampler(fitstanIE4_N, silent = T)
-
-  }else{IE4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeIE4N=NA; converged=c(converged, NA); IE4covNI=rep(NA,2); IE4corrNI=rep(NA,2); DRM_IE4_N=rep(NA,length(data$x))
+  }
+  if(prior.weights[2] == 0){IE4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeIE4N=NA; converged=c(converged, NA); IE4covNI=rep(NA,2); IE4corrNI=rep(NA,2); DRM_IE4_N=rep(NA,length(data$x))
   parsIE4N <- NA
   div_IE4_N <- NA
 
@@ -216,49 +239,59 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[3]))
+  }
   if(prior.weights[3]>0){
-    print(3)
+    # print(3)
 
     fitstanH4_N = fun_sampling(stanmodels$mH4, data, start,
                                ndraws,nrchains,
                                nriterations,warmup,
                                delta,treedepth,seed,pvec)
 
-    parsH4N <- par_extract(fitstanH4_N, model_name = "H4_N")
-    # parsH4N[,"BMD"] <- parsH4N[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanH4_N)){
+      prior.weights[3] <- 0
+      warning('Difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanH4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanH4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsH4N <- par_extract(fitstanH4_N, model_name = "H4_N")
+      # parsH4N[,"BMD"] <- parsH4N[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_H4_N <- sum(sapply(rstan::get_sampler_params(fitstanH4_N, inc_warmup = F),
-                           function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanH4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanH4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    H4resNI=(quantile(as.matrix(fitstanH4_N)[,"par2"],pvec))*data$maxD
-    H4resNI=c(H4resNI,apply(as.matrix(fitstanH4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(H4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_H4_N <- sum(sapply(rstan::get_sampler_params(fitstanH4_N, inc_warmup = F),
+                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    H4outNI <- outLP(parsH4N, pvec, data$maxD)
+      H4resNI=(quantile(as.matrix(fitstanH4_N)[,"par2"],pvec))*data$maxD
+      H4resNI=c(H4resNI,apply(as.matrix(fitstanH4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(H4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 1){
-      DRM_H4_N = DRM.H4_NI(H4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_H4_N = DRM.H4_ND(H4resNI[4:7], data$x, data$q)
+      H4outNI <- outLP(parsH4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_H4_N = DRM.H4_NI(H4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_H4_N = DRM.H4_ND(H4resNI[4:7], data$x, data$q)
+      }
+      # Covariance between b-d and between BMD-d
+      H4covNI = c(cov(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      H4corrNI = c(cor(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, H4resNI[1]); BMD=c(BMD, H4resNI[2]); BMDU=c(BMDU, H4resNI[3])
+      bridgeH4N = bridgesampling::bridge_sampler(fitstanH4_N, silent = T)
     }
-    # Covariance between b-d and between BMD-d
-    H4covNI = c(cov(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                cov(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    H4corrNI = c(cor(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, H4resNI[1]); BMD=c(BMD, H4resNI[2]); BMDU=c(BMDU, H4resNI[3])
-    bridgeH4N = bridgesampling::bridge_sampler(fitstanH4_N, silent = T)
-  }else{H4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeH4N=NA;
+  }
+  if(prior.weights[3] == 0){H4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeH4N=NA;
   converged=c(converged, NA); H4covNI=rep(NA,2); H4corrNI=rep(NA,2); DRM_H4_N=rep(NA,length(data$x))
   parsH4N <- NA
   div_H4_N <- NA
@@ -279,49 +312,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[4]))
+  }
   if(prior.weights[4]>0){
-    print(4)
+    # print(4)
+
     fitstanLN4_N = fun_sampling(stanmodels$mLN4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsLN4N <- par_extract(fitstanLN4_N, model_name = "LN4_N")
-    # parsLN4N[,"BMD"] <- parsLN4N[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanLN4_N)){
+      prior.weights[4] <- 0
+      warning('Difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanLN4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanLN4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsLN4N <- par_extract(fitstanLN4_N, model_name = "LN4_N")
+      # parsLN4N[,"BMD"] <- parsLN4N[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_LN4_N <- sum(sapply(rstan::get_sampler_params(fitstanLN4_N, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanLN4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanLN4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    LN4resNI=(quantile(as.matrix(fitstanLN4_N)[,"par2"],pvec))*data$maxD
-    LN4resNI=c(LN4resNI,apply(as.matrix(fitstanLN4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(LN4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_LN4_N <- sum(sapply(rstan::get_sampler_params(fitstanLN4_N, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    LN4outNI <- outLP(parsLN4N, pvec, data$maxD)
+      LN4resNI=(quantile(as.matrix(fitstanLN4_N)[,"par2"],pvec))*data$maxD
+      LN4resNI=c(LN4resNI,apply(as.matrix(fitstanLN4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(LN4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 1){
-      DRM_LN4_N = DRM.LN4_NI(LN4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_LN4_N = DRM.LN4_ND(LN4resNI[4:7], data$x, data$q)
+      LN4outNI <- outLP(parsLN4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_LN4_N = DRM.LN4_NI(LN4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_LN4_N = DRM.LN4_ND(LN4resNI[4:7], data$x, data$q)
+      }
+
+      # Covariance between b-d and between BMD-d
+      LN4covNI = c(cov(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      LN4corrNI = c(cor(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, LN4resNI[1]); BMD=c(BMD, LN4resNI[2]); BMDU=c(BMDU, LN4resNI[3])
+      bridgeLN4N = bridgesampling::bridge_sampler(fitstanLN4_N, silent = T)
     }
-
-    # Covariance between b-d and between BMD-d
-    LN4covNI = c(cov(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    LN4corrNI = c(cor(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, LN4resNI[1]); BMD=c(BMD, LN4resNI[2]); BMDU=c(BMDU, LN4resNI[3])
-    bridgeLN4N = bridgesampling::bridge_sampler(fitstanLN4_N, silent = T)
-  }else{LN4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeLN4N=NA; converged=c(converged, NA); LN4covNI=rep(NA,2); LN4corrNI=rep(NA,2); DRM_LN4_N=rep(NA,length(data$x))
+  }
+  if(prior.weights[4] == 0){LN4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeLN4N=NA; converged=c(converged, NA); LN4covNI=rep(NA,2); LN4corrNI=rep(NA,2); DRM_LN4_N=rep(NA,length(data$x))
   parsLN4N <- NA
   div_LN4_N <- NA
 
@@ -341,48 +385,68 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[5]))
+  }
   if(prior.weights[5]>0){
-    print(5)
+    # print(5)
+
+    if(data$is_increasing == 1){
+      data$init_b = qgamma(data$q/
+                             (E4resNI[6]-1), rate=1.0, shape=exp(E4resNI[7]))/(E4resNI[2]/data$maxD)
+    }else if(data$is_decreasing == 1){
+      data$init_b = qgamma((-data$q)/
+                             (E4resNI[6]-1), rate=1.0, shape=exp(E4resNI[7]))/(E4resNI[2]/data$maxD)
+    }
+
     fitstanG4_N = fun_sampling(stanmodels$mG4, data, start,
                                ndraws,nrchains,
                                nriterations,warmup,
                                delta,treedepth,seed,pvec)
-    parsG4N <- par_extract(fitstanG4_N, model_name = "G4_N")
-    # parsG4N[,"BMD"] <- parsG4N[,"BMD"]*data$maxD # BMD on original scale
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanG4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanG4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+    if(is.null(fitstanG4_N)){
+      prior.weights[5] <- 0
+      warning('Difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    # divergent transitions
-    div_G4_N <- sum(sapply(rstan::get_sampler_params(fitstanG4_N, inc_warmup = F),
-                           function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      parsG4N <- par_extract(fitstanG4_N, model_name = "G4_N")
+      # parsG4N[,"BMD"] <- parsG4N[,"BMD"]*data$maxD # BMD on original scale
 
-    G4resNI=(quantile(as.matrix(fitstanG4_N)[,"par2"],pvec))*data$maxD
-    G4resNI=c(G4resNI,apply(as.matrix(fitstanG4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(G4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanG4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanG4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    G4outNI <- outLP(parsG4N, pvec, data$maxD)
+      # divergent transitions
+      div_G4_N <- sum(sapply(rstan::get_sampler_params(fitstanG4_N, inc_warmup = F),
+                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    if(data$data_type == 1){
-      DRM_G4_N = DRM.G4_NI(G4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_G4_N = DRM.G4_ND(G4resNI[4:7], data$x, data$q)
+      G4resNI=(quantile(as.matrix(fitstanG4_N)[,"par2"],pvec))*data$maxD
+      G4resNI=c(G4resNI,apply(as.matrix(fitstanG4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(G4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+
+      G4outNI <- outLP(parsG4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_G4_N = DRM.G4_NI(G4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_G4_N = DRM.G4_ND(G4resNI[4:7], data$x, data$q)
+      }
+
+      # Covariance between b-d and between BMD-d
+      G4covNI = c(cov(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      G4corrNI = c(cor(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, G4resNI[1]); BMD=c(BMD, G4resNI[2]); BMDU=c(BMDU, G4resNI[3])
+      bridgeG4N = bridgesampling::bridge_sampler(fitstanG4_N, silent = T)
     }
-
-    # Covariance between b-d and between BMD-d
-    G4covNI = c(cov(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                cov(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    G4corrNI = c(cor(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, G4resNI[1]); BMD=c(BMD, G4resNI[2]); BMDU=c(BMDU, G4resNI[3])
-    bridgeG4N = bridgesampling::bridge_sampler(fitstanG4_N, silent = T)
-  }else{G4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeG4N=NA; converged=c(converged, NA); G4covNI=rep(NA,2); G4corrNI=rep(NA,2); DRM_G4_N=rep(NA,length(data$x))
+  }
+  if(prior.weights[5] == 0){G4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeG4N=NA; converged=c(converged, NA); G4covNI=rep(NA,2); G4corrNI=rep(NA,2); DRM_G4_N=rep(NA,length(data$x))
   parsG4N <- NA
   div_G4_N <- NA
 
@@ -402,49 +466,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[6]))
+  }
   if(prior.weights[6]>0){
-    print(6)
-    fitstanQE4_N = fun_sampling(stanmodels$mQE4, data, start,
+    # print(6)
+
+    fitstanQE4_N = fun_sampling(stanmodels$mQE4, data, startQ,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsQE4N <- par_extract(fitstanQE4_N, model_name = "QE4_N")
-    # parsQE4N[,"BMD"] <- parsQE4N[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanQE4_N)){
+      prior.weights[6] <- 0
+      warning('Difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanQE4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanQE4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsQE4N <- par_extract(fitstanQE4_N, model_name = "QE4_N")
+      # parsQE4N[,"BMD"] <- parsQE4N[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_QE4_N <- sum(sapply(rstan::get_sampler_params(fitstanQE4_N, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanQE4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanQE4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    QE4resNI=(quantile(as.matrix(fitstanQE4_N)[,"par2"],pvec))*data$maxD
-    QE4resNI=c(QE4resNI,apply(as.matrix(fitstanQE4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(QE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_QE4_N <- sum(sapply(rstan::get_sampler_params(fitstanQE4_N, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    QE4outNI <- outLP(parsQE4N, pvec, data$maxD)
+      QE4resNI=(quantile(as.matrix(fitstanQE4_N)[,"par2"],pvec))*data$maxD
+      QE4resNI=c(QE4resNI,apply(as.matrix(fitstanQE4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(QE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 1){
-      DRM_QE4_N = DRM.QE4_NI(QE4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_QE4_N = DRM.QE4_ND(QE4resNI[4:7], data$x, data$q)
+      QE4outNI <- outLP(parsQE4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_QE4_N = DRM.QE4_NI(QE4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_QE4_N = DRM.QE4_ND(QE4resNI[4:7], data$x, data$q)
+      }
+
+      # Covariance between b-d and between BMD-d
+      QE4covNI = c(cov(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      QE4corrNI = c(cor(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, QE4resNI[1]); BMD=c(BMD, QE4resNI[2]); BMDU=c(BMDU, QE4resNI[3])
+      bridgeQE4N = bridgesampling::bridge_sampler(fitstanQE4_N, silent = T)
     }
-
-    # Covariance between b-d and between BMD-d
-    QE4covNI = c(cov(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    QE4corrNI = c(cor(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, QE4resNI[1]); BMD=c(BMD, QE4resNI[2]); BMDU=c(BMDU, QE4resNI[3])
-    bridgeQE4N = bridgesampling::bridge_sampler(fitstanQE4_N, silent = T)
-  }else{QE4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeQE4N=NA; converged=c(converged, NA); QE4covNI=rep(NA,2); QE4corrNI=rep(NA,2); DRM_QE4_N=rep(NA,length(data$x))
+  }
+  if(prior.weights[6] == 0){QE4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeQE4N=NA; converged=c(converged, NA); QE4covNI=rep(NA,2); QE4corrNI=rep(NA,2); DRM_QE4_N=rep(NA,length(data$x))
   parsQE4N <- NA
   div_QE4_N <- NA
 
@@ -464,48 +539,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[7]))
+  }
   if(prior.weights[7]>0){
-    print(7)
+    # print(7)
+
     fitstanP4_N = fun_sampling(stanmodels$mP4, data, start,
                                ndraws,nrchains,
                                nriterations,warmup,
                                delta,treedepth,seed,pvec)
-    parsP4N <- par_extract(fitstanP4_N, model_name = "P4_N")
-    # parsP4N[,"BMD"] <- parsP4N[,"BMD"]*data$maxD # BMD on original scale
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanP4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanP4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+    if(is.null(fitstanP4_N)){
+      prior.weights[7] <- 0
+      warning('Difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    # divergent transitions
-    div_P4_N <- sum(sapply(rstan::get_sampler_params(fitstanP4_N, inc_warmup = F),
-                           function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      parsP4N <- par_extract(fitstanP4_N, model_name = "P4_N")
+      # parsP4N[,"BMD"] <- parsP4N[,"BMD"]*data$maxD # BMD on original scale
 
-    P4resNI=(quantile(as.matrix(fitstanP4_N)[,"par2"],pvec))*data$maxD
-    P4resNI=c(P4resNI,apply(as.matrix(fitstanP4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(P4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanP4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanP4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    P4outNI <- outLP(parsP4N, pvec, data$maxD)
+      # divergent transitions
+      div_P4_N <- sum(sapply(rstan::get_sampler_params(fitstanP4_N, inc_warmup = F),
+                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    if(data$data_type == 1){
-      DRM_P4_N = DRM.P4_NI(P4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_P4_N = DRM.P4_ND(P4resNI[4:7], data$x, data$q)
+      P4resNI=(quantile(as.matrix(fitstanP4_N)[,"par2"],pvec))*data$maxD
+      P4resNI=c(P4resNI,apply(as.matrix(fitstanP4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(P4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+
+      P4outNI <- outLP(parsP4N, pvec, data$maxD)
+
+      if(data$data_type == 1){
+        DRM_P4_N = DRM.P4_NI(P4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_P4_N = DRM.P4_ND(P4resNI[4:7], data$x, data$q)
+      }
+
+      # Covariance between b-d and between BMD-d
+      P4covNI = c(cov(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      P4corrNI = c(cor(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, P4resNI[1]); BMD=c(BMD, P4resNI[2]); BMDU=c(BMDU, P4resNI[3])
+      bridgeP4N = bridgesampling::bridge_sampler(fitstanP4_N, silent = T)
     }
-
-    # Covariance between b-d and between BMD-d
-    P4covNI = c(cov(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                cov(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    P4corrNI = c(cor(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, P4resNI[1]); BMD=c(BMD, P4resNI[2]); BMDU=c(BMDU, P4resNI[3])
-    bridgeP4N = bridgesampling::bridge_sampler(fitstanP4_N, silent = T)
-  }else{P4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeP4N=NA; converged=c(converged, NA);
+  }
+  if(prior.weights[7] == 0){P4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeP4N=NA; converged=c(converged, NA);
   P4covNI=rep(NA,2); P4corrNI=rep(NA,2);
   DRM_P4_N=rep(NA,length(data$x))
   parsP4N <- NA
@@ -527,52 +614,63 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[8]))
+  }
   if(prior.weights[8]>0){
-    print(8)
+    # print(8)
+
     fitstanL4_N = fun_sampling(stanmodels$mL4, data, start,
                                ndraws,nrchains,
                                nriterations,warmup,
                                delta,treedepth,seed,pvec)
 
-    parsL4N <- par_extract(fitstanL4_N, model_name = "L4_N")
-    # parsL4N[,"BMD"] <- parsL4N[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanL4_N)){
+      prior.weights[8] <- 0
+      warning('Difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    # save(fitstanL4_N, file = "fitL4N.RData")
+      parsL4N <- par_extract(fitstanL4_N, model_name = "L4_N")
+      # parsL4N[,"BMD"] <- parsL4N[,"BMD"]*data$maxD # BMD on original scale
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanL4_N)
-    convergence_stat <- convergence_deci(model_stan = fitstanL4_N, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      # save(fitstanL4_N, file = "fitL4N.RData")
 
-    # divergent transitions
-    div_L4_N <- sum(sapply(rstan::get_sampler_params(fitstanL4_N, inc_warmup = F),
-                           function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanL4_N)
+      convergence_stat <- convergence_deci(model_stan = fitstanL4_N, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    L4resNI=(quantile(as.matrix(fitstanL4_N)[,"par2"],pvec))*data$maxD
-    L4resNI=c(L4resNI,apply(as.matrix(fitstanL4_N),2,median)[c("par1","par2","par3","par4","par5")])
-    names(L4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_L4_N <- sum(sapply(rstan::get_sampler_params(fitstanL4_N, inc_warmup = F),
+                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    L4outNI <- outLP(parsL4N, pvec, data$maxD)
+      L4resNI=(quantile(as.matrix(fitstanL4_N)[,"par2"],pvec))*data$maxD
+      L4resNI=c(L4resNI,apply(as.matrix(fitstanL4_N),2,median)[c("par1","par2","par3","par4","par5")])
+      names(L4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+
+      L4outNI <- outLP(parsL4N, pvec, data$maxD)
 
 
-    if(data$data_type == 1){
-      DRM_L4_N = DRM.L4_NI(L4resNI[4:7], data$x, data$q)
-    }else if(data$data_type == 3){
-      DRM_L4_N = DRM.L4_ND(L4resNI[4:7], data$x, data$q)
+      if(data$data_type == 1){
+        DRM_L4_N = DRM.L4_NI(L4resNI[4:7], data$x, data$q)
+      }else if(data$data_type == 3){
+        DRM_L4_N = DRM.L4_ND(L4resNI[4:7], data$x, data$q)
+      }
+
+      # Covariance between b-d and between BMD-d
+      L4covNI = c(cov(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      L4corrNI = c(cor(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, L4resNI[1]); BMD=c(BMD, L4resNI[2]); BMDU=c(BMDU, L4resNI[3])
+      bridgeL4N = bridgesampling::bridge_sampler(fitstanL4_N, silent = T)
     }
-
-    # Covariance between b-d and between BMD-d
-    L4covNI = c(cov(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                cov(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    L4corrNI = c(cor(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, L4resNI[1]); BMD=c(BMD, L4resNI[2]); BMDU=c(BMDU, L4resNI[3])
-    bridgeL4N = bridgesampling::bridge_sampler(fitstanL4_N, silent = T)
-  }else{L4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeL4N=NA; converged=c(converged, NA); L4covNI=rep(NA,2); L4corrNI=rep(NA,2); DRM_L4_N=rep(NA,length(data$x))
+  }
+  if(prior.weights[8] == 0){L4resNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeL4N=NA; converged=c(converged, NA); L4covNI=rep(NA,2); L4corrNI=rep(NA,2); DRM_L4_N=rep(NA,length(data$x))
   parsL4N <- NA
   div_L4_N <- NA
 
@@ -596,52 +694,63 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   data=data.LN$data
   start=data.LN$start
+  startQ=data.LN$startQ
 
   # model specific results
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[9]))
+  }
   if(prior.weights[9]>0){
-    print(9)
+    # print(9)
 
     fitstanE4_LN = fun_sampling(stanmodels$mE4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsE4LN <- par_extract(fitstanE4_LN, model_name = "E4_LN")
-    # parsE4LN[,"BMD"] <- parsE4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanE4_LN)){
+      prior.weights[9] <- 0
+      warning('Difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanE4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanE4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsE4LN <- par_extract(fitstanE4_LN, model_name = "E4_LN")
+      # parsE4LN[,"BMD"] <- parsE4LN[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_E4_LN <- sum(sapply(rstan::get_sampler_params(fitstanE4_LN, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanE4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanE4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    E4resLNI=(quantile(as.matrix(fitstanE4_LN)[,"par2"],pvec))*data$maxD
-    E4resLNI=c(E4resLNI,apply(as.matrix(fitstanE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(E4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_E4_LN <- sum(sapply(rstan::get_sampler_params(fitstanE4_LN, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    E4outLNI <- outLP(parsE4LN, pvec, data$maxD)
+      E4resLNI=(quantile(as.matrix(fitstanE4_LN)[,"par2"],pvec))*data$maxD
+      E4resLNI=c(E4resLNI,apply(as.matrix(fitstanE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(E4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 2){
-      DRM_E4_LN = exp(DRM.E4_LNI(E4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_E4_LN = exp(DRM.E4_LND(E4resLNI[4:7], data$x, data$q, shift=data$shift))
+      E4outLNI <- outLP(parsE4LN, pvec, data$maxD)
+
+      if(data$data_type == 2){
+        DRM_E4_LN = exp(DRM.E4_LNI(E4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_E4_LN = exp(DRM.E4_LND(E4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      # Covariance between b-d and between BMD-d
+      E4covLNI = c(cov(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      E4corrLNI = c(cor(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, E4resLNI[1]); BMD=c(BMD, E4resLNI[2]); BMDU=c(BMDU, E4resLNI[3])
+      bridgeE4LN = bridgesampling::bridge_sampler(fitstanE4_LN, silent = T)
     }
-
-    # Covariance between b-d and between BMD-d
-    E4covLNI = c(cov(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    E4corrLNI = c(cor(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, E4resLNI[1]); BMD=c(BMD, E4resLNI[2]); BMDU=c(BMDU, E4resLNI[3])
-    bridgeE4LN = bridgesampling::bridge_sampler(fitstanE4_LN, silent = T)
-  }else{E4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeE4LN=NA; converged=c(converged, NA); E4covLNI=rep(NA,2); E4corrLNI=rep(NA,2); DRM_E4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[9] == 0){E4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeE4LN=NA; converged=c(converged, NA); E4covLNI=rep(NA,2); E4corrLNI=rep(NA,2); DRM_E4_LN=rep(NA,length(data$x))
   parsE4LN <- NA
   div_E4_LN <- NA
 
@@ -661,50 +770,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[10]))
+  }
   if(prior.weights[10]>0){
-    print(10)
+    # print(10)
 
     fitstanIE4_LN = fun_sampling(stanmodels$mIE4, data, start,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
 
-    parsIE4LN <- par_extract(fitstanIE4_LN, model_name = "IE4_LN")
-    # parsIE4LN[,"BMD"] <- parsIE4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanIE4_LN)){
+      prior.weights[10] <- 0
+      warning('Difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanIE4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanIE4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsIE4LN <- par_extract(fitstanIE4_LN, model_name = "IE4_LN")
+      # parsIE4LN[,"BMD"] <- parsIE4LN[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_IE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanIE4_LN, inc_warmup = F),
-                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanIE4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanIE4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    IE4resLNI=(quantile(as.matrix(fitstanIE4_LN)[,"par2"],pvec))*data$maxD
-    IE4resLNI=c(IE4resLNI,apply(as.matrix(fitstanIE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(IE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_IE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanIE4_LN, inc_warmup = F),
+                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    IE4outLNI <- outLP(parsIE4LN, pvec, data$maxD)
+      IE4resLNI=(quantile(as.matrix(fitstanIE4_LN)[,"par2"],pvec))*data$maxD
+      IE4resLNI=c(IE4resLNI,apply(as.matrix(fitstanIE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(IE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+
+      IE4outLNI <- outLP(parsIE4LN, pvec, data$maxD)
 
 
-    if(data$data_type == 2){
-      DRM_IE4_LN = exp(DRM.IE4_LNI(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_IE4_LN = exp(DRM.IE4_LND(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
+      if(data$data_type == 2){
+        DRM_IE4_LN = exp(DRM.IE4_LNI(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_IE4_LN = exp(DRM.IE4_LND(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cov(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      IE4corrLNI = c(cor(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                     cor(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, IE4resLNI[1]); BMD=c(BMD, IE4resLNI[2]); BMDU=c(BMDU, IE4resLNI[3])
+      bridgeIE4LN = bridgesampling::bridge_sampler(fitstanIE4_LN, silent = T)
     }
-
-    IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    IE4corrLNI = c(cor(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, IE4resLNI[1]); BMD=c(BMD, IE4resLNI[2]); BMDU=c(BMDU, IE4resLNI[3])
-    bridgeIE4LN = bridgesampling::bridge_sampler(fitstanIE4_LN, silent = T)
-  }else{IE4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeIE4LN=NA; converged=c(converged, NA); IE4covLNI=rep(NA,2); IE4corrLNI=rep(NA,2); DRM_IE4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[10] == 0){IE4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeIE4LN=NA; converged=c(converged, NA); IE4covLNI=rep(NA,2); IE4corrLNI=rep(NA,2); DRM_IE4_LN=rep(NA,length(data$x))
   parsIE4LN <- NA
   div_IE4_LN <- NA
 
@@ -724,49 +843,59 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[11]))
+  }
   if(prior.weights[11]>0){
-    print(11)
+    # print(11)
 
     fitstanH4_LN = fun_sampling(stanmodels$mH4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsH4LN <- par_extract(fitstanH4_LN, model_name = "H4_LN")
-    # parsH4LN[,"BMD"] <- parsH4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanH4_LN)){
+      prior.weights[11] <- 0
+      warning('Difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanH4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanH4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsH4LN <- par_extract(fitstanH4_LN, model_name = "H4_LN")
+      # parsH4LN[,"BMD"] <- parsH4LN[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_H4_LN <- sum(sapply(rstan::get_sampler_params(fitstanH4_LN, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanH4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanH4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    H4resLNI=(quantile(as.matrix(fitstanH4_LN)[,"par2"],pvec))*data$maxD
-    H4resLNI=c(H4resLNI,apply(as.matrix(fitstanH4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(H4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_H4_LN <- sum(sapply(rstan::get_sampler_params(fitstanH4_LN, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    H4outLNI <- outLP(parsH4LN, pvec, data$maxD)
+      H4resLNI=(quantile(as.matrix(fitstanH4_LN)[,"par2"],pvec))*data$maxD
+      H4resLNI=c(H4resLNI,apply(as.matrix(fitstanH4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(H4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 2){
-      DRM_H4_LN = exp(DRM.H4_LNI(H4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_H4_LN = exp(DRM.H4_LND(H4resLNI[4:7], data$x, data$q, shift=data$shift))
+      H4outLNI <- outLP(parsH4LN, pvec, data$maxD)
+
+      if(data$data_type == 2){
+        DRM_H4_LN = exp(DRM.H4_LNI(H4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_H4_LN = exp(DRM.H4_LND(H4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      H4corrLNI = c(cor(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, H4resLNI[1]); BMD=c(BMD, H4resLNI[2]); BMDU=c(BMDU, H4resLNI[3])
+      bridgeH4LN = bridgesampling::bridge_sampler(fitstanH4_LN, silent = T)
     }
-
-    H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    H4corrLNI = c(cor(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, H4resLNI[1]); BMD=c(BMD, H4resLNI[2]); BMDU=c(BMDU, H4resLNI[3])
-    bridgeH4LN = bridgesampling::bridge_sampler(fitstanH4_LN, silent = T)
-  }else{H4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeH4LN=NA; converged=c(converged, NA); H4covLNI=rep(NA,2); H4corrLNI=rep(NA,2); DRM_H4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[11] == 0){H4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeH4LN=NA; converged=c(converged, NA); H4covLNI=rep(NA,2); H4corrLNI=rep(NA,2); DRM_H4_LN=rep(NA,length(data$x))
   parsH4LN <- NA
   div_H4_LN <- NA
 
@@ -786,50 +915,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[12]))
+  }
   if(prior.weights[12]>0){
-    print(12)
+    # print(12)
 
     fitstanLN4_LN = fun_sampling(stanmodels$mLN4, data, start,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
 
-    parsLN4LN <- par_extract(fitstanLN4_LN, model_name = "LN4_LN")
-    # parsLN4LN[,"BMD"] <- parsLN4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanLN4_LN)){
+      prior.weights[12] <- 0
+      warning('Difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanLN4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanLN4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsLN4LN <- par_extract(fitstanLN4_LN, model_name = "LN4_LN")
+      # parsLN4LN[,"BMD"] <- parsLN4LN[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_LN4_LN <- sum(sapply(rstan::get_sampler_params(fitstanLN4_LN, inc_warmup = F),
-                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanLN4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanLN4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    LN4resLNI=(quantile(as.matrix(fitstanLN4_LN)[,"par2"],pvec))*data$maxD
-    LN4resLNI=c(LN4resLNI,apply(as.matrix(fitstanLN4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(LN4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_LN4_LN <- sum(sapply(rstan::get_sampler_params(fitstanLN4_LN, inc_warmup = F),
+                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    LN4outLNI <- outLP(parsLN4LN, pvec, data$maxD)
+      LN4resLNI=(quantile(as.matrix(fitstanLN4_LN)[,"par2"],pvec))*data$maxD
+      LN4resLNI=c(LN4resLNI,apply(as.matrix(fitstanLN4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(LN4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+
+      LN4outLNI <- outLP(parsLN4LN, pvec, data$maxD)
 
 
-    if(data$data_type == 2){
-      DRM_LN4_LN = exp(DRM.LN4_LNI(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_LN4_LN = exp(DRM.LN4_LND(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
+      if(data$data_type == 2){
+        DRM_LN4_LN = exp(DRM.LN4_LNI(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_LN4_LN = exp(DRM.LN4_LND(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cov(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      LN4corrLNI = c(cor(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                     cor(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, LN4resLNI[1]); BMD=c(BMD, LN4resLNI[2]); BMDU=c(BMDU, LN4resLNI[3])
+      bridgeLN4LN = bridgesampling::bridge_sampler(fitstanLN4_LN, silent = T)
     }
-
-    LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    LN4corrLNI = c(cor(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, LN4resLNI[1]); BMD=c(BMD, LN4resLNI[2]); BMDU=c(BMDU, LN4resLNI[3])
-    bridgeLN4LN = bridgesampling::bridge_sampler(fitstanLN4_LN, silent = T)
-  }else{LN4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeLN4LN=NA; converged=c(converged, NA); LN4covLNI=rep(NA,2); LN4corrLNI=rep(NA,2); DRM_LN4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[12] == 0){LN4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeLN4LN=NA; converged=c(converged, NA); LN4covLNI=rep(NA,2); LN4corrLNI=rep(NA,2); DRM_LN4_LN=rep(NA,length(data$x))
   parsLN4LN <- NA
   div_LN4_LN <- NA
 
@@ -849,51 +988,69 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[13]))
+  }
   if(prior.weights[13]>0){
-    print(13)
+    # print(13)
+
+    if(data$is_increasing == 1){
+      data$init_b = qgamma(log(1+data$q)/
+                             (E4resLNI[4]*(E4resLNI[6]-1)), rate=1.0, shape=exp(E4resLNI[7]))/(E4resLNI[2]/data$maxD)
+    }else if(data$is_decreasing == 1){
+      data$init_b = qgamma(log(1-data$q)/
+                             (E4resLNI[4]*(E4resLNI[6]-1)), rate=1.0, shape=exp(E4resLNI[7]))/(E4resLNI[2]/data$maxD)
+    }
 
     fitstanG4_LN = fun_sampling(stanmodels$mG4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsG4LN <- par_extract(fitstanG4_LN, model_name = "G4_LN")
-    # parsG4LN[,"BMD"] <- parsG4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanG4_LN)){
+      prior.weights[13] <- 0
+      warning('Difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      parsG4LN <- par_extract(fitstanG4_LN, model_name = "G4_LN")
+      # parsG4LN[,"BMD"] <- parsG4LN[,"BMD"]*data$maxD # BMD on original scale
 
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanG4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanG4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanG4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanG4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    # divergent transitions
-    div_G4_LN <- sum(sapply(rstan::get_sampler_params(fitstanG4_LN, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      # divergent transitions
+      div_G4_LN <- sum(sapply(rstan::get_sampler_params(fitstanG4_LN, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    G4resLNI=(quantile(as.matrix(fitstanG4_LN)[,"par2"],pvec))*data$maxD
-    G4resLNI=c(G4resLNI,apply(as.matrix(fitstanG4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(G4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      G4resLNI=(quantile(as.matrix(fitstanG4_LN)[,"par2"],pvec))*data$maxD
+      G4resLNI=c(G4resLNI,apply(as.matrix(fitstanG4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(G4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    G4outLNI <- outLP(parsG4LN, pvec, data$maxD)
+      G4outLNI <- outLP(parsG4LN, pvec, data$maxD)
 
 
-    if(data$data_type == 2){
-      DRM_G4_LN = exp(DRM.G4_LNI(G4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_G4_LN = exp(DRM.G4_LND(G4resLNI[4:7], data$x, data$q, shift=data$shift))
+      if(data$data_type == 2){
+        DRM_G4_LN = exp(DRM.G4_LNI(G4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_G4_LN = exp(DRM.G4_LND(G4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      G4corrLNI = c(cor(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, G4resLNI[1]); BMD=c(BMD, G4resLNI[2]); BMDU=c(BMDU, G4resLNI[3])
+      bridgeG4LN = bridgesampling::bridge_sampler(fitstanG4_LN, silent = T)
     }
-
-    G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    G4corrLNI = c(cor(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, G4resLNI[1]); BMD=c(BMD, G4resLNI[2]); BMDU=c(BMDU, G4resLNI[3])
-    bridgeG4LN = bridgesampling::bridge_sampler(fitstanG4_LN, silent = T)
-  }else{G4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeG4LN=NA; converged=c(converged, NA); G4covLNI=rep(NA,2); G4corrLNI=rep(NA,2); DRM_G4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[13] == 0){G4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeG4LN=NA; converged=c(converged, NA); G4covLNI=rep(NA,2); G4corrLNI=rep(NA,2); DRM_G4_LN=rep(NA,length(data$x))
   parsG4LN <- NA
   div_G4_LN <- NA
 
@@ -913,49 +1070,59 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[14]))
+  }
   if(prior.weights[14]>0){
-    print(14)
+    # print(14)
 
-    fitstanQE4_LN = fun_sampling(stanmodels$mQE4, data, start,
+    fitstanQE4_LN = fun_sampling(stanmodels$mQE4, data, startQ,
                                  ndraws,nrchains,
                                  nriterations,warmup,
                                  delta,treedepth,seed,pvec)
 
-    parsQE4LN <- par_extract(fitstanQE4_LN, model_name = "QE4_LN")
-    # parsQE4LN[,"BMD"] <- parsQE4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanQE4_LN)){
+      prior.weights[14] <- 0
+      warning('Difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanQE4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanQE4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsQE4LN <- par_extract(fitstanQE4_LN, model_name = "QE4_LN")
+      # parsQE4LN[,"BMD"] <- parsQE4LN[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_QE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanQE4_LN, inc_warmup = F),
-                             function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanQE4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanQE4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    QE4resLNI=(quantile(as.matrix(fitstanQE4_LN)[,"par2"],pvec))*data$maxD
-    QE4resLNI=c(QE4resLNI,apply(as.matrix(fitstanQE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(QE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_QE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanQE4_LN, inc_warmup = F),
+                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    QE4outLNI <- outLP(parsQE4LN, pvec, data$maxD)
+      QE4resLNI=(quantile(as.matrix(fitstanQE4_LN)[,"par2"],pvec))*data$maxD
+      QE4resLNI=c(QE4resLNI,apply(as.matrix(fitstanQE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(QE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    if(data$data_type == 2){
-      DRM_QE4_LN = exp(DRM.QE4_LNI(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_QE4_LN = exp(DRM.QE4_LND(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
+      QE4outLNI <- outLP(parsQE4LN, pvec, data$maxD)
+
+      if(data$data_type == 2){
+        DRM_QE4_LN = exp(DRM.QE4_LNI(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_QE4_LN = exp(DRM.QE4_LND(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cov(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      QE4corrLNI = c(cor(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                     cor(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, QE4resLNI[1]); BMD=c(BMD, QE4resLNI[2]); BMDU=c(BMDU, QE4resLNI[3])
+      bridgeQE4LN = bridgesampling::bridge_sampler(fitstanQE4_LN, silent = T)
     }
-
-    QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    QE4corrLNI = c(cor(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, QE4resLNI[1]); BMD=c(BMD, QE4resLNI[2]); BMDU=c(BMDU, QE4resLNI[3])
-    bridgeQE4LN = bridgesampling::bridge_sampler(fitstanQE4_LN, silent = T)
-  }else{QE4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeQE4LN=NA; converged=c(converged, NA); QE4covLNI=rep(NA,2); QE4corrLNI=rep(NA,2); DRM_QE4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[14] == 0){QE4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeQE4LN=NA; converged=c(converged, NA); QE4covLNI=rep(NA,2); QE4corrLNI=rep(NA,2); DRM_QE4_LN=rep(NA,length(data$x))
   parsQE4LN <- NA
   div_QE4_LN <- NA
 
@@ -975,50 +1142,60 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[15]))
+  }
   if(prior.weights[15]>0){
-    print(15)
+    # print(15)
 
     fitstanP4_LN = fun_sampling(stanmodels$mP4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsP4LN <- par_extract(fitstanP4_LN, model_name = "P4_LN")
-    # parsP4LN[,"BMD"] <- parsP4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanP4_LN)){
+      prior.weights[15] <- 0
+      warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanP4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanP4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      parsP4LN <- par_extract(fitstanP4_LN, model_name = "P4_LN")
+      # parsP4LN[,"BMD"] <- parsP4LN[,"BMD"]*data$maxD # BMD on original scale
 
-    # divergent transitions
-    div_P4_LN <- sum(sapply(rstan::get_sampler_params(fitstanP4_LN, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanP4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanP4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    P4resLNI=(quantile(as.matrix(fitstanP4_LN)[,"par2"],pvec))*data$maxD
-    P4resLNI=c(P4resLNI,apply(as.matrix(fitstanP4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(P4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      # divergent transitions
+      div_P4_LN <- sum(sapply(rstan::get_sampler_params(fitstanP4_LN, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    P4outLNI <- outLP(parsP4LN, pvec, data$maxD)
+      P4resLNI=(quantile(as.matrix(fitstanP4_LN)[,"par2"],pvec))*data$maxD
+      P4resLNI=c(P4resLNI,apply(as.matrix(fitstanP4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(P4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+
+      P4outLNI <- outLP(parsP4LN, pvec, data$maxD)
 
 
-    if(data$data_type == 2){
-      DRM_P4_LN = exp(DRM.P4_LNI(P4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_P4_LN = exp(DRM.P4_LND(P4resLNI[4:7], data$x, data$q, shift=data$shift))
+      if(data$data_type == 2){
+        DRM_P4_LN = exp(DRM.P4_LNI(P4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_P4_LN = exp(DRM.P4_LND(P4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      P4corrLNI = c(cor(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, P4resLNI[1]); BMD=c(BMD, P4resLNI[2]); BMDU=c(BMDU, P4resLNI[3])
+      bridgeP4LN = bridge_sampler(fitstanP4_LN, silent = T)
     }
-
-    P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    P4corrLNI = c(cor(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, P4resLNI[1]); BMD=c(BMD, P4resLNI[2]); BMDU=c(BMDU, P4resLNI[3])
-    bridgeP4LN = bridge_sampler(fitstanP4_LN, silent = T)
-  }else{P4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeP4LN=NA;
+  }
+  if(prior.weights[15] == 0){P4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeP4LN=NA;
   converged=c(converged, NA); P4covLNI=rep(NA,2); P4corrLNI=rep(NA,2); DRM_P4_LN=rep(NA,length(data$x))
   parsP4LN <- NA
   div_P4_LN <- NA
@@ -1039,51 +1216,61 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   ))
   }
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[16]))
+  }
   if(prior.weights[16]>0){
-    print(16)
+    # print(16)
 
     fitstanL4_LN = fun_sampling(stanmodels$mL4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
                                 delta,treedepth,seed,pvec)
 
-    parsL4LN <- par_extract(fitstanL4_LN, model_name = "L4_LN")
-    # parsL4LN[,"BMD"] <- parsL4LN[,"BMD"]*data$maxD # BMD on original scale
+    if(is.null(fitstanL4_LN)){
+      prior.weights[16] <- 0
+      warning('Difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      parsL4LN <- par_extract(fitstanL4_LN, model_name = "L4_LN")
+      # parsL4LN[,"BMD"] <- parsL4LN[,"BMD"]*data$maxD # BMD on original scale
 
 
-    #diagnostics here
-    # posterior_diag(model_stan = fitstanL4_LN)
-    convergence_stat <- convergence_deci(model_stan = fitstanL4_LN, nrchains = nrchains)
-    conv_lp = 0
-    if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
-    converged = c(converged, conv_lp)
+      #diagnostics here
+      # posterior_diag(model_stan = fitstanL4_LN)
+      convergence_stat <- convergence_deci(model_stan = fitstanL4_LN, nrchains = nrchains)
+      conv_lp = 0
+      if(convergence_stat$Rhat[convergence_stat$Parameters=="lp__"] < 1.01) conv_lp = 1
+      converged = c(converged, conv_lp)
 
-    # divergent transitions
-    div_L4_LN <- sum(sapply(rstan::get_sampler_params(fitstanL4_LN, inc_warmup = F),
-                            function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
+      # divergent transitions
+      div_L4_LN <- sum(sapply(rstan::get_sampler_params(fitstanL4_LN, inc_warmup = F),
+                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-    L4resLNI=(quantile(as.matrix(fitstanL4_LN)[,"par2"],pvec))*data$maxD
-    L4resLNI=c(L4resLNI,apply(as.matrix(fitstanL4_LN),2,median)[c("par1","par2","par3","par4","par5")])
-    names(L4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
+      L4resLNI=(quantile(as.matrix(fitstanL4_LN)[,"par2"],pvec))*data$maxD
+      L4resLNI=c(L4resLNI,apply(as.matrix(fitstanL4_LN),2,median)[c("par1","par2","par3","par4","par5")])
+      names(L4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
-    L4outLNI <- outLP(parsL4LN, pvec, data$maxD)
+      L4outLNI <- outLP(parsL4LN, pvec, data$maxD)
 
 
-    if(data$data_type == 2){
-      DRM_L4_LN = exp(DRM.L4_LNI(L4resLNI[4:7], data$x, data$q, shift=data$shift))
-    }else if(data$data_type == 4){
-      DRM_L4_LN = exp(DRM.L4_LND(L4resLNI[4:7], data$x, data$q, shift=data$shift))
+      if(data$data_type == 2){
+        DRM_L4_LN = exp(DRM.L4_LNI(L4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }else if(data$data_type == 4){
+        DRM_L4_LN = exp(DRM.L4_LND(L4resLNI[4:7], data$x, data$q, shift=data$shift))
+      }
+
+      L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      L4corrLNI = c(cor(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+
+      BMDL=c(BMDL, L4resLNI[1]); BMD=c(BMD, L4resLNI[2]); BMDU=c(BMDU, L4resLNI[3])
+      bridgeL4LN = bridgesampling::bridge_sampler(fitstanL4_LN, silent = T)
     }
-
-    L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    L4corrLNI = c(cor(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
-
-    BMDL=c(BMDL, L4resLNI[1]); BMD=c(BMD, L4resLNI[2]); BMDU=c(BMDU, L4resLNI[3])
-    bridgeL4LN = bridgesampling::bridge_sampler(fitstanL4_LN, silent = T)
-  }else{L4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeL4LN=NA; converged=c(converged, NA); L4covLNI=rep(NA,2); L4corrLNI=rep(NA,2); DRM_L4_LN=rep(NA,length(data$x))
+  }
+  if(prior.weights[16] == 0){L4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeL4LN=NA; converged=c(converged, NA); L4covLNI=rep(NA,2); L4corrLNI=rep(NA,2); DRM_L4_LN=rep(NA,length(data$x))
   parsL4LN <- NA
   div_L4_LN <- NA
 
@@ -1281,6 +1468,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   # normal
   data=data.N$data
   start=data.N$start
+  startQ=data.N$startQ
 
   llN = c() # likelihoods
 
@@ -1290,157 +1478,219 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optE4_NI <- fun_optim(stanmodels$mE4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 1){
-      llE4N=llfE4_NI(optE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llE4N=llfE4_ND(optE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
+    if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
+      prior.weights[1] <- 0
+      warning('Difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$data_type == 1){
+        llE4N=llfE4_NI(optE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llE4N=llfE4_ND(optE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }
+
+
+      llN = c(llN, llE4N)
     }
-
-
-    llN = c(llN, llE4N)
-  }else{llN = c(llN,NA)}
+  }
+  if(prior.weights[1] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[2]>0){
     print("pw2")
 
     optIE4_NI <- fun_optim(stanmodels$mIE4, data, start, ndraws, 123, pvec)
 
+    if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
+      prior.weights[2] <- 0
+      warning('Difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    if(data$data_type == 1){
-      llIE4N=llfIE4_NI(optIE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llIE4N=llfIE4_ND(optIE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+      if(data$data_type == 1){
+        llIE4N=llfIE4_NI(optIE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llIE4N=llfIE4_ND(optIE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q)
+      }
+
+      llN = c(llN, llIE4N)
     }
-
-    llN = c(llN, llIE4N)
-  }else{llN = c(llN,NA)}
+  }
+  if(prior.weights[2] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[3]>0){
     print("pw3")
 
     optH4_NI <- fun_optim(stanmodels$mH4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 1){
-      llH4N=llfH4_NI(optH4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llH4N=llfH4_ND(optH4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }
+    if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
+      prior.weights[3] <- 0
+      warning('Difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    llN = c(llN, llH4N)
-  }else{llN = c(llN,NA)}
+      if(data$data_type == 1){
+        llH4N=llfH4_NI(optH4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llH4N=llfH4_ND(optH4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }
+
+      llN = c(llN, llH4N)
+    }
+  }
+  if(prior.weights[3] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[4]>0){
     print("pw4")
 
     optLN4_NI <- fun_optim(stanmodels$mLN4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 1){
-      llLN4N=llfLN4_NI(optLN4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llLN4N=llfLN4_ND(optLN4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+    if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
+      prior.weights[4] <- 0
+      warning('Difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$data_type == 1){
+        llLN4N=llfLN4_NI(optLN4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llLN4N=llfLN4_ND(optLN4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q)
+      }
+
+
+      llN = c(llN, llLN4N)
     }
-
-
-    llN = c(llN, llLN4N)
-  }else{llN = c(llN,NA)}
+  }
+  if(prior.weights[4] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[5]>0){
     print("pw5")
 
-    optG4_NI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
-
-    if(data$data_type == 1){
-      llG4N=llfG4_NI(optG4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llG4N=llfG4_ND(optG4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
+    if(data$is_increasing == 1){
+      data$init_b = qgamma(data$q/
+                             (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
+    }else if(data$is_decreasing == 1){
+      data$init_b = qgamma((-data$q)/
+                             (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
     }
 
+    optG4_NI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 
-    llN = c(llN, llG4N)
-  }else{llN = c(llN,NA)}
+    if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
+      prior.weights[5] <- 0
+      warning('Difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$data_type == 1){
+        llG4N=llfG4_NI(optG4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llG4N=llfG4_ND(optG4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }
+
+
+      llN = c(llN, llG4N)
+    }
+  }
+  if(prior.weights[5] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[6]>0){
     print("pw6")
 
-    optQE4_NI <- fun_optim(stanmodels$mQE4, data, start, ndraws, 123, pvec)
+    optQE4_NI <- fun_optim(stanmodels$mQE4, data, startQ, ndraws, 123, pvec)
+
+    if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
+      prior.weights[6] <- 0
+      warning('Difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$data_type == 1){
+        llQE4N=llfQE4_NI(optQE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llQE4N=llfQE4_ND(optQE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q)
+      }
 
 
-    if(data$data_type == 1){
-      llQE4N=llfQE4_NI(optQE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llQE4N=llfQE4_ND(optQE4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q)
+      llN = c(llN, llQE4N)
     }
-
-
-    llN = c(llN, llQE4N)
-  }else{llN = c(llN,NA)}
+  }
+  if(prior.weights[6] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[7]>0){
     print("pw7")
 
     optP4_NI <- fun_optim(stanmodels$mP4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 1){
-      llP4N=llfP4_NI(optP4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llP4N=llfP4_ND(optP4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }
+    if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
+      prior.weights[7] <- 0
+      warning('Difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    llN = c(llN, llP4N)
-  }else{llN = c(llN,NA)}
+      if(data$data_type == 1){
+        llP4N=llfP4_NI(optP4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llP4N=llfP4_ND(optP4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }
+
+      llN = c(llN, llP4N)
+    }
+  }
+  if(prior.weights[7] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[8]>0){
     print("pw8")
 
     optL4_NI <- fun_optim(stanmodels$mL4, data, start, ndraws, 123, pvec)
 
+    if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
+      prior.weights[8] <- 0
+      warning('Difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    if(data$data_type == 1){
-      llL4N=llfL4_NI(optL4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
-    }else if(data$data_type == 3){
-      llL4N=llfL4_ND(optL4_NI$par[c(1,2,9,4,5)],nvec=data$n,
-                     dvec=data$x,mvec=data$m,
-                     s2vec=data$s2,qval=data$q)
+      if(data$data_type == 1){
+        llL4N=llfL4_NI(optL4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }else if(data$data_type == 3){
+        llL4N=llfL4_ND(optL4_NI$par[c(1,2,9,4,5)],nvec=data$n,
+                       dvec=data$x,mvec=data$m,
+                       s2vec=data$s2,qval=data$q)
+      }
+
+
+      llN = c(llN, llL4N)
     }
-
-
-    llN = c(llN, llL4N)
-  }else{llN = c(llN,NA)}
+  }
+  if(prior.weights[8] == 0){llN = c(llN,NA)}
 
 
   # lognormal
   data=data.LN$data
   start=data.LN$start
+  startQ=data.LN$startQ
 
   llLN = c()
 
@@ -1449,160 +1699,227 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optE4_LNI <- fun_optim(stanmodels$mE4, data, start, ndraws, 123, pvec)
 
+    if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
+      prior.weights[9] <- 0
+      warning('Difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    if(data$data_type == 2){
-      llE4LN=llfE4_LNI(optE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llE4LN=llfE4_LND(optE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
+      if(data$data_type == 2){
+        llE4LN=llfE4_LNI(optE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llE4LN=llfE4_LND(optE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+
+      llLN = c(llLN, llE4LN)
     }
-
-
-    llLN = c(llLN, llE4LN)
-  }else{llLN = c(llLN,NA)}
+  }
+  if(prior.weights[9] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[10]>0){
     print("pw10")
 
     optIE4_LNI <- fun_optim(stanmodels$mIE4, data, start, ndraws, 123, pvec)
 
+    if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
+      prior.weights[10] <- 0
+      warning('Difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    if(data$data_type == 2){
-      llIE4LN=llfIE4_LNI(optIE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                         dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llIE4LN=llfIE4_LND(optIE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                         dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      if(data$data_type == 2){
+        llIE4LN=llfIE4_LNI(optIE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                           dvec=data$x,mvec=data$m,
+                           s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llIE4LN=llfIE4_LND(optIE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                           dvec=data$x,mvec=data$m,
+                           s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+
+      llLN = c(llLN, llIE4LN)
     }
-
-
-    llLN = c(llLN, llIE4LN)
-  }else{llLN = c(llLN,NA)}
+  }
+  if(prior.weights[10] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[11]>0){
     print("pw11")
 
     optH4_LNI <- fun_optim(stanmodels$mH4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 2){
-      llH4LN=llfH4_LNI(optH4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llH4LN=llfH4_LND(optH4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }
+    if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
+      prior.weights[11] <- 0
+      warning('Difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    llLN = c(llLN, llH4LN)
-  }else{llLN = c(llLN,NA)}
+      if(data$data_type == 2){
+        llH4LN=llfH4_LNI(optH4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llH4LN=llfH4_LND(optH4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+      llLN = c(llLN, llH4LN)
+    }
+  }
+  if(prior.weights[11] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[12]>0){
     print("pw12")
 
     optLN4_LNI <- fun_optim(stanmodels$mLN4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 2){
-      llLN4LN=llfLN4_LNI(optLN4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                         dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llLN4LN=llfLN4_LND(optLN4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                         dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q, shift=data$shift)
-    }
+    if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
+      prior.weights[12] <- 0
+      warning('Difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    llLN = c(llLN, llLN4LN)
-  }else{llLN = c(llLN,NA)}
+      if(data$data_type == 2){
+        llLN4LN=llfLN4_LNI(optLN4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                           dvec=data$x,mvec=data$m,
+                           s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llLN4LN=llfLN4_LND(optLN4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                           dvec=data$x,mvec=data$m,
+                           s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+      llLN = c(llLN, llLN4LN)
+    }
+  }
+  if(prior.weights[12] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[13]>0){
 
     print("pw13")
 
-    optG4_LNI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
-
-    if(data$data_type == 2){
-      llG4LN=llfG4_LNI(optG4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llG4LN=llfG4_LND(optG4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
+    if(data$is_increasing == 1){
+      data$init_b = qgamma(log(1+data$q)/
+                             (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
+    }else if(data$is_decreasing == 1){
+      data$init_b = qgamma(log(1-data$q)/
+                             (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
     }
 
-    llLN = c(llLN, llG4LN)
-  }else{llLN = c(llLN,NA)}
+    optG4_LNI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
+
+    if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
+      prior.weights[13] <- 0
+      warning('Difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$data_type == 2){
+        llG4LN=llfG4_LNI(optG4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llG4LN=llfG4_LND(optG4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+      llLN = c(llLN, llG4LN)
+    }
+  }
+  if(prior.weights[13] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[14]>0){
     print("pw14")
 
-    optQE4_LNI <- fun_optim(stanmodels$mQE4, data, start, ndraws, 123, pvec)
+    optQE4_LNI <- fun_optim(stanmodels$mQE4, data, startQ, ndraws, 123, pvec)
 
-    if(data$data_type == 2){
-      llQE4LN=llfQE4_LNI(optQE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                         dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llQE4LN=llfQE4_LND(optQE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                         dvec=data$x,mvec=data$m,
-                         s2vec=data$s2,qval=data$q, shift=data$shift)
+    if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
+      prior.weights[14] <- 0
+      warning('Difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$data_type == 2){
+        llQE4LN=llfQE4_LNI(optQE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                           dvec=data$x,mvec=data$m,
+                           s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llQE4LN=llfQE4_LND(optQE4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                           dvec=data$x,mvec=data$m,
+                           s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+      llLN = c(llLN, llQE4LN)
     }
-
-    llLN = c(llLN, llQE4LN)
-  }else{llLN = c(llLN,NA)}
+  }
+  if(prior.weights[14] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[15]>0){
     print("pw15")
 
     optP4_LNI <- fun_optim(stanmodels$mP4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 2){
-      llP4LN=llfP4_LNI(optP4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llP4LN=llfP4_LND(optP4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }
+    if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
+      prior.weights[15] <- 0
+      warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    llLN = c(llLN, llP4LN)
-  }else{llLN = c(llLN,NA)}
+      if(data$data_type == 2){
+        llP4LN=llfP4_LNI(optP4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llP4LN=llfP4_LND(optP4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+      llLN = c(llLN, llP4LN)
+    }
+  }
+  if(prior.weights[15] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[16]>0){
     print("pw16")
 
     optL4_LNI <- fun_optim(stanmodels$mL4, data, start, ndraws, 123, pvec)
 
-    if(data$data_type == 2){
-      llL4LN=llfL4_LNI(optL4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }else if(data$data_type == 4){
-      llL4LN=llfL4_LND(optL4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
-                       dvec=data$x,mvec=data$m,
-                       s2vec=data$s2,qval=data$q, shift=data$shift)
-    }
+    if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
+      prior.weights[16] <- 0
+      warning('Difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
-    llLN = c(llLN, llL4LN)
-  }else{llLN = c(llLN,NA)}
+      if(data$data_type == 2){
+        llL4LN=llfL4_LNI(optL4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }else if(data$data_type == 4){
+        llL4LN=llfL4_LND(optL4_LNI$par[c(1,2,9,4,5)],nvec=data$n,
+                         dvec=data$x,mvec=data$m,
+                         s2vec=data$s2,qval=data$q, shift=data$shift)
+      }
+
+      llLN = c(llLN, llL4LN)
+    }
+  }
+  if(prior.weights[16] == 0){llLN = c(llLN,NA)}
 
   minll = min(llN,llLN,na.rm=T)
 
   # the weights
 
 
-  fun.w <- function(DIH, ll, min.ll, opt, mu, sig, lb, ub, s1, s2, s3){
+  fun.w <- function(DIH, ll, min.ll, opt, mu, sig, lb, ub, s1, s2, s3, td){
 
     w1 <- (2*pi)^(2.5)*sqrt(DIH)*exp(ll-min.ll)*
-      mvtnorm::dmvnorm(opt$par[c(4,5)],mean=mu[c(4,5)],
-                       sigma=sig[c(4,5),c(4,5)])*
+      # mvtnorm::dmvnorm(opt$par[c(4,5)],mean=mu[c(4,5)],
+      #                  sigma=sig[c(4,5),c(4,5)])*
+      # sigma2
+      dnorm(opt$par[5], mu[5], sig[5,5])*
+      # d
+      truncnorm::dtruncnorm(opt$par[4], b = td, mean = mu[4], sd = sig[4,4])*
+      #
       mc2d::dpert(opt$par[1], min = lb[1], max = ub[1],
                   mode = mu[1], shape = s1)*
       mc2d::dpert(opt$par[2], min = lb[2], max = ub[2],
@@ -1618,12 +1935,14 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   data=data.N$data
   start=data.N$start
+  start=data.N$startQ
 
   if(prior.weights[1]>0){
     DIHE4h=det(-solve(optE4_NI$hessian))
     DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
     w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
 
   }else{w=c(w,0)}
 
@@ -1631,49 +1950,84 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     DIHIE4h=det(-solve(optIE4_NI$hessian))
     DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
     w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[3]>0){
     DIHH4h=det(-solve(optH4_NI$hessian))
     DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
     w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[4]>0){
     DIHLN4h=det(-solve(optLN4_NI$hessian))
     DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
     w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[5]>0){
     DIHG4h=det(-solve(optG4_NI$hessian))
     DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
     w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[6]>0){
     DIHQE4h=det(-solve(optQE4_NI$hessian))
     DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+    # w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormu, data$priorSigma,
+    #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+    w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormuQ, data$priorSigmaQ,
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncdQ))
+    # w = c(w,
+    #       (2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4N-minll)*
+    #         # # sigma2
+    #         # dnorm(optQE4_NI$par[5],mean=data$priormu[5],
+    #         #       sd=data$priorSigma[5,5])*
+    #         # # d
+    #         # # dexp(1/exp(optQE4_NI$par[10]), 1)*
+    #         # dnorm(optQE4_NI$par[4],mean=data$priormuQ[4],
+    #         #       sd=data$priorSigma[4,4])*
+    #         # sigma2
+    #         dnorm(optQE4_NI$par[5],mean=data$priormuQ[5],
+    #               sd=data$priorSigmaQ[5,5])*
+    #         # d
+    #         # dexp(1/exp(optQE4_NI$par[10]), 1)*
+    #         truncnorm::dtruncnorm(optQE4_NI$par[4],mean=data$priormuQ[4],
+    #                               sd=data$priorSigmaQ[4,4], b = data$truncdQ)*
+    #         # a
+    #         mc2d::dpert(optQE4_NI$par[1], min = data$priorlb[1], max = data$priorub[1],
+    #                     mode = data$priormu[1], shape = data$shape.a)*
+    #         # BMD
+    #         mc2d::dpert(optQE4_NI$par[2], min = data$priorlb[2], max = data$priorub[2],
+    #                     mode = data$priormu[2], shape = data$shape.BMD)*
+    #         # c
+    #         mc2d::dpert(optQE4_NI$par[9], min = data$priorlb[3], max = data$priorub[3],
+    #                     mode = data$priormu[3], shape = data$shape.c)
+    # )
   }else{w=c(w,0)}
 
   if(prior.weights[7]>0){
     DIHP4h=det(-solve(optP4_NI$hessian))
     DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
     w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[8]>0){
     DIHL4h=det(-solve(optL4_NI$hessian))
     DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
     w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
 
@@ -1681,61 +2035,98 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   data=data.LN$data
   start=data.LN$start
+  start=data.LN$startQ
 
   if(prior.weights[9]>0){
     DIHE4h=det(-solve(optE4_LNI$hessian))
     DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
     w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[10]>0){
     DIHIE4h=det(-solve(optIE4_LNI$hessian))
     DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
     w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[11]>0){
     DIHH4h=det(-solve(optH4_LNI$hessian))
     DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
     w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[12]>0){
     DIHLN4h=det(-solve(optLN4_LNI$hessian))
     DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
     w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[13]>0){
     DIHG4h=det(-solve(optG4_LNI$hessian))
     DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
     w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[14]>0){
     DIHQE4h=det(-solve(optQE4_LNI$hessian))
     DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+    # w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormu, data$priorSigma,
+    #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+    w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormuQ, data$priorSigmaQ,
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncdQ))
+    # w = c(w,
+    #       (2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4LN-minll)*
+    #         # # sigma2
+    #         # dnorm(optQE4_LNI$par[5],mean=data$priormu[5],
+    #         #       sd=data$priorSigma[5,5])*
+    #         # # d
+    #         # # dexp(1/exp(optQE4_LNI$par[10]), 1)*
+    #         # dnorm(optQE4_LNI$par[4],mean=data$priormuQ[4],
+    #         #       sd=data$priorSigma[4,4])*
+    #         # sigma2
+    #         dnorm(optQE4_LNI$par[5],mean=data$priormu[5],
+    #               sd=data$priorSigmaQ[5,5])*
+    #         # d
+    #         # dexp(1/exp(optQE4_LNI$par[10]), 1)*
+    #         truncnorm::dtruncnorm(optQE4_LNI$par[4],mean=data$priormuQ[4],
+    #                               sd=data$priorSigmaQ[4,4], b = data$truncdQ)*
+    #         # a
+    #         mc2d::dpert(optQE4_LNI$par[1], min = data$priorlb[1], max = data$priorub[1],
+    #                     mode = data$priormu[1], shape = data$shape.a)*
+    #         # BMD
+    #         mc2d::dpert(optQE4_LNI$par[2], min = data$priorlb[2], max = data$priorub[2],
+    #                     mode = data$priormu[2], shape = data$shape.BMD)*
+    #         # c
+    #         mc2d::dpert(optQE4_LNI$par[9], min = data$priorlb[3], max = data$priorub[3],
+    #                     mode = data$priormu[3], shape = data$shape.c)
+    # )
   }else{w=c(w,0)}
 
   if(prior.weights[15]>0){
     DIHP4h=det(-solve(optP4_LNI$hessian))
     DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
     w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   if(prior.weights[16]>0){
     DIHL4h=det(-solve(optL4_LNI$hessian))
     DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
     w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                   data$truncd))
   }else{w=c(w,0)}
 
   lpwlp=(prior.weights*w)/sum(prior.weights*w)
