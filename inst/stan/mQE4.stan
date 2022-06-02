@@ -20,12 +20,13 @@ data{
   vector[N] s2;  // the arithmetic variance of the response values for each dose group
   real q;       // the BMR
   real shift; // data are shifted if different from 0
-  vector[5] priormu;
+  vector[5] priormuQ;
   vector[5] priorlb;
   vector[5] priorub;
   vector[5] shape1;
   vector[5] shape2;
-  cov_matrix[5] priorSigma;
+  cov_matrix[5] priorSigmaQ;
+  real truncdQ;
   int data_type; // data data_type; 1 = increasing N, 2 = increasing LN, 3 = decreasing N, 4 = decreasing LN
   int<lower=0, upper=1> is_increasing; // indicator for increasing data
   real L; //lower bound for increasing data
@@ -34,7 +35,7 @@ data{
 }
 parameters{
  real<lower=0> par1;
- real<lower=0, upper=1> par2;
+ real<lower=0> par2;
  real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
  real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
  real par4;
@@ -75,35 +76,37 @@ transformed parameters{
   k = log(par2);
 
   if(data_type == 1){
-    b=(-log(1-(q/(c-1)))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)));
+    b=(-log(1-(q/(c-1)))) / (exp(k)+(exp(k)*(exp(k)-1)/exp(d)));
   }else if(data_type == 2){
-    b=(-log(1-(log(1+q)/(a*(c-1))))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)));
+    b=(-log(1-(log(1+q)/(a*(c-1))))) / (exp(k)+(exp(k)*(exp(k)-1)/exp(d)));
   }else if(data_type == 3){
-    b=(-log(1-((-q)/(c-1)))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)));
+    b=(-log(1-((-q)/(c-1)))) / (exp(k)+(exp(k)*(exp(k)-1)/exp(d)));
   }else if(data_type == 4){
-    b=(-log(1-(log(1-q)/(a*(c-1))))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)));
+    b=(-log(1-(log(1-q)/(a*(c-1))))) / (exp(k)+(exp(k)*(exp(k)-1)/exp(d)));
   }
 
   invsigma2=exp(par5);
-
 
 }
 model{
     par1 ~ pert_dist(shape1[1], shape2[1], priorlb[1], priorub[1]);
     par2 ~ pert_dist(shape1[2], shape2[2], priorlb[2], priorub[2]);
     par3 ~ pert_dist(shape1[3], shape2[3], priorlb[3], priorub[3]);
-    par4 ~ normal(priormu[4],priorSigma[4,4]);
-    par5 ~ normal(priormu[5],priorSigma[5,5]);
+    par4 ~ normal(priormuQ[4],priorSigmaQ[4,4])T[,truncdQ];
+    //1/exp(d) ~ exponential(1);
+    par5 ~ normal(priormuQ[5],priorSigmaQ[5,5]);
 
   if(data_type == 1 || data_type == 3){
    for (i in 1:N){
        target += -0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2)-0.5*(n[i]-1)*s2[i]*invsigma2-0.5*n[i]*square(m[i]-a-a*(c-1)*
        (1-exp((-b*x[i])-((b/exp(d))*x[i]*(x[i]-1)))))*invsigma2;
+      // target += par4 - exp(par4);
    }
   }else if(data_type == 2 || data_type == 4){
      for (i in 1:N){
        target += -0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2)-0.5*(n[i]-1)*s2[i]*invsigma2-0.5*n[i]*square(m[i]-a-a*(c-1)*
        (1-exp((-b*x[i])-((b/exp(d))*x[i]*(x[i]-1)))))*invsigma2 - m[i]*n[i];
+      //  target += par4 - exp(par4);
    }
   }
 

@@ -29,6 +29,7 @@ data{
   real priorgama[2];
   real eps; // epsilon
   cov_matrix[3] priorSigma;
+  real truncd;
   int<lower=0, upper=1> is_bin;       //model type 1 = Binomial 0 = otherwise
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
 }
@@ -52,7 +53,7 @@ transformed parameters{
   a = par1;
   d = exp(par3);
   k = log(par2);
-  b = exp(-k*d)*(((pow(3,0.5)/pi())*logit(q*(1-a)+a)) - ((pow(3,0.5)/pi())*logit(a)));
+  b = exp(-k*d)*((pow(3,0.5)/pi()*logit(q*(1-a)+a)) - (pow(3,0.5)/pi()*logit(a)));
 
   for (i in 1:N){
   if(x[i] == 0){
@@ -77,7 +78,7 @@ transformed parameters{
 model{
     par1 ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama[1]); //prior for a
     par2 ~ pert_dist(priorlb[2], priormu[2], priorub[2], priorgama[2]); //prior for BMD
-    par3 ~ normal(priormu[3], priorSigma[3,3]); //prior for d
+    par3 ~ normal(priormu[3], priorSigma[3,3])T[,truncd]; //prior for d
 
    if(is_bin==1) {
 

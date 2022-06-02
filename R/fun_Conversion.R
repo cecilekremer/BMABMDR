@@ -13,6 +13,8 @@
 #'
 #' @return Vector containing the geometric means and standard deviations per ordered dose level.
 #'
+#' @export NtoLN
+#'
 NtoLN=function(am,asd){
   gm=am/sqrt(asd^2/am^2+1)
   gsd=exp(sqrt(log(asd^2/am^2+1)))
@@ -33,7 +35,9 @@ NtoLN=function(am,asd){
 #'  LNtoN(gm = immunotoxicityData$Mean, gsd = immunotoxicityData$SD)
 #'
 #' @return Vector containing the arithmetic means and standard deviations per ordered dose level.
-
+#'
+#' @export LNtoN
+#'
 LNtoN=function(gm,gsd){
   am=exp(log(gm)+log(gsd)^2/2)
   asd=sqrt((exp(log(gsd)^2)-1)*exp(2*log(gm)+log(gsd)^2))

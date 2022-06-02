@@ -15,7 +15,9 @@ PREP_DATA_N(
   prior.BMD = NULL,
   shape.a = 4,
   shape.c = 4,
-  shape.BMD = 1e-04
+  shape.BMD = 1e-04,
+  prior.d = "N11",
+  extended = TRUE
 )
 }
 \arguments{
@@ -41,7 +43,15 @@ PREP_DATA_N(
 
 \item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution}
 
-\item{prior}{which prior distribution will be used, defaults to "PERT" (and currently this is the only one implemented)}
+\item{prior.d}{prior distribution for parameter d, should be either N11 (default) or EPA}
+
+\item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+
+#' @description The function takes in the dataset and generates the data list and starting values needed by the stan
+scripts containing the models to be fitted. Using the supplied data, we compute starting values for the BMD from a fractional
+polynomial model. The starting values and prior parameters for the background is determined
+using the confidence interval around the mean in the 0-dose group. The starting value for c and d
+are determined using....}
 }
 \value{
 List with data and start values in correct format to be directly used within the BMA functions.

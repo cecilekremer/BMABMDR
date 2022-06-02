@@ -1,7 +1,7 @@
 rm(list=ls())
 
 # install package from zip file
-# install.packages("~/GitHub/BMABMDR_0.0.0.9011.tar.gz", repos = NULL, type = "source")
+# install.packages("~/GitHub/BMABMDR_0.0.0.9013.tar.gz", repos = NULL, type = "source")
 
 library(BMABMDR)
 library(gamlss)
@@ -81,14 +81,20 @@ pvec = c(0.05,0.5,0.95)
 # uninformative
 data_N = PREP_DATA_N(summ.data,
                      sumstats = T,
-                     q = q)
+                     q = q,
+                     prior.d = 'N11',
+                     extended = T)
 data_LN = PREP_DATA_LN(summ.data,
                        sumstats = T,
-                       q = q)
+                       q = q,
+                       prior.d = 'N11',
+                       extended = T)
 
 # informative, for example:
-# data_N = PREP_DATA_N(summ.data, sumstats = T, q = q, bkg = c(8,10.58,12), maxy = c(18,20.28,22), prior.BMD = c(20,40,60), shape.BMD = 4)
-# data_LN = PREP_DATA_LN(summ.data, sumstats = T, q = q, bkg = c(8,10.58,12), maxy = c(18,20.28,22), prior.BMD = c(20,40,60), shape.BMD = 4)
+data_N = PREP_DATA_N(summ.data, sumstats = T, q = q, bkg = c(5, 10.58, 15), maxy = c(15, 20.28, 25),
+                     prior.BMD = c(23.5, 38.41, 53.27), shape.BMD = 4)
+data_LN = PREP_DATA_LN(summ.data, sumstats = T, q = q, bkg = c(5, 10.58, 15), maxy = c(15, 20.28, 25),
+                       prior.BMD = c(23.5, 38.41, 53.27), shape.BMD = 4)
 
 
 ## Laplace approximation
@@ -164,8 +170,6 @@ pSBMD$MA_fit
 # plot prior vs posterior
 plot_prior(SBMD, data_N$data, "E4_N", parms = T)
 plot_prior(SBMD, data_LN$data, "P4_LN", parms = T)
-
-
 
 ####################
 ### QUANTAL DATA ###
