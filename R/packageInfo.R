@@ -6,5 +6,5 @@
 #'
 #' @docType package
 #'
-#' @import ggplot2 forcats mvtnorm mc2d ggpubr RColorBrewer posterior bbmle AICcmodavg numDeriv bridgesampling rstan gamlss rstantools
+#' @import ggplot2 forcats mvtnorm mc2d ggpubr RColorBrewer posterior bbmle AICcmodavg numDeriv bridgesampling rstan gamlss rstantools truncnorm
 NULL
