@@ -12,7 +12,9 @@ PREP_DATA_QA(
   prior.BMD = NULL,
   shape.a = 4,
   shape.BMD = 1e-04,
-  cluster = FALSE
+  cluster = FALSE,
+  prior.d = c("N11", "EPA"),
+  extended = TRUE
 )
 }
 \arguments{

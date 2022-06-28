@@ -4,7 +4,14 @@
 \alias{fun_optimQ}
 \title{function to perform Laplace approximation for each of the dose-response model.}
 \usage{
-fun_optimQ(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
+fun_optimQ(
+  mod,
+  data,
+  stv,
+  ndraws = ndraws,
+  seed = seed,
+  pvec = c(0.05, 0.5, 0.95)
+)
 }
 \arguments{
 \item{mod}{stan model file}
