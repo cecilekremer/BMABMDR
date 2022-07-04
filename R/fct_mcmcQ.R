@@ -28,6 +28,9 @@ fun_samplingQ = function(mod, data, stv,
   if(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
+  if(class(opt) == 'try-error'){
+    opt = c(NA, NA, NA)
+  }
   n.attempts <- 1
   while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) & n.attempts < 100){
     svh=stv

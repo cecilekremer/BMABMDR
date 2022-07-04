@@ -7,6 +7,7 @@
 plot.BMADR(
   mod.obj,
   type = c("increasing", "decreasing"),
+  clustered = F,
   weight_type = c("BS", "LP"),
   include_data = TRUE,
   all = TRUE,
@@ -17,6 +18,8 @@ plot.BMADR(
 \item{mod.obj}{BMDBMA model object}
 
 \item{type}{dose-response type. It can either be "increasing" or "decreasing"}
+
+\item{clustered}{logical indicating whether clustered data is used}
 
 \item{weight_type}{type of model weight to be plotted. It can either be "BS" or "LP"}
 

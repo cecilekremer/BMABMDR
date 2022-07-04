@@ -14,46 +14,66 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 
 RcppExport SEXP _rcpp_module_boot_stan_fit4mE4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mE4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mE4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mG4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mG4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mG4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH0_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH0_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mH0c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mH4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mIE4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mIE4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mIE4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mL4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mL4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mL4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mLN4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mLN4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mLN4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mP4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mP4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mP4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mQE4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mQE4_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mQE4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mSM_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mSM_Q_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mSMc_mod();
 
 static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4mE4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mE4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mE4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mG4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mG4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mG4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mG4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mG4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mG4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH0_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH0_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mH0c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mH4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mIE4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mIE4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mIE4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mIE4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mIE4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mIE4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mL4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mL4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mL4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mL4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mL4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mL4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mLN4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mLN4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mLN4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mLN4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mLN4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mLN4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mP4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mP4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mP4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mP4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mP4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mP4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mQE4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mQE4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mQE4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mQE4_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mQE4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mQE4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mSM_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSM_mod, 0},
     {"_rcpp_module_boot_stan_fit4mSM_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSM_Q_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mSMc_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSMc_mod, 0},
     {NULL, NULL, 0}
 };
 

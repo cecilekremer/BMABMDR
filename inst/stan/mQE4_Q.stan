@@ -80,7 +80,7 @@ transformed parameters{
 model{
     par1 ~ pert_dist(priorlb[1], priormuQ[1], priorub[1], priorgama[1]); //prior for a
     par2 ~ pert_dist(priorlb[2], priormuQ[2], priorub[2], priorgama[2]); //prior for BMD
-    par3 ~ normal(priormuQ[3], priorSigmaQ[3,3])T[, truncdQ]; //prior for d
+    par3 ~ normal(priormuQ[3], priorSigmaQ[3,3])T[,truncdQ]; //prior for d
 
     //1/exp(d) ~ exponential(1);
     //1/exp(d) ~ uniform(0,1);

@@ -176,7 +176,7 @@ pert_dist = function(x,lb,ub,s1,s2){
 #' @param sd standard deviation per dose group
 #' @param n number of observations per dose group
 #'
-#' @return pvalue for the Bartlett's test
+#' @return vector with test statistic and pvalue for the Bartlett's test
 #' @export bartlett
 #'
 bartlett <- function(sd,n){

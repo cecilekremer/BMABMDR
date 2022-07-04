@@ -183,6 +183,1131 @@ llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
   sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.L4_LND(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 
+#' Loglikelihood functions for the different dose response models - clustered
+#'
+#' @param x parameter values
+#' @param d dose levels
+#' @param n number of litters per dose level
+#' @param nij dose x litter matrix with the number of observations for each combination
+#' @param y response matrix
+#' @param qval BMR
+#' @param shift value of the shift for negative geometric means
+#'
+#' @examples
+#'
+#' @return .
+#'
+#' @export
+#'
+llfE4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.E4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfIE4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.IE4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      # ym = rsp - m
+      # ymt = t(ym)
+      #
+      # sum(-0.5*lt*log(2*pi) +
+      #       0.5*lt*log(x[5]) -
+      #       0.5*determinant(P, logarithm = T)$modulus[1] -
+      #       0.5*(ym%*%ymt * solve(P))*x[5])
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfH4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.H4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfLN4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.LN4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfG4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.G4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfQE4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.QE4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfP4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.P4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfL4_NIc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.L4_NI(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfSM_N=function(x,nvec,dvec,mvec,s2vec){
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[length(dvec)+1]-0.5*(nvec-1)*s2vec*exp(x[length(dvec)+1])-0.5*nvec*((mvec-x[1:length(dvec)])^2)*exp(x[length(dvec)+1]))
+}
+#' @rdname llfE4_NI
+#' @export
+llfE4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.E4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfIE4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.IE4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfH4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.H4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfLN4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.LN4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfG4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.G4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfQE4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.QE4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfP4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.P4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfL4_LNIc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.L4_LNI(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfSM_LNc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = x[i]
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[length(d)+2]
+          }
+        }
+      }
+      Sigma = 1/exp(x[length(d)+1]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfSM_Nc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = x[i]
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[length(d)+2]
+          }
+        }
+      }
+      Sigma = 1/exp(x[length(d)+1]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfE4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.E4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      # ym = rsp - m
+      # ymt = t(ym)
+      #
+      # sum(-0.5*lt*log(2*pi) +
+      #       0.5*lt*log(x[5]) -
+      #       0.5*determinant(P, logarithm = T)$modulus[1] -
+      #       0.5*(ym%*%ymt * solve(P))*x[5])
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfIE4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.IE4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfH4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.H4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfLN4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.LN4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfG4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.G4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfQE4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.QE4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfP4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.P4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfL4_NDc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = DRM.L4_ND(x[1:4], d[i], qval)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfE4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){ ## ll per cluster
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.E4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfIE4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.IE4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfH4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.H4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfLN4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.LN4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfG4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.G4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfQE4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.QE4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfP4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.P4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
+llfL4_LNDc = function(x, d, n, nij, y, qval, shift){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt] + shift
+      mx = DRM.L4_LND(x[1:4], d[i], qval, shift)
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[6]
+          }
+        }
+      }
+      Sigma = 1/exp(x[5]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+
+
 
 #' Loglikelihood functions for the different dose response models
 #'

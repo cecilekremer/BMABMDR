@@ -391,13 +391,13 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[5]>0){
     # print(5)
 
-    if(data$is_increasing == 1){
-      data$init_b = qgamma(data$q/
-                             (E4resNI[6]-1), rate=1.0, shape=exp(E4resNI[7]))/(E4resNI[2]/data$maxD)
-    }else if(data$is_decreasing == 1){
-      data$init_b = qgamma((-data$q)/
-                             (E4resNI[6]-1), rate=1.0, shape=exp(E4resNI[7]))/(E4resNI[2]/data$maxD)
-    }
+    # if(data$is_increasing == 1){
+    #   data$init_b = qgamma(data$q/
+    #                          (E4resNI[6]-1), rate=1.0, shape=exp(E4resNI[7]))/(E4resNI[2]/data$maxD)
+    # }else if(data$is_decreasing == 1){
+    #   data$init_b = qgamma((-data$q)/
+    #                          (E4resNI[6]-1), rate=1.0, shape=exp(E4resNI[7]))/(E4resNI[2]/data$maxD)
+    # }
 
     fitstanG4_N = fun_sampling(stanmodels$mG4, data, start,
                                ndraws,nrchains,
@@ -994,13 +994,13 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[13]>0){
     # print(13)
 
-    if(data$is_increasing == 1){
-      data$init_b = qgamma(log(1+data$q)/
-                             (E4resLNI[4]*(E4resLNI[6]-1)), rate=1.0, shape=exp(E4resLNI[7]))/(E4resLNI[2]/data$maxD)
-    }else if(data$is_decreasing == 1){
-      data$init_b = qgamma(log(1-data$q)/
-                             (E4resLNI[4]*(E4resLNI[6]-1)), rate=1.0, shape=exp(E4resLNI[7]))/(E4resLNI[2]/data$maxD)
-    }
+    # if(data$is_increasing == 1){
+    #   data$init_b = qgamma(log(1+data$q)/
+    #                          (E4resLNI[4]*(E4resLNI[6]-1)), rate=1.0, shape=exp(E4resLNI[7]))/(E4resLNI[2]/data$maxD)
+    # }else if(data$is_decreasing == 1){
+    #   data$init_b = qgamma(log(1-data$q)/
+    #                          (E4resLNI[4]*(E4resLNI[6]-1)), rate=1.0, shape=exp(E4resLNI[7]))/(E4resLNI[2]/data$maxD)
+    # }
 
     fitstanG4_LN = fun_sampling(stanmodels$mG4, data, start,
                                 ndraws,nrchains,
@@ -1578,13 +1578,13 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[5]>0){
     print("pw5")
 
-    if(data$is_increasing == 1){
-      data$init_b = qgamma(data$q/
-                             (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
-    }else if(data$is_decreasing == 1){
-      data$init_b = qgamma((-data$q)/
-                             (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
-    }
+    # if(data$is_increasing == 1){
+    #   data$init_b = qgamma(data$q/
+    #                          (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
+    # }else if(data$is_decreasing == 1){
+    #   data$init_b = qgamma((-data$q)/
+    #                          (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
+    # }
 
     optG4_NI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 
@@ -1800,13 +1800,13 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     print("pw13")
 
-    if(data$is_increasing == 1){
-      data$init_b = qgamma(log(1+data$q)/
-                             (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
-    }else if(data$is_decreasing == 1){
-      data$init_b = qgamma(log(1-data$q)/
-                             (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
-    }
+    # if(data$is_increasing == 1){
+    #   data$init_b = qgamma(log(1+data$q)/
+    #                          (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
+    # }else if(data$is_decreasing == 1){
+    #   data$init_b = qgamma(log(1-data$q)/
+    #                          (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
+    # }
 
     optG4_LNI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 

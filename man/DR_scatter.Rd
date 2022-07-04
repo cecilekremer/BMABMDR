@@ -27,6 +27,8 @@ Typically dose.}
 \item{x_DRM_df}{name of the x variable in the dose response curve data. Typically dose}
 
 \item{y_DRM_df}{name of the y variable in the individual-level dose response data.}
+
+\item{col_DRM}{color scheme}
 }
 \value{
 .

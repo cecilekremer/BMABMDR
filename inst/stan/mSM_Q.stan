@@ -21,9 +21,14 @@ data{
   int N;  // the total number of distinct dose group
   vector[N] n;  // the sample size for each dose group
   vector[N] y;  // the arithmetic mean of the response values for each dose group
+
   vector[N+1] priormu;
   vector[N] priorlb; //lower bound
   vector[N] priorub; //upper bound
+
+  //real priormu[N+1];
+  //real priorlb; //lower bound
+  //real<upper=1> priorub; //upper bound
   real priorgama;
   real eps;
   int<lower=0, upper=1> is_bin;  //model type 1 = Binomial 0 = otherwise
@@ -66,10 +71,10 @@ transformed parameters{
 }
 model{
 
-  par[1] ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama);
+  //par[1] ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama);
 
-  for(k in 2:N)
-        par[k] ~ pert_dist(priorlb[k], priormu[k], priorub[k], 4);
+  //for(k in 2:N)
+  //    par[k] ~ uniform(priorlb[k], priorub[k]);//pert_dist(priorlb, priormu[1], priorub, 4);
 
     if(is_bin==1) {
 
@@ -77,15 +82,15 @@ model{
 
        target += lchoose(n[i], y[i]) + y[i]*log(a[i]+eps) + (n[i] - y[i])*log(1 - a[i]+eps);
 
-      }
+     }
 
-    } else {
+     } else {
 
-    rho[is_betabin] ~ pert_dist(0.0, priormu[N+1], 1.0, 4.0);
+      rho[is_betabin] ~ pert_dist(0.0, priormu[2], 1.0, 4.0);
       for (i in 1:N){
              target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
-                lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
-                lgamma(abet[i]+bbet[i]+eps);
+                  lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+                  lgamma(abet[i]+bbet[i]+eps);
       }
     }
 

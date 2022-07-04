@@ -24,6 +24,9 @@ fun_optim = function(mod, data, stv,
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
+  if(class(opt) == 'try-error'){
+    opt = c(NA, NA, NA)
+  }
   n.attempts <- 1
   while((ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9) & n.attempts < 100){
     svh=stv

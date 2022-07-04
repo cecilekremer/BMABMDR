@@ -12,7 +12,7 @@ bartlett(sd, n)
 \item{n}{number of observations per dose group}
 }
 \value{
-pvalue for the Bartlett's test
+vector with test statistic and pvalue for the Bartlett's test
 }
 \description{
 Bartlett function for testing constant variance and co-efficient of variation; H0 equal variances
