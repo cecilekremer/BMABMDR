@@ -142,8 +142,8 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
                              nrow = 2, ncol = 2,
                              common.legend = TRUE, legend = "bottom")
 
-    return(ggpubr::annotate_figure(pts, top = text_grob(paste0("Model ", model_name),
-                                                        color = "red", face = "bold", size = 14)))
+    return(ggpubr::annotate_figure(pts, top = text_grob(names(get_models('quantal')[
+      which(get_models('quantal') == model_name)]), color = "red", face = "bold", size = 14)))
   } else stop("The requested model was not included in the original analysis.")
 
 }

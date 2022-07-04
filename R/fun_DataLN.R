@@ -387,4 +387,3 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   return(ret.list)
 
 }
-

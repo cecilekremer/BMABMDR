@@ -99,7 +99,8 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   # on the original scale (constant variance)
   b.test.N <- bartlett(sd.a, n.a)
   if(b.test.N[2]>=0.05){
-    test.var = paste0('Distributional assumption of constant variance are met, Bartlett test p-value is ', round(b.test.N[2], 4))
+    test.var = paste0('Distributional assumption of constant variance are met, Bartlett test p-value is ',
+                      round(b.test.N[2], 4))
     message(test.var)
   }else if(b.test.N[2]<0.05){
     test.var = paste0('Distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is ', round(b.test.N[2], 4))
@@ -375,4 +376,3 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   return(ret.list)
 
 }
-

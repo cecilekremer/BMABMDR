@@ -21,7 +21,13 @@ plot_BMD(
 
 \item{BMD.true}{true value for BMD. Only necessary if such exist}
 
-\item{x}{value?}
+\item{x}{value}
+
+\item{BMD}{BMD}
+
+\item{BMDL}{BMDL}
+
+\item{BMDU}{BMDU}
 
 \item{xlab}{x-axis label}
 

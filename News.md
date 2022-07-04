@@ -10,6 +10,16 @@
 
 * Added two internal datasets
 
+## Updates 25/6/2022
+
+* Added functions and stan models for clustered continuous data (modelTest not yet implemented)
+
+* Fixed anydoseresponseQ() function
+
+* Fixed problem with plots
+
+* Added option for clustered data to plot.BMADR()
+
 ## Updates 2/6/2022
 
 * Updated Stan models for continuous and quantal endpoints

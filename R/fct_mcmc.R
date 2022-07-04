@@ -28,7 +28,9 @@ fun_sampling = function(mod, data, stv,
   if(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
-
+  if(class(opt) == 'try-error'){
+    opt = c(NA, NA, NA)
+  }
   n.attempts <- 1
   while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) & n.attempts < 100){
     svh=stv
@@ -145,6 +147,17 @@ fun_sampling = function(mod, data, stv,
                              ,
                              show_messages = F, refresh = 0, verbose = F)
 
+  # while(is.na(dim(fitstan)[1])){
+
+  # init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+  #
+  # # save(init_ll, file = "init.RData")
+  # fitstan=try(rstan::sampling(mod,data = data,
+  #                             init=init_ll,iter = nriterations,
+  #                             chains = nrchains,warmup=warmup,seed=123,
+  #                             control = list(adapt_delta = delta,
+  #                                            max_treedepth =treedepth),
+  #                             show_messages = F, refresh = 0, verbose = F),silent=T)
   if(is.na(dim(fitstan)[1])){
 
     fitstan <- NULL
