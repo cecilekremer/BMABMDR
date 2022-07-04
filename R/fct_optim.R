@@ -24,7 +24,8 @@ fun_optim = function(mod, data, stv,
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9){
+  n.attempts <- 1
+  while((ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -56,7 +57,7 @@ fun_optim = function(mod, data, stv,
     par[4:5] = par[4:5] + rnorm(2, sd = 0.01*abs(par[4:5]))
 
     ## BMD between 0 and 1
-    if(par[2] > 1) par[2] = 0.9
+    # if(par[2] > 1) par[2] = 0.9
 
     if(data$data_type==1|data$data_type==2){
       pars3d = numeric()
@@ -74,6 +75,8 @@ fun_optim = function(mod, data, stv,
     opt=try(rstan::optimizing(mod,data = data,
                               seed=as.integer(seed),draws=ndraws,
                               init=svh,hessian=TRUE),silent=T)
+
+    n.attempts <- n.attempts + 1
   }
 
   attr(opt, "class") <- "stanfitOptim"

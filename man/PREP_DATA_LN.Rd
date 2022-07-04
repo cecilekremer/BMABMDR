@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_DataLN.R
 \name{PREP_DATA_LN}
 \alias{PREP_DATA_LN}
-\title{Function to set data in the correct format, and also to generate starting values. Lognormal version}
+\title{Function to set data in the correct format}
 \usage{
 PREP_DATA_LN(
   data,
@@ -15,42 +15,63 @@ PREP_DATA_LN(
   prior.BMD = NULL,
   shape.a = 4,
   shape.c = 4,
-  shape.BMD = 1e-04
+  shape.BMD = 1e-04,
+  prior.d = "N11",
+  extended = TRUE
 )
 }
 \arguments{
-\item{data}{dataframe with input data, order of columns should be: dose, response, sd, n.}
+\item{data}{a dataframe with input data, order of columns should be: dose, response, sd (or se), n}
 
-\item{sumstats}{logical. TRUE indicates summary data is provided while FALSE indicates individual-level data.}
+\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
 
-\item{geom.stats}{logical. TRUE if geometric summary data is provided.}
+\item{geom.stats}{logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics}
 
-\item{sd}{logical. TRUE indicates that standard deviation per dose is provided,
-FALSE indicates that standard error per dose level is provided}
+\item{sd}{logical indicating whether standard deviation (T, default) or standard error (F) is provided}
 
-\item{q}{the specified BMR}
+\item{q}{specified BMR}
 
-\item{bkg}{vector containing informative prior for the background.
-It should be specified as minimum, most likely and maximum. Defaults to NULL.}
+\item{bkg}{vector containing minimum, most likely, and maximum value for the background response}
 
-\item{maxy}{vector containing informative prior for the maximum response.
-It should be specified as minimum, most likely and maximum. Defaults to NULL.}
+\item{maxy}{vector containing minimum, most likely, and maximum value for the response at dose infinity}
 
-\item{prior.BMD}{vector containing informative prior for the BMD.
-It should be specified as minimum, most likely and maximum. Defaults to NULL.}
+\item{prior.BMD}{vector containing minimum, most likely, and maximum value for the BMD}
 
-\item{shape.a}{shape parameter that determines the flatness of the Pert prior for the background.
-Defaults to 4, which implies a peak at the most likely value.}
+\item{shape.a}{shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution}
 
-\item{shape.c}{shape parameter that determines the flatness of the Pert prior for c.
-Defaults to 4, which implies a peak at the most likely value.}
+\item{shape.c}{shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution}
 
-\item{shape.BMD}{shape parameter that determines the flatness of the Pert prior for the BMD.
-Defaults to 0.0001, which implies a flat prior.}
+\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution}
+
+\item{prior.d}{prior distribution for parameter d, should be either N11 (default) or EPA}
+
+\item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 }
 \value{
 List with data and start values in correct format to be directly used within the BMA functions.
 }
 \description{
+The function takes in the dataset and generates the data list and starting values needed by the stan
+scripts containing the models to be fitted. Using the supplied data, we compute starting values for the BMD from a fractional
+polynomial model. The starting values and prior parameters for the background is determined
+using the confidence interval around the mean in the 0-dose group. The starting value for c and d
+are determined using....
+}
+\details{
 This function also generates appropriate start values and uninformative priors for each model
+}
+\examples{
+
+ load("immunotoxicityData.rda")  #load the immunotoxicity data
+ data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
+                         sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+
+ data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+                       sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
+
+
+ data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+                       sd = TRUE, q = 0.1,
+                       prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
+
 }

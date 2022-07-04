@@ -4,12 +4,14 @@
 \alias{flat}
 \title{Function for internal use}
 \usage{
-flat(dose, mean, inc)
+flat(dose, mean, n, inc)
 }
 \arguments{
 \item{dose}{value}
 
 \item{mean}{value}
+
+\item{n}{value}
 
 \item{inc}{logical variable to indicate if the dose-resonse curve is increasing or decreasing}
 }

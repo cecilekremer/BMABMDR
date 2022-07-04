@@ -41,6 +41,7 @@ data{
   real priorgama[2];
   real eps;
   cov_matrix[3] priorSigma;
+  real truncd;
   int<lower=0, upper=1> is_bin;       //model type 1 = Binomial 0 = otherwise
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
  }
@@ -103,7 +104,7 @@ data{
  model{
     par1 ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama[1]); //prior for a
     par2 ~ pert_dist(priorlb[2], priormu[2], priorub[2], priorgama[2]); //prior for BMD
-    par3 ~ normal(priormu[3], priorSigma[3,3]); //prior for d
+    par3 ~ normal(priormu[3], priorSigma[3,3])T[,truncd]; //prior for d
 
     if(is_bin==1) {
 

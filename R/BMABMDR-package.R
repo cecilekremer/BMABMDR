@@ -8,6 +8,7 @@
 #' @useDynLib BMABMDR, .registration = TRUE
 #' @import methods
 #' @import Rcpp
+#' @import truncnorm
 #' @importFrom rstan sampling
 #'
 #' @references

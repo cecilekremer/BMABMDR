@@ -8,7 +8,7 @@
 #'
 #' @return Vector containing the expected response at each dose level
 #'
-#' @example
+#' @examples
 #' data("immunotoxicityData.rda")  #load the immunotoxicity data
 #' DRM.E4_NI(par = c(1.06, 0.015, 0.2, 1), x = immunotoxicityData$Dose[1:5], q = 0.1)
 #'

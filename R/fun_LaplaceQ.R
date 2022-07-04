@@ -38,79 +38,91 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   ## Data to use for Normal distribution
   data = data.Q$data
   start = data.Q$start
+  startQ = data.Q$startQ
 
   llQ = c() # likelihoods
   BMDL = c()
   BMD = c()
   BMDU = c()
 
+  nModels = 8
+
   ### Getting the posterior modes and the hessian to obtain the model specific posterior distributions
   # optimizing function: obtain point estimates by maximizing the joint posterior from the Stan model
   ### Additionally save BMD(L/U) estimates and loglikelihood values; set to NA if model has prior weight 0
 
-
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[1]))
+  }
   if(prior.weights[1]>0){
 
-    print(1)
-    optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
+    # print(1)
+    optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, seed, pvec)
 
-    if(data$is_bin == 1) {
-      parsE4Q <- parq_extract(optE4_Q, model_name = "E4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                     paste0('par',1:3)))
-    } else {
-      parsE4Q <- parq_extract(optE4_Q, model_name = "E4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                     paste0('par',1:3)),
-                              rho = TRUE)
+    if((ifelse(is.na(optE4_Q[[3]]),TRUE,(optE4_Q[[3]]!=0)) | length(optE4_Q)!=9)){
+      prior.weights[1] <- 0
+      warning('Difficulties fitting the Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsE4Q <- parq_extract(optE4_Q, model_name = "E4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                       paste0('par',1:3)))
+      } else {
+        parsE4Q <- parq_extract(optE4_Q, model_name = "E4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                       paste0('par',1:3)),
+                                rho = TRUE)
+      }
+
+      E4resQ <- quantile(parsE4Q$BMD, pvec)*data$maxD
+      if(data$is_bin == 1){
+        E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(E4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                              c("BMDL","BMD","BMDU","a","b","d"),
+                              c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        E4outQ <- outLPQ(parsE4Q, pvec, data$maxD)
+      } else {
+        E4outQ <- outLPQ(parsE4Q, pvec, data$maxD, rho=TRUE)
+      }
+
+      # Covariance between b-d and between BMD-d
+      E4covQ <- c(cov(parsE4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(parsE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      E4corrQ <- c(cor(parsE4Q[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(parsE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_E4_Q <- DRM.E4_Q(optE4_Q$par[1:3], data$x, data$q)
+
+      # obtain loglikelihood
+      llE4Q <- ifelse(data$is_bin == 1,
+                      llfE4_Q(optE4_Q$par[1:3],
+                              nvec=data$n,
+                              dvec=data$x,
+                              yvec=data$y,
+                              qval=data$q),
+                      llfE42_Q(optE4_Q$par[1:3],
+                               nvec=data$n,
+                               dvec=data$x,
+                               yvec=data$y,
+                               qval=data$q,
+                               rho = optE4_Q$par[stringr::str_detect(names(optE4_Q$par),'rho') &
+                                                   !stringr::str_detect(names(optE4_Q$par),'eta')])
+      )
+      # save LL and BMD(L/U) estimate
+      llQ = c(llQ, llE4Q)
+      BMDL = c(BMDL, E4resQ[1])
+      BMD = c(BMD, E4resQ[2])
+      BMDU = c(BMDU, E4resQ[3])
     }
-
-    E4resQ <- quantile(parsE4Q$BMD, pvec)*data$maxD
-    if(data$is_bin == 1){
-      E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(E4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                            c("BMDL","BMD","BMDU","a","b","d"),
-                            c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      E4outQ <- outLPQ(parsE4Q, pvec, data$maxD)
-    } else {
-      E4outQ <- outLPQ(parsE4Q, pvec, data$maxD, rho=TRUE)
-    }
-
-    # Covariance between b-d and between BMD-d
-    E4covQ <- c(cov(parsE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cov(parsE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    E4corrQ <- c(cor(parsE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(parsE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_E4_Q <- DRM.E4_Q(optE4_Q$par[1:3], data$x, data$q)
-
-    # obtain loglikelihood
-    llE4Q <- ifelse(data$is_bin == 1,
-                    llfE4_Q(optE4_Q$par[1:3],
-                            nvec=data$n,
-                            dvec=data$x,
-                            yvec=data$y,
-                            qval=data$q),
-                    llfE42_Q(optE4_Q$par[1:3],
-                             nvec=data$n,
-                             dvec=data$x,
-                             yvec=data$y,
-                             qval=data$q,
-                             rho = optE4_Q$par[stringr::str_detect(names(optE4_Q$par),'rho') &
-                                                 !stringr::str_detect(names(optE4_Q$par),'eta')])
-    )
-    # save LL and BMD(L/U) estimate
-    llQ = c(llQ, llE4Q)
-    BMDL = c(BMDL, E4resQ[1])
-    BMD = c(BMD, E4resQ[2])
-    BMDU = c(BMDU, E4resQ[3])
-  }else{E4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
+  }
+  if(prior.weights[1] == 0){E4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
   E4covQ=rep(NA,2); E4corrQ=rep(NA,2); DRM_E4_Q=rep(NA, length(data$x))
   parsE4Q <- NA
   E4outQ <- t(data.frame(
@@ -131,66 +143,76 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[2]))
+  }
   if(prior.weights[2]>0){
 
-    print(2)
+    # print(2)
     optIE4_Q <- fun_optimQ(stanmodels$mIE4_Q, data, start, ndraws, 123, pvec)
 
-    if(data$is_bin == 1) {
-      parsIE4Q <- parq_extract(optIE4_Q, model_name = "IE4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                        paste0('par',1:3)))
-    } else {
-      parsIE4Q <- parq_extract(optIE4_Q, model_name = "IE4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                        paste0('par',1:3)),
-                               rho = TRUE)
+    if((ifelse(is.na(optIE4_Q[[3]]),TRUE,(optIE4_Q[[3]]!=0)) | length(optIE4_Q)!=9)){
+      prior.weights[2] <- 0
+      warning('Difficulties fitting the Inverse Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsIE4Q <- parq_extract(optIE4_Q, model_name = "IE4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                          paste0('par',1:3)))
+      } else {
+        parsIE4Q <- parq_extract(optIE4_Q, model_name = "IE4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                          paste0('par',1:3)),
+                                 rho = TRUE)
+      }
+      IE4resQ <- quantile(parsIE4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
+
+      if(data$is_bin == 1){
+        IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(IE4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                               c("BMDL","BMD","BMDU","a","b","d"),
+                               c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        IE4outQ <- outLPQ(parsIE4Q, pvec, data$maxD)
+      } else {
+        IE4outQ <- outLPQ(parsIE4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+      # Covariance between b-d and between BMD-d
+      IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
+                   cov(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
+                    cor(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_IE4_Q <- DRM.IE4_Q(optIE4_Q$par[1:3], data$x, data$q)
+
+      llIE4Q <- ifelse(data$is_bin == 1,
+                       llfIE4_Q(optIE4_Q$par[1:3],nvec=data$n,
+                                dvec=data$x,
+                                yvec=data$y,
+                                qval=data$q),
+                       llfIE42_Q(optIE4_Q$par[1:3],
+                                 nvec=data$n,
+                                 dvec=data$x,
+                                 yvec=data$y,
+                                 qval=data$q,
+                                 rho = optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho') &
+                                                      !stringr::str_detect(names(optIE4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llIE4Q)
+      BMDL = c(BMDL, IE4resQ[1])
+      BMD = c(BMD, IE4resQ[2])
+      BMDU = c(BMDU, IE4resQ[3])
     }
-    IE4resQ <- quantile(parsIE4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
-
-    if(data$is_bin == 1){
-      IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(IE4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                             c("BMDL","BMD","BMDU","a","b","d"),
-                             c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      IE4outQ <- outLPQ(parsIE4Q, pvec, data$maxD)
-    } else {
-      IE4outQ <- outLPQ(parsIE4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-    # Covariance between b-d and between BMD-d
-    IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_IE4_Q <- DRM.IE4_Q(optIE4_Q$par[1:3], data$x, data$q)
-
-    llIE4Q <- ifelse(data$is_bin == 1,
-                     llfIE4_Q(optIE4_Q$par[1:3],nvec=data$n,
-                              dvec=data$x,
-                              yvec=data$y,
-                              qval=data$q),
-                     llfIE42_Q(optIE4_Q$par[1:3],
-                               nvec=data$n,
-                               dvec=data$x,
-                               yvec=data$y,
-                               qval=data$q,
-                               rho = optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho') &
-                                                    !stringr::str_detect(names(optIE4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llIE4Q)
-    BMDL = c(BMDL, IE4resQ[1])
-    BMD = c(BMD, IE4resQ[2])
-    BMDU = c(BMDU, IE4resQ[3])
-  }else{
+  }
+  if(prior.weights[2] == 0){
     IE4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
     IE4covQ=rep(NA,2); IE4corrQ=rep(NA,2); DRM_IE4_Q=rep(NA,length(data$x))
     parsIE4Q <- NA
@@ -211,68 +233,78 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   }
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[3]))
+  }
   if(prior.weights[3]>0){
 
-    print(3)
+    # print(3)
 
     optH4_Q <- fun_optimQ(stanmodels$mH4_Q, data, start, ndraws, 123, pvec)
 
-    if(data$is_bin == 1) {
-      parsH4Q <- parq_extract(optH4_Q, model_name = "H4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                     paste0('par',1:3)))
-    } else {
-      parsH4Q <- parq_extract(optH4_Q, model_name = "H4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                     paste0('par',1:3)),
-                              rho = TRUE)
+    if((ifelse(is.na(optH4_Q[[3]]),TRUE,(optH4_Q[[3]]!=0)) | length(optH4_Q)!=9)){
+      prior.weights[3] <- 0
+      warning('Difficulties fitting the Hill model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsH4Q <- parq_extract(optH4_Q, model_name = "H4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                       paste0('par',1:3)))
+      } else {
+        parsH4Q <- parq_extract(optH4_Q, model_name = "H4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                       paste0('par',1:3)),
+                                rho = TRUE)
+      }
+
+      H4resQ <- quantile(parsH4Q$BMD, pvec)*data$maxD
+      if(data$is_bin == 1){
+        H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(H4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                              c("BMDL","BMD","BMDU","a","b","d"),
+                              c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        H4outQ <- outLPQ(parsH4Q, pvec, data$maxD)
+      } else {
+        H4outQ <- outLPQ(parsH4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+
+      # Covariance between b-d and between BMD-d
+      H4covQ = c(cov(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
+                 cov(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cor(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_H4_Q <- DRM.H4_Q(optH4_Q$par[1:3], data$x, data$q)
+
+      llH4Q <- ifelse(data$is_bin == 1,
+                      llfH4_Q(optH4_Q$par[1:3],nvec=data$n,
+                              dvec=data$x,
+                              yvec=data$y,
+                              qval=data$q),
+                      llfH42_Q(optH4_Q$par[1:3],
+                               nvec=data$n,
+                               dvec=data$x,
+                               yvec=data$y,
+                               qval=data$q,
+                               rho = optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'rho') &
+                                                   !stringr::str_detect(names(optH4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llH4Q)
+      BMDL = c(BMDL, H4resQ[1])
+      BMD = c(BMD, H4resQ[2])
+      BMDU = c(BMDU, H4resQ[3])
     }
-
-    H4resQ <- quantile(parsH4Q$BMD, pvec)*data$maxD
-    if(data$is_bin == 1){
-      H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(H4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                            c("BMDL","BMD","BMDU","a","b","d"),
-                            c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      H4outQ <- outLPQ(parsH4Q, pvec, data$maxD)
-    } else {
-      H4outQ <- outLPQ(parsH4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-
-    # Covariance between b-d and between BMD-d
-    H4covQ = c(cov(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
-               cov(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cor(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_H4_Q <- DRM.H4_Q(optH4_Q$par[1:3], data$x, data$q)
-
-    llH4Q <- ifelse(data$is_bin == 1,
-                    llfH4_Q(optH4_Q$par[1:3],nvec=data$n,
-                            dvec=data$x,
-                            yvec=data$y,
-                            qval=data$q),
-                    llfH42_Q(optH4_Q$par[1:3],
-                             nvec=data$n,
-                             dvec=data$x,
-                             yvec=data$y,
-                             qval=data$q,
-                             rho = optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'rho') &
-                                                 !stringr::str_detect(names(optH4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llH4Q)
-    BMDL = c(BMDL, H4resQ[1])
-    BMD = c(BMD, H4resQ[2])
-    BMDU = c(BMDU, H4resQ[3])
-  }else{H4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
+  }
+  if(prior.weights[3] == 0){H4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
   BMDU=c(BMDU,NA); H4covQ=rep(NA,2); H4corrQ=rep(NA,2); DRM_H4_Q=rep(NA,length(data$x))
   parsH4Q <- NA
   H4outQ <- t(data.frame(
@@ -293,67 +325,77 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[4]))
+  }
   if(prior.weights[4]>0){
 
-    print(4)
+    # print(4)
     optLN4_Q <- fun_optimQ(stanmodels$mLN4_Q, data, start, ndraws, 123, pvec)
 
-    if(data$is_bin == 1) {
-      parsLN4Q <- parq_extract(optLN4_Q, model_name = "LN4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                        paste0('par',1:3)))
-    } else {
-      parsLN4Q <- parq_extract(optLN4_Q, model_name = "LN4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                        paste0('par',1:3)),
-                               rho = TRUE)
+    if((ifelse(is.na(optLN4_Q[[3]]),TRUE,(optLN4_Q[[3]]!=0)) | length(optLN4_Q)!=9)){
+      prior.weights[4] <- 0
+      warning('Difficulties fitting the Lognormal model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsLN4Q <- parq_extract(optLN4_Q, model_name = "LN4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                          paste0('par',1:3)))
+      } else {
+        parsLN4Q <- parq_extract(optLN4_Q, model_name = "LN4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                          paste0('par',1:3)),
+                                 rho = TRUE)
+      }
+      LN4resQ <- quantile(parsLN4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
+
+      if(data$is_bin == 1){
+        LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(LN4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                               c("BMDL","BMD","BMDU","a","b","d"),
+                               c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        LN4outQ <- outLPQ(parsLN4Q, pvec, data$maxD)
+      } else {
+        LN4outQ <- outLPQ(parsLN4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+      # Covariance between b-d and between BMD-d
+      LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_LN4_Q = DRM.LN4_Q(optLN4_Q$par[1:3], data$x, data$q)
+
+
+      llLN4Q <- ifelse(data$is_bin == 1,
+                       llfLN4_Q(optLN4_Q$par[1:3],nvec=data$n,
+                                dvec=data$x,
+                                yvec=data$y,
+                                qval=data$q),
+                       llfLN42_Q(optLN4_Q$par[1:3],
+                                 nvec=data$n,
+                                 dvec=data$x,
+                                 yvec=data$y,
+                                 qval=data$q,
+                                 rho = optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'rho') &
+                                                      !stringr::str_detect(names(optLN4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llLN4Q)
+      BMDL = c(BMDL, LN4resQ[1])
+      BMD = c(BMD, LN4resQ[2])
+      BMDU = c(BMDU, LN4resQ[3])
     }
-    LN4resQ <- quantile(parsLN4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
-
-    if(data$is_bin == 1){
-      LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(LN4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                             c("BMDL","BMD","BMDU","a","b","d"),
-                             c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      LN4outQ <- outLPQ(parsLN4Q, pvec, data$maxD)
-    } else {
-      LN4outQ <- outLPQ(parsLN4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-    # Covariance between b-d and between BMD-d
-    LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cov(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_LN4_Q = DRM.LN4_Q(optLN4_Q$par[1:3], data$x, data$q)
-
-
-    llLN4Q <- ifelse(data$is_bin == 1,
-                     llfLN4_Q(optLN4_Q$par[1:3],nvec=data$n,
-                              dvec=data$x,
-                              yvec=data$y,
-                              qval=data$q),
-                     llfLN42_Q(optLN4_Q$par[1:3],
-                               nvec=data$n,
-                               dvec=data$x,
-                               yvec=data$y,
-                               qval=data$q,
-                               rho = optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'rho') &
-                                                    !stringr::str_detect(names(optLN4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llLN4Q)
-    BMDL = c(BMDL, LN4resQ[1])
-    BMD = c(BMD, LN4resQ[2])
-    BMDU = c(BMDU, LN4resQ[3])
-  }else{LN4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
+  }
+  if(prior.weights[4] == 0){LN4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
   LN4covQ=rep(NA,2); LN4corrQ=rep(NA,2); DRM_LN4_Q=rep(NA,length(data$x))
   parsLN4Q <- NA
   LN4outQ <- t(data.frame(
@@ -373,67 +415,77 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   }
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[5]))
+  }
   if(prior.weights[5]>0){
-    print(5)
-    # optG4_Q = fun_optimQ_G4(modN, stanmodels$mG4_Q, data, stv = start, ndraws, 123, pvec)
+    # print(5)
+
+    data$init_b <- qgamma(data$q, rate=1.0, shape=optE4_Q$par[6])/optE4_Q$par[2]
+
     optG4_Q <- fun_optimQ(stanmodels$mG4_Q, data, start, ndraws, 123, pvec)
+    if((ifelse(is.na(optG4_Q[[3]]),TRUE,(optG4_Q[[3]]!=0)) | length(optG4_Q)!=9)){
+      prior.weights[5] <- 0
+      warning('Difficulties fitting the Gamma model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
 
+      if(data$is_bin == 1) {
+        parsG4Q <- parq_extract(optG4_Q, model_name = "G4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                       paste0('par',1:3)))
+      } else {
+        parsG4Q <- parq_extract(optG4_Q, model_name = "G4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                       paste0('par',1:3)),
+                                rho = TRUE)
+      }
 
-    if(data$is_bin == 1) {
-      parsG4Q <- parq_extract(optG4_Q, model_name = "G4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                     paste0('par',1:3)))
-    } else {
-      parsG4Q <- parq_extract(optG4_Q, model_name = "G4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                     paste0('par',1:3)),
-                              rho = TRUE)
+      G4resQ <- quantile(parsG4Q$BMD, pvec)*data$maxD
+      if(data$is_bin == 1){
+        G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(G4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                              c("BMDL","BMD","BMDU","a","b","d"),
+                              c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        G4outQ <- outLPQ(parsG4Q, pvec, data$maxD)
+      } else {
+        G4outQ <- outLPQ(parsG4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+      # Covariance between b-d and between BMD-d
+      G4covQ = c(cov(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
+                 cov(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      G4corrQ = c(cor(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cor(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_G4_Q = DRM.G4_Q(optG4_Q$par[1:3], data$x, data$q)
+
+      llG4Q <- ifelse(data$is_bin == 1,
+                      llfG4_Q(optG4_Q$par[1:3],nvec=data$n,
+                              dvec=data$x,
+                              yvec=data$y,
+                              qval=data$q),
+                      llfG42_Q(optG4_Q$par[1:3],
+                               nvec=data$n,
+                               dvec=data$x,
+                               yvec=data$y,
+                               qval=data$q,
+                               rho = optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'rho') &
+                                                   !stringr::str_detect(names(optG4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llG4Q)
+      BMDL = c(BMDL, G4resQ[1])
+      BMD = c(BMD, G4resQ[2])
+      BMDU = c(BMDU, G4resQ[3])
     }
-
-    G4resQ <- quantile(parsG4Q$BMD, pvec)*data$maxD
-    if(data$is_bin == 1){
-      G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(G4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                            c("BMDL","BMD","BMDU","a","b","d"),
-                            c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      G4outQ <- outLPQ(parsG4Q, pvec, data$maxD)
-    } else {
-      G4outQ <- outLPQ(parsG4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-    # Covariance between b-d and between BMD-d
-    G4covQ = c(cov(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
-               cov(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    G4corrQ = c(cor(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cor(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_G4_Q = DRM.G4_Q(optG4_Q$par[1:3], data$x, data$q)
-
-    llG4Q <- ifelse(data$is_bin == 1,
-                    llfG4_Q(optG4_Q$par[1:3],nvec=data$n,
-                            dvec=data$x,
-                            yvec=data$y,
-                            qval=data$q),
-                    llfG42_Q(optG4_Q$par[1:3],
-                             nvec=data$n,
-                             dvec=data$x,
-                             yvec=data$y,
-                             qval=data$q,
-                             rho = optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'rho') &
-                                                 !stringr::str_detect(names(optG4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llG4Q)
-    BMDL = c(BMDL, G4resQ[1])
-    BMD = c(BMD, G4resQ[2])
-    BMDU = c(BMDU, G4resQ[3])
-  }else{G4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
+  }
+  if(prior.weights[5] == 0){G4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
   BMDU=c(BMDU,NA); G4covQ=rep(NA,2); G4corrQ=rep(NA,2); DRM_G4_Q=rep(NA, length(data$x))
   parsG4Q <-NA
   G4outQ <- t(data.frame(
@@ -453,65 +505,75 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   }
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[6]))
+  }
   if(prior.weights[6]>0){
-    print(6)
-    optQE4_Q = fun_optimQ(stanmodels$mQE4_Q, data, start, ndraws, 123, pvec)
+    # print(6)
+    optQE4_Q = fun_optimQ(stanmodels$mQE4_Q, data, startQ, ndraws, 123, pvec)
 
-    if(data$is_bin == 1) {
-      parsQE4Q <- parq_extract(optQE4_Q, model_name = "QE4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                        paste0('par',1:3)))
-    } else {
-      parsQE4Q <- parq_extract(optQE4_Q, model_name = "QE4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                        paste0('par',1:3)),
-                               rho = TRUE)
+    if((ifelse(is.na(optQE4_Q[[3]]),TRUE,(optQE4_Q[[3]]!=0)) | length(optQE4_Q)!=9)){
+      prior.weights[6] <- 0
+      warning('Difficulties fitting the Quadratic Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsQE4Q <- parq_extract(optQE4_Q, model_name = "QE4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                          paste0('par',1:3)))
+      } else {
+        parsQE4Q <- parq_extract(optQE4_Q, model_name = "QE4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                          paste0('par',1:3)),
+                                 rho = TRUE)
+      }
+      QE4resQ <- quantile(parsQE4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
+
+      if(data$is_bin == 1){
+        QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(QE4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                               c("BMDL","BMD","BMDU","a","b","d"),
+                               c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        QE4outQ <- outLPQ(parsQE4Q, pvec, data$maxD)
+      } else {
+        QE4outQ <- outLPQ(parsQE4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+      # Covariance between b-d and between BMD-d
+      QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cov(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
+                   cor(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_QE4_Q = DRM.QE4_Q(optQE4_Q$par[1:3], data$x, data$q)
+
+
+      llQE4Q = ifelse(data$is_bin == 1,
+                      llfQE4_Q(optQE4_Q$par[1:3],nvec=data$n,
+                               dvec=data$x,
+                               yvec=data$y,
+                               qval=data$q),
+                      llfQE42_Q(optQE4_Q$par[1:3],nvec=data$n,
+                                dvec=data$x,
+                                yvec=data$y,
+                                qval=data$q,
+                                rho = optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'rho') &
+                                                     !stringr::str_detect(names(optQE4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llQE4Q)
+      BMDL = c(BMDL, QE4resQ[1])
+      BMD = c(BMD, QE4resQ[2])
+      BMDU = c(BMDU, QE4resQ[3])
     }
-    QE4resQ <- quantile(parsQE4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
-
-    if(data$is_bin == 1){
-      QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(QE4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                             c("BMDL","BMD","BMDU","a","b","d"),
-                             c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      QE4outQ <- outLPQ(parsQE4Q, pvec, data$maxD)
-    } else {
-      QE4outQ <- outLPQ(parsQE4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-    # Covariance between b-d and between BMD-d
-    QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cov(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cor(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_QE4_Q = DRM.QE4_Q(optQE4_Q$par[1:3], data$x, data$q)
-
-
-    llQE4Q = ifelse(data$is_bin == 1,
-                    llfQE4_Q(optQE4_Q$par[1:3],nvec=data$n,
-                             dvec=data$x,
-                             yvec=data$y,
-                             qval=data$q),
-                    llfQE42_Q(optQE4_Q$par[1:3],nvec=data$n,
-                              dvec=data$x,
-                              yvec=data$y,
-                              qval=data$q,
-                              rho = optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'rho') &
-                                                   !stringr::str_detect(names(optQE4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llQE4Q)
-    BMDL = c(BMDL, QE4resQ[1])
-    BMD = c(BMD, QE4resQ[2])
-    BMDU = c(BMDU, QE4resQ[3])
-  }else{QE4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
+  }
+  if(prior.weights[6] == 0){QE4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
   BMDU = c(BMDU,NA); QE4covQ = rep(NA,2); QE4corrQ=rep(NA,2); DRM_QE4_Q = rep(NA,length(data$x))
   parsQE4Q <- NA
   QE4outQ <- t(data.frame(
@@ -531,66 +593,76 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   }
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[7]))
+  }
   if(prior.weights[7]>0){
-    print(7)
+    # print(7)
     optP4_Q = fun_optimQ(stanmodels$mP4_Q, data, start, ndraws, 123, pvec)
 
-    if(data$is_bin == 1) {
-      parsP4Q <- parq_extract(optP4_Q, model_name = "P4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                     paste0('par',1:3)))
-    } else {
-      parsP4Q <- parq_extract(optP4_Q, model_name = "P4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                     paste0('par',1:3)),
-                              rho = TRUE)
+    if((ifelse(is.na(optP4_Q[[3]]),TRUE,(optP4_Q[[3]]!=0)) | length(optP4_Q)!=9)){
+      prior.weights[7] <- 0
+      warning('Difficulties fitting the Probit model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsP4Q <- parq_extract(optP4_Q, model_name = "P4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                       paste0('par',1:3)))
+      } else {
+        parsP4Q <- parq_extract(optP4_Q, model_name = "P4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                       paste0('par',1:3)),
+                                rho = TRUE)
+      }
+
+      P4resQ <- quantile(parsP4Q$BMD, pvec)*data$maxD
+      if(data$is_bin == 1){
+        P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(P4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                              c("BMDL","BMD","BMDU","a","b","d"),
+                              c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        P4outQ <- outLPQ(parsP4Q, pvec, data$maxD)
+      } else {
+        P4outQ <- outLPQ(parsP4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+
+      # Covariance between b-d and between BMD-d
+      P4covQ = c(cov(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
+                 cov(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      P4corrQ = c(cor(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cor(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_P4_Q = DRM.P4_Q(optP4_Q$par[1:3], data$x, data$q)
+
+      llP4Q <- ifelse(data$is_bin == 1,
+                      llfP4_Q(optP4_Q$par[1:3],nvec=data$n,
+                              dvec=data$x,
+                              yvec=data$y,
+                              qval=data$q),
+                      llfP42_Q(optP4_Q$par[1:3],
+                               nvec=data$n,
+                               dvec=data$x,
+                               yvec=data$y,
+                               qval=data$q,
+                               rho = optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'rho') &
+                                                   !stringr::str_detect(names(optP4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llP4Q)
+      BMDL = c(BMDL, P4resQ[1])
+      BMD = c(BMD, P4resQ[2])
+      BMDU = c(BMDU, P4resQ[3])
     }
-
-    P4resQ <- quantile(parsP4Q$BMD, pvec)*data$maxD
-    if(data$is_bin == 1){
-      P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(P4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                            c("BMDL","BMD","BMDU","a","b","d"),
-                            c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      P4outQ <- outLPQ(parsP4Q, pvec, data$maxD)
-    } else {
-      P4outQ <- outLPQ(parsP4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-
-    # Covariance between b-d and between BMD-d
-    P4covQ = c(cov(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
-               cov(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    P4corrQ = c(cor(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cor(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_P4_Q = DRM.P4_Q(optP4_Q$par[1:3], data$x, data$q)
-
-    llP4Q <- ifelse(data$is_bin == 1,
-                    llfP4_Q(optP4_Q$par[1:3],nvec=data$n,
-                            dvec=data$x,
-                            yvec=data$y,
-                            qval=data$q),
-                    llfP42_Q(optP4_Q$par[1:3],
-                             nvec=data$n,
-                             dvec=data$x,
-                             yvec=data$y,
-                             qval=data$q,
-                             rho = optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'rho') &
-                                                 !stringr::str_detect(names(optP4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llP4Q)
-    BMDL = c(BMDL, P4resQ[1])
-    BMD = c(BMD, P4resQ[2])
-    BMDU = c(BMDU, P4resQ[3])
-  }else{P4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
+  }
+  if(prior.weights[7] == 0){P4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA);
   P4covQ=rep(NA,2); P4corrQ=rep(NA,2); DRM_P4_Q=rep(NA,length(data$x)); parsP4Q <- NA
   P4outQ <- t(data.frame(
     # transformed parameters
@@ -609,65 +681,75 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   }
   #
 
+  if (!is.null(shiny::getDefaultReactiveDomain())){
+    shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='quantal')[8]))
+  }
   if(prior.weights[8]>0){
-    print(8)
+    # print(8)
     optL4_Q = fun_optimQ(stanmodels$mL4_Q, data, start, ndraws, 123, pvec)
 
-    if(data$is_bin == 1) {
-      parsL4Q <- parq_extract(optL4_Q, model_name = "L4_Q", pars = c('a', 'b', 'd', 'BMD',
-                                                                     paste0('par',1:3)))
-    } else {
-      parsL4Q <- parq_extract(optL4_Q, model_name = "L4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
-                                                                     paste0('par',1:3)),
-                              rho = TRUE)
+    if((ifelse(is.na(optL4_Q[[3]]),TRUE,(optL4_Q[[3]]!=0)) | length(optL4_Q)!=9)){
+      prior.weights[8] <- 0
+      warning('Difficulties fitting the Logit model; prior weight was set to 0 and the model is not included in model averaging')
+    }else{
+
+      if(data$is_bin == 1) {
+        parsL4Q <- parq_extract(optL4_Q, model_name = "L4_Q", pars = c('a', 'b', 'd', 'BMD',
+                                                                       paste0('par',1:3)))
+      } else {
+        parsL4Q <- parq_extract(optL4_Q, model_name = "L4_Q", pars = c('a', 'b', 'd', 'BMD','rho[1]',
+                                                                       paste0('par',1:3)),
+                                rho = TRUE)
+      }
+
+      L4resQ <- quantile(parsL4Q$BMD, pvec)*data$maxD
+      if(data$is_bin == 1){
+        L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd')], 2, median))
+      } else {
+        L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd','rho')], 2, median))
+      }
+
+      names(L4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
+                              c("BMDL","BMD","BMDU","a","b","d"),
+                              c("BMDL","BMD","BMDU","a","b","d","rho")
+      )
+
+      if(data$is_bin == 1){
+        L4outQ <- outLPQ(parsL4Q, pvec, data$maxD)
+      } else {
+        L4outQ <- outLPQ(parsL4Q, pvec, data$maxD, rho = TRUE)
+      }
+
+      # Covariance between b-d and between BMD-d
+      L4covQ = c(cov(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
+                 cov(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      L4corrQ = c(cor(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
+                  cor(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+
+      DRM_L4_Q = DRM.L4_Q(optL4_Q$par[1:3], data$x, data$q)
+
+      llL4Q <- ifelse(data$is_bin == 1,
+                      llfL4_Q(optL4_Q$par[1:3],nvec=data$n,
+                              dvec=data$x,
+                              yvec=data$y,
+                              qval=data$q),
+                      llfL42_Q(optL4_Q$par[1:3],
+                               nvec=data$n,
+                               dvec=data$x,
+                               yvec=data$y,
+                               qval=data$q,
+                               rho = optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'rho') &
+                                                   !stringr::str_detect(names(optL4_Q$par),'eta')])
+      )
+
+      llQ = c(llQ, llL4Q)
+      BMDL = c(BMDL, L4resQ[1])
+      BMD = c(BMD, L4resQ[2])
+      BMDU = c(BMDU, L4resQ[3])
     }
-
-    L4resQ <- quantile(parsL4Q$BMD, pvec)*data$maxD
-    if(data$is_bin == 1){
-      L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd')], 2, median))
-    } else {
-      L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd','rho')], 2, median))
-    }
-
-    names(L4resQ) <- ifelse(rep(data$is_bin == 1, ifelse(data$is_bin == 1,6,7)),
-                            c("BMDL","BMD","BMDU","a","b","d"),
-                            c("BMDL","BMD","BMDU","a","b","d","rho")
-    )
-
-    if(data$is_bin == 1){
-      L4outQ <- outLPQ(parsL4Q, pvec, data$maxD)
-    } else {
-      L4outQ <- outLPQ(parsL4Q, pvec, data$maxD, rho = TRUE)
-    }
-
-    # Covariance between b-d and between BMD-d
-    L4covQ = c(cov(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
-               cov(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    L4corrQ = c(cor(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
-                cor(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
-
-    DRM_L4_Q = DRM.L4_Q(optL4_Q$par[1:3], data$x, data$q)
-
-    llL4Q <- ifelse(data$is_bin == 1,
-                    llfL4_Q(optL4_Q$par[1:3],nvec=data$n,
-                            dvec=data$x,
-                            yvec=data$y,
-                            qval=data$q),
-                    llfL42_Q(optL4_Q$par[1:3],
-                             nvec=data$n,
-                             dvec=data$x,
-                             yvec=data$y,
-                             qval=data$q,
-                             rho = optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'rho') &
-                                                 !stringr::str_detect(names(optL4_Q$par),'eta')])
-    )
-
-    llQ = c(llQ, llL4Q)
-    BMDL = c(BMDL, L4resQ[1])
-    BMD = c(BMD, L4resQ[2])
-    BMDU = c(BMDU, L4resQ[3])
-  }else{L4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
+  }
+  if(prior.weights[8] == 0){L4resQ=NULL; llQ = c(llQ,NA); BMDL = c(BMDL,NA); BMD = c(BMD,NA);
   BMDU=c(BMDU,NA);
   L4covQ=rep(NA,2); L4corrQ=rep(NA,2); DRM_L4_Q=rep(NA,length(data$x)); parsL4Q <- NA
   L4outQ <- t(data.frame(
@@ -690,6 +772,38 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   minll = min(llQ, na.rm=T)
 
   # the weights
+  fun.w.bin <- function(DIH, ll, min.ll, opt, mu, sig, lb, ub, s1, s2, td){
+
+    w1 <- (2*pi)^(2.5)*sqrt(DIH)*exp(ll-min.ll)*
+      # d
+      truncnorm::dtruncnorm(opt$par[3], b = td, mean = mu[3], sd = sig[3,3])*
+      # a
+      mc2d::dpert(opt$par[1], min = lb[1], max = ub[1],
+                  mode = mu[1], shape = s1)*
+      # BMD
+      mc2d::dpert(opt$par[2], min = lb[2], max = ub[2],
+                  mode = mu[2], shape = s2)
+
+    return(w1)
+  }
+
+  fun.w.betabin <- function(DIH, ll, min.ll, opt, mu, sig, lb, ub, s1, s2, td){
+
+    w1 <- (2*pi)^(2.5)*sqrt(DIH)*exp(ll-min.ll)*
+      # d
+      truncnorm::dtruncnorm(opt$par[3], b = td, mean = mu[3], sd = sig[3,3])*
+      # a
+      mc2d::dpert(opt$par[1], min = lb[1], max = ub[1],
+                  mode = mu[1], shape = s1)*
+      # BMD
+      mc2d::dpert(opt$par[2], min = lb[2], max = ub[2],
+                  mode = mu[2], shape = s2)*
+      mc2d::dpert(opt$par[stringr::str_detect(names(opt$par),'rho')],
+                  min = 0, max = 1, mode = mu[4], shape = 4)
+
+    return(w1)
+  }
+
   w=c()
 
   # normal
@@ -700,25 +814,14 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
     ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHE4)*exp(llE4Q-minll)*
-            dnorm(optE4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHE4, llE4Q, minll, optE4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHE4)*exp(llE4Q-minll)*
-            dnorm(optE4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHE4, llE4Q, minll, optE4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
+
     }
 
   }else{w=c(w,0)}
@@ -728,25 +831,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHIE4)*exp(llIE4Q-minll)*
-            dnorm(optIE4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHIE4, llIE4Q, minll, optIE4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHIE4)*exp(llIE4Q-minll)*
-            dnorm(optIE4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optIE4_Q$par[stringr::str_detect(names(optIE4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optIE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optIE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHIE4, llIE4Q, minll, optIE4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
     }
 
   }else{w=c(w,0)}
@@ -756,25 +847,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHH4)*exp(llH4Q-minll)*
-            dnorm(optH4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHH4, llH4Q, minll, optH4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHH4)*exp(llH4Q-minll)*
-            dnorm(optH4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optH4_Q$par[stringr::str_detect(names(optH4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optH4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optH4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHH4, llH4Q, minll, optH4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
     }
 
   }else{w=c(w,0)}
@@ -784,25 +863,14 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHLN4)*exp(llLN4Q-minll)*
-            dnorm(optLN4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHLN4, llLN4Q, minll, optLN4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHLN4)*exp(llLN4Q-minll)*
-            dnorm(optLN4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optLN4_Q$par[stringr::str_detect(names(optLN4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optLN4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optLN4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHLN4, llLN4Q, minll, optLN4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
+
     }
 
   }else{w=c(w,0)}
@@ -812,25 +880,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHG4)*exp(llG4Q-minll)*
-            dnorm(optG4_Q$par[3], mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHG4, llG4Q, minll, optG4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHG4)*exp(llG4Q-minll)*
-            dnorm(optG4_Q$par[3], mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optG4_Q$par[stringr::str_detect(names(optG4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optG4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optG4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHG4, llG4Q, minll, optG4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
     }
 
   }else{w=c(w,0)}
@@ -840,25 +896,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4Q-minll)*
-            dnorm(optQE4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHQE4, llQE4Q, minll, optQE4_Q, data$priormuQ, data$priorSigmaQ,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncdQ))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4Q-minll)*
-            dnorm(optQE4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optQE4_Q$par[stringr::str_detect(names(optQE4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optQE4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optQE4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHQE4, llQE4Q, minll, optQE4_Q, data$priormuQ, data$priorSigmaQ,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncdQ))
     }
 
   }else{w=c(w,0)}
@@ -868,25 +912,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHP4)*exp(llP4Q-minll)*
-            dnorm(optP4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHP4, llP4Q, minll, optP4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHP4)*exp(llP4Q-minll)*
-            dnorm(optP4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optP4_Q$par[stringr::str_detect(names(optP4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optP4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optP4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHP4, llP4Q, minll, optP4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
     }
 
   }else{w=c(w,0)}
@@ -896,25 +928,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
 
     if(data$is_bin==1) {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHL4)*exp(llL4Q-minll)*
-            dnorm(optL4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.bin(DIHL4, llL4Q, minll, optL4_Q, data$priormu, data$priorSigma,
+                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                         data$truncd))
     } else {
-      w=c(w,(2*pi)^(2.5)*sqrt(DIHL4)*exp(llL4Q-minll)*
-            dnorm(optL4_Q$par[3],mean=data$priormu[3],
-                  sd=data$priorSigma[3,3])*
-            mc2d::dpert(optL4_Q$par[stringr::str_detect(names(optL4_Q$par),'rho')],
-                        min = 0, max = 1, mode = data$priormu[4], shape = 4)*
-            mc2d::dpert(optL4_Q$par[2], min = data$priorlb[2], max = data$priorub[2],
-                        mode = data$priormu[2], shape = data$priorgama[2])*
-            mc2d::dpert(optL4_Q$par[1], min = data$priorlb[1], max = data$priorub[1],
-                        mode = data$priormu[1], shape = data$priorgama[1])
-      )
+      w = c(w, fun.w.betabin(DIHL4, llL4Q, minll, optL4_Q, data$priormu, data$priorSigma,
+                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                             data$truncd))
     }
 
   }else{w=c(w,0)}
@@ -1033,9 +1053,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       y = data.Q$data$y,
       n = data.Q$data$n),
     max.dose = data.Q$data$maxD,
+    models_included = model[prior.weights > 0],
     q = data.Q$data$q,
     is_bin = data.Q$data$is_bin,
-    is_betabin = data.Q$data$is_betabin#,
+    is_betabin = data.Q$data$is_betabin,
+    model_included = modelnames[prior.weights>0]
     #bf = bfTest$bayesFactor,
     #means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     #BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
@@ -1045,3 +1067,4 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
   return(ret_results)
 }
+
