@@ -30,7 +30,7 @@
 #'                        ndraws=ndr,seed=123,pvec=pvec)
 #'
 #' @description Using Laplace approximation, we compute the parameters and weights of each model.
-#'
+#' @importFrom truncnorm dtruncnorm
 #'
 #' @return
 #' \enumerate{
