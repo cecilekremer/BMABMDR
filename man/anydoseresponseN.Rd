@@ -2,7 +2,7 @@
 % Please edit documentation in R/anydoseresponse.R
 \name{anydoseresponseN}
 \alias{anydoseresponseN}
-\title{Function to determine if there is a dose-response effect (continuous data version)}
+\title{Function to determine if there is a dose-response effect (Normally distributed data version)}
 \usage{
 anydoseresponseN(dose.a, mean.a, sd.a, n.a)
 }
@@ -16,8 +16,19 @@ anydoseresponseN(dose.a, mean.a, sd.a, n.a)
 \item{n.a}{number of observations per dose level}
 }
 \value{
-list containing Baye's factor and decision.
+list containing Bayes factor and decision.
 }
 \description{
-Function to determine if there is a dose-response effect (continuous data version)
+This function tests for any dose-response effect using Bayes factor.
+It fits a null model and a saturated model and compare these two models using model posterior probabilities.
+}
+\examples{
+
+# we use the first 5 rows because those are observations from subjects belonging to the same group.
+data("immunotoxicityData.rda")  #load the immunotoxicity data
+anydoseresponseN(dose.a = immunotoxicityData$Dose[1:5],
+                 mean.a = immunotoxicityData$Mean[1:5],
+                 sd.a = immunotoxicityData$SD[1:5],
+                 n.a = immunotoxicityData$n[1:5])
+
 }

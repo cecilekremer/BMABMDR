@@ -16,21 +16,45 @@
 anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
 
   nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
-  N <- length(unique(dose.a))
 
-  ydiff <- abs(diff(y.a/n.a))
-
-  lbs <- ubs <- numeric(length(y.a)-1)
-  for(i in 1:length(y.a)){
-    if(i == length(y.a)) break
-    tt <- prop.test(c(y.a[i+1], y.a[i]),
-                    c(n.a[i+1], n.a[i]))$conf.int
-    lbs[i] <- tt[1]
-    ubs[i] <- tt[2]
-  }
 
   if(cluster==TRUE){
 
+    yamax <- tapply(y.a, dose.a, max, na.rm = TRUE)
+    dose2.a <- sort(unique(dose.a))
+    namax <- tapply(n.a, dose.a, max, na.rm = TRUE)
+
+    yamin <- tapply(y.a, dose.a, min, na.rm = TRUE)
+    namin <- tapply(n.a, dose.a, min, na.rm = TRUE)
+
+    yasum <- tapply(y.a, dose.a, mean, na.rm = TRUE)
+    nasum <- tapply(n.a, dose.a, mean, na.rm = TRUE)
+
+    ydiff <- abs(diff(yasum/nasum))
+
+    lbs <- ubs <- numeric(length(y.a)-1)
+
+    for(i in 1:length(y.a)){
+      if(i == length(y.a)) break
+      for(j in 1:length(yasum)){
+        if(j == length(yasum)) break
+        if(dose.a[i] == dose2.a[j]) {
+          tt1 <- prop.test(c(yamin[j+1], yamin[j]),
+                           c(namin[j+1], namin[j]))$conf.int
+          tt2 <- prop.test(c(yamax[j+1], yamax[j]),
+                           c(namax[j+1], namax[j]))$conf.int
+
+        }
+
+        lbs[i] <- tt1[1]
+        ubs[i] <- tt2[2]
+      }
+
+    }
+    #lbs[lbs <= 0] <- .Machine$double.xmin
+    #ubs[ubs <= 0] <- max(ubs)
+
+    N <- length(dose.a)
     datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
     fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
                   silent = TRUE)
@@ -44,20 +68,35 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
       priorub = min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1])))
     )
 
+    #ddy <- diff(y.a/n.a)
+    #ddy[ddy <= 0] <- max(c(y.a[1]/n.a[1], 1/(5*n.a[1])))
+    ddy <- numeric(length(y.a))
+    #ddiffy <- diff(yasum/nasum)
+
+    ddy[dose.a== min(dose.a)] <- max(c(yasum[1]/nasum[1], 1/(5*nasum[1])))
+    ddy[dose.a == max(dose.a)] <- ydiff[length(ydiff)]
+
+    for(i in 1:length(dose.a)){
+      for(j in 1:length(dose2.a)){
+
+        if(dose.a[i] != min(dose.a) & dose.a[i] != max(dose.a) &
+           dose.a[i] == dose2.a[j]){
+          ddy[i] <- ydiff[j]
+        }
+      }
+    }
+
     priorSM = list(
-      priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
-                  ydiff, rhohat),
-      priorlb = c(ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
-                         .Machine$double.xmin), lbs),
-      priorub = c(min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1]))),
-                  ubs
-      )
+      priormu = c(ddy, rhohat),
+      priorlb = c(ifelse(yasum[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
+                         .Machine$double.xmin), as.numeric(lbs)
+      ),
+      priorub = c(min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*n.a[1]))), as.numeric(ubs))
     )
 
-    svSM = list(par = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), # background
-                        diff(y.a/n.a)
-    ), # invsigma2
-    rho = rhohat
+
+    svSM = list(par = ddy, # invsigma2
+                rho = rhohat
     )
 
     svH0 = list(par = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1])))), rho = rhohat)
@@ -75,6 +114,8 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
     )
 
   } else {
+
+    N <- length(dose.a)
     priorH0 = list(
       priormu = max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
       priorlb = ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
@@ -102,13 +143,13 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                           is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin
-    )
+    )+
 
-    data.modstanH0 = list(N=N,n=n.a,y=y.a, yint=y.a, nint=n.a,
-                          priormu=c(priorH0$priormu, 0.0),
-                          priorlb=priorH0$priorlb, priorub=priorH0$priorub,
-                          is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin
-    )
+      data.modstanH0 = list(N=N,n=n.a,y=y.a, yint=y.a, nint=n.a,
+                            priormu=c(priorH0$priormu, 0.0),
+                            priorlb=priorH0$priorlb, priorub=priorH0$priorub,
+                            is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin
+      )
   }
 
 
@@ -119,27 +160,27 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
   # svH0 = list(par=log(mean(y.a)))
   # priorH0 = prior_H0(dose.a, y.a, n.a)
   # data.modstanH0 = list(N=N, n=n.a, y=y.a, priormu=priorH0$priormu, priorSigma=priorH0$priorSigma)
-  sv=optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
+  sv=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
   if(data.modstanH0$is_bin == 1){
     initf2 <- function(chain_id = 1) {
       list(par=sv[1] + rnorm(1, sd = 0.01*abs(sv[2])) ,alpha = chain_id)
     }
   } else if(data.modstanH0$is_betabin == 1) {
     initf2 <- function(chain_id = 1) {
-      rho = par[2]; dim(rho)=1
+      rho = sv[2]; dim(rho)=1
       list(par=sv[1] + rnorm(1, sd = 0.01*abs(sv[2])), rho = rho ,alpha = chain_id)
     }
   }
 
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanH0=sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+  fitstanH0=rstan::sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
                      control = list(adapt_delta = delta,max_treedepth =treedepth),
                      show_messages = F, refresh = 0)
   while(is.na(dim(fitstanH0)[1])){
 
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
 
-    fitstanH0 = rstan::sampling(stanmodels$stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
+    fitstanH0 = rstan::sampling(stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
                                 chains = nrch, warmup = warmup, seed = seed,
                                 control = list(adapt_delta = delta, max_treedepth =treedepth),
                                 show_messages = F, refresh = 0)
@@ -150,7 +191,8 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
   # svSM=list(par=log(y.a))
   # priorSM=prior_SM(dose.a, y.a, n.a)
   # data.modstanSM=list(N=N, n=n.a, y=y.a, priormu=priorSM$priormu, priorSigma=priorSM$priorSigma)
-  sv=optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+  # sampling(stanmodels$mSM_Q,data = data.modstanSM, chains=1, init = list(svSM))
+  sv=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
 
   if(data.modstanH0$is_bin == 1){
     initf2 <- function(chain_id = 1) {
@@ -165,14 +207,14 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
 
 
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanSM = sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
+  fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
                        control = list(adapt_delta = delta,max_treedepth =treedepth),
                        show_messages = F, refresh = 0)
   while(is.na(dim(fitstanSM)[1])){
 
     init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
 
-    fitstanSM = rstan::sampling(stanmodels$stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
+    fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
                                 chains = nrch, warmup = warmup, seed = seed,
                                 control = list(adapt_delta = delta, max_treedepth =treedepth),
                                 show_messages = F, refresh = 0)

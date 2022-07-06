@@ -19,5 +19,9 @@ anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE)
 list containing estimated Bayes factor and the decision.
 }
 \description{
-Function to determine if there is a dose-response effect, based on Bayes Factor (Quantal data version)
+This function tests for any dose-response effect using Bayes factor.
+It fits a null model and a saturated model and compare these two models using model posterior probabilities.
+}
+\examples{
+
 }

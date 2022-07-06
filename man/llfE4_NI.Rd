@@ -35,6 +35,7 @@
 \alias{llfQE4_LND}
 \alias{llfP4_LND}
 \alias{llfL4_LND}
+\alias{llfE4_LNIc}
 \title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE4_NI(x, nvec, dvec, mvec, s2vec, qval)
@@ -104,6 +105,8 @@ llfQE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 llfP4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
 llfL4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
+
+llfE4_LNIc(x, d, n, nij, y, qval, shift)
 }
 \arguments{
 \item{x}{parameter values}
