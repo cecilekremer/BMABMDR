@@ -68,7 +68,8 @@ ndr=30000
 nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123
 
 # prior model weights
-prior.weights = c(rep(1,8), rep(1,8))
+prior.weights = c(rep(1,4), rep(1,4), rep(0,8))
+
 
 # bmr
 q = 0.1
