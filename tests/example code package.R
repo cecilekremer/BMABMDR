@@ -68,11 +68,8 @@ ndr=30000
 nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123
 
 # prior model weights
-<<<<<<< HEAD
 prior.weights = c(rep(1,4), rep(1,4), rep(0,8))
-=======
-prior.weights = c(rep(1,8), rep(1,8))
->>>>>>> 840f3a4f07f4595f95af47df511cfa45b1ce9420
+
 
 # bmr
 q = 0.1
@@ -202,8 +199,8 @@ pvec = c(0.05,0.5,0.95)
 
 # uninformative
 data_Q = PREP_DATA_QA(summ.data,
-                     sumstats = T,
-                     q = q)
+                      sumstats = T,
+                      q = q)
 
 # informative, for example:
 # data_Q = PREP_DATA_QA(summ.data, sumstats = T, q = q, prior.BMD = c(10,16,25), shape.BMD = 4)
@@ -212,10 +209,10 @@ data_Q = PREP_DATA_QA(summ.data,
 ## Laplace approximation
 
 FLBMD_Q = full.laplaceQ_MA(data_Q,
-                      prior.weights,
-                      ndraws=ndr,
-                      seed=123,
-                      pvec=pvec)
+                           prior.weights,
+                           ndraws=ndr,
+                           seed=123,
+                           pvec=pvec)
 # MA estimates
 FLBMD_Q$MA
 # model weights
@@ -245,10 +242,10 @@ plot_priorQ(FLBMD_Q, data_Q$data, "L4_Q")
 ## Sampling
 
 SBMD_Q = samplingQ_MA(data_Q,
-                   prior.weights,
-                   ndraws=ndr, nrchains=nrch,
-                   nriterations=nriter, warmup=wu, delta=dl,
-                   treedepth=trd, seed=sd, pvec=pvec)
+                      prior.weights,
+                      ndraws=ndr, nrchains=nrch,
+                      nriterations=nriter, warmup=wu, delta=dl,
+                      treedepth=trd, seed=sd, pvec=pvec)
 # MA estimates
 SBMD_Q$MA_bridge_sampling
 SBMD_Q$MA_laplace
@@ -347,7 +344,6 @@ pFBMD_CQ$BMDs
 pFBMD_CQ$weights
 pFBMD_CQ$model_fit
 pFBMD_CQ$MA_fit
-
 
 
 
