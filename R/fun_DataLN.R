@@ -7,14 +7,13 @@
 #' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics
 #' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
 #' @param q specified BMR
+#' @param prior which prior distribution will be used, defaults to "PERT" (and currently this is the only one implemented)
 #' @param bkg vector containing minimum, most likely, and maximum value for the background response
 #' @param maxy vector containing minimum, most likely, and maximum value for the response at dose infinity
 #' @param prior.BMD vector containing minimum, most likely, and maximum value for the BMD
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4, a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4, a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 4, a value of 0.0001 implies a uniform distribution
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
-#' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description The function takes in the dataset and generates the data list and starting values needed by the stan
 #'              scripts containing the models to be fitted. Using the supplied data, we compute starting values for the BMD from a fractional
@@ -39,16 +38,14 @@
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
 #' @export
+
 PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns should be: dose, response, sd, n
                          sumstats = TRUE, # TRUE if summary data, FALSE if individual data
                          geom.stats = FALSE, # TRUE if geometric summary data is provided
                          sd = TRUE, # TRUE if sd per dose group is given, FALSE is se is given
                          q, # the BMR
                          bkg = NULL, maxy = NULL, prior.BMD = NULL, # possible expert info on background and max response
-                         shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
-                         # prmean.d = 1, prmean.dQE4 = 0
-                         prior.d = 'N11',
-                         extended = TRUE
+                         shape.a = 4, shape.c = 4, shape.BMD = 0.0001 # shape for the PERT distribution
 ){
 
 
@@ -73,22 +70,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     gsd.a = log(NtoLN(mean.a,sd.a))[(N+1):(2*N)]
 
   }else if(sumstats == TRUE & geom.stats == TRUE){
-    data = data[order(data[, 1]), ]
-    dose.a = data[, 1]
-    maxDose = max(dose.a)
-    mean.a = data[, 2]
-    if(sd == TRUE){
-      sd.a = data[, 3]
-    }else if(sd == FALSE){
-      sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
-    }
-    gsd.a = sd.a
-    gmean.a = mean.a
-    gmean.a2 = mean.a
-    shift = 0
-    n.a = data[, 4]
-    N = length(dose.a)
-    dose.a = dose.a/maxDose
+
 
   }else if(sumstats == FALSE){
     data = data[order(data[, 1]), ]
@@ -153,7 +135,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     max.max = 2*mean.a[N]
     mode.max = obs.max
 
-    if(flat(dose.a, mean.a, n.a, inc=T) == F & is.null(maxy)){
+    if(flat(dose.a, mean.a,inc=T) == F & is.null(maxy)){
       mode.max = 3*mean.a[N]
       min.max  = mean.a[1]*(1.01+q)
       max.max = 2*mode.max
@@ -186,7 +168,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     min.max = 0.5*obs.max
     max.max = obs.min*(1-q-0.01)
 
-    if(flat(dose.a, mean.a, n.a, inc=F) == F & is.null(maxy)){
+    if(flat(dose.a, mean.a,inc=F) == F & is.null(maxy)){
       mode.max = 0.5*obs.max
       min.max  = 0.1*obs.max
       max.max = obs.min*(1-q-0.01)
@@ -220,8 +202,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
     if(!is.na(bkg[2])){
       mode.min = bkg[2]
-    }else{
-      mode.min = bkg[1] + ((bkg[3]-bkg[1])/2)
     }
     if(!is.na(bkg[1])){
       min.min = bkg[1]
@@ -241,8 +221,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
     if(!is.na(maxy[2])){
       mode.max = maxy[2]
-    }else{
-      mode.max = maxy[1] + ((maxy[3]-maxy[1])/2)
     }
     if(!is.na(maxy[1])){
       min.max = maxy[1]
@@ -257,14 +235,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
   ## Default prior BMD
   BMD.min <- .Machine$double.xmin
-  if(extended == FALSE){
-    BMD.max <- 1
-  }else{
-    BMD.max <- maxDose
-    if(maxDose <= 1){
-      BMD.max <- maxDose*1000
-    }
-  }
+  BMD.max <- 1
   BMD.mode <- 0.5
 
   ## If info on BMD is given
@@ -272,8 +243,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
     if(!is.na(prior.BMD[2])){
       BMD.mode = prior.BMD[2]/maxDose
-    }else{
-      BMD.mode = (prior.BMD[1]/maxDose) + (((prior.BMD[3]/maxDose) - prior.BMD[1]/maxDose)/2)
     }
     if(!is.na(prior.BMD[1])){
       BMD.min = prior.BMD[1]/maxDose
@@ -288,29 +257,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
 
-  # if(!is.null(prior.BMD)){
-  #   mode.BMD = prior.BMD[2]/maxDose
-  #   min.BMD = prior.BMD[1]/maxDose
-  #   if(min.BMD == 0) min.BMD = 0.0001
-  #   max.BMD = prior.BMD[3]/maxDose
-  # }
-  #
-  # # Default (normal) priors on k, d, sigma
-  # # prvar.k=1; prmean.k=1
-  # if(!is.null(prior.BMD)){
-  #   BMD.vec = c(min.BMD, mode.BMD, max.BMD)
-  # }else{
-  #   BMD.vec = c(0,0.5,1)
-  #   message("Default prior choices used on BMD")
-  # }
-  # prvar.d=sqrt(0.5); prmean.d = prmean.d
-  if(prior.d == 'N11'){
-    prvar.d = 1; prmean.d = 1; truncd = 5
-  }else if(prior.d == 'EPA'){
-    # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
-    prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
-  }
-  prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
+  prvar.d=1; prmean.d=0
   # prvar.d=(exp(sqrt(0.18)))^2; prmean.d=2
   prvar.s=1; prmean.s=-2*log(1.5*mean(gsd.a))
 
@@ -321,14 +268,10 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   c.vec = c(min.max/mode.min, mode.max/mode.min, max.max/mode.min)
   if(c.vec[1] == 0) c.vec[1] = 0.0001
   if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
-  # if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[1] + (c.vec[3] - c.vec[1])/2 - 0.01
 
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
-  priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s)
   priorSigma1a=diag(c(1,1,1,prvar.d,prvar.s))
-  priorSigma1bQ=diag(c(1,1,1,prvar.dQE4,prvar.s))
-
   priorlb1a = c(a.vec[1],BMD.vec[1],c.vec[1],0,0)
   priorub1a = c(a.vec[3],BMD.vec[3],c.vec[3],0,0)
 
@@ -360,7 +303,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   ## Data in correct format
 
   ret.list <- list(data = list(N=N,n=n.a,x=dose.a,m=gmean.a,m.org=gmean.a2,shift=shift,s2=gsd.a^2,maxD=maxDose,q=q,priormu=priormu1a,
-                               priormuQ = priormu1bQ,
                                shape1 = c(fun.alpha(a = priorlb1a[1], b = priormu1a[1], c = priorub1a[1], g = shape.a),
                                           fun.alpha(a = priorlb1a[2], b = priormu1a[2], c = priorub1a[2], g = shape.BMD),
                                           fun.alpha(a = priorlb1a[3], b = priormu1a[3], c = priorub1a[3], g = shape.c), 0, 0),
@@ -368,20 +310,13 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
                                           fun.beta(a = priorlb1a[2], b = priormu1a[2], c = priorub1a[2], g = shape.BMD),
                                           fun.beta(a = priorlb1a[3], b = priormu1a[3], c = priorub1a[3], g = shape.c), 0, 0),
                                priorlb = priorlb1a, priorub = priorub1a, shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-                               priorSigma=priorSigma1a, priorSigmaQ = priorSigma1bQ, truncd = truncd, truncdQ = truncdQ,
-                               init_b = 1, data_type = data_type, L = L, U = U, is_increasing = is_increasing,
+                               priorSigma=priorSigma1a, init_b = 1, data_type = data_type, L = L, U = U, is_increasing = is_increasing,
                                is_decreasing = is_decreasing, is_informative_a = is_informative_a, is_informative_c = is_informative_c,
                                is_informative_BMD = is_informative_BMD),
-                   start = list(par1=priormu1a[1],par2=bmd.sv,pars3i=pars3i,pars3d=pars3d,par4=prmean.d,par5=log(1/mean(gsd.a^2))),
-                   startQ = list(par1=priormu1a[1],par2=bmd.sv,pars3i=pars3i,pars3d=pars3d,par4=prmean.dQE4,par5=log(1/mean(gsd.a^2))),
+                   start = list(par1=priormu1a[1],par2=bmd.sv,pars3i=pars3i,pars3d=pars3d,par4=0,par5=log(1/mean(gsd.a^2))),
                    test.var = test.var
   )
 
-
-
-
-  # test for dose-response effect
-  # DR.effect = anydoseresponseNI(dose.a,mean.a,sd.a,n.a)
 
   # data in correct format
   return(ret.list)

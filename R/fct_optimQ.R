@@ -14,21 +14,18 @@
 #' @export fun_optim
 #'
 fun_optimQ = function(mod, data, stv,
-                      ndraws = ndraws, seed=seed, pvec=c(0.05, 0.5, 0.95)){
+                      ndraws = ndraws,seed=seed,pvec){
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  # if(is.na(opt$return_code) | opt$return_code != 0) {
-  if(length(opt)!=9){
+  if(length(opt)!=9) {
+
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
-  n.attempts <- 1
-  while((ifelse(is.na(opt[[3]]),TRUE,(opt[[3]]!=0)) | length(opt)!=9) & n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
+
+  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9){
     svh=stv
     par = unname(unlist(svh))
 
@@ -44,18 +41,10 @@ fun_optimQ = function(mod, data, stv,
     }
     par[3] = par[3] + rnorm(1, sd = 0.01*abs(par[3]))
 
-    svh = list(par1=par[1], par2=par[2], par3=par[3])
-
-    #opt=try(rstan::optimizing(mod,data = data,
-    #                          seed=as.integer(seed),draws=ndraws,
-    #                          init=svh,hessian=TRUE),silent=T)
-    # seed <- runif(1, 1, 10000)
-    opt=try(rstan::optimizing(mod,data = data, init = svh,
-                              seed=as.integer(seed), draws=ndraws, hessian=TRUE),silent=T)
-    n.attempts <- n.attempts + 1
-    # print(n.attempts)
+    opt=try(rstan::optimizing(mod,data = data,
+                              seed=as.integer(seed),draws=ndraws,
+                              init=svh,hessian=TRUE),silent=T)
   }
-
 
   attr(opt, "class") <- "stanfitOptim"
   return(opt)
