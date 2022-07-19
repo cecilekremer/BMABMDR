@@ -1,7 +1,7 @@
 rm(list=ls())
 
 # install package from zip file
-# install.packages("~/GitHub/BMABMDR_0.0.0.9014.tar.gz", repos = NULL, type = "source")
+# install.packages("~/GitHub/BMABMDR_0.0.0.9011.tar.gz", repos = NULL, type = "source")
 
 library(BMABMDR)
 library(gamlss)
@@ -70,6 +70,7 @@ nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123
 # prior model weights
 prior.weights = c(rep(1,4), rep(1,4), rep(0,8))
 
+
 # bmr
 q = 0.1
 
@@ -81,20 +82,14 @@ pvec = c(0.05,0.5,0.95)
 # uninformative
 data_N = PREP_DATA_N(summ.data,
                      sumstats = T,
-                     q = q,
-                     prior.d = 'N11',
-                     extended = T)
+                     q = q)
 data_LN = PREP_DATA_LN(summ.data,
                        sumstats = T,
-                       q = q,
-                       prior.d = 'N11',
-                       extended = T)
+                       q = q)
 
 # informative, for example:
-data_N = PREP_DATA_N(summ.data, sumstats = T, q = q, bkg = c(5, 10.58, 15), maxy = c(15, 20.28, 25),
-                     prior.BMD = c(23.5, 38.41, 53.27), shape.BMD = 4)
-data_LN = PREP_DATA_LN(summ.data, sumstats = T, q = q, bkg = c(5, 10.58, 15), maxy = c(15, 20.28, 25),
-                       prior.BMD = c(23.5, 38.41, 53.27), shape.BMD = 4)
+# data_N = PREP_DATA_N(summ.data, sumstats = T, q = q, bkg = c(8,10.58,12), maxy = c(18,20.28,22), prior.BMD = c(20,40,60), shape.BMD = 4)
+# data_LN = PREP_DATA_LN(summ.data, sumstats = T, q = q, bkg = c(8,10.58,12), maxy = c(18,20.28,22), prior.BMD = c(20,40,60), shape.BMD = 4)
 
 
 ## Laplace approximation
@@ -171,95 +166,6 @@ pSBMD$MA_fit
 plot_prior(SBMD, data_N$data, "E4_N", parms = T)
 plot_prior(SBMD, data_LN$data, "P4_LN", parms = T)
 
-#################################
-### CLUSTERED CONTINUOUS DATA ###
-
-# Simulated data
-par = c(10.58, 0.38, 1.91, 1.3)
-doses <- c(0,6.25,12.5,25,50,100)/100
-# Correlation
-dim = 10 # number of observations per litter
-ngroup = 20 # number of litters per dose
-covmat = matrix(0.2, nrow = dim, ncol = dim) # correlation of 0.5
-diag(covmat) = 1
-library(mvtnorm)
-nsims = 1
-sd = 2.28
-covmat2 = covmat*sd^2
-
-means = DRM.H4_NI(par, doses, q = 0.1, shift = 0)
-sim_data = c()
-for(i in 1:nsims){
-  datmat = c()
-  cnt = 1
-  for(j in 1:length(doses)){
-    for(k in 1:ngroup){
-      datmat = rbind(datmat,
-                     cbind(rep(doses[j], dim), rep(cnt, dim),
-                           ## CHANGE MEANS !!!
-                           as.vector(rmvnorm(1, mean = rep(means[j], dim), sigma = covmat2))
-                     )
-      )
-      cnt = cnt+1
-    }
-  }
-
-  sim_data = rbind(sim_data, as.vector(datmat[,3]))
-}
-
-## Sampling specification
-ndr=30000
-nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123
-
-### Prior weights: vector with prior weight (0/1) for each of the 16 models
-prior.weights = c(rep(1, 16))
-
-q = 0.1
-pvec = c(0.05,0.5,0.95)
-
-simulated_data = data.frame(dose = rep(doses, each = dim*ngroup),
-                            litter = rep(c(1:(ngroup*length(doses))), each = dim),
-                            resp = sim_data[1,])
-
-data.input <- data.frame(dose = simulated_data$dose,
-                         response = simulated_data$resp,
-                         litter = simulated_data$litter)
-plot(data.input$dose, data.input$response)
-
-data_N <- PREP_DATA_N_C(data.input, q, prior.d = 'N11')
-data_LN <- PREP_DATA_LN_C(data.input, q, prior.d = 'N11')
-
-# Laplace approximation
-FLBMD <- full.laplace_MAc(data_N, data_LN, prior.weights)
-# MA estimates
-FLBMD$MA
-# model weights
-round(FLBMD$weights,4)
-# model-specific fit
-FLBMD$E4_N
-# test whether best-fitting model fits wel not yet fully implemented
-
-# output as dataframe/list
-BMDWeights(FLBMD, 'continuous')
-summary.BMADR(FLBMD, clustered = T)
-
-# plot output
-pFLBMD = plot.BMADR(FLBMD, weight_type = "LP", clustered = T, include_data = T, all = F, title = '')
-pFLBMD$BMDs
-pFLBMD$weights
-pFLBMD$model_fit_N
-pFLBMD$model_fit_LN
-pFLBMD$model_fit
-pFLBMD$MA_fit
-
-# plot prior vs posterior (TO FIX: something wrong with BMD plot?)
-plot_prior(FLBMD, data_N$data, "E4_N", parms = T)
-plot_prior(FLBMD, data_N$data, "E4_N", parms = F)
-plot_prior(FLBMD, data_N$data, "P4_N", parms = T)
-plot_prior(FLBMD, data_LN$data, "L4_LN", parms = T)
-
-# Sampling (implemented but very slow, not recommended to use)
-# SBMD <- sampling_MAc(data_N, data_LN, prior.weights, pvec = pvec) ## takes 4hrs for the data example
 
 
 ####################

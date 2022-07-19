@@ -32,71 +32,32 @@ rnd=function(p) (p<0.5)*round(p,1)+(p>=0.5)*floor(p*10)/10
 #'
 #' @param dose value
 #' @param mean value
-#' @param n value
 #' @param inc logical variable to indicate if the dose-resonse curve is increasing or decreasing
 #' @return .logical value indicating if the dose-response curve is flat or not
 #'
 #' @export flat
 #'
-flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
+flat = function(dose,mean,inc){ # To determine if DR curve flattens or not
   flat=F
   if(inc==TRUE){
-    if(length(unique(dose)) == length(dose)){
-      dat = data.frame(dose,mean)
-      datf=data.frame(yy=mean,xx=dose+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
-      # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
-      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))
-      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))[length(dose)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
-    }
-    else{
-      mean.i = c()
-      dose.i = c()
-      j = 1
-      for(i in unique(dose)){
-        dose.i[j] = i
-        mean.i[j] = weighted.mean(x = mean[dose == i], w = n[dose == i])
-        j = j+1
-      }
-      dat = data.frame(dose.i,mean.i)
-      datf=data.frame(yy=mean.i,xx=dose.i+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))
-      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))[length(dose.i)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
-    }
-
+    dat = data.frame(dose,mean)
+    datf=data.frame(yy=mean,xx=dose+0.0001)
+    fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
+    # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
+    # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
+    maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
+    lastdiff=((diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
+    if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
     return(flat)
-
   }else if(inc==FALSE){
-    if(length(unique(dose)) == length(dose)){
-      dat = data.frame(dose,mean)
-      datf=data.frame(yy=mean,xx=dose+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
-      # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
-      maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))
-      lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))[length(dose)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
-    }else{
-      mean.i = c()
-      dose.i = c()
-      j = 1
-      for(i in unique(dose)){
-        dose.i[j] = i
-        mean.i[j] = weighted.mean(x = mean[dose == i], w = n[dose == i])
-        j = j+1
-      }
-      dat = data.frame(dose.i,mean.i)
-      datf=data.frame(yy=mean.i,xx=dose.i+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))
-      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))[length(dose.i)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
-    }
-
+    dat = data.frame(dose,mean)
+    datf=data.frame(yy=mean,xx=dose+0.0001)
+    fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
+    # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
+    # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
+    maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
+    lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
+    if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
     return(flat)
   }
 
@@ -113,14 +74,12 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
 #' @export fun.alpha
 #'
 fun.alpha = function(a,b,c,g){
-  # if((b-a) == (c-b)){
-  #   c = c + 0.0001
-  # }
-  # m = (a + g*b + c)/(g + 2)
-  # s = ((m - a)*(2*b - a - c))/((b - m)*(c - a))
-  s = 1 + (g*((b-a)/(c-a)))
-  if(s<0) stop("Specified values lead to negative shape parameter for the PERT distribution;
-               try increasing the prior range")
+  if((b-a) == (c-b)){
+    c = c + 0.0001
+  }
+  m = (a + g*b + c)/(g + 2)
+  s = ((m - a)*(2*b - a - c))/((b - m)*(c - a))
+  if(s<0) stop("Specified values lead to negative shape parameter for the PERT distribution; try increasing the prior range")
   return(s)
   # return((shape*b + c - 5*a)/(c-a))
 }
@@ -136,13 +95,12 @@ fun.alpha = function(a,b,c,g){
 #' @export fun.beta
 #'
 fun.beta = function(a,b,c,g){
-  # if((b-a) == (c-b)){
-  #   c = c + 0.0001
-  # }
-  # m = (a + g*b + c)/(g + 2)
-  # alpha = fun.alpha(a,b,c,g)
-  # s = (alpha * (c - m))/(m - a)
-  s = 1 + (g*((c-b)/(c-a)))
+  if((b-a) == (c-b)){
+    c = c + 0.0001
+  }
+  m = (a + g*b + c)/(g + 2)
+  alpha = fun.alpha(a,b,c,g)
+  s = (alpha * (c - m))/(m - a)
   if(s<0) stop("Specified values lead to negative shape parameter for the PERT distribution; try increasing the prior range")
   return(s)
   # return((5*c - a - shape*b)/(c-a))
@@ -171,12 +129,13 @@ pert_dist = function(x,lb,ub,s1,s2){
   # )
 }
 
+
 #' Bartlett function for testing constant variance and co-efficient of variation; H0 equal variances
 #'
 #' @param sd standard deviation per dose group
 #' @param n number of observations per dose group
 #'
-#' @return vector with test statistic and pvalue for the Bartlett's test
+#' @return pvalue for the Bartlett's test
 #' @export bartlett
 #'
 bartlett <- function(sd,n){
