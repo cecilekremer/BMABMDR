@@ -1,7 +1,7 @@
 rm(list=ls())
 
 # install package from zip file
-# install.packages("~/GitHub/BMABMDR_0.0.0.9011.tar.gz", repos = NULL, type = "source")
+# install.packages("~/GitHub/BMABMDR_0.0.0.9014.tar.gz", repos = NULL, type = "source")
 
 library(BMABMDR)
 library(gamlss)
@@ -166,7 +166,74 @@ pSBMD$MA_fit
 plot_prior(SBMD, data_N$data, "E4_N", parms = T)
 plot_prior(SBMD, data_LN$data, "P4_LN", parms = T)
 
+#################################
+### CLUSTERED CONTINUOUS DATA ###
 
+# simulated data
+par = c(10.58,0.38,1.91,2)
+doses <- c(0,6.25,12.5,25,50,100)/100
+dim = 10 # number of observations per litter
+ngroup = 20 # number of litters per dose
+covmat = matrix(0.8, nrow = dim, ncol = dim) # correlation of 0.5
+diag(covmat) = 1
+library(mvtnorm)
+sd = 2.28
+covmat2 = covmat*sd^2
+means = DRM.E4_NI(par, doses, q)
+
+sim_data = c()
+for(i in 1){
+  datmat = c()
+  cnt = 1
+  for(j in 1:length(doses)){
+    for(k in 1:ngroup){
+      datmat = rbind(datmat,
+                     cbind(rep(doses[j], dim), rep(cnt, dim),
+                           ## CHANGE MEANS !!!
+                           as.vector(rmvnorm(1, mean = rep(means[j], dim), sigma = covmat2))
+                     )
+      )
+      cnt = cnt+1
+    }
+  }
+
+  sim_data = rbind(sim_data, as.vector(datmat[,3]))
+}
+
+simulated_data = data.frame(dose = rep(doses, each = dim*ngroup),
+                            litter = rep(c(1:(ngroup*length(doses))), each = dim),
+                            resp = sim_data[1,])
+
+data.input <- data.frame(dose = simulated_data$dose,
+                         response = simulated_data$resp,
+                         litter = simulated_data$litter)
+plot(data.input$dose, data.input$response)
+
+data_N <- PREP_DATA_N_C(data.input, q, prior.d = 'N11')
+data_LN <- PREP_DATA_LN_C(data.input, q, prior.d = 'N11')
+
+prior.weights = c(rep(1,16))
+FLBMD <- full.laplace_MAc(data_N, data_LN, prior.weights)
+# MA estimates
+FLBMD$MA
+# model weights
+round(FLBMD$weights,4)
+# model-specific fit
+FLBMD$E4_N
+# test whether best-fitting model fits wel (BF < 10 means equally well as saturated model; BF > 10 means best fit is better than saturated model)
+FLBMD$bf
+
+# output as dataframe/list
+BMDWeights(FLBMD, 'continuous')
+# summary.BMADR(FLBMD)
+
+pFLBMD <- plot.BMADR(FLBMD, 'increasing', clustered = T, weight_type = 'LP', include_data = T, all = F, title = '')
+pFLBMD$BMDs
+pFLBMD$weights
+pFLBMD$model_fit_N
+pFLBMD$model_fit_LN
+pFLBMD$model_fit
+pFLBMD$MA_fit
 
 ####################
 ### QUANTAL DATA ###
