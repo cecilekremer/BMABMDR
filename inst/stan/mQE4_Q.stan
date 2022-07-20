@@ -23,12 +23,13 @@ data{
   vector[N] x;  // the dose level of each dose group
   vector[N] y;  // the number of adverse events for each dose group
   real q;       // the BMR
-  vector[4] priormu;
+  vector[4] priormuQ;
   real priorlb[2]; //lower bound
   real priorub[2]; //upper bound
   real priorgama[2];
   real eps;
-  cov_matrix[3] priorSigma;
+  cov_matrix[3] priorSigmaQ;
+  real truncdQ;
   int<lower=0, upper=1> is_bin;       //model type 1 = Binomial 0 = otherwise
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
 }
@@ -51,14 +52,14 @@ transformed parameters{
   a = par1;
   d = exp(par3);
   k = log(par2);
-  b = (-log(1-q)) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)));
+  b = (-log(1-q)) / (exp(k)+(((exp(k)*(exp(k)-1))/exp(d))));
 
   for(i in 1:N){
     if(x[i] == 0){
       m[i] = a;
-    } else if(x[i] > 0) {
+     } else if(x[i] > 0) {
       m[i] = a + (1 - a)*(1 - exp(-b*x[i] - ( (b/exp(d)) * x[i] * (x[i] - 1) )));
-    }
+     }
   }
 
 
@@ -77,23 +78,27 @@ transformed parameters{
 
 }
 model{
-    par1 ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama[1]); //prior for a
-    par2 ~ pert_dist(priorlb[2], priormu[2], priorub[2], priorgama[2]); //prior for BMD
-    par3 ~ normal(priormu[3], priorSigma[3,3]); //prior for d
+    par1 ~ pert_dist(priorlb[1], priormuQ[1], priorub[1], priorgama[1]); //prior for a
+    par2 ~ pert_dist(priorlb[2], priormuQ[2], priorub[2], priorgama[2]); //prior for BMD
+    par3 ~ normal(priormuQ[3], priorSigmaQ[3,3])T[,truncdQ]; //prior for d
+
+    //1/exp(d) ~ exponential(1);
+    //1/exp(d) ~ uniform(0,1);
 
    if(is_bin==1) {
 
       for(i in 1:N){
         target += lchoose(n[i], y[i]) + y[i]*log(m[i]+eps) + (n[i] - y[i])*log(1 - m[i]+eps);
+       // target += par3 - exp(par3);
       }
 
     } else {
-      rho[is_betabin] ~ pert_dist(0.0, priormu[4], 1.0, 4.0);
+      rho[is_betabin] ~ pert_dist(0.0, priormuQ[4], 1.0, 4.0);
       for(i in 1:N){
         target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
                   lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
                   lgamma(abet[i]+bbet[i]+eps);
+       // target += par3 - exp(par3);
       }
     }
 }
-
