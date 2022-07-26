@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{BMDmixture_extract}
 \alias{BMDmixture_extract}
-\title{function to extract BMD mixture}
+\title{function to extract BMD mixture (continuous data)}
 \usage{
 BMDmixture_extract(mod.obj, conv = FALSE)
 }
@@ -16,5 +16,5 @@ models or all the models regardless of the convergence status}
 dataframe containing Mixture per model
 }
 \description{
-function to extract BMD mixture
+function to extract BMD mixture (continuous data)
 }

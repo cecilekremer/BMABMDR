@@ -9,13 +9,13 @@ pert_dist(x, lb, ub, s1, s2)
 \arguments{
 \item{x}{value}
 
-\item{lb}{lower bound}
+\item{lb}{value}
 
-\item{ub}{upper bound}
+\item{ub}{value}
 
-\item{s1}{shape}
+\item{s1}{value}
 
-\item{s2}{shape}
+\item{s2}{value}
 }
 \value{
 .

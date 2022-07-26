@@ -2,12 +2,12 @@
 % Please edit documentation in R/anydoseresponse.R
 \name{anydoseresponseN}
 \alias{anydoseresponseN}
-\title{Function to determine if there is a dose-response effect (Normally distributed data version)}
+\title{Function to determine if there is a dose-response effect, for the normal distribution}
 \usage{
 anydoseresponseN(dose.a, mean.a, sd.a, n.a)
 }
 \arguments{
-\item{dose.a}{dose levels}
+\item{dose.a}{ordered dose levels}
 
 \item{mean.a}{mean response}
 
@@ -20,11 +20,11 @@ list containing Bayes factor and decision.
 }
 \description{
 This function tests for any dose-response effect using Bayes factor.
-It fits a null model and a saturated model and compare these two models using model posterior probabilities.
+It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
 }
 \examples{
 
-# we use the first 5 rows because those are observations from subjects belonging to the same group.
+# We use the first 5 rows because those are observations from subjects belonging to the same group.
 data("immunotoxicityData.rda")  #load the immunotoxicity data
 anydoseresponseN(dose.a = immunotoxicityData$Dose[1:5],
                  mean.a = immunotoxicityData$Mean[1:5],

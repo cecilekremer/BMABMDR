@@ -33,17 +33,20 @@ llfSM_Q(x, nvec, dvec, yvec, qval)
 \arguments{
 \item{x}{parameter values}
 
-\item{nvec}{number of observations}
+\item{nvec}{vector containing the number of observations at each dose level}
 
-\item{dvec}{dose levels}
+\item{dvec}{vector containing the unique ordered dose levels}
 
-\item{yvec}{response}
+\item{yvec}{vector containing the number of adverse events at each dose level}
 
 \item{qval}{BMR}
 }
 \value{
-loglikelihood value at x.
+.
 }
 \description{
 Loglikelihood functions for the different dose response models
+}
+\examples{
+
 }

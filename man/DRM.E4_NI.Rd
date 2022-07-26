@@ -33,6 +33,14 @@
 \alias{DRM.QE4_LND}
 \alias{DRM.P4_LND}
 \alias{DRM.L4_LND}
+\alias{DRM.E4_Q}
+\alias{DRM.IE4_Q}
+\alias{DRM.H4_Q}
+\alias{DRM.LN4_Q}
+\alias{DRM.G4_Q}
+\alias{DRM.QE4_Q}
+\alias{DRM.P4_Q}
+\alias{DRM.L4_Q}
 \title{The dose response models}
 \usage{
 DRM.E4_NI(par, x, q, shift = 0)
@@ -98,13 +106,31 @@ DRM.QE4_LND(par, x, q, shift)
 DRM.P4_LND(par, x, q, shift)
 
 DRM.L4_LND(par, x, q, shift)
+
+DRM.E4_Q(par, x, q)
+
+DRM.IE4_Q(par, x, q)
+
+DRM.H4_Q(par, x, q)
+
+DRM.LN4_Q(par, x, q)
+
+DRM.G4_Q(par, x, q)
+
+DRM.QE4_Q(par, x, q)
+
+DRM.P4_Q(par, x, q)
+
+DRM.L4_Q(par, x, q)
 }
 \arguments{
-\item{par}{parameters in the order a, c, d, b}
+\item{par}{parameters in the order a, c (for continuous data only), d, b}
 
 \item{x}{unique ordered dose levels}
 
 \item{q}{specified BMR}
+
+\item{shift}{shift in the response in case of negative geometric means}
 }
 \value{
 Vector containing the expected response at each dose level

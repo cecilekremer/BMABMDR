@@ -2,9 +2,10 @@
 #'
 #' These are the dose response models used internally in the BMA functions.
 #'
-#' @param par parameters in the order a, c, d, b
+#' @param par parameters in the order a, c (for continuous data only), d, b
 #' @param x unique ordered dose levels
 #' @param q specified BMR
+#' @param shift shift in the response in case of negative geometric means
 #'
 #' @return Vector containing the expected response at each dose level
 #'
@@ -77,8 +78,13 @@ DRM.QE4_NI=function(par,x,q,shift=0){
   c = mu_inf/par[1];
   d = exp(par[4])
   k = log(par[2])
-  b=(-log(1-(q/(c-1)))) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)))
+  b=(-log(1-(q/(c-1)))) / (exp(k)+(exp(k)*((exp(k)-1))/exp(d)))
+  # fct = function(x) log(1-(q/(c-1))) + x*exp(k) + d*exp(2*k)
+  #b=max(try(uniroot(f=fct, c(-10000,1000))$root),0)
+  # bh=try(uniroot(f=fct, interval=c(-1000,1000))$root,silent=T)
+  # b=ifelse((is.numeric(bh) & bh>0),bh,0)
   a*(1+(c-1)*(1-exp((-b*x)-(b/exp(d)*x*(x-1)))))
+  # a*(1+(c-1)*(1-exp(-b*x-d*(x^2))))
 }
 #' @rdname DRM.E4_NI
 #' @export
@@ -380,16 +386,9 @@ DRM.L4_LND=function(par,x,q,shift){
   (a*(1+expit(c)))-(a*expit(c+(b*(x^d)))) + shift
 }
 
-#' These are the dose response models used internally in the BMA functions.
-#'
-#' @param par parameters in the order a, c, d, b
-#' @param x unique ordered dose levels
-#' @param q specified BMR
-#'
-#' @return Vector containing the expected response at each dose level
-#'
+
+#' @rdname DRM.E4_NI
 #' @export
-#'
 DRM.E4_Q=function(par,x,q){
   a = par[1]
   d = exp(par[3])
@@ -398,7 +397,7 @@ DRM.E4_Q=function(par,x,q){
   a + (1 - a)*(1 - exp(-b*x^d)) - .Machine$double.xmin
 }
 
-#' @rdname DRM.E4_Q
+#' @rdname DRM.E4_NI
 #' @export
 #'
 DRM.IE4_Q=function(par,x,q){
@@ -408,7 +407,7 @@ DRM.IE4_Q=function(par,x,q){
   b = -exp(k*d)*log(q)
   a + (1 - a)*exp(-b*x^-d) - .Machine$double.xmin
 }
-#' @rdname DRM.E4_Q
+#' @rdname DRM.E4_NI
 #' @export
 DRM.H4_Q=function(par,x,q){
   a = par[1]
@@ -417,7 +416,7 @@ DRM.H4_Q=function(par,x,q){
   b = exp(k*d)*((1/q)-1)
   a + (1 - a)*(1 - (b / (b + x^d))) - .Machine$double.xmin
 }
-#' @rdname DRM.E4_Q
+#' @rdname DRM.E4_NI
 #' @export
 DRM.LN4_Q=function(par,x,q){
   a = par[1]
@@ -426,7 +425,7 @@ DRM.LN4_Q=function(par,x,q){
   b = exp(qnorm(q)-(k*d))
   a + (1 - a)*pnorm(log(b) + d*log(x)) - .Machine$double.xmin
 }
-#' @rdname DRM.E4_Q
+#' @rdname DRM.E4_NI
 #' @export
 DRM.G4_Q=function(par,x,q){
   a = par[1]
@@ -435,16 +434,17 @@ DRM.G4_Q=function(par,x,q){
   b = qgamma(q, rate=1.0, shape=d)/exp(k)
   a + (1 - a)*pgamma(x, shape = d, rate = b) - .Machine$double.xmin
 }
-#' @rdname DRM.E4_Q
+#' @rdname DRM.E4_NI
 #' @export
 DRM.QE4_Q=function(par,x,q){
   a = par[1]
   d = exp(par[3])
   k = log(par[2])
   b = (-log(1-q)) / (exp(k)+((exp(k)*(exp(k)-1))/exp(d)))
-  a + (1 - a)*(1 - exp(-b*x - ( (b/exp(d)) * x * (x - 1)))) - .Machine$double.xmin
+  a + (1 - a)*(1 - exp((-b*x) - ( (b/exp(d)) * x * (x - 1)))) - .Machine$double.xmin
 }
-#' @rdname DRM.E4_Q
+
+#' @rdname DRM.E4_NI
 #' @export
 DRM.P4_Q=function(par,x,q){
   a = par[1]
@@ -454,7 +454,7 @@ DRM.P4_Q=function(par,x,q){
   pnorm(qnorm(a) + b*x^d) - .Machine$double.xmin
 
 }
-#' @rdname DRM.E4_Q
+#' @rdname DRM.E4_NI
 #' @export
 DRM.L4_Q=function(par,x,q){
   a = par[1]
@@ -462,29 +462,5 @@ DRM.L4_Q=function(par,x,q){
   k = log(par[2])
   b = exp(-k*d)*(logit(q*(1-a)+a) - logit(a))
   expit(logit(a) + b*x^d) - .Machine$double.xmin
-
 }
 
-#' Function to select a dose response model based on model name
-#'
-#' @param Model a character for the model name.It can be either of E4_Q, IE4_Q, H4_Q, LN4_Q, G4_Q, QE4_Q,
-#'              P4_Q or L4_Q
-#'
-#' @return a corresponding DRM function
-#'
-#' @export DRMQ
-#'
-DRMQ <- function(Model) {
-
-  DRM <- switch (Model,
-                 E4_Q = DRM.E4_Q,
-                 IE4_Q = DRM.IE4_Q,
-                 H4_Q = DRM.H4_Q,
-                 LN4_Q = DRM.LN4_Q,
-                 G4_Q = DRM.G4_Q,
-                 QE4_Q = DRM.QE4_Q,
-                 P4_Q = DRM.P4_Q,
-                 L4_Q = DRM.L4_Q
-  )
-  return(DRM)
-}

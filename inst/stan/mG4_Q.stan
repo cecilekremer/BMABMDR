@@ -1,13 +1,13 @@
 functions{
-   vector algebra_system(vector yG,        // unknowns
-               vector theta,    // parameters
-               real[] x_r,      // data (real)
-               int[] x_i) {     // data (integer)
-   vector[1] x;
-   real q = x_r[1];
-    if(yG[1]>0) x[1] = gamma_p(theta[2],yG[1]*theta[1]) - q;
-    else if(yG[1]<=0) x[1]=1;
-   return x;
+  vector algebra_system(vector yG,        // unknowns
+  vector theta,    // parameters
+  real[] x_r,      // data (real)
+  int[] x_i) {     // data (integer)
+  vector[1] x;
+  real q = x_r[1];
+  if(yG[1]>0) x[1] = gamma_p(theta[2],yG[1]*theta[1]) - q;
+  else if(yG[1]<=0) x[1]=1;
+  return x;
   }
 
   real pert_dist_lpdf(real theta, real lb, real md, real ub, real gama){
@@ -44,50 +44,50 @@ data{
   real truncd;
   int<lower=0, upper=1> is_bin;       //model type 1 = Binomial 0 = otherwise
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
- }
- transformed data{
-   real x_r[1] = {q};
-   int x_i[0];
- }
- parameters{
+}
+transformed data{
+  real x_r[1] = {q};
+  int x_i[0];
+}
+parameters{
   real<lower=0, upper=1> par1; //a
   real<lower=0> par2; //BMD
   real par3; // d on a log scale
   real rho[is_betabin];
 }
- transformed parameters{
-   real a;
-   real d;
-   real b;
-   real k;
-   vector[2] theta;
-   vector[1] y_guess;
-   vector[1] yG;
-   real m[N];
-   real abet[N];
-   real bbet[N];
-   real<lower=0> BMD;
-   BMD = par2;
-   a = par1;
-   d = exp(par3);
-   k = log(par2);
-   theta[1] = BMD;
-   theta[2] = d;
-   y_guess[1] = init_b;
+transformed parameters{
+  real a;
+  real d;
+  real b;
+  real k;
+  vector[2] theta;
+  vector[1] y_guess;
+  vector[1] yG;
+  real m[N];
+  real abet[N];
+  real bbet[N];
+  real<lower=0> BMD;
+  BMD = par2;
+  a = par1;
+  d = exp(par3);
+  k = log(par2);
+  theta[1] = BMD;
+  theta[2] = d;
+  y_guess[1] = init_b;
 
-   yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
-   b = yG[1];
+  yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+  b = yG[1];
 
-   for(i in 1:N){
+  for(i in 1:N){
     if(x[i] == 0){
       m[i] = a;
     } else if(x[i] > 0) {
       m[i] = a + (1 - a)*gamma_cdf(x[i], d, b);
     }
-   }
+  }
 
 
-   if(is_bin == 0) {
+  if(is_bin == 0) {
 
     for(i in 1:N){
       abet[i] = m[i]*((1.0/rho[is_betabin])-1.0);
@@ -100,25 +100,26 @@ data{
     }
   }
 
- }
- model{
-    par1 ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama[1]); //prior for a
-    par2 ~ pert_dist(priorlb[2], priormu[2], priorub[2], priorgama[2]); //prior for BMD
-    par3 ~ normal(priormu[3], priorSigma[3,3])T[,truncd]; //prior for d
+}
+model{
+  par1 ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama[1]); //prior for a
+  par2 ~ pert_dist(priorlb[2], priormu[2], priorub[2], priorgama[2]); //prior for BMD
+  par3 ~ normal(priormu[3], priorSigma[3,3])T[,truncd]; //prior for d
 
-    if(is_bin==1) {
+  if(is_bin==1) {
 
-      for(i in 1:N){
-        target += lchoose(n[i], y[i]) + y[i]*log(m[i]+eps) + (n[i] - y[i])*log(1 - m[i]+eps);
-      }
-
-    } else {
-
-      rho[is_betabin] ~ pert_dist(0.0, priormu[4], 1.0, 4.0);
-      for(i in 1:N){
-        target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
-                  lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
-                  lgamma(abet[i]+bbet[i]+eps);
-      }
+    for(i in 1:N){
+      target += lchoose(n[i], y[i]) + y[i]*log(m[i]+eps) + (n[i] - y[i])*log(1 - m[i]+eps);
     }
- }
+
+  } else {
+
+    rho[is_betabin] ~ pert_dist(0.0, priormu[4], 1.0, 4.0);
+    for(i in 1:N){
+      target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
+      lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+      lgamma(abet[i]+bbet[i]+eps);
+    }
+  }
+}
+

@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{BMDMA_extract}
 \alias{BMDMA_extract}
-\title{function to extract model averaged BMD}
+\title{function to extract model averaged BMD (continuous dataa)}
 \usage{
 BMDMA_extract(mod.obj, conv = FALSE)
 }
@@ -16,5 +16,5 @@ models or all the models regardless of the convergence status}
 dataframe containing BMDL, BMD and BMDU
 }
 \description{
-function to extract model averaged BMD
+function to extract model averaged BMD (continuous dataa)
 }

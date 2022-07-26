@@ -9,7 +9,7 @@
 \alias{llfQE4_NIc}
 \alias{llfP4_NIc}
 \alias{llfL4_NIc}
-\alias{llfSM_N}
+\alias{llfE4_LNIc}
 \alias{llfIE4_LNIc}
 \alias{llfH4_LNIc}
 \alias{llfLN4_LNIc}
@@ -35,7 +35,7 @@
 \alias{llfQE4_LNDc}
 \alias{llfP4_LNDc}
 \alias{llfL4_LNDc}
-\title{Loglikelihood functions for the different dose response models - clustered}
+\title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE4_NIc(x, d, n, nij, y, qval)
 
@@ -53,7 +53,7 @@ llfP4_NIc(x, d, n, nij, y, qval)
 
 llfL4_NIc(x, d, n, nij, y, qval)
 
-llfSM_N(x, nvec, dvec, mvec, s2vec)
+llfE4_LNIc(x, d, n, nij, y, qval, shift)
 
 llfIE4_LNIc(x, d, n, nij, y, qval, shift)
 
@@ -110,11 +110,11 @@ llfL4_LNDc(x, d, n, nij, y, qval, shift)
 
 \item{d}{dose levels}
 
-\item{n}{number of litters per dose level}
+\item{n}{observations per dose level}
 
-\item{nij}{dose x litter matrix with the number of observations for each combination}
+\item{nij}{observations per dose x litter combination}
 
-\item{y}{response matrix}
+\item{y}{observed responses}
 
 \item{qval}{BMR}
 
@@ -124,7 +124,7 @@ llfL4_LNDc(x, d, n, nij, y, qval, shift)
 .
 }
 \description{
-Loglikelihood functions for the different dose response models - clustered
+Loglikelihood functions for the different dose response models
 }
 \examples{
 

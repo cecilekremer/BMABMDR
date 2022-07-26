@@ -4,12 +4,12 @@ functions {
     real x2;
     real x3;
     real x4;
-    real alpha;
+    real alpha; 
     real beta;
-
+    
     alpha = 1 + gama * (md - lb)/(ub - lb);
     beta = 1 + gama * (ub - md)/(ub - lb);
-
+  
     x1 = (alpha-1) * log((theta - lb));
     x2 = (beta-1) * log((ub - theta));
     x3 = (alpha+beta-1) * log((ub - lb));
@@ -18,34 +18,32 @@ functions {
   }
 }
 data{
-  int N;  // the total number of distinct dose group
+  int N;  // the total number of observations
+  int Ndose; // the total number of distinct dose group
   vector[N] n;  // the sample size for each dose group
   vector[N] y;  // the arithmetic mean of the response values for each dose group
-
-  vector[N+1] priormu;
-  vector[N] priorlb; //lower bound
-  vector[N] priorub; //upper bound
-
-  //real priormu[N+1];
-  //real priorlb; //lower bound
-  //real<upper=1> priorub; //upper bound
+  
+  real priormu[2]; 
+  real priorlb; //lower bound
+  real<upper=1> priorub; //upper bound
   real priorgama;
   real eps;
   int<lower=0, upper=1> is_bin;  //model type 1 = Binomial 0 = otherwise
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
 }
 parameters{
-  vector[N] par; // par[1]=background, par[2:N]=increment per dose group
+  vector[Ndose] par; // par[1]=background, par[2:N]=increment per dose group
   real<lower=0, upper=1> rho[is_betabin]; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
-  vector[N] a;
+  vector[Ndose] a; // at the dose level
   real abet[N];
   real bbet[N];
-
-
+  
+  // mean in lowest dose
   a[1] = par[1];
-  for(k in 2:N){
+  
+  for(k in 2:Ndose){
       a[k] = a[k-1] + par[k];
       if(a[k] <= 0){
         a[k] = 0.0001;
@@ -54,13 +52,13 @@ transformed parameters{
         a[k] = 0.9999;
       }
   }
-
-
+  
+  
   if(is_bin == 0) {
-
+    
     for(i in 1:N){
-      abet[i] = a[i]*((1/rho[is_betabin])-1.0);
-      bbet[i] = (1.0 - a[i])*((1.0/rho[is_betabin])-1);
+      abet[i] = (y[i]/n[i])*((1/rho[is_betabin])-1.0);
+      bbet[i] = (1.0 - (y[i]/n[i]))*((1.0/rho[is_betabin])-1);
     }
   } else {
     for(i in 1:N){
@@ -71,28 +69,28 @@ transformed parameters{
 }
 model{
 
-  //par[1] ~ pert_dist(priorlb[1], priormu[1], priorub[1], priorgama);
-
-  //for(k in 2:N)
-  //    par[k] ~ uniform(priorlb[k], priorub[k]);//pert_dist(priorlb, priormu[1], priorub, 4);
-
+  par[1] ~ pert_dist(priorlb, priormu[1], priorub, priorgama);
+  
+  for(k in 2:Ndose)
+      par[k] ~ uniform(-1, 1);//pert_dist(priorlb, priormu[1], priorub, 4);
+        
     if(is_bin==1) {
-
+    
       for (i in 1:N){
-
+       
        target += lchoose(n[i], y[i]) + y[i]*log(a[i]+eps) + (n[i] - y[i])*log(1 - a[i]+eps);
-
+        
      }
-
+    
      } else {
-
+    
       rho[is_betabin] ~ pert_dist(0.0, priormu[2], 1.0, 4.0);
       for (i in 1:N){
-             target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
-                  lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+             target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) - 
+                  lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) + 
                   lgamma(abet[i]+bbet[i]+eps);
       }
     }
-
-
+   
+   
 }
