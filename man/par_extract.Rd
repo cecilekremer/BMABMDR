@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{par_extract}
 \alias{par_extract}
-\title{function to extract the sampled values for the model parameters and the BMD}
+\title{function to extract the sampled values for the model parameters and the BMD (continuous data)}
 \usage{
 par_extract(
   mod_obj,
@@ -21,5 +21,5 @@ par_extract(
 dataframe containing model estimates
 }
 \description{
-function to extract the sampled values for the model parameters and the BMD
+function to extract the sampled values for the model parameters and the BMD (continuous data)
 }

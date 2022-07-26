@@ -10,7 +10,7 @@
 \alias{llfP42_Q}
 \alias{llfL42_Q}
 \alias{llfSM2_Q}
-\title{Loglikelihood functions for the different dose response models (Beta-Binomial)}
+\title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE42_Q(x, nvec, dvec, yvec, qval, rho)
 
@@ -33,19 +33,22 @@ llfSM2_Q(x, nvec, dvec, yvec, qval, rho)
 \arguments{
 \item{x}{parameter values}
 
-\item{nvec}{number of observations}
+\item{nvec}{vector containing the number of observations at each dose level}
 
-\item{dvec}{dose levels}
+\item{dvec}{vector containing the unique ordered dose levels}
 
-\item{yvec}{response}
+\item{yvec}{vector containing the number of adverse events at each dose level}
 
 \item{qval}{BMR}
 
 \item{rho}{intra-cluster correlation parameter}
 }
 \value{
-loglikelihood value at x.
+.
 }
 \description{
-Loglikelihood functions for the different dose response models (Beta-Binomial)
+Loglikelihood functions for the different dose response models
+}
+\examples{
+
 }

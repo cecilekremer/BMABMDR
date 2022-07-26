@@ -2,6 +2,7 @@
 % Please edit documentation in R/fun_Sampling.R
 \name{sampling_MA}
 \alias{sampling_MA}
+\alias{sampling_MAc}
 \title{Perform model averaging using MCMC methods (Bridge sampling & Partial Laplace)}
 \usage{
 sampling_MA(
@@ -15,8 +16,21 @@ sampling_MA(
   delta = 0.8,
   treedepth = 10,
   seed = 123,
-  pvec = c(0.05, 0.5, 0.95),
-  plot = FALSE
+  pvec = c(0.05, 0.5, 0.95)
+)
+
+sampling_MAc(
+  data.N,
+  data.LN,
+  prior.weights = rep(1, 16),
+  ndraws = 30000,
+  nrchains = 3,
+  nriterations = 3000,
+  warmup = 1000,
+  delta = 0.8,
+  treedepth = 10,
+  seed = 123,
+  pvec = c(0.05, 0.5, 0.95)
 )
 }
 \arguments{
@@ -42,8 +56,6 @@ sampling_MA(
 
 \item{pvec}{vector specifying the three BMD quantiles of interest}
 
-\item{plot}{logical indicating whether a simple plot of model fits should be shown}
-
 \item{priordist}{which prior distribution should be used (currently only "PERT" is implemented)}
 
 \item{prior.BMD}{logical indicating whether an informative prior for the BMD is used (currently not implemented)}
@@ -51,31 +63,31 @@ sampling_MA(
 \value{
 a list containing the following important entries:
 \enumerate{
-\item E4_N parameter estimates from the exponential model
-\item IE4_N parameter estimates from the inverse-exponential model
-\item H4_N parameter estimates from the Hill model
-\item LN4_N parameter estimates from the lognormal model
-\item G4_N parameter estimates from the gamma model
-\item QE4_N parameter estimates from the quadratic-exponential model
-\item P4_N parameter estimates from the probit model
-\item L4_N parameter estimates from the logit model
-\item E4_LN parameter estimates from the exponential model
-\item IE4_LN parameter estimates from the inverse-exponential model
-\item H4_LN parameter estimates from the Hill model
-\item LN4_LN parameter estimates from the lognormal model
-\item G4_LN parameter estimates from the gamma model
-\item QE4_LN parameter estimates from the quadratic-exponential model
-\item P4_LN parameter estimates from the probit model
-\item L4_LN parameter estimates from the logit model
-\item MA_laplace Laplace approximation model averaged BMD estimates using all the models
-\item MA_bs Bridge sampling model averaged BMD estimates using all the models
+\item E4_N parameter estimates from the (Exponential, Normal) model
+\item IE4_N parameter estimates from the (Inverse Exponential, Normal) model
+\item H4_N parameter estimates from the (Hill, Normal) model
+\item LN4_N parameter estimates from the (Log-normal, Normal)
+\item G4_N parameter estimates from the (Gamma, Normal) model
+\item QE4_N parameter estimates from the (Quadratic Exponential, Normal) model
+\item P4_N parameter estimates from the (Probit, Normal) model
+\item L4_N parameter estimates from the (Logit, Normal) model
+\item E4_LN parameter estimates from the (Exponential, Log-normal) model
+\item IE4_LN parameter estimates from the (Inverse Exponential, Log-normal) model
+\item H4_LN parameter estimates from the (Hill, Log-normal) model
+\item LN4_LN parameter estimates from the (Log-normal, Log-normal)
+\item G4_LN parameter estimates from the (Gamma, Log-normal) model
+\item QE4_LN parameter estimates from the (Quadratic Exponential, Log-normal) model
+\item P4_LN parameter estimates from the (Probit, Log-normal) model
+\item L4_LN parameter estimates from the (Logit, Log-normal) model
+\item MA_laplace Partial Laplace model averaged BMD estimates using all included
+\item MA_bridge_sampling Bridge sampling model averaged BMD estimates using all included models
+\item MA_ls_conv Partial Laplace model averaged BMD estimates using only converged models
 \item MA_bs_conv Bridge sampling model averaged BMD estimates using only converged models
 \item weights_laplace model weights using Laplace approximation to the posterior
-\item weights_bs model weights computed using bridge sampling
+\item weights_bridge_sampling model weights computed using bridge sampling
 \item convergence vector indicating model convergence or not. 1 = converged, 0 otherwise.
-\item llN vector of model likelihoods when the distribution is assumed normal
-\item llLN vector of model likelihoods when the distribution is assumed lognormal
-\item bf Bayes factor comparing the best model against saturated ANOVA model
+\item divergences vector indicating the proportion of divergent transitions for each model.
+\item bf Bayes factor comparing the best model against saturated ANOVA model#'
 }
 }
 \description{

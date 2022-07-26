@@ -2,9 +2,39 @@
 % Please edit documentation in R/fct_mcmc.R
 \name{fun_sampling}
 \alias{fun_sampling}
-\title{Function to perform MCMC sampling for a given dose-response model.}
+\alias{fun_samplingC}
+\alias{fun_samplingQ}
+\title{Function to perform MCMC sampling for a given dose-response model (used internally).}
 \usage{
 fun_sampling(
+  mod,
+  data,
+  stv,
+  ndraws = ndraws,
+  nrchains = nrchains,
+  nriterations = nriterations,
+  warmup = warmup,
+  delta = delta,
+  treedepth = treedepth,
+  seed = seed,
+  pvec
+)
+
+fun_samplingC(
+  mod,
+  data,
+  stv,
+  ndraws = ndraws,
+  nrchains = nrchains,
+  nriterations = nriterations,
+  warmup = warmup,
+  delta = delta,
+  treedepth = treedepth,
+  seed = seed,
+  pvec
+)
+
+fun_samplingQ(
   mod,
   data,
   stv,
@@ -45,7 +75,7 @@ fun_sampling(
 a stan results object
 }
 \description{
-Function to perform MCMC sampling for a given dose-response model.
+Function to perform MCMC sampling for a given dose-response model (used internally).
 }
 \examples{
 

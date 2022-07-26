@@ -7,7 +7,7 @@
 plot.BMADR(
   mod.obj,
   type = c("increasing", "decreasing"),
-  clustered = F,
+  clustered = FALSE,
   weight_type = c("BS", "LP"),
   include_data = TRUE,
   all = TRUE,

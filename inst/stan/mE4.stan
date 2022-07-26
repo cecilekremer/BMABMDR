@@ -106,7 +106,7 @@ model{
     for (i in 1:N){
      target += -0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2)-
      0.5*(n[i]-1)*s2[i]*invsigma2-
-     0.5*n[i]*square(m[i]-a-a*(c-1)*(1-exp(-b*pow(x[i],d))))*invsigma2 - m[i]*n[i];
+     0.5*n[i]*square((m[i])-a-a*(c-1)*(1-exp(-b*pow(x[i],d))))*invsigma2 - m[i]*n[i];
     }
    }
 }

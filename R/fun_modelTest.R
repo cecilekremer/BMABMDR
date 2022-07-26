@@ -1,10 +1,12 @@
-#'  function to perform MCMC sampling for all the dose-response model.
+
+#'  Function to test whether the best fitting model fits the data well, compared to a saturated (non-monotone) model
 #'
 #' @param best.fit best fitting model name
-#' @param data.N list containing data values for the normal models
-#' @param data.LN list containing data values for the lognormal models
+#' @param data.N object as given by PREP_DATA_N
+#' @param data.LN object as given by PREP_DATA_LN
 #' @param stanBest stan object for the best fitting model
-#' @param type estimation type. Laplace approximation or McMC
+#' @param type estimation type. Laplace or MCMC
+#' @param seed random seed for reproducibility
 #' @param ndraws number of draws to be made from the posterior distribution. Defaults to 30000
 #' @param nrchains number of MCMC chains. Defaults to 3
 #' @param nriterations number of MCMC iterations.Defaults to 3000
@@ -13,11 +15,10 @@
 #'              Defaults to 0.8.
 #' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
 #'                  Defaults to 10.
-#' @param seed random seed for reproducibility. Defaults to 123
 #'
 #' @examples
 #'
-#' @description The function compares the best fitting model to the saturated model using the BIC.
+#' @description The function compares the best fitting model to the saturated model using an approximation to BIC.
 #'
 #' @examples
 #' # we use the first 5 rows because those are observations from subjects belonging to the same group.
@@ -33,6 +34,8 @@
 #'            stanBest = 'mE4_N', type = 'Laplace',
 #'            seed = 123, ndraws= 30000, nrchains = 3,
 #'            nriterations=nriter, warmup=wu, delta=dl, treedepth=trd)
+#'
+#' @return Bayes factor for the best fitting model compared to the saturated ANOVA model. A Bayes factor > 0.1 indicates the best fitting model fits equally well as the ANOVA model.
 #'
 #'
 #' @export modelTest
@@ -113,10 +116,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     if(bf < 1/10){
       warn.bf = 'None of the models provide an adequate fit do the data.'
-    }else if(bf > 1/10 & bf < 10){
-      warn.bf = 'Best fitting model fits well.'
-    }else if(bf > 10){
-      warn.bf = 'attention: bayes factor is larger than 10 in favor of the best fitting model'
+    }else if(bf > 1/10){
+      warn.bf = 'Best fitting model fits sufficiently well.'
     }
 
 
@@ -196,10 +197,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     if(bf < 1/10){
       warn.bf = 'None of the models provide an adequate fit do the data.'
-    }else if(bf > 1/10 & bf < 10){
-      warn.bf = 'Best fitting model fits well.'
-    }else if(bf > 10){
-      warn.bf = 'attention: bayes factor is larger than 10 in favor of the best fitting model'
+    }else if(bf > 1/10){
+      warn.bf = 'Best fitting model fits sufficiently well.'
     }
 
   }
@@ -213,3 +212,463 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
   )
 
 }
+
+#' @rdname modelTest
+#' @export
+modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
+                       ndraws, nrchains, nriterations, warmup, delta, treedepth){
+
+  if(grepl('_N', best.fit)){
+
+    means.all <- data.N$data$data %>%
+      group_by(dose) %>%
+      summarise(mresp = mean(response))
+    dose.a = unique(data.N$data$data$dose)
+    mean.a = c()
+    for(m in 1:length(dose.a)){
+      mean.a[m] <- means.all$mresp[means.all$dose == dose.a[m]]
+    }
+
+    svSM = list(par = c(mean.a[1],
+                        diff(mean.a),
+                        log(1/var(data.N$data$y[data.N$data$y!=0])),
+                        0.5))
+
+    priorSM = list(
+      priormu = c(mean.a[1],
+                  diff(mean.a),
+                  -2*log(1.5*sd(data.N$data$y[data.N$data$y!=0])),
+                  0.5),
+      priorSigma = diag(c(1, rep(1, length(dose.a)-1), 1)),
+      priorlb = 0.001,
+      priorub = c(2*mean.a[1],
+                  max(abs(diff(mean.a)))*10)
+    )
+
+    data.modstanSM = list(N=data.N$data$N, n=data.N$data$n, nc=data.N$data$nc, maxN=data.N$data$maxN, maxNc=data.N$data$maxNc,
+                          nij=data.N$data$nij, y=data.N$data$y, q=data.N$data$q, shift=data.N$data$shift,
+                          priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          priorg=4, data_type=data.N$data$data_type
+    )
+
+    if(type == 'MCMC'){
+
+      sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
+
+      initf2 <- function(chain_id = 1) {
+        list(par=sv[1:(data.N$data$N+2)] + rnorm(data.N$data$N+2, sd = 0.01*abs(sv[1:(data.N$data$N+2)])) ,alpha = chain_id)
+      }
+      init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+      fitstanSM = rstan::sampling(stanmodels$mSMc, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                  chains = nrchains, warmup = warmup, seed = seed,
+                                  control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                  show_messages = F, refresh = 0)
+
+      pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5","par6")]
+
+      parsSM = as.matrix(fitstanSM)
+      means.SM = apply(parsSM[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'),
+                                 paste0('par[', data.N$data$N+2, ']'))], 2, median)
+
+    }else if(type == 'Laplace'){
+
+      all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median)
+
+      optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
+                         seed=as.integer(seed), draws = ndraws,
+                         init = svSM, hessian=TRUE)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'),
+                                            paste0('par[', data.N$data$N+2, ']'))], 2, median)
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
+
+    }
+
+    if(data.N$data$is_increasing == 1){
+      llfun = paste0('llf',best.fit,'Ic')
+    }else if(data.N$data$is_decreasing == 1){
+      llfun = paste0('llf',best.fit,'Dc')
+    }
+    llBestfitf = get(llfun)
+    llBestfit = llBestfitf(x = pars.bestfit,
+                           d=data.N$data$x,
+                           n=data.N$data$n,
+                           nij=data.N$data$nij,
+                           y=data.N$data$y,
+                           qval=data.N$data$q)
+
+    llSM = llfSM_Nc(pars.SM,
+                    d=data.N$data$x,
+                    n=data.N$data$n,
+                    nij=data.N$data$nij,
+                    y=data.N$data$y,
+                    qval=data.N$data$q)
+
+    BIC.bestfit = - 2 * llBestfit + (6 * log(sum(data.N$data$y!=0)))
+    BIC.SM = - 2 * llSM + ((data.N$data$N + 2) * log(sum(data.N$data$y!=0)))
+
+    bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
+
+    if(bf < 1/10){
+      warn.bf = 'None of the models provide an adequate fit do the data.'
+    }else if(bf > 1/10){
+      warn.bf = 'Best fitting model fits sufficiently well.'
+    }
+
+
+    #############--LOGNORMAL--##################################
+
+  }else if(grepl('_LN', best.fit)){
+
+    means.all <- data.LN$data$data %>%
+      group_by(dose) %>%
+      summarise(mresp = mean(response))
+    dose.a = unique(data.LN$data$data$dose)
+    mean.a = c()
+    for(m in 1:length(dose.a)){
+      mean.a[m] <- means.all$mresp[means.all$dose == dose.a[m]]
+    }
+
+    svSM = list(par = c(mean.a[1],
+                        diff(mean.a),
+                        log(1/var(data.LN$data$y[data.LN$data$y!=0])),
+                        0.5))
+
+    priorSM = list(
+      priormu = c(mean.a[1],
+                  diff(mean.a),
+                  -2*log(1.5*sd(data.LN$data$y[data.LN$data$y!=0])),
+                  0.5),
+      priorSigma = diag(c(1, rep(1, length(dose.a)-1), 1)),
+      priorlb = 0.001,
+      priorub = c(2*mean.a[1],
+                  max(abs(diff(mean.a)))*10)
+    )
+
+    data.modstanSM = list(N=data.LN$data$N, n=data.LN$data$n, nc=data.LN$data$nc, maxN=data.LN$data$maxN, maxNc=data.LN$data$maxNc,
+                          nij=data.LN$data$nij, y=data.LN$data$y, q=data.LN$data$q, shift=data.LN$data$shift,
+                          priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          priorg=4, data_type=data.LN$data$data_type
+    )
+
+    if(type == 'MCMC'){
+
+      sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
+
+      initf2 <- function(chain_id = 1) {
+        list(par=sv[1:(data.LN$data$N+2)] + rnorm(data.LN$data$N+2, sd = 0.01*abs(sv[1:(data.LN$data$N+2)])) ,alpha = chain_id)
+      }
+      init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+      fitstanSM = rstan::sampling(stanmodels$mSMc, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                  chains = nrchains, warmup = warmup, seed = seed,
+                                  control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                  show_messages = F, refresh = 0)
+
+      pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5","par6")]
+
+      parsSM = as.matrix(fitstanSM)
+      means.SM = apply(parsSM[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'),
+                                 paste0('par[', data.LN$data$N+2, ']'))], 2, median)
+
+
+    }else if(type == 'Laplace'){
+
+      all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median)
+
+      optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
+                         seed=as.integer(seed), draws = ndraws,
+                         init = svSM, hessian=TRUE)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'),
+                                            paste0('par[', data.LN$data$N+2, ']'))], 2, median)
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median)
+
+    }
+
+    if(data.LN$data$is_increasing == 1){
+      llfun = paste0('llf',best.fit,'Ic')
+    }else if(data.LN$data$is_decreasing == 1){
+      llfun = paste0('llf',best.fit,'Dc')
+    }
+    llBestfitf = get(llfun)
+    llBestfit = llBestfitf(x = pars.bestfit,
+                           d=data.LN$data$x,
+                           n=data.LN$data$n,
+                           nij=data.LN$data$nij,
+                           y=data.LN$data$y,
+                           qval=data.LN$data$q,
+                           shift=data.LN$data$shift)
+
+    llSM = llfSM_LNc(pars.SM,
+                     d=data.LN$data$x,
+                     n=data.LN$data$n,
+                     nij=data.LN$data$nij,
+                     y=data.LN$data$y,
+                     qval=data.LN$data$q,
+                     shift=data.LN$data$shift)
+
+    BIC.bestfit = - 2 * llBestfit + (6 * log(sum(data.LN$data$y!=0)))
+    BIC.SM = - 2 * llSM + ((data.LN$data$N + 2) * log(sum(data.LN$data$y!=0)))
+
+    bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
+
+    if(bf < 1/10){
+      warn.bf = 'None of the models provide an adequate fit do the data.'
+    }else if(bf > 1/10){
+      warn.bf = 'Best fitting model fits sufficiently well.'
+    }
+
+  }
+
+  return(list(bayesFactor = bf,
+              means.SM = means.SM,
+              par.best = pars.bestfit,
+              BIC.bestfit = BIC.bestfit,
+              BIC.SM = BIC.SM,
+              warn.bf = warn.bf)
+  )
+
+}
+
+#'  Function to test whether the best fitting model fits the data well, compared to a saturated (non-monotone) model
+#'
+#' @param best.fit best fitting model name
+#' @param data.Q object as given by PREP_DATA_QA
+#' @param stanBest stan object for the best fitting model
+#' @param type estimation type. Laplace or MCMC
+#' @param seed random seed for reproducibility
+#' @param ndraws number of draws to be made from the posterior distribution. Defaults to 30000
+#' @param nrchains number of MCMC chains. Defaults to 3
+#' @param nriterations number of MCMC iterations.Defaults to 3000
+#' @param warmup  number of MCMC iterations for warmup. Defaults to 1000
+#' @param delta adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
+#'              Defaults to 0.8.
+#' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
+#'                  Defaults to 10.
+#'
+#' @examples
+#'
+#' @description The function compares the best fitting model to the saturated model using an approximation to BIC.
+#'
+#' @return Bayes factor for the best fitting model compared to the saturated ANOVA model. A Bayes factor > 0.1 indicates the best fitting model fits equally well as the ANOVA model.
+#'
+#' @export modelTestQ
+#'
+modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains, nriterations,
+                       warmup, delta, treedepth){
+
+  N = data.Q$data$N
+
+
+  if(data.Q$data$is_betabin == 1){
+
+    yasum <- tapply(data.Q$data$y, data.Q$data$x, sum, na.rm = TRUE)
+    nasum <- tapply(data.Q$data$n, data.Q$data$x, sum, na.rm = TRUE)
+
+    yamean <- yasum/nasum
+    ydiff <- diff(yasum/nasum)
+
+    datf = data.frame(yy = data.Q$data$y, n.a = data.Q$data$n, xx = data.Q$data$x)
+    fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
+                  silent = TRUE)
+    rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    dim(rhohat) <- 1
+
+    lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
+                  .Machine$double.xmin)
+    ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
+
+    priorSM = list(
+      priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
+      priorlb = lbs,
+      priorub = ubs
+    )
+
+    ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
+    svSM = list(par = ddy, # invsigma2
+                rho = rhohat
+    )
+
+    data.modstanSM = list(N=N,Ndose=length(unique(data.Q$data$x)),n=data.Q$data$n,y=data.Q$data$y,
+                          yint = data.Q$data$y,nint = data.Q$data$n,
+                          priormu=priorSM$priormu,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin
+    )
+  } else if(data.Q$data$is_bin == 1){
+
+    N <- length(data.Q$data$x)
+    y.a <- data.Q$data$y
+    n.a <- data.Q$data$n
+
+    priorSM = list(
+      priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), 0.0),
+      priorlb = ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
+                       .Machine$double.xmin),
+      priorub = min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1])))
+    )
+
+    svSM = list(par = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
+                        diff(y.a/n.a)
+    ))
+
+    data.modstanSM = list(N=N,Ndose=length(unique(data.Q$data$x)),n=n.a,y=y.a, yint=y.a, nint=n.a,
+                          priormu = priorSM$priormu,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin
+    )
+  } else stop("data must be either clustered or independent")
+
+  #max(abs(diff(data.Q$data$y/data.Q$data$n))),
+
+
+  if(type == 'MCMC'){
+
+    svH1 <- rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+
+    if(data.Q$data$is_bin == 1){
+      initf2 <- function(chain_id = 1) {
+        nns <- which(stringr::str_detect(names(svH1),'par'))
+        list(par=svH1[nns] +
+               rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
+      }
+    } else if(data.Q$data$is_betabin == 1) {
+      initf2 <- function(chain_id = 1) {
+        nns <- which(stringr::str_detect(names(svH1),'par'))
+        nns_rho <- which(stringr::str_detect(names(svH1),'rho'))
+
+        rho = svH1[nns_rho]; dim(rho)=1
+        list(par=svH1[nns] +
+               rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
+             rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
+      }
+    }
+
+    init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+
+    fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                chains = nrchains, warmup = warmup, seed = seed,
+                                control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                show_messages = F, refresh = 0)
+
+    while(is.na(dim(fitstanSM)[1])){
+
+      init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+
+      fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                  chains = nrchains, warmup = warmup, seed = seed,
+                                  control = list(adapt_delta = delta, max_treedepth = treedepth),
+                                  show_messages = F, refresh = 0)
+    }
+    parsSM = as.matrix(fitstanSM)
+
+    if(data.Q$data$is_bin == 1){
+
+      pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3")]
+      means.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'))], 2, median)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
+                                 paste0('par[', length(unique(data.Q$data$x)), ']'))], 2, median)
+
+    } else if(data.Q$data$is_betabin == 1){
+
+      pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3", "rho[1]")]
+      means.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'), "rho[1]")], 2, median)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
+                                 paste0('par[', length(unique(data.Q$data$x)), ']'), "rho[1]")], 2, median)
+
+    } else stop("data must be either clustered or independent")
+
+
+  }else if(type == 'Laplace'){
+
+    if(data.Q$data$is_bin == 1){
+
+      all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'), pars = c('a', 'b', 'd', 'BMD',
+                                                                                             paste0('par',1:3)))
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3))], 2, median)
+
+      optSM = optimizing(stanmodels$mSM_Q, data = data.modstanSM,
+                         seed=as.integer(seed), draws = ndraws,
+                         init = svSM, hessian=TRUE)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
+                                            paste0('par[', data.Q$data$N, ']'))], 2, median)
+      means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median)
+
+    } else if(data.Q$data$is_betabin == 1) {
+
+      all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'),
+                                      pars = c('a', 'b', 'd', 'rho[1]','BMD', paste0('par',1:3)),
+                                      rho = TRUE)
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3),"rho")], 2, median)
+
+      optSM = optimizing(stanmodels$mSM_Q, data = data.modstanSM,
+                         seed=as.integer(seed), #draws = ndraws,
+                         init = svSM#, hessian=TRUE
+      )
+      pSM <- optSM$par
+
+      pars.SM = pSM[names(pSM) %in% c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
+                                      paste0('par[', length(unique(data.Q$data$x)), ']'),
+                                      'rho[1]')]
+      means.SM = pSM[names(pSM) %in% c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
+                                       'rho[1]')]
+      # pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
+      #                                       paste0('par[', length(unique(data.Q$data$x)), ']'),
+      #                                       'rho[1]')], 2, median)
+      # means.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
+      #                                        'rho[1]')], 2, median)
+    }
+
+  }
+
+  if(data.Q$data$is_bin == 1){
+
+    llfun = paste0('llf',best.fit,'_Q')
+    llBestfitf = get(llfun)
+    llBestfit = llBestfitf(x = pars.bestfit, data.Q$data$n, data.Q$data$x, data.Q$data$y, data.Q$data$q)
+
+  }else if(data.Q$data$is_betabin == 1){
+
+    llfun = paste0('llf',best.fit,'2_Q')
+    llBestfitf = get(llfun)
+    llBestfit = llBestfitf(x = pars.bestfit[1:3], data.Q$data$n, data.Q$data$x,
+                           data.Q$data$y, data.Q$data$q, pars.bestfit[4])
+
+  }
+
+
+  if(data.Q$data$is_bin == 1){
+    llSM = llfSM_Q(pars.SM, data.Q$data$n, data.Q$data$x, data.Q$data$y)
+  }else if(data.Q$data$is_betabin == 1){
+    llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
+                    data.Q$data$n, data.Q$data$x, data.Q$data$y, data.Q$data$q,
+                    pars.SM[stringr::str_detect(names(pars.SM), 'rho')]) ## UPDATE --> rho? !!
+  }
+
+  BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n)))
+  BIC.SM = - 2 * llSM + ((data.Q$data$N) * log(sum(data.Q$data$n)))
+
+  bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
+
+  if(bf < 1/10){
+    warn.bf = 'None of the models provide an adequate fit do the data.'
+  }else if(bf > 1/10 & bf < 10){
+    warn.bf = 'Best fitting model fits well.'
+  }else if(bf > 10){
+    warn.bf = 'attention: bayes factor is larger than 10 in favor of the best fitting model'
+  }
+
+  return(list(bayesFactor = bf,
+              means.SM = means.SM,
+              par.best = pars.bestfit,
+              BIC.bestfit = BIC.bestfit,
+              BIC.SM = BIC.SM,
+              warn.bf = warn.bf)
+  )
+
+}
+

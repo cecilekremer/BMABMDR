@@ -10,7 +10,7 @@ get_models(type = c("continuous", "quantal"))
 \item{type}{one of 'continuous' or 'quantal'}
 }
 \value{
-.
+list of all available models
 }
 \description{
 Obtain a list of all available models

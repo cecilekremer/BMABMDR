@@ -2,6 +2,7 @@
 % Please edit documentation in R/fun_Laplace.R
 \name{full.laplace_MA}
 \alias{full.laplace_MA}
+\alias{full.laplace_MAc}
 \title{Perform model averaging using Full Laplace method}
 \usage{
 full.laplace_MA(
@@ -12,6 +13,15 @@ full.laplace_MA(
   seed = 123,
   pvec = c(0.05, 0.5, 0.95),
   plot = FALSE
+)
+
+full.laplace_MAc(
+  data.N,
+  data.LN,
+  prior.weights = rep(1, 16),
+  ndraws = 30000,
+  seed = 123,
+  pvec = c(0.05, 0.5, 0.95)
 )
 }
 \arguments{
@@ -26,46 +36,32 @@ full.laplace_MA(
 \item{seed}{default 123}
 
 \item{pvec}{vector specifying the three BMD quantiles of interest}
-
-\item{plot}{logical indicating whether a simple plot of model fits should be shown}
-
-\item{priordist}{which prior distribution should be used (currently only "PERT" is implemented)}
-
-\item{prior.BMD}{logical indicating whether an informative prior for the BMD is used (currently not implemented)}
 }
 \value{
 \enumerate{
-\item E4_N parameter estimates from the exponential model
-\item IE4_N parameter estimates from the inverse-exponential model
-\item H4_N parameter estimates from the Hill model
-\item LN4_N parameter estimates from the lognormal
-\item G4_N parameter estimates from the gamma model
-\item QE4_N parameter estimates from the quadratic-exponential model
-\item P4_N parameter estimates from the probit model
-\item L4_N parameter estimates from the logit model
-\item E4_LN parameter estimates from the exponential model
-\item IE4_LN parameter estimates from the inverse-exponential model
-\item H4_LN parameter estimates from the Hill model
-\item LN4_LN parameter estimates from the lognormal
-\item G4_LN parameter estimates from the gamma model
-\item QE4_LN parameter estimates from the quadratic-exponential model
-\item P4_LN parameter estimates from the probit model
-\item L4_LN parameter estimates from the logit model
-\item MA_laplace Laplace approximation model averaged BMD estimates using all the models
-\item MA_lp_conv Laplace approximation model averaged BMD estimates using only converged models
-\item weights_laplace model weights using Laplace approximation to the posterior
-\item llN vector of model likelihoods for normal distribution
-\item llLN vector of model likelihoods for lognormal distribution
+\item E4_N parameter estimates from the (Exponential, Normal) model
+\item IE4_N parameter estimates from the (Inverse Exponential, Normal) model
+\item H4_N parameter estimates from the (Hill, Normal) model
+\item LN4_N parameter estimates from the (Log-normal, Normal)
+\item G4_N parameter estimates from the (Gamma, Normal) model
+\item QE4_N parameter estimates from the (Quadratic Exponential, Normal) model
+\item P4_N parameter estimates from the (Probit, Normal) model
+\item L4_N parameter estimates from the (Logit, Normal) model
+\item E4_LN parameter estimates from the (Exponential, Log-normal) model
+\item IE4_LN parameter estimates from the (Inverse Exponential, Log-normal) model
+\item H4_LN parameter estimates from the (Hill, Log-normal) model
+\item LN4_LN parameter estimates from the (Log-normal, Log-normal)
+\item G4_LN parameter estimates from the (Gamma, Log-normal) model
+\item QE4_LN parameter estimates from the (Quadratic Exponential, Log-normal) model
+\item P4_LN parameter estimates from the (Probit, Log-normal) model
+\item L4_LN parameter estimates from the (Logit, Log-normal) model
+\item MA  Model averaged BMD credible interval
+\item weights Model weights used in the averaging
 \item bf Bayes factor comparing the best model against saturated ANOVA model
 }
 }
 \description{
 Using Laplace approximation, we compute the parameters and weights of each model.
-}
-\details{
-This method assumed data for continuous endpoints.
-
-More detailed descriprion
 }
 \examples{
  # we use the first 5 rows because those are observations from subjects belonging to the same group.

@@ -2,9 +2,25 @@
 % Please edit documentation in R/fun_modelTest.R
 \name{modelTest}
 \alias{modelTest}
-\title{function to perform MCMC sampling for all the dose-response model.}
+\alias{modelTestC}
+\title{Function to test whether the best fitting model fits the data well, compared to a saturated (non-monotone) model}
 \usage{
 modelTest(
+  best.fit,
+  data.N,
+  data.LN,
+  stanBest,
+  type,
+  seed,
+  ndraws,
+  nrchains,
+  nriterations,
+  warmup,
+  delta,
+  treedepth
+)
+
+modelTestC(
   best.fit,
   data.N,
   data.LN,
@@ -22,15 +38,15 @@ modelTest(
 \arguments{
 \item{best.fit}{best fitting model name}
 
-\item{data.N}{list containing data values for the normal models}
+\item{data.N}{object as given by PREP_DATA_N}
 
-\item{data.LN}{list containing data values for the lognormal models}
+\item{data.LN}{object as given by PREP_DATA_LN}
 
 \item{stanBest}{stan object for the best fitting model}
 
-\item{type}{estimation type. Laplace approximation or McMC}
+\item{type}{estimation type. Laplace or MCMC}
 
-\item{seed}{random seed for reproducibility. Defaults to 123}
+\item{seed}{random seed for reproducibility}
 
 \item{ndraws}{number of draws to be made from the posterior distribution. Defaults to 30000}
 
@@ -46,8 +62,11 @@ Defaults to 0.8.}
 \item{treedepth}{tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
 Defaults to 10.}
 }
+\value{
+Bayes factor for the best fitting model compared to the saturated ANOVA model. A Bayes factor > 0.1 indicates the best fitting model fits equally well as the ANOVA model.
+}
 \description{
-The function compares the best fitting model to the saturated model using the BIC.
+The function compares the best fitting model to the saturated model using an approximation to BIC.
 }
 \examples{
 
@@ -64,6 +83,5 @@ The function compares the best fitting model to the saturated model using the BI
            stanBest = 'mE4_N', type = 'Laplace',
            seed = 123, ndraws= 30000, nrchains = 3,
            nriterations=nriter, warmup=wu, delta=dl, treedepth=trd)
-
 
 }

@@ -35,7 +35,6 @@
 \alias{llfQE4_LND}
 \alias{llfP4_LND}
 \alias{llfL4_LND}
-\alias{llfE4_LNIc}
 \title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE4_NI(x, nvec, dvec, mvec, s2vec, qval)
@@ -106,18 +105,18 @@ llfP4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
 llfL4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
-llfE4_LNIc(x, d, n, nij, y, qval, shift)
+llfSM_N(x, nvec, dvec, mvec, s2vec)
 }
 \arguments{
 \item{x}{parameter values}
 
 \item{nvec}{vector containing the number of observations at each dose level}
 
-\item{dvec}{unique ordered dose levels}
+\item{dvec}{vector containing the unique ordered dose levels}
 
-\item{mvec}{vector containing the response at each dose level}
+\item{mvec}{vector containing the mean response at each dose level}
 
-\item{s2vec}{variance}
+\item{s2vec}{vector containing the variance at each dose level}
 
 \item{qval}{BMR}
 

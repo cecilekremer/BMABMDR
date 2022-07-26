@@ -1,7 +1,7 @@
 rm(list=ls())
 
 # install package from zip file
-# install.packages("~/GitHub/BMABMDR_0.0.0.9014.tar.gz", repos = NULL, type = "source")
+# install.packages("~/GitHub/BMABMDR_0.0.0.9017.tar.gz", repos = NULL, type = "source")
 
 library(BMABMDR)
 library(gamlss)
@@ -13,7 +13,7 @@ library(gamlss)
 get_models('continuous')
 get_models('quantal')
 
-# sessionInfo()
+# > sessionInfo()
 # R version 4.1.0 (2021-05-18)
 # Platform: x86_64-w64-mingw32/x64 (64-bit)
 # Running under: Windows 10 x64 (build 19044)
@@ -21,30 +21,31 @@ get_models('quantal')
 # Matrix products: default
 #
 # locale:
-#   [1] LC_COLLATE=English_United Kingdom.1252  LC_CTYPE=English_United Kingdom.1252    LC_MONETARY=English_United Kingdom.1252
-# [4] LC_NUMERIC=C                            LC_TIME=English_United Kingdom.1252
+#   [1] LC_COLLATE=Dutch_Belgium.1252  LC_CTYPE=Dutch_Belgium.1252    LC_MONETARY=Dutch_Belgium.1252 LC_NUMERIC=C                   LC_TIME=Dutch_Belgium.1252
 #
 # attached base packages:
-#   [1] parallel  splines   stats     graphics  grDevices utils     datasets  methods   base
+#   [1] stats     graphics  grDevices utils     datasets  methods   base
 #
 # other attached packages:
-#   [1] gamlss_5.3-4       nlme_3.1-152       gamlss.dist_5.3-2  MASS_7.3-54        gamlss.data_6.0-1  BMABMDR_0.0.0.9011
+#   [1] BMABMDR_0.0.0.9017
 #
 # loaded via a namespace (and not attached):
-#   [1] matrixStats_0.61.0   RColorBrewer_1.1-2   rstan_2.21.2         numDeriv_2016.8-1.1  tensorA_0.36.2       tools_4.1.0          backports_1.4.0
-# [8] utf8_1.2.2           R6_2.5.1             DBI_1.1.1            colorspace_2.0-2     raster_3.4-13        withr_2.4.3          sp_1.4-5
-# [15] tidyselect_1.1.1     gridExtra_2.3        prettyunits_1.1.1    processx_3.5.2       Brobdingnag_1.2-6    curl_4.3.2           compiler_4.1.0
-# [22] cli_3.0.1            unmarked_1.1.1       posterior_1.0.1      scales_1.1.1         checkmate_2.0.0      mvtnorm_1.1-2        AICcmodavg_2.3-1
-# [29] mc2d_0.1-21          callr_3.7.0          stringr_1.4.0        StanHeaders_2.21.0-7 foreign_0.8-81       rio_0.5.27           pkgconfig_2.0.3
-# [36] bbmle_1.0.24         rlang_0.4.12         readxl_1.3.1         VGAM_1.1-5           generics_0.1.0       farver_2.1.0         jsonlite_1.7.2
-# [43] dplyr_1.0.7          zip_2.2.0            car_3.0-11           distributional_0.2.2 inline_0.3.19        magrittr_2.0.1       loo_2.4.1
-# [50] Matrix_1.3-3         Rcpp_1.0.7           munsell_0.5.0        fansi_0.5.0          abind_1.4-5          lifecycle_1.0.1      stringi_1.7.4
-# [57] carData_3.0-4        pkgbuild_1.3.1       plyr_1.8.6           grid_4.1.0           bdsmatrix_1.3-4      forcats_0.5.1        crayon_1.4.2
-# [64] lattice_0.20-44      haven_2.4.3          hms_1.1.0            ps_1.6.0             pillar_1.6.4         ggpubr_0.4.0         ggsignif_0.6.2
-# [71] codetools_0.2-18     stats4_4.1.0         rstantools_2.1.1     glue_1.4.2           V8_3.6.0             data.table_1.14.0    RcppParallel_5.1.4
-# [78] vctrs_0.3.8          cellranger_1.1.0     gtable_0.3.0         purrr_0.3.4          tidyr_1.1.3          assertthat_0.2.1     ggplot2_3.3.5
-# [85] openxlsx_4.2.4       xtable_1.8-4         broom_0.7.9          coda_0.19-4          rstatix_0.7.0        survival_3.2-11      tibble_3.1.4
-# [92] ellipsis_0.3.2       bridgesampling_1.1-2
+#   [1] nlme_3.1-152         matrixStats_0.61.0   RColorBrewer_1.1-2   rstan_2.21.2         numDeriv_2016.8-1.1  tensorA_0.36.2       tools_4.1.0
+# [8] backports_1.4.0      utf8_1.2.2           R6_2.5.1             DBI_1.1.1            colorspace_2.0-3     raster_3.4-13        withr_2.5.0
+# [15] sp_1.4-5             tidyselect_1.1.1     gridExtra_2.3        prettyunits_1.1.1    processx_3.5.2       Brobdingnag_1.2-6    curl_4.3.2
+# [22] compiler_4.1.0       cli_3.0.1            unmarked_1.1.1       posterior_1.0.1      scales_1.1.1         checkmate_2.0.0      mvtnorm_1.1-2
+# [29] AICcmodavg_2.3-1     mc2d_0.1-21          ggridges_0.5.3       callr_3.7.0          gamlss_5.3-4         digest_0.6.29        stringr_1.4.0
+# [36] StanHeaders_2.21.0-7 foreign_0.8-81       rio_0.5.27           htmltools_0.5.2      pkgconfig_2.0.3      fastmap_1.1.0        bbmle_1.0.24
+# [43] rlang_0.4.12         readxl_1.3.1         VGAM_1.1-5           shiny_1.6.0          generics_0.1.0       farver_2.1.0         gamlss.data_6.0-1
+# [50] jsonlite_1.7.2       dplyr_1.0.7          zip_2.2.0            car_3.0-11           distributional_0.2.2 inline_0.3.19        magrittr_2.0.1
+# [57] loo_2.4.1            bayesplot_1.8.1      Matrix_1.3-3         Rcpp_1.0.8.3         munsell_0.5.0        fansi_1.0.2          abind_1.4-5
+# [64] lifecycle_1.0.1      stringi_1.7.6        carData_3.0-4        MASS_7.3-54          gamlss.dist_5.3-2    pkgbuild_1.3.1       plyr_1.8.6
+# [71] grid_4.1.0           promises_1.2.0.1     parallel_4.1.0       bdsmatrix_1.3-4      forcats_0.5.1        crayon_1.5.0         lattice_0.20-44
+# [78] haven_2.4.3          splines_4.1.0        hms_1.1.1            ps_1.6.0             pillar_1.7.0         ggpubr_0.4.0         ggsignif_0.6.2
+# [85] codetools_0.2-18     stats4_4.1.0         rstantools_2.1.1     glue_1.4.2           V8_3.6.0             data.table_1.14.0    RcppParallel_5.1.4
+# [92] httpuv_1.6.2         vctrs_0.3.8          cellranger_1.1.0     gtable_0.3.0         purrr_0.3.4          tidyr_1.1.3          assertthat_0.2.1
+# [99] ggplot2_3.3.5        openxlsx_4.2.4       mime_0.11            xtable_1.8-4         broom_0.7.9          later_1.3.0          coda_0.19-4
+# [106] rstatix_0.7.0        survival_3.2-11      truncnorm_1.0-8      tibble_3.1.6         ellipsis_0.3.2       bridgesampling_1.1-2
 
 #######################
 ### CONTINUOUS DATA ###
@@ -99,8 +100,7 @@ FLBMD=full.laplace_MA(data_N,
                       prior.weights,
                       ndraws=ndr,
                       seed=123,
-                      pvec=pvec,
-                      plot=F)
+                      pvec=pvec)
 # MA estimates
 FLBMD$MA
 # model weights
@@ -112,7 +112,7 @@ FLBMD$bf
 
 # output as dataframe/list
 BMDWeights(FLBMD, 'continuous')
-summary.BMADR(FLBMD)
+summary.BMADR(FLBMD, type = 'continuous')
 
 # plot output
 pFLBMD = plot.BMADR(FLBMD, weight_type = "LP", include_data = T, all = F, title = '')
@@ -136,8 +136,7 @@ SBMD = sampling_MA(data_N, data_LN,
                    prior.weights,
                    ndraws=ndr, nrchains=nrch,
                    nriterations=nriter, warmup=wu, delta=dl,
-                   treedepth=trd, seed=sd, pvec=pvec,
-                   plot=F)
+                   treedepth=trd, seed=sd, pvec=pvec)
 # MA estimates
 SBMD$MA_bridge_sampling
 SBMD$MA_laplace
@@ -151,7 +150,7 @@ SBMD$bf
 
 # output as dataframe/list
 BMDWeights(SBMD, 'continuous')
-summary.BMADR(SBMD)
+summary.BMADR(SBMD, 'continuous')
 
 # plot output
 pSBMD = plot.BMADR(SBMD, weight_type = "BS", include_data = T, all = F, title = '')
@@ -245,7 +244,7 @@ n = c(20, 20, 20, 20, 20)
 summ.data = data.frame(x = dose, y = y, n = n)
 
 # Test for dose-response effect (not optimal yet)
-# anydoseresponseQ(summ.data$x, summ.data$y, summ.data$n)
+anydoseresponseQ(summ.data$x, summ.data$y, summ.data$n)
 
 ### ANALYSIS ###
 
@@ -291,7 +290,7 @@ FLBMD_Q$E4_Q
 
 # output as dataframe/list
 BMDWeights(FLBMD_Q, 'quantal')
-summary.BMADRQ(FLBMD_Q)
+summary.BMADR(FLBMD_Q, 'quantal')
 
 # plot output
 pFLBMD_Q = plot.BMADRQ(FLBMD_Q, weight_type = "LP", include_data = T, all = F, title = '')
@@ -322,7 +321,7 @@ SBMD_Q$divergences*100 # percentage of iterations that were divergent
 
 # output as dataframe/list
 BMDWeights(SBMD_Q, 'quantal')
-summary.BMADRQ(SBMD_Q)
+summary.BMADR(SBMD_Q, 'quantal')
 
 # plot output
 pSBMD_Q = plot.BMADRQ(SBMD_Q, weight_type = "BS", include_data = T, all = F, title = '')
@@ -377,10 +376,10 @@ testbb_laplace$E4_Q
 
 # output as dataframe/list
 BMDWeights(testbb_laplace, 'quantal')
-summary.BMADRQ(testbb_laplace)
+summary.BMADR(testbb_laplace, 'quantal')
 
 # plot output
-pSBMD_CQ <- plot(testbb_laplace, weight_type = 'LP', title = 'Quantal (Full Laplace)', all = F)
+pSBMD_CQ <- plot.BMADRQ(testbb_laplace, weight_type = 'LP', title = 'Quantal (Full Laplace)', all = F)
 pSBMD_CQ$BMDs
 pSBMD_CQ$weights
 pSBMD_CQ$model_fit
@@ -390,7 +389,7 @@ pSBMD_CQ$MA_fit
 plot_priorQ(testbb_laplace, data = clusterdataQ$data,
             model_name = "QE4_Q")
 
-### Sampling
+### Sampling (slow !!)
 
 testbb_sampling <- samplingQ_MA(data.Q = clusterdataQ, prior.weights = pw)
 
@@ -412,6 +411,30 @@ pFBMD_CQ$weights
 pFBMD_CQ$model_fit
 pFBMD_CQ$MA_fit
 
+###### COVARIATES
 
+data.test <- read.csv('test_data.csv', header = T, sep = ';')
+summ.data <- data.frame(
+  x = data.test$Dose,
+  y = data.test$Mean,
+  s = data.test$SD,
+  n = data.test$N,
+  cov = data.test$group
+)
+q = 0.2
+prior.weights = rep(1,16)
 
+FLBMD <- full.laplace_MA_Cov(summ.data,
+                             sumstats = T,
+                             sd = T, # option not used for Quantal data
+                             q = q,
+                             prior.d = 'N11',
+                             extended = F,
+                             ndraws = 30000,
+                             seed = 123,
+                             pvec = c(0.05, 0.5, 0.95),
+                             prior.weights = prior.weights)
+FLBMD$MA
+FLBMD$summary
+basic.plot(FLBMD, increasing = T)
 

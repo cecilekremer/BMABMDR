@@ -1,5 +1,46 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Updates 27/07/2022
+
+* Merged plot_prior.R scripts for clustered and unclustered endpoints
+
+* Added getBMD.R script for covariates
+
+* Added fun_cov_selection.R script for covariates
+
+* Added plot_model_fit.R script for covariates
+
+* Merged output.R scripts for all endpoints
+
+* Merged classes.R scripts for all endpoints
+
+* Merged diagnostics.R scripts for all endpoints
+
+* Merged anydoseresponse.R scripts for all endpoints
+
+* Merged DRM.R scripts for all endpoints
+
+* Merged FUNs.R scripts for all endpoints
+
+* Added NtoLN() and LNtoN() functions to FUNs.R script
+
+* Merged fun_Data.R scripts for all endpoints
+
+* Merged fun_Laplace.R scripts for all endpoints
+
+* Merged fct_optim.R scripts for all endpoints
+
+* Merged LL.R scripts for all endpoints
+
+* Merged fun_modelTest.R scripts for all endpoints
+
+* Merged fct_mcmc.R scripts for all endpoints
+
+* Merged fun_Sampling.R scripts for all endpoints
+
+* Merged plot_prior.R scripts for all endpoints
+
+
 ## General Updates
 
 * Added help files to all the functions 
@@ -30,8 +71,3 @@
     mode.maxresp <- data\_N\$data\$priormu[3]*data\_N\$data\$priormu[1]
     
     max.maxresp <- data\_N\$data\$priorub[3]*data\_N\$data\$priormu[1]
-    
-
-*
-
-*
