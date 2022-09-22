@@ -649,8 +649,13 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
                     pars.SM[stringr::str_detect(names(pars.SM), 'rho')]) ## UPDATE --> rho? !!
   }
 
-  BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n)))
-  BIC.SM = - 2 * llSM + ((data.Q$data$N) * log(sum(data.Q$data$n)))
+  if(data.Q$data$is_bin == 1){
+    BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n)))
+
+  }else{
+    BIC.bestfit = - 2 * llBestfit + (4 * log(sum(data.Q$data$n)))
+
+  }  BIC.SM = - 2 * llSM + ((data.Q$data$N) * log(sum(data.Q$data$n)))
 
   bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 

@@ -6,7 +6,7 @@
 #' @param n.a number of observations per dose level
 #'
 #' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
 #'
 #' @examples
 #'
@@ -87,24 +87,24 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
   )
 
   # Fitting the null model (no effect)
-  sv=optimizing(stanmodels$mH0,data = data.modstanH0,init=svH0)$par
+  sv=rstan::optimizing(stanmodels$mH0,data = data.modstanH0,init=svH0)$par
   initf2 <- function(chain_id = 1) {
     list(par=sv[1:2] + rnorm(2, sd = 0.01*abs(sv[2])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanH0=sampling(stanmodels$mH0,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
+  fitstanH0=rstan::sampling(stanmodels$mH0,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                            control = list(adapt_delta = delta,max_treedepth =treedepth),
+                            show_messages = F, refresh = 0)
 
   # Fitting the saturated ANOVA model
-  sv=optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
+  sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
   initf2 <- function(chain_id = 1) {
     list(par=sv[1:(N+1)] + rnorm(N+1, sd = 0.01*abs(sv[1:(N+1)])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanSM=sampling(stanmodels$mSM,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
+  fitstanSM=rstan::sampling(stanmodels$mSM,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                            control = list(adapt_delta = delta,max_treedepth =treedepth),
+                            show_messages = F, refresh = 0)
 
   set.seed(1234)
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
@@ -132,7 +132,7 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 #' @param n.a number of observations per dose level
 #'
 #' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
 #'
 #' @examples
 #'
@@ -218,24 +218,24 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   )
 
   # Fitting the null model (no effect)
-  sv=optimizing(stanmodels$mH0,data = data.modstanH0,init=svH0)$par
+  sv=rstan::optimizing(stanmodels$mH0,data = data.modstanH0,init=svH0)$par
   initf2 <- function(chain_id = 1) {
     list(par=sv[1:2] + rnorm(2, sd = 0.01*abs(sv[2])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanH0=sampling(stanmodels$mH0,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
+  fitstanH0=rstan::sampling(stanmodels$mH0,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                            control = list(adapt_delta = delta,max_treedepth =treedepth),
+                            show_messages = F, refresh = 0)
 
   # Fitting the saturated ANOVA model
-  sv=optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
+  sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
   initf2 <- function(chain_id = 1) {
     list(par=sv[1:(N+1)] + rnorm(N+1, sd = 0.01*abs(sv[1:(N+1)])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanSM=sampling(stanmodels$mSM,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
+  fitstanSM=rstan::sampling(stanmodels$mSM,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                            control = list(adapt_delta = delta,max_treedepth =treedepth),
+                            show_messages = F, refresh = 0)
 
   set.seed(1234)
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
@@ -260,7 +260,7 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
 #' @param data Individual data with columns: dose, response, litter
 #'
 #' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
 #'              Currently only based on the normal distribution.
 #'
 #' @return list containing Bayes factor and decision.
@@ -369,24 +369,24 @@ anydoseresponseC=function(data){
   )
 
   # Fitting the null model (no effect)
-  sv=optimizing(stanmodels$mH0c, data = data.modstanH0, init=svH0)$par
+  sv=rstan::optimizing(stanmodels$mH0c, data = data.modstanH0, init=svH0)$par
   initf2 <- function(chain_id = 1) {
     list(par=sv[1:3] + rnorm(3, sd = 0.01*abs(sv[1:3])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanH0=sampling(stanmodels$mH0c,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
+  fitstanH0=rstan::sampling(stanmodels$mH0c,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                            control = list(adapt_delta = delta,max_treedepth =treedepth),
+                            show_messages = F, refresh = 0)
 
   # Fitting the saturated ANOVA model
-  sv=optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
+  sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
   initf2 <- function(chain_id = 1) {
     list(par=sv[1:(N+2)] + rnorm(N+2, sd = 0.01*abs(sv[1:(N+2)])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanSM=sampling(stanmodels$mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
+  fitstanSM=rstan::sampling(stanmodels$mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                            control = list(adapt_delta = delta,max_treedepth =treedepth),
+                            show_messages = F, refresh = 0)
 
   set.seed(1234)
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
@@ -411,31 +411,35 @@ anydoseresponseC=function(data){
 #' @param y.a number of adverse events
 #' @param n.a number of observations per dose level
 #' @param cluster logical variable indicating whether the data are clustered or not
+#' @param use.mcmc logical indicating wheter MCMC (TRUE) or Laplace (FALSE, default) should be used for the case of clustered data
 #'
 #' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
 #'
 #' @return list containing estimated Bayes factor and the decision.
 #'
 #' @export anydoseresponseQ
 #'
-anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
+anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
-  nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
+  ndr=30000;nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
 
-  if(length(dose.a) != length(unique(dose.a))){
-    dose = sort(unique(dose.a))
-    N = length(dose)
-    y=rep(NA,N)
-    n=rep(NA,N)
-    for (iu in (1:N)){
-      y[iu] = sum(y.a[dose.a == dose[iu]])
-      n[iu] = sum(n.a[dose.a == dose[iu]])
-    }
-    y.a = y
-    dose.a = dose
-    n.a = n
-  }
+  # if(length(dose.a) != length(unique(dose.a))){
+  #   dose = sort(unique(dose.a))
+  #   N = length(dose)
+  #   y=rep(NA,N)
+  #   n=rep(NA,N)
+  #   for (iu in (1:N)){
+  #     y[iu] = sum(y.a[dose.a == dose[iu]])
+  #     n[iu] = sum(n.a[dose.a == dose[iu]])
+  #   }
+  #   y.a = y
+  #   dose.a = dose
+  #   n.a = n
+  # }
+  maxDose = max(dose.a)
+  N = length(dose.a)
+  dose.a = dose.a/maxDose
 
 
   if(cluster==TRUE){
@@ -490,6 +494,109 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
                           is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin
     )
 
+    if(use.mcmc == TRUE){
+      svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
+
+      initf2 <- function(chain_id = 1) {
+        rho = svNM[2]; dim(rho)=1
+        list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])), rho = rho ,alpha = chain_id)
+      }
+
+      init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+      fitstanH0=rstan::sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                                control = list(adapt_delta = delta,max_treedepth =treedepth),
+                                show_messages = F, refresh = 0)
+      while(is.na(dim(fitstanH0)[1])){
+
+        init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+
+        fitstanH0 = rstan::sampling(stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
+                                    chains = nrch, warmup = warmup, seed = sd,
+                                    control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                    show_messages = F, refresh = 0)
+      }
+
+
+
+
+      # Fitting the saturated ANOVA model
+      # svSM=list(par=log(y.a))
+      # priorSM=prior_SM(dose.a, y.a, n.a)
+      # data.modstanSM=list(N=N, n=n.a, y=y.a, priormu=priorSM$priormu, priorSigma=priorSM$priorSigma)
+      #sampling(stanmodels$mSM2_Q,data = data.modstanSM, chains=1, init = list(svSM))
+      svH1=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+
+      initf2 <- function(chain_id = 1) {
+        nns <- which(stringr::str_detect(names(svH1),'par'))
+        nns_rho <- which(stringr::str_detect(names(svH1),'rho'))
+
+        rho = svH1[nns_rho]; dim(rho)=1
+        list(par=svH1[nns] +
+               rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
+             rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
+      }
+
+
+
+      init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+      fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
+                                  control = list(adapt_delta = delta,max_treedepth =treedepth),
+                                  show_messages = F, refresh = 0)
+      while(is.na(dim(fitstanSM)[1])){
+
+        init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+
+        fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                    chains = nrch, warmup = warmup, seed = sd,
+                                    control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                    show_messages = F, refresh = 0)
+      }
+
+      set.seed(1234)
+      bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
+      bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
+      bf=bf(bridge_H0,bridge_SM)
+      bf = bf$bf
+
+    }else if(use.mcmc == FALSE){
+
+      fitH0 = rstan::optimizing(stanmodels$mH0_Q, data = data.modstanH0, seed = as.integer(sd), draws = ndr, init = svH0, hessian = T)
+
+
+      pH0 <- fitH0$par
+      pars.H0 = pH0[names(pH0) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
+                                      paste0('par[', length(unique(dose.a)), ']'),
+                                      'rho[1]')]
+
+
+
+      fitSM = rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, seed = as.integer(sd), draws = ndr, init = svSM, hessian = T)
+
+
+      pSM <- fitSM$par
+      pars.SM = pSM[names(pSM) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
+                                      paste0('par[', length(unique(dose.a)), ']'),
+                                      'rho[1]')]
+
+
+
+      llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
+                      n.a, dose.a, y.a, 0,
+                      pars.SM[stringr::str_detect(names(pars.SM), 'rho')]) ## UPDATE --> rho? !!
+      llH0 = llfH02_Q(pars.H0[stringr::str_detect(names(pars.H0), 'a\\[')],
+                      n.a, dose.a, y.a, 0,
+                      pars.H0[stringr::str_detect(names(pars.H0), 'rho')])
+
+
+      BIC.H0 = - 2 * llH0 + (2 * log(sum(n.a))) # 2 parameters: a and rho
+
+      BIC.SM = - 2 * llSM + (N+1 * log(sum(n.a)))
+
+
+      bf = exp(-0.5 * (BIC.H0 - BIC.SM))
+
+    }
+
   } else {
 
     N <- length(dose.a)
@@ -524,96 +631,82 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){
                           priorlb=priorH0$priorlb, priorub=priorH0$priorub,
                           is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin
     )
+
+    svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
+
+    initf2 <- function(chain_id = 1) {
+      list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])) ,alpha = chain_id)
+    }
+
+    init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+    fitstanH0=rstan::sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                              control = list(adapt_delta = delta,max_treedepth =treedepth),
+                              show_messages = F, refresh = 0)
+    while(is.na(dim(fitstanH0)[1])){
+
+      init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+
+      fitstanH0 = rstan::sampling(stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
+                                  chains = nrch, warmup = warmup, seed = sd,
+                                  control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                  show_messages = F, refresh = 0)
+    }
+
+    # Fitting the saturated ANOVA model
+    # svSM=list(par=log(y.a))
+    # priorSM=prior_SM(dose.a, y.a, n.a)
+    # data.modstanSM=list(N=N, n=n.a, y=y.a, priormu=priorSM$priormu, priorSigma=priorSM$priorSigma)
+    #sampling(stanmodels$mSM2_Q,data = data.modstanSM, chains=1, init = list(svSM))
+    svH1=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+
+
+    initf2 <- function(chain_id = 1) {
+      nns <- which(stringr::str_detect(names(svH1),'par'))
+      list(par=svH1[nns] +
+             rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
+    }
+
+
+
+    init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+    fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
+                                control = list(adapt_delta = delta,max_treedepth =treedepth),
+                                show_messages = F, refresh = 0)
+    while(is.na(dim(fitstanSM)[1])){
+
+      init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+
+      fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                  chains = nrch, warmup = warmup, seed = sd,
+                                  control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                  show_messages = F, refresh = 0)
+    }
+
+    set.seed(1234)
+    bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
+    bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
+    bf=bf(bridge_H0,bridge_SM)
+    bf = bf$bf
+
   }
-
-
-
 
 
   # Fitting the null model (no effect)
   # svH0 = list(par=log(mean(y.a)))
   # priorH0 = prior_H0(dose.a, y.a, n.a)
   # data.modstanH0 = list(N=N, n=n.a, y=y.a, priormu=priorH0$priormu, priorSigma=priorH0$priorSigma)
-  svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
-  if(data.modstanH0$is_bin == 1){
-    initf2 <- function(chain_id = 1) {
-      list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])) ,alpha = chain_id)
-    }
-  } else if(data.modstanH0$is_betabin == 1) {
-    initf2 <- function(chain_id = 1) {
-      rho = svNM[2]; dim(rho)=1
-      list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])), rho = rho ,alpha = chain_id)
-    }
-  }
-
-  init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanH0=sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                     control = list(adapt_delta = delta,max_treedepth =treedepth),
-                     show_messages = F, refresh = 0)
-  while(is.na(dim(fitstanH0)[1])){
-
-    init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-
-    fitstanH0 = rstan::sampling(stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
-                                chains = nrch, warmup = warmup, seed = seed,
-                                control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                show_messages = F, refresh = 0)
-  }
 
 
-  # Fitting the saturated ANOVA model
-  # svSM=list(par=log(y.a))
-  # priorSM=prior_SM(dose.a, y.a, n.a)
-  # data.modstanSM=list(N=N, n=n.a, y=y.a, priormu=priorSM$priormu, priorSigma=priorSM$priorSigma)
-  #sampling(stanmodels$mSM2_Q,data = data.modstanSM, chains=1, init = list(svSM))
-  svH1=optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
-
-  if(data.modstanH0$is_bin == 1){
-    initf2 <- function(chain_id = 1) {
-      nns <- which(stringr::str_detect(names(svH1),'par'))
-      list(par=svH1[nns] +
-             rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
-    }
-  } else if(data.modstanH0$is_betabin == 1) {
-    initf2 <- function(chain_id = 1) {
-      nns <- which(stringr::str_detect(names(svH1),'par'))
-      nns_rho <- which(stringr::str_detect(names(svH1),'rho'))
-
-      rho = svH1[nns_rho]; dim(rho)=1
-      list(par=svH1[nns] +
-             rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
-           rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
-    }
-  }
-
-
-  init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-  fitstanSM = sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
-                       control = list(adapt_delta = delta,max_treedepth =treedepth),
-                       show_messages = F, refresh = 0)
-  while(is.na(dim(fitstanSM)[1])){
-
-    init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
-
-    fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
-                                chains = nrch, warmup = warmup, seed = seed,
-                                control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                show_messages = F, refresh = 0)
-  }
-
-  set.seed(1234)
-  bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
-  bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-  bf=bf(bridge_H0,bridge_SM)
   # pb=post_prob(bridge_sampler(fitstanH0, silent = T),bridge_sampler(fitstanSM, silent = T))
   # print(bf)
   # print(pb)
 
-  if (bf$bf<10){
+  if (bf<10){
     mess = "there is sufficient evidence that there is a substantial dose-effect"#; therefore models are fitted and the BMDL is calculated"
   } else{
     mess = "attention: there is insufficient evidence that there is a substantial dose-effect"
   }
+
 
   return(list(bf = bf, bf.message = mess))
 }
