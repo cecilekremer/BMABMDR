@@ -765,9 +765,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 #' This function also generates appropriate start values and uninformative priors for each model
 #'
 #' @param data a dataframe with individual-level input data, order of columns should be: dose, response, litter
-#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
-#' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics
-#' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional, can be NA), and maximum value for the background response. Defaults to NULL (non-informative prior)
 #' @param maxy vector containing minimum, most likely (optional, can be NA), and maximum value for the response at dose infinity. Defaults to NULL (non-informative prior)
@@ -842,7 +839,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
   datind <- data.frame(x = indiv.data$dose,
                        y = indiv.data$response)
-  testNLN <- NLN_test(datind)
+  # testNLN <- NLN_test(datind)
 
   ## Observed background and maximum response
 
@@ -1123,6 +1120,19 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     warning(test.var)
   }
 
+  # normality
+  norm.test.N <- shapiro.test(indiv.data$res)
+  # b.test.N <- bartlett(sd.a, n.a)
+  if(norm.test.N$p.value>=0.05){
+    test.varN = paste0('Distributional assumption of normality of residuals for the normal distribution is met, Shapiro test p-value is ',
+                       round(norm.test.N$p.value, 4))
+    message(test.varN)
+  }else if(norm.test.N$p.value<0.05){
+    test.varN = paste0('Distributional assumption of normality of residuals for the normal distribution is not met, Shapiro test p-value is ',
+                       round(norm.test.N$p.value, 4))
+    warning(test.varN)
+  }
+
   ## Data in correct format
   ret.list <- list(data = list(N=N,
                                n=n,
@@ -1155,8 +1165,12 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
                               par6=0.5),
                    startQ=list(par1=priormu1a[1],par2=bmd.sv,pars3i=pars3i,pars3d=pars3d,par4=prmean.dQE4,par5=log(1/var(y[y!=0])),
                                par6=0.5),
-                   test.var = test.var,
-                   test.NLN = testNLN
+                   # test.var = test.var,
+                   # test.NLN = testNLN
+                   shapiro.p = norm.test.N$p.value,
+                   bartlett.p = b.test.N$p.value,
+                   shapiro.msg = test.varN,
+                   bartlett.msg = test.var
   )
 
   # test for dose-response effect
@@ -1238,7 +1252,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
   datind <- data.frame(x = indiv.data$dose,
                        y = indiv.data$response)
-  testNLN <- NLN_test(datind)
+  # testNLN <- NLN_test(datind)
 
   is_informative_BMD = 0
   is_informative_a = 0
@@ -1249,7 +1263,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   ## Overall mean for test of flatness
   means.all <- indiv.data %>%
     group_by(dose) %>%
-    summarise(mresp = mean(response))
+    summarise(mresp = mean(log(response)))
   dose.a = unique(indiv.data$dose)
   mean.a = c()
   for(m in 1:length(dose.a)){
@@ -1524,14 +1538,15 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   norm.test.N <- shapiro.test(indiv.data$res)
   # b.test.N <- bartlett(sd.a, n.a)
   if(norm.test.N$p.value>=0.05){
-    test.var = paste0('Distributional assumption of normality of residuals for the lognormal distribution is met, Shapiro test p-value is ',
-                      round(norm.test.N$p.value, 4))
-    message(test.var)
+    test.varN = paste0('Distributional assumption of normality of residuals for the lognormal distribution is met, Shapiro test p-value is ',
+                       round(norm.test.N$p.value, 4))
+    message(test.varN)
   }else if(norm.test.N$p.value<0.05){
-    test.var = paste0('Distributional assumption of normality of residuals for the lognormal distribution is not met, Shapiro test p-value is ',
-                      round(norm.test.N$p.value, 4))
-    warning(test.var)
+    test.varN = paste0('Distributional assumption of normality of residuals for the lognormal distribution is not met, Shapiro test p-value is ',
+                       round(norm.test.N$p.value, 4))
+    warning(test.varN)
   }
+
 
   ## Data in correct format
 
@@ -1564,8 +1579,12 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
                                 par6=0.5),
                    startQ = list(par1=priormu1a[1],par2=bmd.sv,pars3i=pars3i,pars3d=pars3d,par4=prmean.dQE4,par5=log(1/(var(yl2[yl2!=0]))),
                                  par6=0.5),
-                   test.var = test.var,
-                   test.NLN = testNLN
+                   # test.var = test.var,
+                   # test.NLN = testNLN
+                   shapiro.p = norm.test.N$p.value,
+                   bartlett.p = b.test.N$p.value,
+                   shapiro.msg = test.varN,
+                   bartlett.msg = test.var
   )
 
 
@@ -1587,7 +1606,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 #' Input should be given as arithmetic mean and standard deviation on the original scale
 #'
 #' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n
-#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
+#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional), and maximum value for the background response. Defaults to NULL (non-informative prior)
 #' @param prior.BMD vector containing minimum, most likely (optional), and maximum value for the BMD. Defaults to NULL (non-informative prior)
@@ -1623,21 +1642,23 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     n.a = data[, 3]
     N = length(dose.a)
     dose.a = dose.a/maxDose
-  } else if(sumstats == FALSE){
+  }else if(sumstats == FALSE){ # summarize by dose and cluster ! (NOT TESTED)
     doses = data[, 1]
     maxDose = max(doses)
-    dose.a = sort(unique(doses))
-    N = length(dose.a)
+    # dose.a = sort(unique(doses))
+    litter = data[,3]
+    # N = length(dose.a)
     y.a = rep(NA,N)
     n.a = rep(NA,N)
     ybin = data[, 2]
-    for (iu in (1:N)){
-      y.a[iu] = sum(ybin[doses == dose.a[iu]])
-      n.a[iu] = sum(doses == dose.a[iu])
+    id = 1
+    for(iu in unique(litter)){
+      y.a[id] = sum(ybin[litter = iu])
+      n.a[id] = sum(litter == iu)
+      dose.a[id] = doses[litter == iu]
+      id = id + 1
     }
-    dose.a = dose.a/maxDose
   }
-
 
   datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
   if(cluster == FALSE) {

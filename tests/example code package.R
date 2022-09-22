@@ -69,7 +69,7 @@ ndr=30000
 nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123
 
 # prior model weights
-prior.weights = c(rep(1,4), rep(1,4), rep(0,8))
+prior.weights = c(rep(1,8), rep(0,8))
 
 
 # bmr
@@ -115,7 +115,7 @@ BMDWeights(FLBMD, 'continuous')
 summary.BMADR(FLBMD, type = 'continuous')
 
 # plot output
-pFLBMD = plot.BMADR(FLBMD, weight_type = "LP", include_data = T, all = F, title = '')
+pFLBMD = plot.BMADR(FLBMD, weight_type = "LP", type = 'increasing', include_data = T, all = F, title = '')
 pFLBMD$BMDs
 pFLBMD$weights
 pFLBMD$model_fit_N
@@ -153,7 +153,7 @@ BMDWeights(SBMD, 'continuous')
 summary.BMADR(SBMD, 'continuous')
 
 # plot output
-pSBMD = plot.BMADR(SBMD, weight_type = "BS", include_data = T, all = F, title = '')
+pSBMD = plot.BMADR(SBMD, weight_type = "BS", type = 'increasing', include_data = T, all = F, title = '')
 pSBMD$BMDs
 pSBMD$weights
 pSBMD$model_fit_N
@@ -178,8 +178,10 @@ diag(covmat) = 1
 library(mvtnorm)
 sd = 2.28
 covmat2 = covmat*sd^2
+q = 0.1
 means = DRM.E4_NI(par, doses, q)
 
+set.seed(34545)
 sim_data = c()
 for(i in 1){
   datmat = c()
@@ -210,6 +212,11 @@ plot(data.input$dose, data.input$response)
 
 data_N <- PREP_DATA_N_C(data.input, q, prior.d = 'N11')
 data_LN <- PREP_DATA_LN_C(data.input, q, prior.d = 'N11')
+
+data_N$shapiro.msg; data_N$shapiro.p
+data_LN$shapiro.msg; data_LN$shapiro.p
+data_N$bartlett.msg; data_N$bartlett.p
+data_LN$bartlett.msg; data_LN$bartlett.p
 
 prior.weights = c(rep(1,16))
 FLBMD <- full.laplace_MAc(data_N, data_LN, prior.weights)
@@ -358,6 +365,9 @@ clusterdata <- data.frame(
             1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1, 2, 1)
 
 )
+
+anydoseresponseQ(clusterdata$dose, clusterdata$y, clusterdata$n, cluster = T, use.mcmc = F)
+
 
 clusterdataQ <- PREP_DATA_QA(data = clusterdata, sumstats = TRUE,
                              q = 0.1, bkg = NULL, shape.a = 4, shape.BMD = 0.0001,

@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Updates 22/09/2022
+
+* PREP_DATA_N_C and PREP_DATA_LN_C now return 4 additional objects: shapiro.p, shapiro.msg, bartlett.p, bartlett.msg (containing the p-value for shapiro/bartlett test and the corresponding message)
+
+* anydoseresponseQ now works with Laplace for clustered data by specifying 'cluster = TRUE, use.mcmc = FALSE'
+
 ## Updates 27/07/2022
 
 * Merged plot_prior.R scripts for clustered and unclustered endpoints

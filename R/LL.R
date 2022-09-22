@@ -8,16 +8,16 @@
 #' @param s2vec vector containing the variance at each dose level
 #' @param qval BMR
 #' @param shift value of the shift for negative geometric means
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' @return .
-#' 
+#'
 #' @export
 #'
 llfE4_NI=function(x,nvec,dvec,mvec,s2vec,qval){
   sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*
-        ((mvec-DRM.E4_NI(x[1:4],dvec,qval))^2)*exp(x[5])) 
+        ((mvec-DRM.E4_NI(x[1:4],dvec,qval))^2)*exp(x[5]))
 }
 #' @rdname llfE4_NI
 #' @export
@@ -62,7 +62,7 @@ llfL4_NI=function(x,nvec,dvec,mvec,s2vec,qval){
 #' @rdname llfE4_NI
 #' @export
 llfE4_LNI=function(x,nvec,dvec,mvec,s2vec,qval,shift){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.E4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)  
+  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[5]-0.5*(nvec-1)*s2vec*exp(x[5])-0.5*nvec*(((mvec+shift)-DRM.E4_LNI(x[1:4],dvec,qval,shift))^2)*exp(x[5])) - sum((mvec+shift)*nvec)
 }
 #' @rdname llfE4_NI
 #' @export
@@ -195,11 +195,11 @@ llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
 #' @param y observed responses
 #' @param qval BMR
 #' @param shift value of the shift for negative geometric means
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' @return .
-#' 
+#'
 #' @export
 #'
 llfE4_NIc = function(x, d, n, nij, y, qval){
@@ -222,11 +222,11 @@ llfE4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -254,19 +254,19 @@ llfIE4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       # ym = rsp - m
       # ymt = t(ym)
-      # 
+      #
       # sum(-0.5*lt*log(2*pi) +
       #       0.5*lt*log(x[5]) -
       #       0.5*determinant(P, logarithm = T)$modulus[1] -
       #       0.5*(ym%*%ymt * solve(P))*x[5])
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -294,11 +294,11 @@ llfH4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -326,11 +326,11 @@ llfLN4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -358,11 +358,11 @@ llfG4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -390,11 +390,11 @@ llfQE4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -422,11 +422,11 @@ llfP4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -454,11 +454,11 @@ llfL4_NIc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -491,11 +491,11 @@ llfE4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -523,11 +523,11 @@ llfIE4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -555,11 +555,11 @@ llfH4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -587,11 +587,11 @@ llfLN4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -619,11 +619,11 @@ llfG4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -651,11 +651,11 @@ llfQE4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -683,11 +683,11 @@ llfP4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -715,11 +715,11 @@ llfL4_LNIc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -747,11 +747,11 @@ llfSM_LNc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[length(d)+1]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -765,7 +765,7 @@ llfSM_Nc = function(x, d, n, nij, y, qval){
   for(i in 1:length(d)){
     for(j in 1:n[i]){
       lt = nij[i, j]
-      rsp = y[cnt, 1:lt] 
+      rsp = y[cnt, 1:lt]
       mx = x[i]
       m = rep(mx, lt)
       P = matrix(0, nrow = lt, ncol = lt)
@@ -779,11 +779,11 @@ llfSM_Nc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[length(d)+1]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -811,19 +811,19 @@ llfE4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       # ym = rsp - m
       # ymt = t(ym)
-      # 
+      #
       # sum(-0.5*lt*log(2*pi) +
       #       0.5*lt*log(x[5]) -
       #       0.5*determinant(P, logarithm = T)$modulus[1] -
       #       0.5*(ym%*%ymt * solve(P))*x[5])
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -851,11 +851,11 @@ llfIE4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -883,11 +883,11 @@ llfH4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -915,11 +915,11 @@ llfLN4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -947,11 +947,11 @@ llfG4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -979,11 +979,11 @@ llfQE4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1011,11 +1011,11 @@ llfP4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1043,11 +1043,11 @@ llfL4_NDc = function(x, d, n, nij, y, qval){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1075,11 +1075,11 @@ llfE4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1107,11 +1107,11 @@ llfIE4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1139,11 +1139,11 @@ llfH4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1171,11 +1171,11 @@ llfLN4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1203,11 +1203,11 @@ llfG4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1235,11 +1235,11 @@ llfQE4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1267,11 +1267,11 @@ llfP4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1299,11 +1299,11 @@ llfL4_LNDc = function(x, d, n, nij, y, qval, shift){
         }
       }
       Sigma = 1/exp(x[5]) * P
-      
+
       llij = mvtnorm::dmvnorm(rsp, mean = m, sigma = Sigma, log = T) - sum(rsp)
-      
+
       cnt = cnt + 1
-      
+
       ll = c(ll, llij)
     }
   }
@@ -1317,65 +1317,70 @@ llfL4_LNDc = function(x, d, n, nij, y, qval, shift){
 #' @param dvec vector containing the unique ordered dose levels
 #' @param yvec vector containing the number of adverse events at each dose level
 #' @param qval BMR
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' @return .
-#' 
+#'
 #' @export
 #'
 ### Binomial
 llfE4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.E4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
-        (nvec - yvec)*log(1 - DRM.E4_Q(x, dvec, qval) + 1.0E-05)) 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.E4_Q(x[1:3], dvec, qval) + 1.0E-05) +
+        (nvec - yvec)*log(1 - DRM.E4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfIE4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.IE4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.IE4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.IE4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfH4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.H4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.H4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.H4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfLN4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.LN4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.LN4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.LN4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfG4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.G4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.G4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.G4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfQE4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.QE4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.QE4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.QE4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfP4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.P4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.P4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.P4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfL4_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(DRM.L4_Q(x[1:3], dvec, qval) + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(DRM.L4_Q(x[1:3], dvec, qval) + 1.0E-05) +
         (nvec - yvec)*log(1 - DRM.L4_Q(x, dvec, qval) + 1.0E-05))
 }
 #' @rdname llfE4_Q
 #' @export
 llfSM_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(x[1:length(dvec)] + 1.0E-05) + 
+  sum(lchoose(nvec, yvec) + yvec*log(x[1:length(dvec)] + 1.0E-05) +
         (nvec - yvec)*log(1 - x[1:length(dvec)] + 1.0E-05))
+}
+#' @rdname llfE4_Q
+#' @export
+llfH0_Q=function(x,nvec,dvec,yvec,qval){
+  sum(lchoose(nvec, yvec) + yvec*log(x[1] + 1.0E-05) + (nvec-yvec)*log(1 - x[1]+ 1.0E-05))
 }
 
 
@@ -1389,34 +1394,34 @@ llfSM_Q=function(x,nvec,dvec,yvec,qval){
 #' @param yvec vector containing the number of adverse events at each dose level
 #' @param qval BMR
 #' @param rho intra-cluster correlation parameter
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' @return .
-#' 
+#'
 #' @export
 #'
 llfE42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.E4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
-        lgamma(abet+bbet+1.0E-05)) 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
+        lgamma(abet+bbet+1.0E-05))
 }
 #' @rdname llfE42_Q
 #' @export
 llfIE42_Q=function(x,nvec,dvec,yvec,qval,rho){
-  
+
   m = DRM.IE4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1427,10 +1432,10 @@ llfH42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.H4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1441,10 +1446,10 @@ llfLN42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.LN4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1455,10 +1460,10 @@ llfG42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.G4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1469,10 +1474,10 @@ llfQE42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.QE4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1483,10 +1488,10 @@ llfP42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.P4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1497,10 +1502,10 @@ llfL42_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = DRM.IE4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
 }
 
@@ -1512,11 +1517,23 @@ llfSM2_Q=function(x,nvec,dvec,yvec,qval,rho){
   m = yvec/nvec #x[1:length(dvec)]
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
-  
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) - 
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) - 
-        lgamma(bbet+1.0E-05) + 
+
+  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
         lgamma(abet+bbet+1.0E-05))
+}
+#' @rdname llfE42_Q
+#' @export
+llfH02_Q=function(x,nvec,dvec,yvec,qval,rho){
+  m = yvec/nvec
+  abet = m*((1/rho)-1)
+  bbet = (1.0 - m)*((1/rho)-1)
+
+  sum(lchoose(nvec, yvec) + lgamma(abet + yvec + 1.0E-05) + lgamma(bbet + nvec - yvec+1.0E-05) -
+        lgamma(abet + bbet + nvec + 1.0E-05) - lgamma(abet+1.0E-05) -
+        lgamma(bbet+1.0E-05) +
+        lgamma(abet + bbet + 1.0E-05))
 }
 
 #' Loglikelihood functions for the different dose response models
@@ -1531,21 +1548,21 @@ llfSM2_Q=function(x,nvec,dvec,yvec,qval,rho){
 #' @param covar which parameter includes a covariate effect
 #' @param nlevels number of covariate levels
 #' @param trt_ind matrix indicating which reponse corresponds to which covariate level
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' @return .
-#' 
+#'
 #' @export
 #'
-llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1553,7 +1570,7 @@ llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1562,10 +1579,10 @@ llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1573,20 +1590,20 @@ llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.E4_NI(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -1594,28 +1611,28 @@ llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
-                n*((m - DRM.E4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1])) 
-    
+                n*((m - DRM.E4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
+
   }
-  
-  
+
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1623,7 +1640,7 @@ llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1632,10 +1649,10 @@ llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1643,20 +1660,20 @@ llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.IE4_NI(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -1664,28 +1681,28 @@ llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.IE4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1693,7 +1710,7 @@ llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1702,10 +1719,10 @@ llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1713,20 +1730,20 @@ llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m-DRM.H4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -1734,28 +1751,28 @@ llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.H4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
+
   return(ll)
-  
+
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1763,7 +1780,7 @@ llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1772,10 +1789,10 @@ llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1783,20 +1800,20 @@ llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.LN4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -1804,28 +1821,28 @@ llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.LN4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1833,7 +1850,7 @@ llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1842,10 +1859,10 @@ llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1853,20 +1870,20 @@ llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.G4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -1874,28 +1891,28 @@ llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.G4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1903,7 +1920,7 @@ llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1912,10 +1929,10 @@ llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1923,20 +1940,20 @@ llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.QE4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -1944,28 +1961,28 @@ llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.QE4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -1973,7 +1990,7 @@ llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -1982,10 +1999,10 @@ llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -1993,20 +2010,20 @@ llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.P4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2014,27 +2031,27 @@ llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.P4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2042,7 +2059,7 @@ llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2051,10 +2068,10 @@ llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2062,20 +2079,20 @@ llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.L4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2083,28 +2100,28 @@ llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.L4_NI(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2112,7 +2129,7 @@ llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2121,10 +2138,10 @@ llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2132,20 +2149,20 @@ llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.E4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2153,36 +2170,36 @@ llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.E4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval, shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
-  
+
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                           nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2191,11 +2208,11 @@ llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2203,20 +2220,20 @@ llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.IE4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2224,34 +2241,34 @@ llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.IE4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval, shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2260,11 +2277,11 @@ llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2272,20 +2289,20 @@ llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.H4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2293,35 +2310,35 @@ llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.H4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval, shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                           nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2330,11 +2347,11 @@ llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2342,20 +2359,20 @@ llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.LN4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2363,34 +2380,34 @@ llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.LN4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2399,11 +2416,11 @@ llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2411,20 +2428,20 @@ llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.G4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2432,34 +2449,34 @@ llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.G4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                           nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2468,11 +2485,11 @@ llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2480,20 +2497,20 @@ llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.QE4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2501,35 +2518,35 @@ llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.QE4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2538,11 +2555,11 @@ llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2550,20 +2567,20 @@ llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.P4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2571,35 +2588,35 @@ llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.P4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2608,11 +2625,11 @@ llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2620,20 +2637,20 @@ llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.L4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2641,28 +2658,28 @@ llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.L4_LNI(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2670,7 +2687,7 @@ llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2679,10 +2696,10 @@ llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2690,20 +2707,20 @@ llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.E4_ND(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2711,28 +2728,28 @@ llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
-                n*((m - DRM.E4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1])) 
-    
+                n*((m - DRM.E4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
+
   }
-  
-  
+
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2740,7 +2757,7 @@ llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2749,10 +2766,10 @@ llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2760,20 +2777,20 @@ llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.IE4_ND(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2781,28 +2798,28 @@ llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.IE4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2810,7 +2827,7 @@ llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2819,10 +2836,10 @@ llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2830,20 +2847,20 @@ llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m-DRM.H4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2851,28 +2868,28 @@ llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.H4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
+
   return(ll)
-  
+
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2880,7 +2897,7 @@ llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2889,10 +2906,10 @@ llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2900,20 +2917,20 @@ llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.LN4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2921,28 +2938,28 @@ llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.LN4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -2950,7 +2967,7 @@ llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -2959,10 +2976,10 @@ llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -2970,20 +2987,20 @@ llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.G4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -2991,28 +3008,28 @@ llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.G4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -3020,7 +3037,7 @@ llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3029,10 +3046,10 @@ llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3040,20 +3057,20 @@ llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.QE4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3061,28 +3078,28 @@ llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.QE4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -3090,7 +3107,7 @@ llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3099,10 +3116,10 @@ llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3110,20 +3127,20 @@ llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.P4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3131,27 +3148,27 @@ llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.P4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar <- match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -3159,7 +3176,7 @@ llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3168,10 +3185,10 @@ llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3179,20 +3196,20 @@ llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[1]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m - DRM.L4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3200,28 +3217,28 @@ llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*n*
                 ((m - DRM.L4_ND(c(a[1], bmd[1], c[1], d[1]),x,qval))^2)*exp(s[1]))
   }
-  
-  
+
+
   return(ll)
-  
+
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
@@ -3229,7 +3246,7 @@ llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3238,10 +3255,10 @@ llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3249,20 +3266,20 @@ llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.E4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3270,36 +3287,36 @@ llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.E4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval, shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
-  
+
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                           nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3308,11 +3325,11 @@ llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3320,20 +3337,20 @@ llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.IE4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3341,34 +3358,34 @@ llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.IE4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval, shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3377,11 +3394,11 @@ llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3389,20 +3406,20 @@ llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.H4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3410,35 +3427,35 @@ llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.H4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval, shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                           nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3447,11 +3464,11 @@ llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3459,20 +3476,20 @@ llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.LN4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3480,34 +3497,34 @@ llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.LN4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3516,11 +3533,11 @@ llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3528,20 +3545,20 @@ llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.G4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3549,34 +3566,34 @@ llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.G4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                           nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3585,11 +3602,11 @@ llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3597,20 +3614,20 @@ llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.QE4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3618,35 +3635,35 @@ llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.QE4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3655,11 +3672,11 @@ llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3667,20 +3684,20 @@ llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.P4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3688,35 +3705,35 @@ llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.P4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
 
 #' @rdname llfE4_NI_Cov
 #' @export
-llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'), 
+llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'BMD_d', 'all', 'none'),
                          nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('a_sigma2', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     #b <- pars[grep("b\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     c <- pars[nmpar == "par3"]
     d <- pars[grep("par4\\[", nmpar)]
     s <- pars[grep("par5\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
@@ -3725,11 +3742,11 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     d <- pars[nmpar == "par4"]
     s <- pars[nmpar == "par5"]
   }
-  
-  
+
+
   ll.level <- numeric(nlevels)
   if(covar == 'BMD_d'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[1]-
                              0.5*(n-1)*s2*exp(s[1])-
@@ -3737,20 +3754,20 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[1]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'a_sigma2'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
                              0.5*n*((m+shift - DRM.L4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
-      
+
     }
     ll <- sum(ll.level)
-    
+
   } else if(covar == 'all'){
-    
+
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
@@ -3758,14 +3775,14 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
-    
+
   } else{
-    
+
     ll <- sum(-0.5*n*log(2*pi)+0.5*n*s[1]-0.5*(n-1)*s2*exp(s[1])-0.5*
                 n*((m+shift - DRM.L4_LND(c(a[1], bmd[1], c[1], d[1]),x,qval,shift))^2)*exp(s[1])) - sum((m+shift)*n)
-    
+
   }
-  
+
   return(ll)
 }
 
@@ -3780,62 +3797,62 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
 #' @param covar which parameter includes a covariate effect
 #' @param nlevels number of covariate levels
 #' @param trt_ind matrix indicating which reponse corresponds to which covariate level
-#' 
-#' @examples 
-#' 
+#'
+#' @examples
+#'
 #' @return .
-#' 
+#'
 #' @export
 #'
 llfE4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                        nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.E4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.E4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.E4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.E4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.E4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.E4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.E4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.E4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.E4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.E4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.E4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.E4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.E4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -3843,53 +3860,53 @@ llfE4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'al
 #' @export
 llfIE4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.IE4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.IE4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.IE4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.IE4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.IE4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.IE4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.IE4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.IE4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.IE4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.IE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.IE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.IE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.IE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -3897,53 +3914,53 @@ llfIE4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'a
 #' @export
 llfH4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                        nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.H4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.H4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.H4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.H4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.H4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.H4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.H4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.H4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.H4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.H4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.H4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.H4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.H4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -3951,53 +3968,53 @@ llfH4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'al
 #' @export
 llfLN4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.LN4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.LN4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.LN4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.LN4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.LN4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.LN4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.LN4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.LN4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.LN4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.LN4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.LN4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.LN4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.LN4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -4005,53 +4022,53 @@ llfLN4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'a
 #' @export
 llfG4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                        nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.G4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.G4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.G4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.G4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.G4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.G4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.G4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.G4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.G4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.G4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.G4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.G4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.G4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -4059,53 +4076,53 @@ llfG4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'al
 #' @export
 llfQE4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                         nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.QE4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.QE4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.QE4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.QE4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.QE4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.QE4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.QE4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.QE4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.QE4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.QE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.QE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.QE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.QE4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -4113,53 +4130,53 @@ llfQE4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'a
 #' @export
 llfP4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                        nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.P4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.P4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.P4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.P4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.P4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.P4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.P4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.P4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.P4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.P4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.P4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.P4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.P4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
 
@@ -4167,52 +4184,52 @@ llfP4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'al
 #' @export
 llfL4_Q_Cov = function(pars, x, n, y, qval, covar = c('background', 'BMD_d', 'all', 'none'),
                        nlevels, trt_ind){
-  
+
   covar = match.arg(covar, c('background', 'BMD_d', 'all', 'none'))
   nmpar <- names(pars)
-  
+
   if(covar != 'none'){
-    
+
     a <- pars[grep("par1\\[", nmpar)]
     bmd <- pars[grep("par2\\[", nmpar)]
     d <- pars[grep("par3\\[", nmpar)]
-    
+
   } else {
     a <- pars[nmpar == "par1"]
     bmd <- pars[nmpar == "par2"]
     d <- pars[nmpar == "par3"]
   }
-  
+
   ll.level <- numeric(nlevels)
-  
+
   if(covar == 'BMD_d'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.L4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.L4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.L4_Q(c(a[1], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'background'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.L4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.L4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.L4_Q(c(a[mn], bmd[1], d[1]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else if(covar == 'all'){
     for(mn in 1:nlevels){
-      ll.level[mn] <- sum( 
+      ll.level[mn] <- sum(
         (lchoose(n, y) + y*log(DRM.L4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05) +
-           (n - y)*log(1 - DRM.L4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn] 
+           (n - y)*log(1 - DRM.L4_Q(c(a[mn], bmd[mn], d[mn]), x, qval) + 1.0E-05)) * trt_ind[,mn]
       )
     }
     ll <- sum(ll.level)
   }else{
-    ll <- sum(lchoose(n, y) + y*log(DRM.L4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) + 
-                (n - y)*log(1 - DRM.L4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05)) 
+    ll <- sum(lchoose(n, y) + y*log(DRM.L4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05) +
+                (n - y)*log(1 - DRM.L4_Q(c(a[1], bmd[1], d[1]), x, qval) + 1.0E-05))
   }
-  
+
   return(ll)
 }
