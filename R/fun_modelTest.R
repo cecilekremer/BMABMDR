@@ -655,7 +655,6 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   }else{
     BIC.bestfit = - 2 * llBestfit + (4 * log(sum(data.Q$data$n)))
 
-
   }  
   BIC.SM = - 2 * llSM + ((data.Q$data$N) * log(sum(data.Q$data$n)))
 
