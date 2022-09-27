@@ -372,22 +372,22 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
   if(use.mcmc == TRUE){
 
     # Fitting the null model (no effect)
-    sv=optimizing(mH0c, data = data.modstanH0, init=svH0)$par
+    sv=rstan::optimizing(stanmodels$mH0c, data = data.modstanH0, init=svH0)$par
     initf2 <- function(chain_id = 1) {
       list(par=sv[1:3] + rnorm(3, sd = 0.01*abs(sv[1:3])) ,alpha = chain_id)
     }
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-    fitstanH0=sampling(mH0c,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+    fitstanH0=rstan::sampling(stanmodels$mH0c,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
                        control = list(adapt_delta = delta,max_treedepth =treedepth),
                        show_messages = F, refresh = 0)
 
     # Fitting the saturated ANOVA model
-    sv=optimizing(mSMc,data = data.modstanSM,init=svSM)$par
+    sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
     initf2 <- function(chain_id = 1) {
       list(par=sv[1:(N+2)] + rnorm(N+2, sd = 0.01*abs(sv[1:(N+2)])) ,alpha = chain_id)
     }
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-    fitstanSM=sampling(mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+    fitstanSM=rstan::sampling(stanmodels$mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
                        control = list(adapt_delta = delta,max_treedepth =treedepth),
                        show_messages = F, refresh = 0)
 
@@ -403,11 +403,11 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 
   }else if(use.mcmc == FALSE){
 
-    fitH0 = rstan::optimizing(mH0c, data = data.modstanH0, seed = as.integer(sd), draws = ndr, init = svH0, hessian = T)
+    fitH0 = rstan::optimizing(stanmodels$mH0c, data = data.modstanH0, seed = as.integer(sd), draws = ndr, init = svH0, hessian = T)
     pars.H0 = apply(fitH0$theta_tilde[, c(paste0('a'), paste0('par[2]'),
                                           paste0('rho_cluster'))], 2, median)
 
-    fitSM = rstan::optimizing(mSMc, data = data.modstanSM, seed = as.integer(sd), draws = ndr, init = svSM, hessian = T)
+    fitSM = rstan::optimizing(stanmodels$mSMc, data = data.modstanSM, seed = as.integer(sd), draws = ndr, init = svSM, hessian = T)
     pars.SM = apply(fitSM$theta_tilde[, c(paste0('a[', 1:N, ']'), paste0('par[', N+1, ']'),
                                           paste0('par[', N+2, ']'))], 2, median)
 
