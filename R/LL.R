@@ -791,6 +791,38 @@ llfSM_Nc = function(x, d, n, nij, y, qval){
 }
 #' @rdname llfE4_NIc
 #' @export
+llfH0_Nc = function(x, d, n, nij, y, qval){
+  ll = c()
+  cnt = 1
+  for(i in 1:length(d)){
+    for(j in 1:n[i]){
+      lt = nij[i, j]
+      rsp = y[cnt, 1:lt]
+      mx = x[1]
+      m = rep(mx, lt)
+      P = matrix(0, nrow = lt, ncol = lt)
+      for(id1 in 1:lt){
+        for(id2 in 1:lt){
+          if(id1 == id2){
+            P[id1, id2] = 1
+          }else{
+            P[id1, id2] = x[3]
+          }
+        }
+      }
+      Sigma = 1/exp(x[2]) * P
+
+      llij = mvtnorm::dmvnorm(rsp, m, Sigma, log = T)
+
+      cnt = cnt + 1
+
+      ll = c(ll, llij)
+    }
+  }
+  return(sum(ll))
+}
+#' @rdname llfE4_NIc
+#' @export
 llfE4_NDc = function(x, d, n, nij, y, qval){
   ll = c()
   cnt = 1
