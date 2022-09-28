@@ -16,8 +16,6 @@
 #' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
 #'                  Defaults to 10.
 #'
-#' @examples
-#'
 #' @description The function compares the best fitting model to the saturated model using an approximation to BIC.
 #'
 #' @examples
@@ -449,8 +447,6 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 #'              Defaults to 0.8.
 #' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
 #'                  Defaults to 10.
-#'
-#' @examples
 #'
 #' @description The function compares the best fitting model to the saturated model using an approximation to BIC.
 #'

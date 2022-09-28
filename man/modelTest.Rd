@@ -69,7 +69,6 @@ Bayes factor for the best fitting model compared to the saturated ANOVA model. A
 The function compares the best fitting model to the saturated model using an approximation to BIC.
 }
 \examples{
-
 # we use the first 5 rows because those are observations from subjects belonging to the same group.
  data("immunotoxicityData.rda")  #load the immunotoxicity data
  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),

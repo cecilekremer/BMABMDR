@@ -6,5 +6,5 @@
 #'
 #' @docType package
 #'
-#' @import ggplot2 shiny forcats mvtnorm truncnorm bayesplot ggpubr mc2d ggpubr RColorBrewer posterior bbmle AICcmodavg numDeriv bridgesampling rstan gamlss rstantools
+#' @import ggplot2 shiny dplyr plyr forcats mvtnorm truncnorm bayesplot ggpubr mc2d ggpubr RColorBrewer posterior bbmle AICcmodavg numDeriv bridgesampling rstan gamlss rstantools
 NULL

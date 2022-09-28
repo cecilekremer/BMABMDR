@@ -76,6 +76,3 @@ This method assumed data for continuous endpoints.
 
 More detailed descriprion
 }
-\examples{
-
-}

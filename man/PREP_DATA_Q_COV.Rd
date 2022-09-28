@@ -48,6 +48,3 @@ List with data and start values in correct format to be directly used within the
 This function also generates appropriate start values and uninformative priors for each model
 Input should be given as arithmetic mean and standard deviation on the original scale
 }
-\examples{
-
-}

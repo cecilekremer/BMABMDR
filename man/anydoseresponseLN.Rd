@@ -20,7 +20,7 @@ list containing Bayes factor and decision.
 }
 \description{
 This function tests for any dose-response effect using Bayes factor.
-It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
 }
 \examples{
 

@@ -49,6 +49,3 @@ Bayes factor for the best fitting model compared to the saturated ANOVA model. A
 \description{
 The function compares the best fitting model to the saturated model using an approximation to BIC.
 }
-\examples{
-
-}

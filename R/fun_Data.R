@@ -13,7 +13,7 @@
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
+#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description The function a dataset as input and generates the data list and starting values needed by the stan
@@ -316,6 +316,8 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     prvar.d = 1; prmean.d = 1; truncd = 5
   }else if(prior.d == 'EPA'){
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
+  }else if(prior.d == 'N05'){
+    prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
   prvar.s=1; prmean.s=-2*log(1.5*mean(sd.a))
@@ -670,6 +672,8 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     prvar.d = 1; prmean.d = 1; truncd = 5
   }else if(prior.d == 'EPA'){
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
+  }else if(prior.d == 'N05'){
+    prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
   prvar.s=1; prmean.s=-2*log(1.5*mean(gsd.a))
@@ -772,7 +776,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
+#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description The function takes a dataset as input and generates the data list and starting values needed by the stan
@@ -1011,6 +1015,8 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
     # prvar.d = 1; prmean.d = 1; truncd = 10000
+  }else if(prior.d == 'N05'){
+    prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
   }
   # prvar.d=sqrt(0.5); prmean.d = prmean.d
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -1425,6 +1431,8 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   }else if(prior.d == 'EPA'){
     # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
+  }else if(prior.d == 'N05'){
+    prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
   prvar.s=1; prmean.s=-2*log(1.5*sd(yl2[yl2!=0]))
@@ -1613,10 +1621,8 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
+#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
-#'
-#' @examples
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
@@ -1770,6 +1776,8 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     prvar.d = 1; prmean.d = 1; truncd = 5
   }else if(prior.d == 'EPA'){
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
+  }else if(prior.d == 'N05'){
+    prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
 
@@ -1830,7 +1838,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
+#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate on which parameters a covariate effect should be used. Defaults to 'all', other options are 'a_sigma2' and 'BMD_d'
 #'
@@ -2377,6 +2385,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
       prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
       # prvar.d = 1; prmean.d = 1; truncd = 10000
+    }else if(prior.d == 'N05'){
+      prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -3046,6 +3056,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
       prvar.d = rep(0.5, nlevels); prmean.d = rep(0.4, nlevels); truncd = 10000
       # prvar.d = 1; prmean.d = 1; truncd = 10000
+    }else if(prior.d == 'N05'){
+      prvar.d = rep(0.25, nlevels); prmean.d = rep(0.5, nlevels); truncd = 10000
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = rep(0, nlevels); prvar.dQE4 = rep(1, nlevels); truncdQ = 10000
@@ -3059,6 +3071,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
       prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
       # prvar.d = 1; prmean.d = 1; truncd = 10000
+    }else if(prior.d == 'N05'){
+      prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -3226,11 +3240,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
+#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate for which parameter a covariate effect should be included. Defaults to 'all', other options are 'background' or 'BMD_d'
-#'
-#' @examples
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
 #'
@@ -3524,6 +3536,8 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
       prvar.d = rep(0.5, nlevels); prmean.d = rep(0.4, nlevels); truncd = 10000
       # prvar.d = 1; prmean.d = 1; truncd = 10000
+    }else if(prior.d == 'N05'){
+      prvar.d = rep(0.25, nlevels); prmean.d = rep(0.5, nlevels); truncd = 10000
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = rep(0, nlevels); prvar.dQE4 = rep(1, nlevels); truncdQ = 10000
@@ -3540,6 +3554,8 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
       prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
       # prvar.d = 1; prmean.d = 1; truncd = 10000
+    }else if(prior.d == 'N05'){
+      prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000

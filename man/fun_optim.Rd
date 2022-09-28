@@ -44,6 +44,3 @@ a stan results object
 \description{
 Function to perform Laplace approximation for a given dose-response model.
 }
-\examples{
-
-}

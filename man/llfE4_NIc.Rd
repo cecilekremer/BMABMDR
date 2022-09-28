@@ -19,6 +19,7 @@
 \alias{llfL4_LNIc}
 \alias{llfSM_LNc}
 \alias{llfSM_Nc}
+\alias{llfH0_Nc}
 \alias{llfE4_NDc}
 \alias{llfIE4_NDc}
 \alias{llfH4_NDc}
@@ -73,6 +74,8 @@ llfSM_LNc(x, d, n, nij, y, qval, shift)
 
 llfSM_Nc(x, d, n, nij, y, qval)
 
+llfH0_Nc(x, d, n, nij, y, qval)
+
 llfE4_NDc(x, d, n, nij, y, qval)
 
 llfIE4_NDc(x, d, n, nij, y, qval)
@@ -125,7 +128,4 @@ llfL4_LNDc(x, d, n, nij, y, qval, shift)
 }
 \description{
 Loglikelihood functions for the different dose response models
-}
-\examples{
-
 }

@@ -10,6 +10,7 @@
 \alias{llfP4_Q}
 \alias{llfL4_Q}
 \alias{llfSM_Q}
+\alias{llfH0_Q}
 \title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE4_Q(x, nvec, dvec, yvec, qval)
@@ -29,6 +30,8 @@ llfP4_Q(x, nvec, dvec, yvec, qval)
 llfL4_Q(x, nvec, dvec, yvec, qval)
 
 llfSM_Q(x, nvec, dvec, yvec, qval)
+
+llfH0_Q(x, nvec, dvec, yvec, qval)
 }
 \arguments{
 \item{x}{parameter values}
@@ -46,7 +49,4 @@ llfSM_Q(x, nvec, dvec, yvec, qval)
 }
 \description{
 Loglikelihood functions for the different dose response models
-}
-\examples{
-
 }

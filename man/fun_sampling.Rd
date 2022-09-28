@@ -77,6 +77,3 @@ a stan results object
 \description{
 Function to perform MCMC sampling for a given dose-response model (used internally).
 }
-\examples{
-
-}

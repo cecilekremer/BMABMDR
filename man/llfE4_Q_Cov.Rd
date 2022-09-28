@@ -122,6 +122,3 @@ llfL4_Q_Cov(
 \description{
 Loglikelihood functions for the different dose response models
 }
-\examples{
-
-}

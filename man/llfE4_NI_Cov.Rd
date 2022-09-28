@@ -478,6 +478,3 @@ llfL4_LND_Cov(
 \description{
 Loglikelihood functions for the different dose response models
 }
-\examples{
-
-}

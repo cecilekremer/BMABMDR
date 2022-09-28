@@ -1,6 +1,6 @@
 Package: BMABMDR
 Title: Bayesian Model Averaging (BMA) for benchmark dose (BMD) analysis in R
-Version: 0.0.0.9019
+Version: 0.0.0.9020
 Authors@R: 
     person(given = "First",
            family = "Last",
@@ -13,7 +13,7 @@ License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
 Encoding: UTF-8
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.1.2
+RoxygenNote: 7.2.1
 Biarch: true
 Depends: 
     R (>= 3.4.0)
@@ -27,6 +27,8 @@ Imports:
     AICcmodavg,
     RColorBrewer,
     bbmle,
+    dplyr,
+    plyr,
     bridgesampling,
     forcats,
     bayesplot,

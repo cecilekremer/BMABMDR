@@ -4,10 +4,12 @@
 \alias{anydoseresponseC}
 \title{Function to determine if there is a dose-response effect, for the normal distribution}
 \usage{
-anydoseresponseC(data)
+anydoseresponseC(data, use.mcmc = FALSE)
 }
 \arguments{
 \item{data}{Individual data with columns: dose, response, litter}
+
+\item{use.mcmc}{logical indicating wheter MCMC (TRUE) or Laplace (FALSE, default) should be used}
 }
 \value{
 list containing Bayes factor and decision.

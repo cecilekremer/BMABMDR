@@ -128,6 +128,3 @@ llfSM_N(x, nvec, dvec, mvec, s2vec)
 \description{
 Loglikelihood functions for the different dose response models
 }
-\examples{
-
-}

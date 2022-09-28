@@ -313,8 +313,8 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
   }
 
   means.all <- indiv.data %>%
-    group_by(dose) %>%
-    summarise(mresp = mean(response))
+    dplyr::group_by(dose) %>%
+    dplyr::summarise(mresp = mean(response))
   dose.a = unique(indiv.data$dose)
   mean.a = c()
   for(m in 1:length(dose.a)){
@@ -595,7 +595,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
       set.seed(1234)
       bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
       bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-      bf=bf(bridge_H0,bridge_SM)
+      bf=bridgesampling::bf(bridge_H0,bridge_SM)
       bf = bf$bf
 
     }else if(use.mcmc == FALSE){
@@ -725,7 +725,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
     set.seed(1234)
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
     bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-    bf=bf(bridge_H0,bridge_SM)
+    bf=bridgesampling::bf(bridge_H0,bridge_SM)
     bf = bf$bf
 
   }

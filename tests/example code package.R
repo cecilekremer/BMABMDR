@@ -210,7 +210,7 @@ data.input <- data.frame(dose = simulated_data$dose,
                          litter = simulated_data$litter)
 plot(data.input$dose, data.input$response)
 
-anydoseresponseC(data.input, use.mcmc = F)
+anydoseresponseC(data.input)#, use.mcmc = F)
 
 data_N <- PREP_DATA_N_C(data.input, q, prior.d = 'N11')
 data_LN <- PREP_DATA_LN_C(data.input, q, prior.d = 'N11')

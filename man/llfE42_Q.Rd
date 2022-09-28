@@ -10,6 +10,7 @@
 \alias{llfP42_Q}
 \alias{llfL42_Q}
 \alias{llfSM2_Q}
+\alias{llfH02_Q}
 \title{Loglikelihood functions for the different dose response models}
 \usage{
 llfE42_Q(x, nvec, dvec, yvec, qval, rho)
@@ -29,6 +30,8 @@ llfP42_Q(x, nvec, dvec, yvec, qval, rho)
 llfL42_Q(x, nvec, dvec, yvec, qval, rho)
 
 llfSM2_Q(x, nvec, dvec, yvec, qval, rho)
+
+llfH02_Q(x, nvec, dvec, yvec, qval, rho)
 }
 \arguments{
 \item{x}{parameter values}
@@ -48,7 +51,4 @@ llfSM2_Q(x, nvec, dvec, yvec, qval, rho)
 }
 \description{
 Loglikelihood functions for the different dose response models
-}
-\examples{
-
 }
