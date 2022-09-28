@@ -20,7 +20,7 @@ PREP_DATA_QA(
 \arguments{
 \item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n}
 
-\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
+\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)}
 
 \item{q}{specified BMR}
 
@@ -44,7 +44,4 @@ List with data and start values in correct format to be directly used within the
 \description{
 This function also generates appropriate start values and uninformative priors for each model
 Input should be given as arithmetic mean and standard deviation on the original scale
-}
-\examples{
-
 }

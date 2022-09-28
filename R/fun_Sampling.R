@@ -4664,8 +4664,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 #'
 #' @importFrom truncnorm dtruncnorm
 #'
-#' @examples
-#'
 #' @return a list containing the following important entries:
 #' \enumerate{
 #'   \item E4_Q parameter estimates from the exponential model

@@ -52,12 +52,6 @@ PREP_DATA_LN_C(
 \item{prior.d}{prior distribution for parameter d, should be either N11 (default) or EPA}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
-
-\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
-
-\item{geom.stats}{logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics}
-
-\item{sd}{logical indicating whether standard deviation (T, default) or standard error (F) is provided}
 }
 \value{
 List with data and start values in correct format to be directly used within the model-averaging functions.

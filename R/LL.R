@@ -9,8 +9,6 @@
 #' @param qval BMR
 #' @param shift value of the shift for negative geometric means
 #'
-#' @examples
-#'
 #' @return .
 #'
 #' @export
@@ -195,8 +193,6 @@ llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
 #' @param y observed responses
 #' @param qval BMR
 #' @param shift value of the shift for negative geometric means
-#'
-#' @examples
 #'
 #' @return .
 #'
@@ -1350,8 +1346,6 @@ llfL4_LNDc = function(x, d, n, nij, y, qval, shift){
 #' @param yvec vector containing the number of adverse events at each dose level
 #' @param qval BMR
 #'
-#' @examples
-#'
 #' @return .
 #'
 #' @export
@@ -1426,8 +1420,6 @@ llfH0_Q=function(x,nvec,dvec,yvec,qval){
 #' @param yvec vector containing the number of adverse events at each dose level
 #' @param qval BMR
 #' @param rho intra-cluster correlation parameter
-#'
-#' @examples
 #'
 #' @return .
 #'
@@ -1580,8 +1572,6 @@ llfH02_Q=function(x,nvec,dvec,yvec,qval,rho){
 #' @param covar which parameter includes a covariate effect
 #' @param nlevels number of covariate levels
 #' @param trt_ind matrix indicating which reponse corresponds to which covariate level
-#'
-#' @examples
 #'
 #' @return .
 #'
@@ -3829,8 +3819,6 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
 #' @param covar which parameter includes a covariate effect
 #' @param nlevels number of covariate levels
 #' @param trt_ind matrix indicating which reponse corresponds to which covariate level
-#'
-#' @examples
 #'
 #' @return .
 #'
