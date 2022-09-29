@@ -35,7 +35,7 @@ PREP_DATA_Q_COV(
 
 \item{cluster}{logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE}
 
-\item{prior.d}{prior distribution for parameter d, should be either N11 (default) or EPA}
+\item{prior.d}{prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 
