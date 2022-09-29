@@ -1,7 +1,7 @@
 rm(list=ls())
 
 # install package from zip file
-# install.packages("~/GitHub/BMABMDR_0.0.0.9020.tar.gz", repos = NULL, type = "source")
+install.packages("~/GitHub/BMABMDR_0.0.0.9020.tar.gz", repos = NULL, type = "source")
 # installation error?? https://cran.r-project.org/bin/windows/Rtools/rtools40.html
 
 library(BMABMDR)
