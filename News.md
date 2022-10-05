@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Update 29/09/2022
+
+* Fixed small error in covariate implementation (Laplace function)
+
 ## Update 27/09/2022
 
 * LL.R updated to include likelihood of null model for quantal and clustered continuous data

@@ -17,7 +17,7 @@ full.laplace_MA_Q_Cov(
 )
 }
 \arguments{
-\item{data}{the summary data, with columns: dose, number of adverse events, n}
+\item{data}{the summary data, with columns: dose, number of adverse events, n, covariate}
 
 \item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
 

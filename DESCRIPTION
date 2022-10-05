@@ -1,6 +1,6 @@
 Package: BMABMDR
 Title: Bayesian Model Averaging (BMA) for benchmark dose (BMD) analysis in R
-Version: 0.0.0.9020
+Version: 0.0.0.9023
 Authors@R: 
     person(given = "First",
            family = "Last",
