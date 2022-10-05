@@ -1,8 +1,19 @@
 rm(list=ls())
 
 # install package from zip file
-install.packages("~/GitHub/BMABMDR_0.0.0.9020.tar.gz", repos = NULL, type = "source")
-# installation error?? https://cran.r-project.org/bin/windows/Rtools/rtools40.html
+# Sys.setenv(BINPREF = "C:/Rtools/mingw64/bin/;C:/Rtools/mingw32/bin/")
+# Sys.setenv(BINPREF = "C:/rtools40/mingw64/bin/")
+# Sys.setenv(BINPREF = "C:/rtools40/mingw$(WIN)/bin/")
+# old_path <- Sys.getenv("PATH")
+# new_path <- paste("C:\\Rtools\\usr\\bin", old_path, sep=";")
+# new_path <- paste(old_path, "C:\\Rtools\\usr\\bin;C:\\Rtools\\mingw32\\bin;C:\\Rtools\\mingw64\\bin", sep=";")
+# new_path
+# Sys.setenv(PATH = new_path)
+
+Sys.setenv(BINPREF = "C:/rtools40/mingw64/bin/;C:/rtools40/mingw32/bin/;")
+Sys.setenv(PATH = "C:\\rtools40\\usr\\bin\\;")
+
+install.packages("~/GitHub/BMABMDR_0.0.0.9023.tar.gz", repos = NULL, type = "source")
 
 library(BMABMDR)
 library(gamlss)
@@ -211,7 +222,7 @@ data.input <- data.frame(dose = simulated_data$dose,
                          litter = simulated_data$litter)
 plot(data.input$dose, data.input$response)
 
-anydoseresponseC(data.input)#, use.mcmc = F)
+anydoseresponseC(data.input, use.mcmc = F)
 
 data_N <- PREP_DATA_N_C(data.input, q, prior.d = 'N11')
 data_LN <- PREP_DATA_LN_C(data.input, q, prior.d = 'N11')

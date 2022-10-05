@@ -4249,7 +4249,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
 #' Perform model averaging using Full Laplace method
 #'
-#' @param data the summary data, with columns: dose, response, sd, n
+#' @param data the summary data, with columns: dose, response, sd, n, covariate
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
 #' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
 #' @param q specified BMR
@@ -5656,8 +5656,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     )
     maci=quantile(mabmd,pvec)*data_N_noCOV$data$maxD ## original scale
     # names(maci)=c("BMDL","BMD","BMDU")
-    colnames(maci)=c("BMDL","BMD","BMDU")
-    rownames(maci)=data_NCOV_all$data$covariate
+    names(maci)=c("BMDL","BMD","BMDU")
 
     BMDq = quantile(mabmd, seq(0,1,0.005))*data_N_noCOV$data$maxD ## original scale
 
@@ -5792,7 +5791,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 
 #' Perform model averaging using Full Laplace method
 #'
-#' @param data the summary data, with columns: dose, number of adverse events, n
+#' @param data the summary data, with columns: dose, number of adverse events, n, covariate
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
 #' @param q specified BMR
 #' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
@@ -6528,8 +6527,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
 
     )
     maci=quantile(mabmd,pvec)*data_all$data$maxD ## original scale
-    colnames(maci)=c("BMDL","BMD","BMDU")
-    rownames(maci)=data_all$data$covariate
+    names(maci)=c("BMDL","BMD","BMDU")
 
     BMDq = quantile(mabmd, seq(0,1,0.005))*data_all$data$maxD ## original scale
 

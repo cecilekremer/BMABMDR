@@ -18,7 +18,7 @@ PREP_DATA_QA(
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n}
+\item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no, litter in case of individual data)}
 
 \item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)}
 

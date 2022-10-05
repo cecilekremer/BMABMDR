@@ -856,8 +856,8 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
   ## Overall mean for test of flatness
   means.all <- indiv.data %>%
-    group_by(dose) %>%
-    summarise(mresp = mean(response))
+    dplyr::group_by(dose) %>%
+    dplyr::summarise(mresp = mean(response))
   dose.a = unique(indiv.data$dose)
   mean.a = c()
   for(m in 1:length(dose.a)){
@@ -885,7 +885,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     max.max = 2*obs.max
     mode.max = obs.max
 
-    if(flatC(dose.a, mean.a,inc=T) == F & is.null(maxy)){
+    if(flatC(dose.a, mean.a, inc=T) == F & is.null(maxy)){
       mode.max = 3*obs.max
       min.max  = obs.min*(1.01+q)
       max.max = 2*mode.max
@@ -913,7 +913,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     # max.max = obs.min
     mode.max = obs.max
 
-    if(flatC(dose.a, mean.a,inc=F) == F & is.null(maxy)){
+    if(flatC(dose.a, mean.a, inc=F) == F & is.null(maxy)){
       mode.max = 0.5*obs.max
       min.max  = 0.1*obs.max
       max.max = obs.min*(1-q-0.01)
@@ -1268,8 +1268,8 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
   ## Overall mean for test of flatness
   means.all <- indiv.data %>%
-    group_by(dose) %>%
-    summarise(mresp = mean(log(response)))
+    dplyr::group_by(dose) %>%
+    dplyr::summarise(mresp = mean(log(response)))
   dose.a = unique(indiv.data$dose)
   mean.a = c()
   for(m in 1:length(dose.a)){
@@ -1301,7 +1301,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     max.max = 2*obs.max
     mode.max = obs.max
 
-    if(flatC(dose.a, mean.a,inc=T) == F & is.null(maxy)){
+    if(flatC(dose.a, mean.a, inc=T) == F & is.null(maxy)){
       mode.max = 3*obs.max
       min.max  = obs.min*(1.01+q)
       max.max = 2*mode.max
@@ -1330,7 +1330,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     # max.max = obs.min
     mode.max = obs.max
 
-    if(flatC(dose.a, mean.a,inc=F) == F & is.null(maxy)){
+    if(flatC(dose.a, mean.a, inc=F) == F & is.null(maxy)){
       mode.max = 0.5*obs.max
       min.max  = 0.1*obs.max
       max.max = obs.min*(1-q-0.01)
@@ -1613,7 +1613,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 #' This function also generates appropriate start values and uninformative priors for each model
 #' Input should be given as arithmetic mean and standard deviation on the original scale
 #'
-#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n
+#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no, litter in case of individual data)
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional), and maximum value for the background response. Defaults to NULL (non-informative prior)
@@ -1654,17 +1654,21 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     # dose.a = sort(unique(doses))
     litter = data[,3]
     # N = length(dose.a)
-    y.a = rep(NA,N)
-    n.a = rep(NA,N)
+    y.a = rep(NA, length(unique(litter)))
+    n.a = rep(NA, length(unique(litter)))
+    dose.a = rep(NA, length(unique(litter)))
     ybin = data[, 2]
     id = 1
     for(iu in unique(litter)){
-      y.a[id] = sum(ybin[litter = iu])
+      y.a[id] = sum(ybin[litter == iu])
       n.a[id] = sum(litter == iu)
-      dose.a[id] = doses[litter == iu]
+      dose.a[id] = unique(doses[litter == iu])
       id = id + 1
     }
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
   }
+
 
   datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
   if(cluster == FALSE) {

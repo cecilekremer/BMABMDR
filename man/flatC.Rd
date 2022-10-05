@@ -4,14 +4,14 @@
 \alias{flatC}
 \title{Function for internal use}
 \usage{
-flatC(dose, mean, inc)
+flatC(dose.a, mean.a, inc)
 }
 \arguments{
+\item{inc}{logical variable to indicate if the dose-resonse curve is increasing or decreasing}
+
 \item{dose}{value}
 
 \item{mean}{value}
-
-\item{inc}{logical variable to indicate if the dose-resonse curve is increasing or decreasing}
 }
 \value{
 .logical value indicating if the dose-response curve is flat or not
