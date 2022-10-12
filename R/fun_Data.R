@@ -1854,7 +1854,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 #' @export PREP_DATA_NCOV
 #'
 PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns should be: dose, response, sd, n, covar
-                           sumstats = TRUE, # TRUE if summary data, FALSE if individual data
+                           sumstats = TRUE, # TRUE if summary data, FALSE if individual data (order of cols should be: dose, resp, covar)
                            geom.stats = FALSE, # TRUE if geometric summary data is provided
                            sd = TRUE, # TRUE if sd per dose group is given, FALSE is se is given
                            q, # the BMR
@@ -1904,25 +1904,27 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     sd.a = LNtoN(gmean.a,gsd.a)[(N+1):(2*N)]
 
   }else if(sumstats == FALSE){
-    # still to be worked on
-    # data = data[order(data[, 1]), ]
-    # doses = data[, 1]
-    # maxDose = max(doses)
-    # dose.a=sort(unique(doses))
-    # N=length(dose.a)
-    # mean.a=rep(NA,N)
-    # sd.a=rep(NA,N)
-    # n.a=rep(NA,N)
-    # y = data[, 2]
-    # for (iu in (1:N)){
-    #   mean.a[iu]=mean(y[doses==dose.a[iu]])
-    #   sd.a[iu]=sd(y[doses==dose.a[iu]])
-    #   n.a[iu]=sum(doses==dose.a[iu])
-    # }
-    # dose.a = dose.a/maxDose
-    # covar = data[,5]
-
-    stop('Data should be provided as summary statistics.')
+    data = data[order(data[, 1]), ]
+    data$dose = data[,1]
+    data$resp = data[,2]
+    data$cov = data[,3]
+    indiv.data <- data %>%
+      dplyr::group_by(dose, cov) %>%
+      dplyr::arrange(by_group = dose) %>%
+      dplyr::summarise(mean = mean(resp, na.rm = T), sd = sd(resp, na.rm=T), n = n())
+    dose.a = indiv.data$dose
+    maxDose = max(dose.a)
+    mean.a = indiv.data$mean
+    sd.a = indiv.data$sd
+    n.a = indiv.data$n
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
+    covar = indiv.data$cov
+    dose.a = dose.a/maxDose
+    # test normality
+    datind <- data.frame(x = data$dose,
+                         y = data$resp)
+    testNLN <- NLN_test(datind)
   }
 
   covar_lvls <- unique(covar)
@@ -2376,6 +2378,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       # prvar.d = 0.5^2; prmean.d = 0.4; truncd = 10000
       prvar.d = rep(0.5, nlevels); prmean.d = rep(0.4, nlevels); truncd = 10000
       # prvar.d = 1; prmean.d = 1; truncd = 10000
+    }else if(prior.d == 'N05'){
+      prvar.d = rep(0.25, nlevels); prmean.d = rep(0.5, nlevels); truncd = 10000
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = rep(0, nlevels); prvar.dQE4 = rep(1, nlevels); truncdQ = 10000
@@ -2547,7 +2551,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 #' @rdname PREP_DATA_NCOV
 #' @export
 PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of columns should be: dose, response, sd, n, covar
-                            sumstats = TRUE, # TRUE if summary data, FALSE if individual data
+                            sumstats = TRUE, # TRUE if summary data, FALSE if individual data (order of cols should be: dose, resp, covar)
                             geom.stats = FALSE, # TRUE if geometric summary data is provided
                             sd = TRUE, # TRUE if sd per dose group is given, FALSE is se is given
                             q, # the BMR
@@ -2584,6 +2588,24 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     if (min(gmean.a2)>=0) gmean.a = gmean.a2
     gsd.a = log(NtoLN(mean.a,sd.a))[(N+1):(2*N)]
 
+    # if(covariate == 'BMD_d' | covariate == 'none'){
+    ## get overall data for values of a and sigma
+    dose.a2 = sort(unique(dose.a))
+    N2 = length(dose.a2)
+    mean.a2 = rep(NA, N2)
+    sd.a2 = rep(NA, N2)
+    n.a2 = rep(NA, N2)
+    for(iu in (1:N2)){
+      mean.a2[iu] = mean(mean.a[dose.a == dose.a2[iu]])
+      sd.a2[iu] = mean(sd.a[dose.a == dose.a2[iu]])
+      n.a2[iu] = sum(n.a[dose.a == dose.a2[iu]])
+    }
+    gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
+    if (min(gmean.a3)<0) {gmean.a4 = gmean.a3-shift}
+    if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
+    gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
+    # }
+
   }else if(sumstats == TRUE & geom.stats == TRUE){
 
     data = data[order(data[, 1]), ]
@@ -2604,11 +2626,68 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     covar = data[,5]
     dose.a = dose.a/maxDose
 
+    # if(covariate == 'BMD_d' | covariate == 'none'){
+    ## get overall data for values of a and sigma
+    dose.a2 = sort(unique(dose.a))
+    N2 = length(dose.a2)
+    mean.a2 = rep(NA, N2)
+    sd.a2 = rep(NA, N2)
+    n.a2 = rep(NA, N2)
+    for(iu in (1:N2)){
+      mean.a2[iu] = mean(mean.a[dose.a == dose.a2[iu]])
+      sd.a2[iu] = mean(sd.a[dose.a == dose.a2[iu]])
+      n.a2[iu] = sum(n.a[dose.a == dose.a2[iu]])
+    }
+    gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
+    if (min(gmean.a3)<0) {gmean.a4 = gmean.a3-shift}
+    if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
+    gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
+    # }
+
   }else if(sumstats == FALSE){
-    # still to be worked on
+    data = data[order(data[, 1]), ]
+    data$dose = data[,1]
+    data$resp = data[,2]
+    data$cov = data[,3]
+    indiv.data <- data %>%
+      dplyr::group_by(dose, cov) %>%
+      dplyr::arrange(by_group = dose) %>%
+      dplyr::summarise(mean = mean(log(resp), na.rm = T), sd = sd(log(resp), na.rm=T), n = n())
+    dose.a = indiv.data$dose
+    maxDose = max(dose.a)
+    gmean.a = indiv.data$mean
+    gsd.a = indiv.data$sd
+    n.a = indiv.data$n
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
+    covar = indiv.data$cov
+    dose.a = dose.a/maxDose
+    # test normality
+    datind <- data.frame(x = data$dose,
+                         y = data$resp)
+    testNLN <- NLN_test(datind)
 
-    stop('Data should be provided as summary statistics.')
+    mean.a = gmean.a; sd.a = gsd.a
+    gmean.a2 = gmean.a
 
+    # if(covariate == 'BMD_d' | covariate == 'none'){
+    ## get overall data for values of a and sigma
+    dose.a2 = sort(unique(dose.a))
+    N2 = length(dose.a2)
+    gmean.a3 = rep(NA, N2)
+    gsd.a2 = rep(NA, N2)
+    n.a2 = rep(NA, N2)
+    for(iu in (1:N2)){
+      gmean.a3[iu] = mean(gmean.a[dose.a == dose.a2[iu]])
+      gsd.a2[iu] = mean(gsd.a[dose.a == dose.a2[iu]])
+      n.a2[iu] = sum(n.a[dose.a == dose.a2[iu]])
+    }
+    # gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
+    # if (min(gmean.a3)<0) {gmean.a4 = gmean.a3-shift}
+    # if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
+    # gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
+    # }
+    mean.a2 = gmean.a3
   }
 
   covar_lvls <- unique(covar)
@@ -2616,24 +2695,6 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
   ## Bartlett test of homoscedasticity
   # on the original scale (constant variance)
   #b.test.LN <- numeric(nlevels)
-
-  # if(covariate == 'BMD_d' | covariate == 'none'){
-  ## get overall data for values of a and sigma
-  dose.a2 = sort(unique(dose.a))
-  N2 = length(dose.a2)
-  mean.a2 = rep(NA, N2)
-  sd.a2 = rep(NA, N2)
-  n.a2 = rep(NA, N2)
-  for(iu in (1:N2)){
-    mean.a2[iu] = mean(mean.a[dose.a == dose.a2[iu]])
-    sd.a2[iu] = mean(sd.a[dose.a == dose.a2[iu]])
-    n.a2[iu] = sum(n.a[dose.a == dose.a2[iu]])
-  }
-  gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
-  if (min(gmean.a3)<0) {gmean.a4 = gmean.a3-shift}
-  if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
-  gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
-  # }
 
   if(covariate == 'a_sigma2' | covariate == 'all') {
     test.var <- character(nlevels)
@@ -3230,7 +3291,6 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
 }
 
-
 #' Function to set data in the correct format
 #'
 #' This function also generates appropriate start values and uninformative priors for each model
@@ -3275,18 +3335,21 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     dose.a = dose.a/maxDose
     covar = data[, 4]
   } else if(sumstats == FALSE){
-    ## STILL TO BE DONE
-    doses = data[, 1]
-    maxDose = max(doses)
-    dose.a = sort(unique(doses))
+    data = data[order(data[, 1]), ]
+    data$dose = data[,1]
+    data$resp = data[,2]
+    data$cov = data[,3]
+    indiv.data <- data %>%
+      dplyr::group_by(dose, cov) %>%
+      dplyr::arrange(by_group = dose) %>%
+      dplyr::summarise(y.a = sum(resp, na.rm = T), n = n())
+    dose.a = indiv.data$dose
+    maxDose = max(dose.a)
+    y.a = indiv.data$y.a
+    n.a = indiv.data$n
     N = length(dose.a)
-    y.a = rep(NA,N)
-    n.a = rep(NA,N)
-    ybin = data[, 2]
-    for (iu in (1:N)){
-      y.a[iu] = sum(ybin[doses == dose.a[iu]])
-      n.a[iu] = sum(doses == dose.a[iu])
-    }
+    dose.a = dose.a/maxDose
+    covar = indiv.data$cov
     dose.a = dose.a/maxDose
   }
 
