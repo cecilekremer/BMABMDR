@@ -5074,7 +5074,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[5]>0){
     # print(5)
 
-    data$init_b <- qgamma(data$q, rate=1.0, shape=E4resQ[6])/(E4resQ[2]/data$maxD)
+    # data$init_b <- qgamma(data$q, rate=1.0, shape=E4resQ[6])/(E4resQ[2]/data$maxD)
 
     fitstanG4_Q <- fun_samplingQ(stanmodels$mG4_Q, data, start,
                                  ndraws,nrchains,
@@ -5680,7 +5680,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[5]>0){
     print("pw5")
 
-    data$init_b <- qgamma(data$q, rate=1.0, shape=optE4_Q$par[6])/optE4_Q$par[2]
+    # data$init_b <- qgamma(data$q, rate=1.0, shape=optE4_Q$par[6])/optE4_Q$par[2]
 
     optG4_Q = fun_optimQ(stanmodels$mG4_Q, data, start, ndraws, 123, pvec)
 

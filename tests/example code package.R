@@ -13,7 +13,7 @@ rm(list=ls())
 Sys.setenv(BINPREF = "C:/rtools40/mingw64/bin/;C:/rtools40/mingw32/bin/;")
 Sys.setenv(PATH = "C:\\rtools40\\usr\\bin\\;")
 
-install.packages("~/GitHub/BMABMDR_0.0.0.9023.tar.gz", repos = NULL, type = "source")
+install.packages("~/GitHub/BMABMDR_0.0.0.9024.tar.gz", repos = NULL, type = "source")
 
 library(BMABMDR)
 library(gamlss)
