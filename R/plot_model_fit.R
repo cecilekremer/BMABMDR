@@ -158,7 +158,7 @@ basic.plot <- function(x, model_name, increasing){
 
 #' @rdname basic.plot
 #' @export
-basic.plotQ <- function(x){
+basic.plotQ <- function(x, model_name){
 
   covar <- unique(x$data[,5])
   model_pars <- get('x')[[paste0('par',model_name)]]
