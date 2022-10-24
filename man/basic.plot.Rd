@@ -5,12 +5,14 @@
 \alias{basic.plotQ}
 \title{Basic plotting for the methods using covariates}
 \usage{
-basic.plot(x, increasing)
+basic.plot(x, model_name, increasing)
 
 basic.plotQ(x)
 }
 \arguments{
 \item{x}{BMDBMA model object}
+
+\item{model_name}{model for which the fit should be plotted (one of get_models('continuous'))}
 
 \item{increasing}{logical indicating whether the continuous data are increasing (T) or decreasing (F)}
 }
