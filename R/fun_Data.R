@@ -72,15 +72,15 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     #   dose.a = dose.a/maxDose
     #
     # }else{
-      mean.a = data[, 2]
-      if(sd == TRUE){
-        sd.a = data[, 3]
-      }else if(sd == FALSE){
-        sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
-      }
-      n.a = data[, 4]
-      N = length(dose.a)
-      dose.a = dose.a/maxDose
+    mean.a = data[, 2]
+    if(sd == TRUE){
+      sd.a = data[, 3]
+    }else if(sd == FALSE){
+      sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
+    }
+    n.a = data[, 4]
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
     # }
     testNLN <- NA
   }else if(sumstats == TRUE & geom.stats == TRUE){
@@ -103,15 +103,15 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     #   dose.a = dose.a/maxDose
     #
     # }else{
-      gmean.a = data[, 2]
-      if(sd == TRUE){
-        gsd.a = data[, 3]
-      }else if(sd == FALSE){
-        gsd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
-      }
-      n.a = data[, 4]
-      N = length(dose.a)
-      dose.a = dose.a/maxDose
+    gmean.a = data[, 2]
+    if(sd == TRUE){
+      gsd.a = data[, 3]
+    }else if(sd == FALSE){
+      gsd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
+    }
+    n.a = data[, 4]
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
     # }
     testNLN <- NA
 
@@ -427,31 +427,15 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     data = data[order(data[, 1]), ]
     dose.a = data[, 1]
     maxDose = max(dose.a)
-    ## if dose levels not unique
-    # if(length(dose.a) != length(unique(dose.a))){
-    #   dose.a = sort(unique(dose.a))
-    #   N = length(dose.a)
-    #   mean.a=rep(NA,N)
-    #   sd.a=rep(NA,N)
-    #   n.a=rep(NA,N)
-    #   for (iu in (1:N)){
-    #     mean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
-    #     sd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
-    #     n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
-    #   }
-    #   dose.a = dose.a/maxDose
-    #
-    # }else{
-
-      mean.a = data[, 2]
-      if(sd == TRUE){
-        sd.a = data[, 3]
-      }else if(sd == FALSE){
-        sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
-      }
-      n.a = data[, 4]
-      N = length(dose.a)
-      dose.a = dose.a/maxDose
+    mean.a = data[, 2]
+    if(sd == TRUE){
+      sd.a = data[, 3]
+    }else if(sd == FALSE){
+      sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
+    }
+    n.a = data[, 4]
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
     # }
     # shift if negative means occur
     shift=0
@@ -472,9 +456,10 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
       sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
     }
     gsd.a = log(sd.a)
-    gmean.a = log(mean.a)
     gmean.a2 = log(mean.a)
     shift = 0
+    if (min(gmean.a2)<0) {gmean.a = gmean.a2-20*min(gmean.a2); shift = 20*min(gmean.a2)}
+    if (min(gmean.a2)>=0) gmean.a = gmean.a2
     n.a = data[, 4]
     N = length(dose.a)
     dose.a = dose.a/maxDose
@@ -1104,8 +1089,8 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   )
 
   optSM = rstan::optimizing(stanmodels$mSMc, data = data.modstanSM,
-                     seed=as.integer(123), draws = 30000,
-                     init = svSM, hessian=TRUE)
+                            seed=as.integer(123), draws = 30000,
+                            init = svSM, hessian=TRUE)
   means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:N, ']')], 2, median)
 
   means.all$pred = means.SM
@@ -1520,8 +1505,8 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   )
 
   optSM = rstan::optimizing(stanmodels$mSMc, data = data.modstanSM,
-                     seed=as.integer(123), draws = 30000,
-                     init = svSM, hessian=TRUE)
+                            seed=as.integer(123), draws = 30000,
+                            init = svSM, hessian=TRUE)
   means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:N, ']')], 2, median)
 
   means.all$pred = means.SM
@@ -2618,9 +2603,10 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
     }
     gsd.a = sd.a
-    gmean.a = mean.a
     gmean.a2 = mean.a
     shift = 0
+    if (min(gmean.a2)<0) {gmean.a = gmean.a2-20*min(gmean.a2); shift = 20*min(gmean.a2)}
+    if (min(gmean.a2)>=0) gmean.a = gmean.a2
     n.a = data[, 4]
     N = length(dose.a)
     covar = data[,5]
