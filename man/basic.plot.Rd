@@ -7,7 +7,7 @@
 \usage{
 basic.plot(x, model_name, increasing)
 
-basic.plotQ(x)
+basic.plotQ(x, model_name)
 }
 \arguments{
 \item{x}{BMDBMA model object}

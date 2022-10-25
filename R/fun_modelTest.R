@@ -81,8 +81,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5")]
 
       parsSM = as.matrix(fitstanSM)
-      means.SM = apply(parsSM[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
-      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median)
+      means.SM = apply(parsSM[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median, na.rm = T)
 
     }else if(type == 'Laplace'){
 
@@ -92,8 +92,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median, na.rm = T)
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -161,8 +161,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5")]
 
       parsSM = as.matrix(fitstanSM)
-      means.SM = apply(parsSM[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median)
-      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'))], 2, median)
+      means.SM = apply(parsSM[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
+      pars.SM = apply(parsSM[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'))], 2, median, na.rm = T)
 
 
     }else if(type == 'Laplace'){
@@ -173,8 +173,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'))], 2, median)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'))], 2, median, na.rm = T)
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -266,9 +266,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5","par6")]
 
       parsSM = as.matrix(fitstanSM)
-      means.SM = apply(parsSM[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
+      means.SM = apply(parsSM[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
       pars.SM = apply(parsSM[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'),
-                                 paste0('par[', data.N$data$N+2, ']'))], 2, median)
+                                 paste0('par[', data.N$data$N+2, ']'))], 2, median, na.rm = T)
 
     }else if(type == 'Laplace'){
 
@@ -279,8 +279,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
       pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'),
-                                            paste0('par[', data.N$data$N+2, ']'))], 2, median)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median)
+                                            paste0('par[', data.N$data$N+2, ']'))], 2, median, na.rm = T)
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -368,9 +368,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5","par6")]
 
       parsSM = as.matrix(fitstanSM)
-      means.SM = apply(parsSM[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median)
+      means.SM = apply(parsSM[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
       pars.SM = apply(parsSM[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'),
-                                 paste0('par[', data.LN$data$N+2, ']'))], 2, median)
+                                 paste0('par[', data.LN$data$N+2, ']'))], 2, median, na.rm = T)
 
 
     }else if(type == 'Laplace'){
@@ -382,8 +382,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
       pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'),
-                                            paste0('par[', data.LN$data$N+2, ']'))], 2, median)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median)
+                                            paste0('par[', data.LN$data$N+2, ']'))], 2, median, na.rm = T)
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -565,16 +565,16 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     if(data.Q$data$is_bin == 1){
 
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3")]
-      means.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'))], 2, median)
+      means.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'))], 2, median, na.rm = T)
       pars.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
-                                 paste0('par[', length(unique(data.Q$data$x)), ']'))], 2, median)
+                                 paste0('par[', length(unique(data.Q$data$x)), ']'))], 2, median, na.rm = T)
 
     } else if(data.Q$data$is_betabin == 1){
 
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3", "rho[1]")]
-      means.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'), "rho[1]")], 2, median)
+      means.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'), "rho[1]")], 2, median, na.rm = T)
       pars.SM = apply(parsSM[, c(paste0('a[', 1:length(unique(data.Q$data$x)), ']'),
-                                 paste0('par[', length(unique(data.Q$data$x)), ']'), "rho[1]")], 2, median)
+                                 paste0('par[', length(unique(data.Q$data$x)), ']'), "rho[1]")], 2, median, na.rm = T)
 
     } else stop("data must be either clustered or independent")
 
@@ -591,15 +591,15 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
       pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
-                                            paste0('par[', data.Q$data$N, ']'))], 2, median)
-      means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median)
+                                            paste0('par[', data.Q$data$N, ']'))], 2, median, na.rm = T)
+      means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median, na.rm = T)
 
     } else if(data.Q$data$is_betabin == 1) {
 
       all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'),
                                       pars = c('a', 'b', 'd', 'rho[1]','BMD', paste0('par',1:3)),
                                       rho = TRUE)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3),"rho")], 2, median)
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3),"rho")], 2, median, na.rm = T)
 
       optSM = optimizing(stanmodels$mSM_Q, data = data.modstanSM,
                          seed=as.integer(seed), #draws = ndraws,

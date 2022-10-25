@@ -1592,7 +1592,7 @@ full.laplace_MA=function(data.N, data.LN,
 
   ### best fitting model vs saturated ANOVA model
   best.fit = modelnames[which(weight[1:16] == max(weight[1:16]))][1]
-
+  nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
   bfTest <- modelTest(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
                       seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
   print(warning(bfTest$warn.bf))
@@ -3134,7 +3134,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
   ### best fitting model vs saturated ANOVA model
   best.fit = modelnames[which(weight[1:16] == max(weight[1:16]))][1]
-
+  nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
   bfTest <- modelTestC(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
                        seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
   print(warning(bfTest$warn.bf))
@@ -4175,7 +4175,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
   ### best fitting model vs saturated ANOVA model
   best.fit = modelnames[which(weight[1:8] == max(weight[1:8]))]
-
+  nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
   bfTest <- modelTestQ(best.fit, data.Q, get(paste0('opt', best.fit, '_Q')), type = 'Laplace',
                        seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
   #warning(bfTest$warn.bf)
