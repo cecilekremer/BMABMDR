@@ -58,20 +58,20 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     maxDose = max(dose.a)
 
     ## if dose levels not unique
-    if(length(dose.a) != length(unique(dose.a))){
-      dose.a = sort(unique(dose.a))
-      N = length(dose.a)
-      mean.a=rep(NA,N)
-      sd.a=rep(NA,N)
-      n.a=rep(NA,N)
-      for (iu in (1:N)){
-        mean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
-        sd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
-        n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
-      }
-      dose.a = dose.a/maxDose
-
-    }else{
+    # if(length(dose.a) != length(unique(dose.a))){
+    #   dose.a = sort(unique(dose.a))
+    #   N = length(dose.a)
+    #   mean.a=rep(NA,N)
+    #   sd.a=rep(NA,N)
+    #   n.a=rep(NA,N)
+    #   for (iu in (1:N)){
+    #     mean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
+    #     sd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
+    #     n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
+    #   }
+    #   dose.a = dose.a/maxDose
+    #
+    # }else{
       mean.a = data[, 2]
       if(sd == TRUE){
         sd.a = data[, 3]
@@ -81,7 +81,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
       n.a = data[, 4]
       N = length(dose.a)
       dose.a = dose.a/maxDose
-    }
+    # }
     testNLN <- NA
   }else if(sumstats == TRUE & geom.stats == TRUE){
     data = data[order(data[, 1]), ]
@@ -89,20 +89,20 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     maxDose = max(dose.a)
 
     ## if dose levels not unique
-    if(length(dose.a) != length(unique(dose.a))){
-      dose.a = sort(unique(dose.a))
-      N = length(dose.a)
-      gmean.a=rep(NA,N)
-      gsd.a=rep(NA,N)
-      n.a=rep(NA,N)
-      for (iu in (1:N)){
-        gmean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
-        gsd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
-        n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
-      }
-      dose.a = dose.a/maxDose
-
-    }else{
+    # if(length(dose.a) != length(unique(dose.a))){
+    #   dose.a = sort(unique(dose.a))
+    #   N = length(dose.a)
+    #   gmean.a=rep(NA,N)
+    #   gsd.a=rep(NA,N)
+    #   n.a=rep(NA,N)
+    #   for (iu in (1:N)){
+    #     gmean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
+    #     gsd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
+    #     n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
+    #   }
+    #   dose.a = dose.a/maxDose
+    #
+    # }else{
       gmean.a = data[, 2]
       if(sd == TRUE){
         gsd.a = data[, 3]
@@ -112,7 +112,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
       n.a = data[, 4]
       N = length(dose.a)
       dose.a = dose.a/maxDose
-    }
+    # }
     testNLN <- NA
 
     mean.a = LNtoN(gmean.a,gsd.a)[1:N]
@@ -428,20 +428,20 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     dose.a = data[, 1]
     maxDose = max(dose.a)
     ## if dose levels not unique
-    if(length(dose.a) != length(unique(dose.a))){
-      dose.a = sort(unique(dose.a))
-      N = length(dose.a)
-      mean.a=rep(NA,N)
-      sd.a=rep(NA,N)
-      n.a=rep(NA,N)
-      for (iu in (1:N)){
-        mean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
-        sd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
-        n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
-      }
-      dose.a = dose.a/maxDose
-
-    }else{
+    # if(length(dose.a) != length(unique(dose.a))){
+    #   dose.a = sort(unique(dose.a))
+    #   N = length(dose.a)
+    #   mean.a=rep(NA,N)
+    #   sd.a=rep(NA,N)
+    #   n.a=rep(NA,N)
+    #   for (iu in (1:N)){
+    #     mean.a[iu] = mean(data[,2][data[,1] == dose.a[iu]])
+    #     sd.a[iu] = mean(data[,3][data[,1] == dose.a[iu]])
+    #     n.a[iu] = sum(data[,4][data[,1] == dose.a[iu]])
+    #   }
+    #   dose.a = dose.a/maxDose
+    #
+    # }else{
 
       mean.a = data[, 2]
       if(sd == TRUE){
@@ -452,7 +452,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
       n.a = data[, 4]
       N = length(dose.a)
       dose.a = dose.a/maxDose
-    }
+    # }
     # shift if negative means occur
     shift=0
     gmean.a2 = log(NtoLN(mean.a,sd.a))[1:N]
