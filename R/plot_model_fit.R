@@ -36,9 +36,9 @@ basic.plot <- function(x, model_name, increasing){
                     'par3',
                     'par4[1]')
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift)), col = i, lwd = 2)
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift)), col = i, lwd = 2)
           }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2)
+            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2)
           }
         }
       }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
@@ -48,9 +48,9 @@ basic.plot <- function(x, model_name, increasing){
                     'par3',
                     paste0('par4[',i,']'))
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift)), col = i, lwd = 2)
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift)), col = i, lwd = 2)
           }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2)
+            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2)
           }
         }
       }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
@@ -63,18 +63,18 @@ basic.plot <- function(x, model_name, increasing){
                     paste0('par4[',i,']')
           )
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift)), col = i, lwd = 2)
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift)), col = i, lwd = 2)
           }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2)
+            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2)
           }
 
         }
 
       }else{
         if(grepl('_LN',model_name)){
-          lines(seq(0,1,0.01), exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, modelFit$shift)), col = 1, lwd = 2)
+          lines(seq(0,1,0.01), exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, x$shift)), col = 1, lwd = 2)
         }else{
-          lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, modelFit$shift), col = 1, lwd = 2)
+          lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, x$shift), col = 1, lwd = 2)
         }
       }
 
@@ -106,9 +106,9 @@ basic.plot <- function(x, model_name, increasing){
                     'par3',
                     'par4[1]')
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2))
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2))
           }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2)
+            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2)
 
           }
         }
@@ -119,9 +119,9 @@ basic.plot <- function(x, model_name, increasing){
                     'par3',
                     paste0('par4[',i,']'))
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift)), col = i, lwd = 2)
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift)), col = i, lwd = 2)
           }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2)
+            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2)
           }
         }
       }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
@@ -134,17 +134,17 @@ basic.plot <- function(x, model_name, increasing){
                     paste0('par4[',i,']')
           )
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift)), col = i, lwd = 2)
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift)), col = i, lwd = 2)
           }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, modelFit$shift), col = i, lwd = 2)
+            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), 0.1, x$shift), col = i, lwd = 2)
           }
         }
 
       }else{
         if(grepl('_LN',model_name)){
-          lines(seq(0,1,0.01), exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, modelFit$shift)), col = 1, lwd = 2)
+          lines(seq(0,1,0.01), exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, x$shift)), col = 1, lwd = 2)
         }else{
-          lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, modelFit$shift), col = 1, lwd = 2)
+          lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), 0.1, x$shift), col = 1, lwd = 2)
         }
       }
 
