@@ -3226,7 +3226,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                                n=n,
                                x=x,
                                m=m,
-                               shift=0,
+                               shift=shift,
                                s2=s2,
                                maxD=maxDose,q=q,
                                covariate = covar_lvls,
