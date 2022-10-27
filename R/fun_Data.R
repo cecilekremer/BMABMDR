@@ -1905,7 +1905,6 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     N = length(dose.a)
     dose.a = dose.a/maxDose
     covar = indiv.data$cov
-    dose.a = dose.a/maxDose
     # test normality
     datind <- data.frame(x = data$dose,
                          y = data$resp)
@@ -2647,7 +2646,6 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     N = length(dose.a)
     dose.a = dose.a/maxDose
     covar = indiv.data$cov
-    dose.a = dose.a/maxDose
     # test normality
     datind <- data.frame(x = data$dose,
                          y = data$resp)
@@ -2668,6 +2666,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       gsd.a2[iu] = mean(gsd.a[dose.a == dose.a2[iu]])
       n.a2[iu] = sum(n.a[dose.a == dose.a2[iu]])
     }
+    shift = 0
     # gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
     # if (min(gmean.a3)<0) {gmean.a4 = gmean.a3-shift}
     # if (min(gmean.a3)>=0) gmean.a4 = gmean.a3

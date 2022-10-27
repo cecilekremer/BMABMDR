@@ -7,8 +7,8 @@
 full.laplace_MA_Q_Cov(
   data,
   sumstats = TRUE,
-  q = q,
-  prior.d = prior.d,
+  q = 0.1,
+  prior.d = "N11",
   extended = TRUE,
   prior.weights = rep(1, 8),
   ndraws = 30000,
