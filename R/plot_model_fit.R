@@ -160,7 +160,7 @@ basic.plot <- function(x, model_name, increasing){
 #' @export
 basic.plotQ <- function(x, model_name){
 
-  covar <- unique(x$data[,5])
+  covar <- unique(x$data[,4])
   model_pars <- get('x')[[paste0('par',model_name)]]
   DRM <- get(paste0('DRM.', model_name))
 

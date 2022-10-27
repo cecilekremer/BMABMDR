@@ -4291,8 +4291,8 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 full.laplace_MA_Cov = function(data, # the summary data
                                sumstats = TRUE,
                                sd = TRUE,
-                               q = q,
-                               prior.d = prior.d,
+                               q = 0.05,
+                               prior.d = 'N11',
                                extended = TRUE,
                                prior.weights = rep(1,16),
                                ndraws=30000,seed=123,
@@ -5823,8 +5823,8 @@ full.laplace_MA_Cov = function(data, # the summary data
 #'
 full.laplace_MA_Q_Cov = function(data, # the summary data
                                  sumstats = TRUE,
-                                 q = q,
-                                 prior.d = prior.d,
+                                 q = 0.1,
+                                 prior.d = 'N11',
                                  extended = TRUE,
                                  prior.weights = rep(1,8),
                                  ndraws=30000,seed=123,
