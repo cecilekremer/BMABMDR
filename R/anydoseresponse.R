@@ -89,7 +89,7 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
   # Fitting the null model (no effect)
   sv=rstan::optimizing(stanmodels$mH0,data = data.modstanH0,init=svH0)$par
   initf2 <- function(chain_id = 1) {
-    list(par=sv[1:2] + rnorm(2, sd = 0.01*abs(sv[2])) ,alpha = chain_id)
+    list(par=sv[1:2] + rnorm(2, sd = 0.001*abs(sv[2])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
   fitstanH0=rstan::sampling(stanmodels$mH0,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
@@ -99,7 +99,7 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
   # Fitting the saturated ANOVA model
   sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
   initf2 <- function(chain_id = 1) {
-    list(par=sv[1:(N+1)] + rnorm(N+1, sd = 0.01*abs(sv[1:(N+1)])) ,alpha = chain_id)
+    list(par=sv[1:(N+1)] + rnorm(N+1, sd = 0.001*abs(sv[1:(N+1)])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
   fitstanSM=rstan::sampling(stanmodels$mSM,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
@@ -220,7 +220,7 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   # Fitting the null model (no effect)
   sv=rstan::optimizing(stanmodels$mH0,data = data.modstanH0,init=svH0)$par
   initf2 <- function(chain_id = 1) {
-    list(par=sv[1:2] + rnorm(2, sd = 0.01*abs(sv[2])) ,alpha = chain_id)
+    list(par=sv[1:2] + rnorm(2, sd = 0.001*abs(sv[2])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
   fitstanH0=rstan::sampling(stanmodels$mH0,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
@@ -230,7 +230,7 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   # Fitting the saturated ANOVA model
   sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
   initf2 <- function(chain_id = 1) {
-    list(par=sv[1:(N+1)] + rnorm(N+1, sd = 0.01*abs(sv[1:(N+1)])) ,alpha = chain_id)
+    list(par=sv[1:(N+1)] + rnorm(N+1, sd = 0.001*abs(sv[1:(N+1)])) ,alpha = chain_id)
   }
   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
   fitstanSM=rstan::sampling(stanmodels$mSM,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
@@ -374,7 +374,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
     # Fitting the null model (no effect)
     sv=rstan::optimizing(stanmodels$mH0c, data = data.modstanH0, init=svH0)$par
     initf2 <- function(chain_id = 1) {
-      list(par=sv[1:3] + rnorm(3, sd = 0.01*abs(sv[1:3])) ,alpha = chain_id)
+      list(par=sv[1:3] + rnorm(3, sd = 0.001*abs(sv[1:3])) ,alpha = chain_id)
     }
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
     fitstanH0=rstan::sampling(stanmodels$mH0c,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
@@ -384,7 +384,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
     # Fitting the saturated ANOVA model
     sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
     initf2 <- function(chain_id = 1) {
-      list(par=sv[1:(N+2)] + rnorm(N+2, sd = 0.01*abs(sv[1:(N+2)])) ,alpha = chain_id)
+      list(par=sv[1:(N+2)] + rnorm(N+2, sd = 0.001*abs(sv[1:(N+2)])) ,alpha = chain_id)
     }
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
     fitstanSM=rstan::sampling(stanmodels$mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
@@ -539,7 +539,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
       initf2 <- function(chain_id = 1) {
         rho = svNM[2]; dim(rho)=1
-        list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])), rho = rho ,alpha = chain_id)
+        list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[2])), rho = rho ,alpha = chain_id)
       }
 
       init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
@@ -572,8 +572,8 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
         rho = svH1[nns_rho]; dim(rho)=1
         list(par=svH1[nns] +
-               rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
-             rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
+               rnorm(length(nns), sd = 0.001*abs(svH1[nns])),
+             rho = rho + rnorm(length(nns_rho), sd = 0.001*abs(svH1[nns_rho])), alpha = chain_id)
       }
 
 
@@ -675,7 +675,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
     svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
 
     initf2 <- function(chain_id = 1) {
-      list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])) ,alpha = chain_id)
+      list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[2])) ,alpha = chain_id)
     }
 
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
@@ -703,7 +703,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
     initf2 <- function(chain_id = 1) {
       nns <- which(stringr::str_detect(names(svH1),'par'))
       list(par=svH1[nns] +
-             rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
+             rnorm(length(nns), sd = 0.001*abs(svH1[nns])), alpha = chain_id)
     }
 
 
