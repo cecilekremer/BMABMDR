@@ -5783,7 +5783,8 @@ full.laplace_MA_Cov = function(data, # the summary data
               parQE4_LN = parQE4_LN,
               parP4_LN = parP4_LN,
               parL4_LN = parL4_LN,
-              shift = data_LNCOV_all$data$shift
+              shift = data_LNCOV_all$data$shift,
+              q = data_NCOV_all$data$q
   ))
 
 }
@@ -6637,7 +6638,8 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
               parG4_Q = parG4_Q,
               parQE4_Q = parQE4_Q,
               parP4_Q = parP4_Q,
-              parL4_Q = parL4_Q
+              parL4_Q = parL4_Q,
+              q = data_all$data$q
   ))
 
 }
