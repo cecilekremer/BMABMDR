@@ -85,6 +85,8 @@ test_that("quantal data with covariate", {
           n = rep(data$size, 2),
           covariate = c(rep('Male', 5), rep('Female', 5))
       )
+      anydoseresponseQ(data.input$dose, data.input$y, data.input$n, cluster = FALSE, use.mcmc = FALSE)
+
 
       q = 0.1
 
@@ -100,6 +102,11 @@ test_that("quantal data with covariate", {
       for (i in seq_along(get_models(type = "quantal"))) {
         basic.plotQ(modelFit, model_name = get_models(type = "quantal")[i])
       }
+
+      # Fit without covariate
+      data.input.Q <- PREP_DATA_QA(data = data.input, q = q, sumstats = T)
+      modelFit <- full.laplaceQ_MA(data.input.Q, prior.weights = rep(1,8), pvec = c(0.05,0.5,0.95))
+      modelFit$MA
 
     })
 

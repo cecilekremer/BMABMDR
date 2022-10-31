@@ -177,7 +177,7 @@ basic.plotQ <- function(x, model_name){
 
   if(!is.na(x$summary$Submodel[x$summary$Model==model_name][1])){
 
-    if(x$summary$Submodel[x$summary$Model==model_name][1] == 'a_sigma2'){
+    if(x$summary$Submodel[x$summary$Model==model_name][1] == 'background'){
       for(i in 1:length(covar)){
         pars <- c(paste0('par1[',i,']'),
                   'par2[1]',
