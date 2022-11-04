@@ -16,8 +16,8 @@ fun_cov_selection(
   data_none,
   prior.weightsCov = rep(1, 4),
   pvec,
-  ndraws = ndraws,
-  td = td,
+  ndraws,
+  td,
   seed
 )
 
@@ -32,8 +32,8 @@ fun_cov_selectionQ(
   data_none,
   prior.weightsCov = rep(1, 4),
   pvec,
-  ndraws = ndraws,
-  td = td,
+  ndraws,
+  td,
   seed
 )
 }

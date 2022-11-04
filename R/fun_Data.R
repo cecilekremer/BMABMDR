@@ -2651,7 +2651,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                          y = data$resp)
     testNLN <- NLN_test(datind)
 
-    mean.a = gmean.a; sd.a = gsd.a
+    mean.a = exp(gmean.a); sd.a = exp(gsd.a)
     gmean.a2 = gmean.a
 
     # if(covariate == 'BMD_d' | covariate == 'none'){
@@ -2672,7 +2672,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     # if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
     # gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
     # }
-    mean.a2 = gmean.a3
+    mean.a2 = exp(gmean.a3)
   }
 
   covar_lvls <- unique(covar)
