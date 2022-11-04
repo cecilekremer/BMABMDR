@@ -272,7 +272,7 @@ fun.w.QE4 <- function(optMod, lld, min.ll, nlevels,
 #'
 fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma2, data_dBMD,
                               data_all, data_none, prior.weightsCov = rep(1, 4),
-                              pvec, ndraws = ndraws, td = td, seed){
+                              pvec, ndraws, td, seed){
 
   # fit all four submodels
   optMod_asigma2 <- fun_optimCov(model, data_asigma2$data,
@@ -459,7 +459,7 @@ fun.wQ <- function(optMod, lld, min.ll, nlevels,
                             mode = dataMod$data$priormu[1,], shape = dataMod$data$priorgama[1, ])*
                 # BMD
                 mc2d::dpert(bmd, min = dataMod$data$priorlb[2,1], max = dataMod$data$priorub[2,1],
-                            mode = dataMod$data$priormu[2,1], shape = dataMod$data$priorgama[2, ]))
+                            mode = dataMod$data$priormu[2,1], shape = dataMod$data$priorgama[2,1]))
 
   } else if(covar == 'BMD_d') {
 
@@ -469,7 +469,7 @@ fun.wQ <- function(optMod, lld, min.ll, nlevels,
                                       sd = dataMod$data$priorSigma[3,3])*
                 # a
                 mc2d::dpert(a, min = dataMod$data$priorlb[1,1], max = dataMod$data$priorub[1,1],
-                            mode = dataMod$data$priormu[1,1], shape = dataMod$data$priorgama[1, ])*
+                            mode = dataMod$data$priormu[1,1], shape = dataMod$data$priorgama[1,1])*
                 # BMD
                 mc2d::dpert(bmd, min = dataMod$data$priorlb[2,], max = dataMod$data$priorub[2,],
                             mode = dataMod$data$priormu[2,], shape = dataMod$data$priorgama[2, ]))
@@ -544,7 +544,7 @@ fun.wQ.QE4 <- function(optMod, lld, min.ll, nlevels,
                             mode = dataMod$data$priormuQ[1,], shape = dataMod$data$priorgama[1,])*
                 # BMD
                 mc2d::dpert(bmd, min = dataMod$data$priorlb[2,1], max = dataMod$data$priorub[2,1],
-                            mode = dataMod$data$priormuQ[2,1], shape = dataMod$data$priorgama[2,]))
+                            mode = dataMod$data$priormuQ[2,1], shape = dataMod$data$priorgama[2,1]))
 
   } else if(covar == 'BMD_d') {
 
@@ -554,7 +554,7 @@ fun.wQ.QE4 <- function(optMod, lld, min.ll, nlevels,
                                       sd = dataMod$data$priorSigmaQ[3,3])*
                 # a
                 mc2d::dpert(a, min = dataMod$data$priorlb[1,1], max = dataMod$data$priorub[1,1],
-                            mode = dataMod$data$priormuQ[1,1], shape = dataMod$data$priorgama[1,])*
+                            mode = dataMod$data$priormuQ[1,1], shape = dataMod$data$priorgama[1,1])*
                 # BMD
                 mc2d::dpert(bmd, min = dataMod$data$priorlb[2,], max = dataMod$data$priorub[2,],
                             mode = dataMod$data$priormuQ[2,], shape = dataMod$data$priorgama[2,]))
@@ -595,7 +595,7 @@ fun.wQ.QE4 <- function(optMod, lld, min.ll, nlevels,
 #' @export
 fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, data_dBMD,
                                data_all, data_none, prior.weightsCov = rep(1, 4),
-                               pvec, ndraws = ndraws, td = td, seed){
+                               pvec, ndraws, td, seed){
 
   # fit all four submodels
   optMod_bkg <- fun_optimQCov(model, data_bkg$data,

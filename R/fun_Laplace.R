@@ -6478,9 +6478,9 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
       },
       if(prior.weights[2] > 0 & !is.na(best.sub.which[2])){
         if(best.sub.which[2] == 'background'){
-          sample(select_I4_Q$best.submodel$theta_tilde[,'par2[1]'], count[2], replace = T)
+          sample(select_IE4_Q$best.submodel$theta_tilde[,'par2[1]'], count[2], replace = T)
         }else if(best.sub.which[2] == 'none'){
-          sample(select_I4_Q$best.submodel$theta_tilde[,'par2'], count[2], replace = T)
+          sample(select_IE4_Q$best.submodel$theta_tilde[,'par2'], count[2], replace = T)
         }
       },
       if(prior.weights[3] > 0 & !is.na(best.sub.which[3])){

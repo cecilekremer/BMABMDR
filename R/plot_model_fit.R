@@ -106,7 +106,7 @@ basic.plot <- function(x, model_name, increasing){
                     'par3',
                     'par4[1]')
           if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2))
+            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
           }else{
             lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
 
