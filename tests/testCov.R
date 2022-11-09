@@ -145,10 +145,10 @@ FLBMD <- full.laplace_MA_Cov(
 FLBMD$MA
 FLBMD$summary
 # Plots
-for (i in seq_along(get_models(type = "continuous"))){
-  basic.plot(FLBMD, model_name = get_models("continuous")[i], increasing = T)
-}
-
+# for (i in seq_along(get_models(type = "continuous"))){
+#   basic.plot(FLBMD, model_name = get_models("continuous")[i], increasing = T)
+# }
+basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
 
 ### QUANTAL
 ###########
@@ -165,13 +165,12 @@ data.input <- data.frame(
 # data.input$y[1:5] <- data.input$y[1:5] + 2
 
 q = 0.1
-anydoseresponseQ(data.input$dose, data.input$y, data.input$n)
+# anydoseresponseQ(data.input$dose, data.input$y, data.input$n)
 
 # Fit without covariate
 data.input.Q <- PREP_DATA_QA(data = data.input, q = q, sumstats = T)
 modelFit <- full.laplaceQ_MA(data.input.Q, prior.weights = rep(1,8), pvec = c(0.05,0.5,0.95))
 modelFit$MA
-modelFit$summary
 
 # Fit with covariate
 modelFit <- full.laplace_MA_Q_Cov(
@@ -182,6 +181,8 @@ modelFit$summary
 modelFit$MA
 
 # Plots --> MODEL FIT?? covariate effects not reflected in fit
-for (i in seq_along(get_models(type = "quantal"))) {
-  basic.plotQ(modelFit, model_name = get_models(type = "quantal")[i])
-}
+# for (i in seq_along(get_models(type = "quantal"))) {
+#   basic.plotQ(modelFit, model_name = get_models(type = "quantal")[i])
+# }
+basic.plotQ(modelFit, 'E4_Q')
+
