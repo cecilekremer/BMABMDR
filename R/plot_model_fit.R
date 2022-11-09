@@ -11,149 +11,114 @@
 #'
 basic.plot <- function(x, model_name, increasing){
 
-  covar <- unique(x$data[,5])
+  covar <- as.factor(unique(x$data[,5]))
+  temp <- temp1 <- temp2 <- temp3 <- NULL
+  x$data$geom.y <- NtoLN(x$data$y, sqrt(x$data$s2))[1:dim(x$data)[1]]
 
+  # if(increasing == TRUE){
+
+  model_pars <- get('x')[[paste0('par',model_name)]]
   if(increasing == TRUE){
-
-    model_pars <- get('x')[[paste0('par',model_name)]]
     DRM <- get(paste0('DRM.', model_name, 'I'))
-
-    plot(x$data$x[x$data$cov == covar[1]]/max(x$data$x[x$data$cov == covar[1]]),
-         x$data$y[x$data$cov == covar[1]], main = paste0('Fitted model: ', model_name),
-         ylim = c(min(x$data$y)-0.5, max(x$data$y)+0.5), xlab = 'Dose', ylab = 'Response')
-    j = 2
-    for(i in 2:length(covar)){
-      points(x$data$x[x$data$cov == covar[i]]/max(x$data$x[x$data$cov == covar[i]]),
-             x$data$y[x$data$cov == covar[i]], pch = j, col = j)
-      j = j + 1
-    }
-    if(!is.na(x$summary$Submodel[x$summary$Model==model_name][1])){
-
-      if(x$summary$Submodel[x$summary$Model==model_name][1] == 'a_sigma2'){
-        for(i in 1:length(covar)){
-          pars <- c(paste0('par1[',i,']'),
-                    'par2[1]',
-                    'par3',
-                    'par4[1]')
-          if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
-          }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
-          }
-        }
-      }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
-        for(i in 1:length(covar)){
-          pars <- c('par1[1]',
-                    paste0('par2[',i,']'),
-                    'par3',
-                    paste0('par4[',i,']'))
-          if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
-          }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
-          }
-        }
-      }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
-
-        for(i in 1:length(covar)){
-
-          pars <- c(paste0('par1[',i,']'),
-                    paste0('par2[',i,']'),
-                    'par3',
-                    paste0('par4[',i,']')
-          )
-          if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
-          }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
-          }
-
-        }
-
-      }else{
-        if(grepl('_LN',model_name)){
-          lines(seq(0,1,0.01), exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift)), col = 1, lwd = 2)
-        }else{
-          lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift), col = 1, lwd = 2)
-        }
-      }
-
-      legend('topleft', c(paste0('Best submodel: ', paste0(x$summary$Submodel[x$summary$Model==model_name][1])),
-                          paste0('Weight ', round(x$weights[model_name], 4))), cex = 1.3, bty = 'n')
-    }
-
-  }else{
-
-    model_pars <- get('x')[[paste0('par',model_name)]]
+  }
+  else{
     DRM <- get(paste0('DRM.', model_name, 'D'))
-
-    plot(x$data$x[x$data$cov == covar[1]]/max(x$data$x[x$data$cov == covar[1]]),
-         x$data$y[x$data$cov == covar[1]], main =  paste0('Fitted model: ', model_name),
-         ylim = c(min(x$data$y)-0.5, max(x$data$y)+0.5), xlab = 'Dose', ylab = 'Response')
-    j = 2
-    for(i in 2:length(covar)){
-      points(x$data$x[x$data$cov == covar[i]]/max(x$data$x[x$data$cov == covar[i]]),
-             x$data$y[x$data$cov == covar[i]], pch = j, col = j)
-      j = j + 1
-    }
-
-    if(!is.na(x$summary$Submodel[x$summary$Model==model_name][1])){
-
-      if(x$summary$Submodel[x$summary$Model==model_name][1] == 'a_sigma2'){
-        for(i in 1:length(covar)){
-          pars <- c(paste0('par1[',i,']'),
-                    'par2[1]',
-                    'par3',
-                    'par4[1]')
-          if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
-          }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
-
-          }
-        }
-      }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
-        for(i in 1:length(covar)){
-          pars <- c('par1[1]',
-                    paste0('par2[',i,']'),
-                    'par3',
-                    paste0('par4[',i,']'))
-          if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
-          }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
-          }
-        }
-      }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
-
-        for(i in 1:length(covar)){
-
-          pars <- c(paste0('par1[',i,']'),
-                    paste0('par2[',i,']'),
-                    'par3',
-                    paste0('par4[',i,']')
-          )
-          if(grepl('_LN',model_name)){
-            lines(seq(0,1,0.01), exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)), col = i, lwd = 2)
-          }else{
-            lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift), col = i, lwd = 2)
-          }
-        }
-
-      }else{
-        if(grepl('_LN',model_name)){
-          lines(seq(0,1,0.01), exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift)), col = 1, lwd = 2)
-        }else{
-          lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift), col = 1, lwd = 2)
-        }
-      }
-
-      legend('topright', c(paste0('Best submodel: ', paste0(x$summary$Submodel[x$summary$Model==model_name][1])),
-                           paste0('Weight ', round(x$weights[model_name], 4))), cex = 1.3, bty = 'n')
-    }
   }
 
+  if(!is.na(x$summary$Submodel[x$summary$Model==model_name][1])){
 
+    if(x$summary$Submodel[x$summary$Model==model_name][1] == 'a_sigma2'){
+      for(i in 1:length(covar)){
+        pars <- c(paste0('par1[',i,']'),
+                  'par2[1]',
+                  'par3',
+                  'par4[1]')
+
+        if(grepl('_LN',model_name)){
+          temp <- c(temp, exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)))
+        }else{
+          temp <- c(temp, DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift))
+        }
+      }
+      if(grepl('_LN',model_name)){
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp, cov = rep(covar, each = length(seq(0,1,0.01))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      }else{
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp, cov = rep(covar, each = length(seq(0,1,0.01))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      }
+    }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
+      for(i in 1:length(covar)){
+        pars <- c('par1[1]',
+                  paste0('par2[',i,']'),
+                  'par3',
+                  paste0('par4[',i,']'))
+        if(grepl('_LN',model_name)){
+          temp1 <- c(temp1, exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)))
+        }else{
+          temp1 <- c(temp1, DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift))
+        }
+      }
+      if(grepl('_LN',model_name)){
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp1, cov = rep(covar, each = length(seq(0,1,0.01))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      }else{
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp1, cov = rep(covar, each = length(seq(0,1,0.01))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      }
+
+    }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
+
+      for(i in 1:length(covar)){
+
+        pars <- c(paste0('par1[',i,']'),
+                  paste0('par2[',i,']'),
+                  'par3',
+                  paste0('par4[',i,']')
+        )
+        if(grepl('_LN',model_name)){
+          temp2 <- c(temp2, exp(DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift)))
+        }else{
+          temp2 <- c(temp2, DRM(par = model_pars[pars], seq(0,1,0.01), x$q, x$shift))
+        }
+
+      }
+      if(grepl('_LN',model_name)){
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp2, cov = rep(covar, each = length(seq(0,1,0.01))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      }else{
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp2, cov = rep(covar, each = length(seq(0,1,0.01))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      }
+
+    }else{
+      if(grepl('_LN',model_name)){
+        temp3 <- c(temp3, exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift)))
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp3)
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y))
+      }else{
+        temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift))
+        dataTemp <- data.frame(x = seq(0,1,0.01), y = temp3)
+        p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y))
+      }
+    }
+
+    subtit <- paste0(paste0('Best submodel: ', paste0(x$summary$Submodel[x$summary$Model==model_name][1])," ("),
+                     paste0('Weight = ', round(x$weights[model_name], 4)),")")
+    pp <- p + labs(title = paste0('Fitted model: ', model_name),
+                   subtitle = subtit,
+                   x = 'Dose', y = 'Response', colour = 'Covariate')
+  }
+
+  return(pp)
 }
 
 #' @rdname basic.plot
@@ -163,19 +128,10 @@ basic.plotQ <- function(x, model_name){
   covar <- unique(x$data[,4])
   model_pars <- get('x')[[paste0('par',model_name)]]
   DRM <- get(paste0('DRM.', model_name))
-
-  ## E4_Q
-  plot(x$data$x[x$data$cov == covar[1]]/max(x$data$x[x$data$cov == covar[1]]),
-       x$data$y[x$data$cov == covar[1]]/x$data$n[x$data$cov == covar[1]], main = paste0('Fitted model: ', model_name),
-       ylim = c(0,1), xlab = '', ylab = 'Response')
-  j = 2
-  for(i in 2:length(covar)){
-    points(x$data$x[x$data$cov == covar[i]]/max(x$data$x[x$data$cov == covar[i]]),
-           x$data$y[x$data$cov == covar[i]]/x$data$n[x$data$cov == covar[1]], pch = j, col = j)
-    j = j + 1
-  }
+  temp <- temp1 <- temp2 <- temp3 <- NULL
 
   if(!is.na(x$summary$Submodel[x$summary$Model==model_name][1])){
+
 
     if(x$summary$Submodel[x$summary$Model==model_name][1] == 'background'){
       for(i in 1:length(covar)){
@@ -183,16 +139,25 @@ basic.plotQ <- function(x, model_name){
                   'par2[1]',
 
                   'par3[1]')
-        lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
+        temp <- c(temp, DRM(par = model_pars[pars], seq(0,1,0.01), x$q))
       }
+      dataTemp <- data.frame(x = seq(0,1,0.01), y = temp, cov = rep(covar, each = length(seq(0,1,0.01))))
+      p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
       for(i in 1:length(covar)){
         pars <- c('par1[1]',
                   paste0('par2[',i,']'),
 
                   paste0('par3[',i,']'))
-        lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
+        # lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
+        temp1 <- c(temp1, DRM(par = model_pars[pars], seq(0,1,0.01), x$q))
       }
+      dataTemp <- data.frame(x = seq(0,1,0.01), y = temp1, cov = rep(covar, each = length(seq(0,1,0.01))))
+      p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
 
       for(i in 1:length(covar)){
@@ -203,15 +168,29 @@ basic.plotQ <- function(x, model_name){
                   paste0('par3[',i,']')
         )
 
-        lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
-
+        # lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
+        temp2 <- c(temp2, DRM(par = model_pars[pars], seq(0,1,0.01), x$q))
       }
+      dataTemp <- data.frame(x = seq(0,1,0.01), y = temp2, cov = rep(covar, each = length(seq(0,1,0.01))))
+      p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
 
     }else{
-      lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q), col = 1, lwd = 2)
+      # lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q), col = 1, lwd = 2)
+      temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q))
+      dataTemp <- data.frame(x = seq(0,1,0.01), y = temp3)
+      p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y))
     }
 
-    legend('topleft', c(paste0('Best submodel: ', paste0(x$summary$Submodel[x$summary$Model==model_name][1])),
-                        paste0('Weight ', round(x$weights[model_name], 4))), cex = 1.3, bty = 'n')
+    subtit <- paste0(paste0('Best submodel: ', paste0(x$summary$Submodel[x$summary$Model==model_name][1])," ("),
+                     paste0('Weight = ', round(x$weights[model_name], 4)),")")
+    pp <- p + labs(title = paste0('Fitted model: ', model_name),
+                   subtitle = subtit,
+                   x = 'Dose', y = 'Response', colour = 'Covariate')
+
   }
+
+
+  return(pp)
 }
