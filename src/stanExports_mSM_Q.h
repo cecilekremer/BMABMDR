@@ -258,8 +258,8 @@ public:
             num_params_r__ = 0U;
             param_ranges_i__.clear();
             current_statement_begin__ = 35;
-            validate_non_negative_index("par", "N", N);
-            num_params_r__ += N;
+            validate_non_negative_index("par", "Ndose", Ndose);
+            num_params_r__ += Ndose;
             current_statement_begin__ = 36;
             validate_non_negative_index("rho", "is_betabin", is_betabin);
             num_params_r__ += (1 * is_betabin);
@@ -285,10 +285,10 @@ public:
             stan::lang::rethrow_located(std::runtime_error(std::string("Variable par missing")), current_statement_begin__, prog_reader__());
         vals_r__ = context__.vals_r("par");
         pos__ = 0U;
-        validate_non_negative_index("par", "N", N);
-        context__.validate_dims("parameter initialization", "par", "vector_d", context__.to_vec(N));
-        Eigen::Matrix<double, Eigen::Dynamic, 1> par(N);
-        size_t par_j_1_max__ = N;
+        validate_non_negative_index("par", "Ndose", Ndose);
+        context__.validate_dims("parameter initialization", "par", "vector_d", context__.to_vec(Ndose));
+        Eigen::Matrix<double, Eigen::Dynamic, 1> par(Ndose);
+        size_t par_j_1_max__ = Ndose;
         for (size_t j_1__ = 0; j_1__ < par_j_1_max__; ++j_1__) {
             par(j_1__) = vals_r__[pos__++];
         }
@@ -346,9 +346,9 @@ public:
             Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> par;
             (void) par;  // dummy to suppress unused var warning
             if (jacobian__)
-                par = in__.vector_constrain(N, lp__);
+                par = in__.vector_constrain(Ndose, lp__);
             else
-                par = in__.vector_constrain(N);
+                par = in__.vector_constrain(Ndose);
             current_statement_begin__ = 36;
             std::vector<local_scalar_t__> rho;
             size_t rho_d_0_max__ = is_betabin;
@@ -361,8 +361,8 @@ public:
             }
             // transformed parameters
             current_statement_begin__ = 39;
-            validate_non_negative_index("a", "N", N);
-            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> a(N);
+            validate_non_negative_index("a", "Ndose", Ndose);
+            Eigen::Matrix<local_scalar_t__, Eigen::Dynamic, 1> a(Ndose);
             stan::math::initialize(a, DUMMY_VAR__);
             stan::math::fill(a, DUMMY_VAR__);
             current_statement_begin__ = 40;
@@ -382,7 +382,7 @@ public:
                         get_base1(par, 1, "par", 1), 
                         "assigning variable a");
             current_statement_begin__ = 46;
-            for (int k = 2; k <= N; ++k) {
+            for (int k = 2; k <= Ndose; ++k) {
                 current_statement_begin__ = 47;
                 stan::model::assign(a, 
                             stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
@@ -439,7 +439,7 @@ public:
             const char* function__ = "validate transformed params";
             (void) function__;  // dummy to suppress unused var warning
             current_statement_begin__ = 39;
-            size_t a_j_1_max__ = N;
+            size_t a_j_1_max__ = Ndose;
             for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                 if (stan::math::is_uninitialized(a(j_1__))) {
                     std::stringstream msg__;
@@ -469,7 +469,7 @@ public:
             current_statement_begin__ = 72;
             lp_accum__.add(pert_dist_lpdf<propto__>(get_base1(par, 1, "par", 1), priorlb, get_base1(priormu, 1, "priormu", 1), priorub, priorgama, pstream__));
             current_statement_begin__ = 74;
-            for (int k = 2; k <= N; ++k) {
+            for (int k = 2; k <= Ndose; ++k) {
                 current_statement_begin__ = 75;
                 lp_accum__.add(uniform_log<propto__>(get_base1(par, k, "par", 1), -(1), 1));
             }
@@ -519,13 +519,13 @@ public:
         dimss__.resize(0);
         std::vector<size_t> dims__;
         dims__.resize(0);
-        dims__.push_back(N);
+        dims__.push_back(Ndose);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(is_betabin);
         dimss__.push_back(dims__);
         dims__.resize(0);
-        dims__.push_back(N);
+        dims__.push_back(Ndose);
         dimss__.push_back(dims__);
         dims__.resize(0);
         dims__.push_back(N);
@@ -548,8 +548,8 @@ public:
         static const char* function__ = "model_mSM_Q_namespace::write_array";
         (void) function__;  // dummy to suppress unused var warning
         // read-transform, write parameters
-        Eigen::Matrix<double, Eigen::Dynamic, 1> par = in__.vector_constrain(N);
-        size_t par_j_1_max__ = N;
+        Eigen::Matrix<double, Eigen::Dynamic, 1> par = in__.vector_constrain(Ndose);
+        size_t par_j_1_max__ = Ndose;
         for (size_t j_1__ = 0; j_1__ < par_j_1_max__; ++j_1__) {
             vars__.push_back(par(j_1__));
         }
@@ -572,8 +572,8 @@ public:
         try {
             // declare and define transformed parameters
             current_statement_begin__ = 39;
-            validate_non_negative_index("a", "N", N);
-            Eigen::Matrix<double, Eigen::Dynamic, 1> a(N);
+            validate_non_negative_index("a", "Ndose", Ndose);
+            Eigen::Matrix<double, Eigen::Dynamic, 1> a(Ndose);
             stan::math::initialize(a, DUMMY_VAR__);
             stan::math::fill(a, DUMMY_VAR__);
             current_statement_begin__ = 40;
@@ -593,7 +593,7 @@ public:
                         get_base1(par, 1, "par", 1), 
                         "assigning variable a");
             current_statement_begin__ = 46;
-            for (int k = 2; k <= N; ++k) {
+            for (int k = 2; k <= Ndose; ++k) {
                 current_statement_begin__ = 47;
                 stan::model::assign(a, 
                             stan::model::cons_list(stan::model::index_uni(k), stan::model::nil_index_list()), 
@@ -652,7 +652,7 @@ public:
             (void) function__;  // dummy to suppress unused var warning
             // write transformed parameters
             if (include_tparams__) {
-                size_t a_j_1_max__ = N;
+                size_t a_j_1_max__ = Ndose;
                 for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                     vars__.push_back(a(j_1__));
                 }
@@ -696,7 +696,7 @@ public:
                                  bool include_tparams__ = true,
                                  bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
-        size_t par_j_1_max__ = N;
+        size_t par_j_1_max__ = Ndose;
         for (size_t j_1__ = 0; j_1__ < par_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "par" << '.' << j_1__ + 1;
@@ -710,7 +710,7 @@ public:
         }
         if (!include_gqs__ && !include_tparams__) return;
         if (include_tparams__) {
-            size_t a_j_1_max__ = N;
+            size_t a_j_1_max__ = Ndose;
             for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "a" << '.' << j_1__ + 1;
@@ -735,7 +735,7 @@ public:
                                    bool include_tparams__ = true,
                                    bool include_gqs__ = true) const {
         std::stringstream param_name_stream__;
-        size_t par_j_1_max__ = N;
+        size_t par_j_1_max__ = Ndose;
         for (size_t j_1__ = 0; j_1__ < par_j_1_max__; ++j_1__) {
             param_name_stream__.str(std::string());
             param_name_stream__ << "par" << '.' << j_1__ + 1;
@@ -749,7 +749,7 @@ public:
         }
         if (!include_gqs__ && !include_tparams__) return;
         if (include_tparams__) {
-            size_t a_j_1_max__ = N;
+            size_t a_j_1_max__ = Ndose;
             for (size_t j_1__ = 0; j_1__ < a_j_1_max__; ++j_1__) {
                 param_name_stream__.str(std::string());
                 param_name_stream__ << "a" << '.' << j_1__ + 1;

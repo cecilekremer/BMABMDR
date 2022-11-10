@@ -32,18 +32,18 @@ data{
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
 }
 parameters{
-  vector[N] par; // par[1]=background, par[2:N]=increment per dose group
+  vector[Ndose] par; // par[1]=background, par[2:N]=increment per dose group
   real<lower=0, upper=1> rho[is_betabin]; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
-  vector[N] a; // at the dose level
+  vector[Ndose] a; // at the dose level
   real abet[N];
   real bbet[N];
 
   // mean in lowest dose
   a[1] = par[1];
 
-  for(k in 2:N){
+  for(k in 2:Ndose){
       a[k] = a[k-1] + par[k];
       if(a[k] <= 0){
         a[k] = 0.0001;
@@ -71,7 +71,7 @@ model{
 
   par[1] ~ pert_dist(priorlb, priormu[1], priorub, priorgama);
 
-  for(k in 2:N)
+  for(k in 2:Ndose)
       par[k] ~ uniform(-1, 1);//pert_dist(priorlb, priormu[1], priorub, 4);
 
     if(is_bin==1) {
