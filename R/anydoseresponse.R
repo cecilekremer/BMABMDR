@@ -464,23 +464,6 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
   ndr=30000;nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
 
-  if(length(dose.a) != length(unique(dose.a))){
-    dose = sort(unique(dose.a))
-    N = length(dose)
-    y=rep(NA,N)
-    n=rep(NA,N)
-    for (iu in (1:N)){
-      y[iu] = sum(y.a[dose.a == dose[iu]])
-      n[iu] = sum(n.a[dose.a == dose[iu]])
-    }
-    y.a = y
-    dose.a = dose
-    n.a = n
-  }
-  maxDose = max(dose.a)
-  N = length(dose.a)
-  dose.a = dose.a/maxDose
-
 
   if(cluster==TRUE){
 
@@ -639,7 +622,23 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
   } else {
 
-    N <- length(dose.a)
+    if(length(dose.a) != length(unique(dose.a))){
+      dose = sort(unique(dose.a))
+      N = length(dose)
+      y=rep(NA,N)
+      n=rep(NA,N)
+      for (iu in (1:N)){
+        y[iu] = sum(y.a[dose.a == dose[iu]])
+        n[iu] = sum(n.a[dose.a == dose[iu]])
+      }
+      y.a = y
+      dose.a = dose
+      n.a = n
+    }
+    maxDose = max(dose.a)
+    N = length(dose.a)
+    dose.a = dose.a/maxDose
+
     priorH0 = list(
       priormu = max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
       priorlb = ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),

@@ -497,9 +497,27 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     )
   } else if(data.Q$data$is_bin == 1){
 
-    N <- length(data.Q$data$x)
-    y.a <- data.Q$data$y
-    n.a <- data.Q$data$n
+    if(length(data.Q$data$x) != length(unique(data.Q$data$x))){
+      dose = sort(unique(data.Q$data$x))
+      N = length(dose)
+      y=rep(NA,N)
+      n=rep(NA,N)
+      for (iu in (1:N)){
+        y[iu] = sum(data.Q$data$y[data.Q$data$x == dose[iu]])
+        n[iu] = sum(data.Q$data$n[data.Q$data$x == dose[iu]])
+      }
+      y.a = y
+      dose.a = dose
+      n.a = n
+    }
+    # maxDose = max(dose.a)
+    # N = length(dose.a)
+    # dose.a = dose.a/maxDose
+
+    N <- length(unique(data.Q$data$x))
+    Ndose <- length(unique(dose.a))
+    # y.a <- data.Q$data$y
+    # n.a <- data.Q$data$n
 
     priorSM = list(
       priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), 0.0),
@@ -512,7 +530,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
                         diff(y.a/n.a)
     ))
 
-    data.modstanSM = list(N=N,Ndose=length(unique(data.Q$data$x)),n=n.a,y=y.a, yint=y.a, nint=n.a,
+    data.modstanSM = list(N=N,Ndose=Ndose,n=n.a,y=y.a, yint=y.a, nint=n.a,
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                           is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin
@@ -590,9 +608,12 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       optSM = optimizing(stanmodels$mSM_Q, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
-                                            paste0('par[', data.Q$data$N, ']'))], 2, median, na.rm = T)
-      means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median, na.rm = T)
+      # pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
+      #                                       paste0('par[', data.Q$data$N, ']'))], 2, median, na.rm = T)
+      # means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median, na.rm = T)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:N, ']'),
+                                            paste0('par[', N, ']'))], 2, median, na.rm = T)
+      means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:N, ']')], 2, median, na.rm = T)
 
     } else if(data.Q$data$is_betabin == 1) {
 
@@ -638,7 +659,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
 
   if(data.Q$data$is_bin == 1){
-    llSM = llfSM_Q(pars.SM, data.Q$data$n, data.Q$data$x, data.Q$data$y)
+    # llSM = llfSM_Q(pars.SM, data.Q$data$n, data.Q$data$x, data.Q$data$y)
+    llSM = llfSM_Q(pars.SM, n.a, dose.a, y.a)
+
   }else if(data.Q$data$is_betabin == 1){
     llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
                     data.Q$data$n, data.Q$data$x, data.Q$data$y, data.Q$data$q,

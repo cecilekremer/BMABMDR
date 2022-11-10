@@ -14,6 +14,7 @@ basic.plot <- function(x, model_name, increasing){
   covar <- as.factor(unique(x$data[,5]))
   temp <- temp1 <- temp2 <- temp3 <- NULL
   x$data$geom.y <- NtoLN(x$data$y, sqrt(x$data$s2))[1:dim(x$data)[1]]
+  x$data$geom.s <- NtoLN(x$data$y, sqrt(x$data$s2))[(dim(x$data)[1]+1):(2*dim(x$data)[1])]
 
   # if(increasing == TRUE){
 
@@ -43,11 +44,15 @@ basic.plot <- function(x, model_name, increasing){
       if(grepl('_LN',model_name)){
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp, cov = rep(covar, each = length(seq(0,1,0.01))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
+          geom_errorbar(data = x$data, mapping = aes(x = x/max(x), ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }else{
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp, cov = rep(covar, each = length(seq(0,1,0.01))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
+          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - sqrt(s2), ymax = geom.y + sqrt(s2), colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
       for(i in 1:length(covar)){
@@ -64,11 +69,15 @@ basic.plot <- function(x, model_name, increasing){
       if(grepl('_LN',model_name)){
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp1, cov = rep(covar, each = length(seq(0,1,0.01))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))          +
+          geom_errorbar(data = x$data, mapping = aes(x = x/max(x), ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }else{
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp1, cov = rep(covar, each = length(seq(0,1,0.01))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))+
+          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - sqrt(s2), ymax = geom.y + sqrt(s2), colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }
 
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
@@ -90,11 +99,15 @@ basic.plot <- function(x, model_name, increasing){
       if(grepl('_LN',model_name)){
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp2, cov = rep(covar, each = length(seq(0,1,0.01))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))          +
+          geom_errorbar(data = x$data, mapping = aes(x = x/max(x), ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }else{
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp2, cov = rep(covar, each = length(seq(0,1,0.01))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))+
+          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - sqrt(s2), ymax = geom.y + sqrt(s2), colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }
 
     }else{
@@ -102,12 +115,16 @@ basic.plot <- function(x, model_name, increasing){
         temp3 <- c(temp3, exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift)))
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp3)
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = geom.y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y))
+          geom_line(data = dataTemp, aes(x = x, y = y)) +
+          geom_errorbar(data = x$data, mapping = aes(x = x/max(x), ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }else{
         temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q, x$shift))
         dataTemp <- data.frame(x = seq(0,1,0.01), y = temp3)
         p <- ggplot() + geom_point(data = x$data, aes(x = x/max(x), y = y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y))
+          geom_line(data = dataTemp, aes(x = x, y = y)) +
+          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - sqrt(s2), ymax = geom.y + sqrt(s2), colour = cov),
+                        size = 1, width = NA, linetype = 'dotted')
       }
     }
 
