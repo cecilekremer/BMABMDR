@@ -113,9 +113,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
     }
 
 
@@ -194,9 +194,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
     }
 
   }
@@ -310,9 +310,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
     }
 
 
@@ -415,9 +415,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', 1/round(bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
     }
 
   }
@@ -497,6 +497,10 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     )
   } else if(data.Q$data$is_bin == 1){
 
+    dose.a = data.Q$data$x
+    y.a = data.Q$data$y
+    n.a = data.Q$data$n
+
     if(length(data.Q$data$x) != length(unique(data.Q$data$x))){
       dose = sort(unique(data.Q$data$x))
       N = length(dose)
@@ -510,14 +514,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       dose.a = dose
       n.a = n
     }
-    # maxDose = max(dose.a)
-    # N = length(dose.a)
-    # dose.a = dose.a/maxDose
 
     N <- length(unique(data.Q$data$x))
     Ndose <- length(unique(dose.a))
-    # y.a <- data.Q$data$y
-    # n.a <- data.Q$data$n
 
     priorSM = list(
       priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), 0.0),
@@ -681,9 +680,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
   if(bf < 1/10){
-    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', 1/round(bf, 4), ').')
+    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
   }else if(bf > 1/10){
-    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', 1/round(bf, 4), ').')
+    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
   }
 
   return(list(bayesFactor = bf,
