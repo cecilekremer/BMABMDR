@@ -32,8 +32,10 @@ test_that("Summary continuous data with covariate", {
   FLBMD$summary
 
   # Plots
-  basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
-  basic.plot(FLBMD, model_name = 'E4_LN', increasing = T)
+  pt <- basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
+  pt
+  pt <- basic.plot(FLBMD, model_name = 'E4_LN', increasing = T)
+  pt
 
 
 })
@@ -67,8 +69,10 @@ test_that("Individual continuous data with covariate", {
   FLBMD$summary
 
   # Plots
-  basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
-  basic.plot(FLBMD, model_name = 'E4_LN', increasing = T)
+  pt <- basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
+  pt
+  pt <- basic.plot(FLBMD, model_name = 'E4_LN', increasing = T)
+  pt
 
 })
 
@@ -98,8 +102,8 @@ test_that("quantal data with covariate", {
   modelFit$summary
 
   # Plots
-  basic.plotQ(modelFit, model_name = 'E4_Q')
-
+  pt <- basic.plotQ(modelFit, model_name = 'E4_Q')
+  pt
 
   # Fit without covariate
   data.input.Q <- PREP_DATA_QA(data = data.input, q = q, sumstats = T)

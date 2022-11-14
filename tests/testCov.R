@@ -70,10 +70,13 @@ FLBMD <- full.laplace_MA_Cov(
 FLBMD$MA
 FLBMD$summary
 # Plots
+pt <- list()
+k = 1
 for (i in seq_along(get_models(type = "continuous"))){
-  basic.plot(FLBMD, model_name = get_models("continuous")[i], increasing = F)
+  pt[[k]] <- basic.plot(FLBMD, model_name = get_models("continuous")[i], increasing = T)
+  k = k+1
 }
-
+pt
 
 ### QUANTAL
 ###########
