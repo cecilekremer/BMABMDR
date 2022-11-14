@@ -1,4 +1,13 @@
 
+#' Summarize individual data
+#' @param data dat.a.frame
+#' @param type character
+#' @param cluster boolean
+#' @param covar boolean
+#' @return data.frame
+#' 
+#' @author mvarewyck
+#' @export
 summarize.indiv.data <- function(data, # in order of: dose, response, covariate OR dose, response, litter
                                  type = c('continuous','quantal'), cluster = FALSE, covar = FALSE){
   require('dplyr')
