@@ -113,9 +113,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }
 
 
@@ -194,9 +194,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }
 
   }
@@ -310,9 +310,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }
 
 
@@ -415,9 +415,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }else if(bf > 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
     }
 
   }
@@ -680,9 +680,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
   if(bf < 1/10){
-    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', round(1/bf, 4), ').')
+    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
   }else if(bf > 1/10){
-    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', round(1/bf, 4), ').')
+    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
   }
 
   return(list(bayesFactor = bf,
