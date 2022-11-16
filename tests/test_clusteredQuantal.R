@@ -39,7 +39,7 @@ test_that("Fit models clustered quantal",{
     pFLBMD_Q$model_fit
     pFLBMD_Q$MA_fit
 
-    pFLBMD_Q$model_fit2
-    pFLBMD_Q$MA_fit2
+    # pFLBMD_Q$model_fit2
+    # pFLBMD_Q$MA_fit2
 
     })
