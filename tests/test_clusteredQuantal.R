@@ -33,4 +33,13 @@ test_that("Fit models clustered quantal",{
     modelFit$MA
     modelFit$gof_check
 
+    pFLBMD_Q = plot.BMADRQ(modelFit, weight_type = "LP", include_data = T, all = F, title = '')
+    pFLBMD_Q$BMDs
+    pFLBMD_Q$weights
+    pFLBMD_Q$model_fit
+    pFLBMD_Q$MA_fit
+
+    pFLBMD_Q$model_fit2
+    pFLBMD_Q$MA_fit2
+
     })

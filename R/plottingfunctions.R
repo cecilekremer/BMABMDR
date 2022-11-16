@@ -1816,8 +1816,8 @@ plot.BMADRQ <- function(mod.obj,
     return(pts2)
   }else{
     if(include_data == TRUE & mod.obj$is_bin == 0){
-      return(list(BMDs = pBMDs, weights = pWeights, model_fit = pplot2, model_fit2 = pplot3,
-                  MA_fit = dplot2, MA_fit2 = dplot3))
+      return(list(BMDs = pBMDs, weights = pWeights, model_fit2 = pplot2, model_fit = pplot3,
+                  MA_fit2 = dplot2, MA_fit = dplot3))
     } else if(include_data == TRUE & mod.obj$is_bin != 0){
       return(list(BMDs = pBMDs, weights = pWeights, model_fit = pplot2, MA_fit = dplot2))
     } else {
