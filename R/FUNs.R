@@ -91,12 +91,14 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
     if(length(unique(dose)) == length(dose)){
       dat = data.frame(dose,mean)
       datf=data.frame(yy=mean,xx=dose+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
-      # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
-      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))
-      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))[length(dose)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      if(class(fpfit)[1] == 'try-error'){
+        flat = F
+      }else{
+        maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))
+        lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))[length(dose)-1]
+        if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      }
     }
     else{
       mean.i = c()
@@ -109,10 +111,14 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
       }
       dat = data.frame(dose.i,mean.i)
       datf=data.frame(yy=mean.i,xx=dose.i+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))
-      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))[length(dose.i)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      if(class(fpfit)[1] == 'try-error'){
+        flat = F
+      }else{
+        maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))
+        lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))[length(dose.i)-1]
+        if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      }
     }
 
     return(flat)
@@ -121,12 +127,14 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
     if(length(unique(dose)) == length(dose)){
       dat = data.frame(dose,mean)
       datf=data.frame(yy=mean,xx=dose+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
-      # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
-      maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))
-      lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))[length(dose)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      if(class(fpfit)[1] == 'try-error'){
+        flat = F
+      }else{
+        maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))
+        lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose+0.0001),lag=1,differences=1)))[length(dose)-1]
+        if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      }
     }else{
       mean.i = c()
       dose.i = c()
@@ -138,10 +146,14 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
       }
       dat = data.frame(dose.i,mean.i)
       datf=data.frame(yy=mean.i,xx=dose.i+0.0001)
-      fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))
-      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))[length(dose.i)-1]
-      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      if(class(fpfit)[1] == 'try-error'){
+        flat = F
+      }else{
+        maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))
+        lastdiff=((diff(predict(fpfit),lag=1,differences=1))/(diff(log(dose.i+0.0001),lag=1,differences=1)))[length(dose.i)-1]
+        if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+      }
     }
 
     return(flat)
@@ -164,25 +176,27 @@ flatC = function(dose.a,mean.a,inc){ # To determine if DR curve flattens or not
     # dat = data.frame(dose,mean)
     # datf=data.frame(yy=mean.a,xx=dose.a+0.0001)
     # fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-    fpfit=gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=NO)
-
-    # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
-    # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
-    maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))
-    lastdiff=((diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))[length(dose.a)-1]
-    if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+    fpfit=try(gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=NO), silent = T)
+    if(class(fpfit)[1] == 'try-error'){
+      flat = F
+    }else{
+      maxdiff=max((diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))
+      lastdiff=((diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))[length(dose.a)-1]
+      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+    }
     return(flat)
   }else if(inc==FALSE){
     # dat = data.frame(dose,mean)
     # datf=data.frame(yy=mean.a,xx=dose.a+0.0001)
     # fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-    fpfit=gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=NO)
-
-    # maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))
-    # lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose+0.0001),lag=1,differences=1))[length(dose)-1]
-    maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))
-    lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))[length(dose.a)-1]
-    if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+    fpfit=try(gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=NO), silent = T)
+    if(class(fpfit)[1] == 'try-error'){
+      flat = F
+    }else{
+      maxdiff=max(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))
+      lastdiff=(abs(diff(predict(fpfit),lag=1,differences=1))/diff(log(dose.a+0.0001),lag=1,differences=1))[length(dose.a)-1]
+      if (lastdiff/maxdiff<(0.5)) flat=T # flat if last incremental change smaller than 50% of the maximal change
+    }
     return(flat)
   }
 

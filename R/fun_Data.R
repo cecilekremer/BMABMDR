@@ -346,12 +346,17 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   }
 
   datf=data.frame(yy=mean.a,xx=dose.a+0.00000000000001)
-  fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-  RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)), data = datf)
-                    -predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)), data = datf))/
-    (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)), data = datf)) - bmr
-  bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-  bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+  if(class(fpfit)[1] == 'try-error'){
+    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    bmd.sv = 0.05
+  }else{
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)), data = datf)
+                      -predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)), data = datf))/
+      (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)), data = datf)) - bmr
+    bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
+    bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  }
 
   if(!is.null(prior.BMD)){
     bmd.sv = BMD.vec[2]
@@ -689,12 +694,17 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   }
 
   datf=data.frame(yy=mean.a,xx=dose.a+0.00000000000001)
-  fpfit=gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf)
-  RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf, type = "response")
-                    -predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf, type = "response"))/
-    (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf, type = "response")) - bmr
-  bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-  bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
+  if(class(fpfit)[1] == 'try-error'){
+    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    bmd.sv = 0.05
+  }else{
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf, type = "response")
+                      -predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf, type = "response"))/
+      (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf, type = "response")) - bmr
+    bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
+    bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  }
 
 
   if(!is.null(prior.BMD)) bmd.sv = BMD.vec[2]
@@ -1032,11 +1042,16 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
   # start value BMD
   datf = data.frame(yy=data[,2], xx=data[,1]/max(data[,1])+0.00000000000001)
-  fpfit = gamlss(yy~fp(xx),family=NO(),data=datf)
-  RISK = function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf)-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-    (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
-  bmd.svh = try(uniroot(RISK, interval=c(0, 1))$root,silent=T)
-  bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  fpfit = try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf))
+  if(class(fpfit)[1] == 'try-error'){
+    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    bmd.sv = 0.05
+  }else{
+    RISK = function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf)-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
+      (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
+    bmd.svh = try(uniroot(RISK, interval=c(0, 1))$root,silent=T)
+    bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  }
 
   if(!is.null(prior.BMD)) bmd.sv = BMD.vec[2]
 
@@ -1447,12 +1462,17 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   }
 
   datf = data.frame(yy=data$response,xx=(data$dose/max(data$dose))+0.00000000000001)
-  fpfit=gamlss::gamlss(yy~fp(xx),family=NO(),data=datf)
-  RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf)-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-    (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
-  bmd.svh=try(uniroot(RISK, interval=c(0, 1))$root,silent=T)
-  # bmd.sv=ifelse((mode(bmd.svh)=="numeric"),exp(bmd.svh),0.05)
-  bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+  if(class(fpfit)[1] == 'try-error'){
+    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    bmd.sv = 0.05
+  }else{
+    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf)-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
+      (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
+    bmd.svh=try(uniroot(RISK, interval=c(0, 1))$root,silent=T)
+    # bmd.sv=ifelse((mode(bmd.svh)=="numeric"),exp(bmd.svh),0.05)
+    bmd.sv=ifelse((mode(bmd.svh)=="numeric"),bmd.svh,0.05)
+  }
 
   if(!is.null(prior.BMD)) bmd.sv = BMD.vec[2]
 
@@ -2249,12 +2269,17 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       # start value BMD
       datf=data.frame(yy=mean.a[covar == covar_lvls[i]],
                       xx=dose.a[covar == covar_lvls[i]]+0.00000000000001)
-      fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-      RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
-                          predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
-      bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-      bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+      if(class(fpfit)[1] == 'try-error'){
+        message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+        bmd.sv[i] = 0.05
+      }else{
+        RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
+                            predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
+          (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+        bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
+        bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+      }
     }
 
     ## Default prior BMD
@@ -2305,12 +2330,18 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     # start value BMD
     datf=data.frame(yy=mean.a2,
                     xx=dose.a2+0.00000000000001)
-    fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
-                        predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-      (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
-    bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-    bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+    fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+    if(class(fpfit)[1] == 'try-error'){
+      message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+      bmd.sv = 0.05
+    }else{
+      RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
+                          predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
+        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+      bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
+      bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+    }
+
     ## Default prior BMD
     BMD.min <- .Machine$double.xmin
     if(extended == FALSE){
@@ -2993,12 +3024,17 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       # start value BMD
       datf=data.frame(yy=mean.a[covar == covar_lvls[i]],
                       xx=dose.a[covar == covar_lvls[i]]+0.00000000000001)
-      fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-      RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
-                          predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
-      bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-      bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+      if(class(fpfit)[1] == 'try-error'){
+        message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+        bmd.sv[i] = 0.05
+      }else{
+        RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
+                            predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
+          (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+        bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
+        bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+      }
     }
 
     ## Default prior BMD
@@ -3049,12 +3085,18 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     # start value BMD
     datf=data.frame(yy=mean.a2,
                     xx=dose.a2+0.00000000000001)
-    fpfit=gamlss(yy~fp(xx),family=NO(),data=datf)
-    RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
-                        predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-      (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
-    bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-    bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+    fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+    if(class(fpfit)[1] == 'try-error'){
+      message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+      bmd.sv = 0.05
+    }else{
+      RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
+                          predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
+        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+      bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
+      bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+    }
+
     ## Default prior BMD
     BMD.min <- .Machine$double.xmin
     if(extended == FALSE){
