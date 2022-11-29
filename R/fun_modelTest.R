@@ -168,7 +168,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     }else if(type == 'Laplace'){
 
       all.pars.bestfit = par_extract(stanBest, model_name = best.fit)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t")], 2, median)
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t")], 2, median, na.rm = T)
 
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
@@ -219,8 +219,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
   if(grepl('_N', best.fit)){
 
     means.all <- data.N$data$data %>%
-      group_by(dose) %>%
-      summarise(mresp = mean(response))
+      dplyr::group_by(dose) %>%
+      dplyr::summarise(mresp = mean(response))
     dose.a = unique(data.N$data$data$dose)
     mean.a = c()
     for(m in 1:length(dose.a)){
@@ -321,8 +321,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
   }else if(grepl('_LN', best.fit)){
 
     means.all <- data.LN$data$data %>%
-      group_by(dose) %>%
-      summarise(mresp = mean(response))
+      dplyr::group_by(dose) %>%
+      dplyr::summarise(mresp = mean(response))
     dose.a = unique(data.LN$data$data$dose)
     mean.a = c()
     for(m in 1:length(dose.a)){
@@ -376,7 +376,7 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     }else if(type == 'Laplace'){
 
       all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median)
+      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median, na.rm = T)
 
       optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,

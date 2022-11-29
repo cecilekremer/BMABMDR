@@ -38,7 +38,7 @@ test_that("LDH response is fitted",{
           mod.obj = modelFit,
           weight_type = "LP",
           type = ifelse(argListFit$data.N$data$is_increasing == 1, "increasing", "decreasing"),
-          title = '', all = F
+          title = '', all = F, log = T
       )
       # modelPlot <- plot.BMADR(
       #   mod.obj = modelFit,

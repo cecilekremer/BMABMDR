@@ -11,7 +11,8 @@ plot.BMADR(
   weight_type = c("BS", "LP"),
   include_data = TRUE,
   all = TRUE,
-  title
+  title,
+  log = T
 )
 }
 \arguments{
@@ -28,6 +29,8 @@ plot.BMADR(
 \item{all}{logical argument to indicate if all plots should be displayed}
 
 \item{title}{title of the plot}
+
+\item{log}{logical whether the fit of Normal models should be on log10-scale (log = T) or original scale (log = F)}
 }
 \value{
 .

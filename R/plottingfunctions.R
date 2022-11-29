@@ -282,6 +282,7 @@ DRM <- function(Model, type = c("increasing", "decreasing", "quantal")) {
 #' @param include_data logical argument to indicate if data should be included in the plots. Defaults to TRUE
 #' @param all logical argument to indicate if all plots should be displayed
 #' @param title title of the plot
+#' @param log logical whether the fit of Normal models should be on log10-scale (log = T) or original scale (log = F)
 #'
 #' @return .
 #'
@@ -292,7 +293,7 @@ plot.BMADR <- function(mod.obj,
                        clustered = FALSE,
                        weight_type = c("BS", "LP"),
                        include_data = TRUE,
-                       all = TRUE, title
+                       all = TRUE, title, log = T
 ) {
   type <- match.arg(type)
   weight_type <- match.arg(weight_type)
@@ -373,12 +374,12 @@ plot.BMADR <- function(mod.obj,
 
     ## overall mean
     means.all <- mod.obj$data %>%
-      group_by(dose) %>%
-      summarise(mresp = mean(response),
+      dplyr::group_by(dose) %>%
+      dplyr::summarise(mresp = mean(response),
                 mlresp = mean(log(response)))
     means.litter <- mod.obj$data %>%
-      group_by(dose, litter) %>%
-      summarise(mresp = mean(response),
+      dplyr::group_by(dose, litter) %>%
+      dplyr::summarise(mresp = mean(response),
                 mlresp = mean(log(response)))
 
     means.all$dose = means.all$dose/max(means.all$dose)
@@ -742,7 +743,6 @@ plot.BMADR <- function(mod.obj,
       #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
       scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
                          breaks = ddd*mod.obj$max.dose) +
-      scale_y_continuous(trans = 'log10', labels = scales::comma) +
       # scale_linetype_manual(values = lty,
       # labels = c('LogNormal', 'Normal')) +
       scale_color_manual(values = md_cls,
@@ -758,6 +758,12 @@ plot.BMADR <- function(mod.obj,
             legend.position = "top",
             legend.direction = "horizontal",
             title = element_text(size = 15, face = "bold"))
+
+    if(log == F){
+      pplotN <- pplotN + scale_y_continuous(trans = 'identity', labels = scales::comma)
+    }else{
+      pplotN <- pplotN + scale_y_continuous(trans = 'log10', labels = scales::comma)
+    }
 
     # plot for LogNormal distribution
     pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN",],
@@ -906,7 +912,6 @@ plot.BMADR <- function(mod.obj,
                    size = 0.8, inherit.aes = FALSE, show.legend = FALSE) +
       scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
                          breaks = ddd*mod.obj$max.dose) +
-      scale_y_continuous(trans = 'log10', labels = scales::comma) +
 
       geom_jitter(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = y),
                   size = 1, color = 3, shape = 20,
@@ -950,6 +955,12 @@ plot.BMADR <- function(mod.obj,
             legend.position = "top",
             legend.direction = "horizontal",
             title = element_text(size = 15, face = "bold"))
+
+    if(log == F){
+      pplotN <- pplotN + scale_y_continuous(trans = 'identity', labels = scales::comma)
+    }else{
+      pplotN <- pplotN + scale_y_continuous(trans = 'log10', labels = scales::comma)
+    }
 
     # plot for LogNormal distribution
     pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN",],

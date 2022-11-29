@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Update 29/11/2022
+
+* Added 'log' option in plot.BMADR() function (defaults to TRUE to plot response on log10 scale)
+
+* Fixed gamlss error for continuous data
+
 ## Update 29/09/2022
 
 * Fixed small error in covariate implementation (Laplace function)
