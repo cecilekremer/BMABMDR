@@ -31,6 +31,7 @@ test_that("LDH response is fitted",{
 
       modelFit <- do.call("full.laplace_MA", argListFit)
       # modelFit <- do.call("sampling_MA", argListFit)
+      modelFit$w.msg
 
       # Plots
 

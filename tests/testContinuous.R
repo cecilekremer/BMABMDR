@@ -65,7 +65,7 @@ test_that("Prepare data (summary)", {
           sumstats = sumstats,
           q = q,
           sd = sd,
-          prior.d = 'EPA',
+          prior.d = 'N11',
           extended = extended
       )
 
@@ -74,7 +74,7 @@ test_that("Prepare data (summary)", {
         sumstats = sumstats,
         q = q,
         sd = sd,
-        prior.d = 'EPA',
+        prior.d = 'N11',
         extended = extended
           )
 
@@ -113,6 +113,7 @@ test_that("Laplace approximation", {
           pvec=pvec,
           plot=F)
 
+      FLBMD$w.msg
 
       # MA estimates
       expect_equal(FLBMD$MA, c(BMDL = 20.95212, BMD = 36.93779, BMDU = 54.18734), tolerance = 1E-05)
@@ -165,6 +166,8 @@ test_that("Sampling", {
           ndraws=ndr, nrchains=nrch,
           nriterations=nriter, warmup=wu, delta=dl,
           treedepth=trd, seed=sd, pvec=pvec)
+
+      SBMD$w.msg
 
       # MA estimates
       SBMD$MA_bridge_sampling

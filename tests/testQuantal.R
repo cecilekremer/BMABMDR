@@ -47,6 +47,7 @@ test_that("Laplace approximation", {
           seed=123,
           pvec=pvec)
 
+      FLBMD_Q$w.msg
       # MA estimates
       FLBMD_Q$MA
       # model weights

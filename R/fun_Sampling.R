@@ -1921,198 +1921,166 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   start=data.N$start
   start=data.N$startQ
 
-  if(prior.weights[1]>0){
-    DIHE4h=det(-solve(optE4_NI$hessian))
-    DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-    w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
+  lls <- c(llN, llLN)
+  w.msg <- ''
 
-  }else{w=c(w,0)}
+  max.ll = max(lls, na.rm = T)
+  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709) & prior.weights>0][1])){
+    lpw <- rep(0, 16)
+    lpw[which(lls == max.ll)] <- 1
+    w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
+    warning('Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help')
+  }else{
 
-  if(prior.weights[2]>0){
-    DIHIE4h=det(-solve(optIE4_NI$hessian))
-    DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
-    w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(FALSE %in% ((max.ll-lls[!is.na(lls)]) < 709)){
+      w.msg <- 'Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help'
+      warning('Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
+    }
 
-  if(prior.weights[3]>0){
-    DIHH4h=det(-solve(optH4_NI$hessian))
-    DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
-    w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709) & prior.weights>0], na.rm = T)
 
-  if(prior.weights[4]>0){
-    DIHLN4h=det(-solve(optLN4_NI$hessian))
-    DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
-    w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[1]>0){
+      DIHE4h=det(-solve(optE4_NI$hessian))
+      DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+      w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
 
-  if(prior.weights[5]>0){
-    DIHG4h=det(-solve(optG4_NI$hessian))
-    DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
-    w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[6]>0){
-    DIHQE4h=det(-solve(optQE4_NI$hessian))
-    DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    # w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormu, data$priorSigma,
-    #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
-    w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormuQ, data$priorSigmaQ,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncdQ))
-    # w = c(w,
-    #       (2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4N-minll)*
-    #         # # sigma2
-    #         # dnorm(optQE4_NI$par[5],mean=data$priormu[5],
-    #         #       sd=data$priorSigma[5,5])*
-    #         # # d
-    #         # # dexp(1/exp(optQE4_NI$par[10]), 1)*
-    #         # dnorm(optQE4_NI$par[4],mean=data$priormuQ[4],
-    #         #       sd=data$priorSigma[4,4])*
-    #         # sigma2
-    #         dnorm(optQE4_NI$par[5],mean=data$priormuQ[5],
-    #               sd=data$priorSigmaQ[5,5])*
-    #         # d
-    #         # dexp(1/exp(optQE4_NI$par[10]), 1)*
-    #         truncnorm::dtruncnorm(optQE4_NI$par[4],mean=data$priormuQ[4],
-    #                               sd=data$priorSigmaQ[4,4], b = data$truncdQ)*
-    #         # a
-    #         mc2d::dpert(optQE4_NI$par[1], min = data$priorlb[1], max = data$priorub[1],
-    #                     mode = data$priormu[1], shape = data$shape.a)*
-    #         # BMD
-    #         mc2d::dpert(optQE4_NI$par[2], min = data$priorlb[2], max = data$priorub[2],
-    #                     mode = data$priormu[2], shape = data$shape.BMD)*
-    #         # c
-    #         mc2d::dpert(optQE4_NI$par[9], min = data$priorlb[3], max = data$priorub[3],
-    #                     mode = data$priormu[3], shape = data$shape.c)
-    # )
-  }else{w=c(w,0)}
+    if(prior.weights[2]>0){
+      DIHIE4h=det(-solve(optIE4_NI$hessian))
+      DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
+      w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[7]>0){
-    DIHP4h=det(-solve(optP4_NI$hessian))
-    DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
-    w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[3]>0){
+      DIHH4h=det(-solve(optH4_NI$hessian))
+      DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
+      w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[8]>0){
-    DIHL4h=det(-solve(optL4_NI$hessian))
-    DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
-    w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[4]>0){
+      DIHLN4h=det(-solve(optLN4_NI$hessian))
+      DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
+      w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[5]>0){
+      DIHG4h=det(-solve(optG4_NI$hessian))
+      DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
+      w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[6]>0){
+      DIHQE4h=det(-solve(optQE4_NI$hessian))
+      DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
+      # w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormu, data$priorSigma,
+      #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+      w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormuQ, data$priorSigmaQ,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncdQ))
+    }else{w=c(w,0)}
+
+    if(prior.weights[7]>0){
+      DIHP4h=det(-solve(optP4_NI$hessian))
+      DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
+      w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[8]>0){
+      DIHL4h=det(-solve(optL4_NI$hessian))
+      DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
+      w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
 
-  # lognormal
+    # lognormal
 
-  data=data.LN$data
-  start=data.LN$start
-  start=data.LN$startQ
+    data=data.LN$data
+    start=data.LN$start
+    start=data.LN$startQ
 
-  if(prior.weights[9]>0){
-    DIHE4h=det(-solve(optE4_LNI$hessian))
-    DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-    w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[9]>0){
+      DIHE4h=det(-solve(optE4_LNI$hessian))
+      DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+      w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[10]>0){
-    DIHIE4h=det(-solve(optIE4_LNI$hessian))
-    DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
-    w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[10]>0){
+      DIHIE4h=det(-solve(optIE4_LNI$hessian))
+      DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
+      w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[11]>0){
-    DIHH4h=det(-solve(optH4_LNI$hessian))
-    DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
-    w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[11]>0){
+      DIHH4h=det(-solve(optH4_LNI$hessian))
+      DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
+      w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[12]>0){
-    DIHLN4h=det(-solve(optLN4_LNI$hessian))
-    DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
-    w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[12]>0){
+      DIHLN4h=det(-solve(optLN4_LNI$hessian))
+      DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
+      w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[13]>0){
-    DIHG4h=det(-solve(optG4_LNI$hessian))
-    DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
-    w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[13]>0){
+      DIHG4h=det(-solve(optG4_LNI$hessian))
+      DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
+      w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[14]>0){
-    DIHQE4h=det(-solve(optQE4_LNI$hessian))
-    DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    # w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormu, data$priorSigma,
-    #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
-    w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormuQ, data$priorSigmaQ,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncdQ))
-    # w = c(w,
-    #       (2*pi)^(2.5)*sqrt(DIHQE4)*exp(llQE4LN-minll)*
-    #         # # sigma2
-    #         # dnorm(optQE4_LNI$par[5],mean=data$priormu[5],
-    #         #       sd=data$priorSigma[5,5])*
-    #         # # d
-    #         # # dexp(1/exp(optQE4_LNI$par[10]), 1)*
-    #         # dnorm(optQE4_LNI$par[4],mean=data$priormuQ[4],
-    #         #       sd=data$priorSigma[4,4])*
-    #         # sigma2
-    #         dnorm(optQE4_LNI$par[5],mean=data$priormu[5],
-    #               sd=data$priorSigmaQ[5,5])*
-    #         # d
-    #         # dexp(1/exp(optQE4_LNI$par[10]), 1)*
-    #         truncnorm::dtruncnorm(optQE4_LNI$par[4],mean=data$priormuQ[4],
-    #                               sd=data$priorSigmaQ[4,4], b = data$truncdQ)*
-    #         # a
-    #         mc2d::dpert(optQE4_LNI$par[1], min = data$priorlb[1], max = data$priorub[1],
-    #                     mode = data$priormu[1], shape = data$shape.a)*
-    #         # BMD
-    #         mc2d::dpert(optQE4_LNI$par[2], min = data$priorlb[2], max = data$priorub[2],
-    #                     mode = data$priormu[2], shape = data$shape.BMD)*
-    #         # c
-    #         mc2d::dpert(optQE4_LNI$par[9], min = data$priorlb[3], max = data$priorub[3],
-    #                     mode = data$priormu[3], shape = data$shape.c)
-    # )
-  }else{w=c(w,0)}
+    if(prior.weights[14]>0){
+      DIHQE4h=det(-solve(optQE4_LNI$hessian))
+      DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
+      # w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormu, data$priorSigma,
+      #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
+      w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormuQ, data$priorSigmaQ,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncdQ))
+    }else{w=c(w,0)}
 
-  if(prior.weights[15]>0){
-    DIHP4h=det(-solve(optP4_LNI$hessian))
-    DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
-    w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[15]>0){
+      DIHP4h=det(-solve(optP4_LNI$hessian))
+      DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
+      w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[16]>0){
-    DIHL4h=det(-solve(optL4_LNI$hessian))
-    DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
-    w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[16]>0){
+      DIHL4h=det(-solve(optL4_LNI$hessian))
+      DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
+      w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+  }
 
+  w <- ifelse(w == 'Inf' | is.na(w), 0, w)
   lpwlp=(prior.weights*w)/sum(prior.weights*w)
   names(lpwlp) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
 
@@ -2335,7 +2303,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-                      shift = data.LN$data$shift
+                      shift = data.LN$data$shift,
+                      w.msg = w.msg
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")
@@ -4262,150 +4231,170 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   start=data.N$start
   startQ=data.N$startQ
 
-  if(prior.weights[1]>0){
-    DIHE4h=det(-solve(optE4_NI$hessian))
-    DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-    w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-    # DIHE4h=det(-solve(hessian(func = llE4fN,x=optE4_NI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
-    # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-    ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
+  lls <- c(llN, llLN)
+  w.msg <- ''
 
-  }else{w=c(w,0)}
+  max.ll = max(lls, na.rm = T)
+  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)][1])){
+    lpwlp <- rep(0, 16)
+    lpwlp[which(lls == max.ll)] <- 1
+    w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
+    warning('Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help')
+  }else{
 
-  if(prior.weights[2]>0){
-    DIHIE4h=det(-solve(optIE4_NI$hessian))
-    DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
-    w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(FALSE %in% ((max.ll-lls[!is.na(lls)]) < 709)){
+      w.msg <- 'Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help'
+      warning('Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
+    }
 
-  if(prior.weights[3]>0){
-    DIHH4h=det(-solve(optH4_NI$hessian))
-    DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
-    w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
 
-  if(prior.weights[4]>0){
-    DIHLN4h=det(-solve(optLN4_NI$hessian))
-    DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
-    w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[1]>0){
+      DIHE4h=det(-solve(optE4_NI$hessian))
+      DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+      w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+      # DIHE4h=det(-solve(hessian(func = llE4fN,x=optE4_NI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
+      # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+      ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
 
-  if(prior.weights[5]>0){
-    DIHG4h=det(-solve(optG4_NI$hessian))
-    DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
-    w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[6]>0){
-    DIHQE4h=det(-solve(optQE4_NI$hessian))
-    DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormuQ, data$priorSigmaQ,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncdQ))
-  }else{w=c(w,0)}
+    if(prior.weights[2]>0){
+      DIHIE4h=det(-solve(optIE4_NI$hessian))
+      DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
+      w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[7]>0){
-    DIHP4h=det(-solve(optP4_NI$hessian))
-    DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
-    w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[3]>0){
+      DIHH4h=det(-solve(optH4_NI$hessian))
+      DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
+      w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[8]>0){
-    DIHL4h=det(-solve(optL4_NI$hessian))
-    DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
-    w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[4]>0){
+      DIHLN4h=det(-solve(optLN4_NI$hessian))
+      DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
+      w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
+    if(prior.weights[5]>0){
+      DIHG4h=det(-solve(optG4_NI$hessian))
+      DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
+      w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  # lognormal
+    if(prior.weights[6]>0){
+      DIHQE4h=det(-solve(optQE4_NI$hessian))
+      DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
+      w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormuQ, data$priorSigmaQ,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncdQ))
+    }else{w=c(w,0)}
 
-  data=data.LN$data
-  start=data.LN$start
-  startQ=data.LN$startQ
+    if(prior.weights[7]>0){
+      DIHP4h=det(-solve(optP4_NI$hessian))
+      DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
+      w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
-  if(prior.weights[9]>0){
-    DIHE4h=det(-solve(optE4_LNI$hessian))
-    DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-    w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-    # DIHE4h=det(-solve(hessian(func = llE4fLN,x=optE4_LNI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
-    # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-
-  }else{w=c(w,0)}
-
-  if(prior.weights[10]>0){
-    DIHIE4h=det(-solve(optIE4_LNI$hessian))
-    DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
-    w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
-
-  if(prior.weights[11]>0){
-    DIHH4h=det(-solve(optH4_LNI$hessian))
-    DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
-    w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
-
-  if(prior.weights[12]>0){
-    DIHLN4h=det(-solve(optLN4_LNI$hessian))
-    DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
-    w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
-
-  if(prior.weights[13]>0){
-    DIHG4h=det(-solve(optG4_LNI$hessian))
-    DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
-    w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
-
-  if(prior.weights[14]>0){
-    DIHQE4h=det(-solve(optQE4_LNI$hessian))
-    DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
-    w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormuQ, data$priorSigmaQ,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncdQ))
-  }else{w=c(w,0)}
-
-  if(prior.weights[15]>0){
-    DIHP4h=det(-solve(optP4_LNI$hessian))
-    DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
-    w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
-
-  if(prior.weights[16]>0){
-    DIHL4h=det(-solve(optL4_LNI$hessian))
-    DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
-    w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
-                   data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
-                   data$truncd))
-  }else{w=c(w,0)}
+    if(prior.weights[8]>0){
+      DIHL4h=det(-solve(optL4_NI$hessian))
+      DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
+      w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
 
 
-  lpwlp=(prior.weights*w)/sum(prior.weights*w)
+    # lognormal
+
+    data=data.LN$data
+    start=data.LN$start
+    startQ=data.LN$startQ
+
+    if(prior.weights[9]>0){
+      DIHE4h=det(-solve(optE4_LNI$hessian))
+      DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+      w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+      # DIHE4h=det(-solve(hessian(func = llE4fLN,x=optE4_LNI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
+      # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+
+    }else{w=c(w,0)}
+
+    if(prior.weights[10]>0){
+      DIHIE4h=det(-solve(optIE4_LNI$hessian))
+      DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
+      w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[11]>0){
+      DIHH4h=det(-solve(optH4_LNI$hessian))
+      DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
+      w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[12]>0){
+      DIHLN4h=det(-solve(optLN4_LNI$hessian))
+      DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
+      w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[13]>0){
+      DIHG4h=det(-solve(optG4_LNI$hessian))
+      DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
+      w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[14]>0){
+      DIHQE4h=det(-solve(optQE4_LNI$hessian))
+      DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
+      w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormuQ, data$priorSigmaQ,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncdQ))
+    }else{w=c(w,0)}
+
+    if(prior.weights[15]>0){
+      DIHP4h=det(-solve(optP4_LNI$hessian))
+      DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
+      w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    if(prior.weights[16]>0){
+      DIHL4h=det(-solve(optL4_LNI$hessian))
+      DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
+      w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
+                     data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
+                     data$truncd))
+    }else{w=c(w,0)}
+
+    w <- ifelse(w == 'Inf' | is.na(w), 0, w)
+    lpwlp=(prior.weights*w)/sum(prior.weights*w)
+
+  }
   names(lpwlp) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
 
   # the model average posterior as a mixture
@@ -4624,7 +4613,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-                      shift = data.LN$data$shift
+                      shift = data.LN$data$shift,
+                      w.msg = w.msg
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")
@@ -5829,6 +5819,23 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
   w=c()
 
+  lls <- c(llQ)
+  w.msg <- ''
+
+  max.ll = max(lls, na.rm = T)
+  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)][1])){
+    lpwlp <- rep(0, 8)
+    lpwlp[which(lls == max.ll)] <- 1
+    w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
+    warning('Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help')
+  }else{
+
+    if(FALSE %in% ((max.ll-lls[!is.na(lls)]) < 709)){
+      w.msg <- 'Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help'
+      warning('Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
+    }
+
+    minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
 
   if(prior.weights[1]>0){
     DIHE4h=det(-solve(optE4_Q$hessian))
@@ -5958,8 +5965,9 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
   }else{w=c(w,0)}
 
-
-  lpwlp=(prior.weights*w)/sum(prior.weights*w)
+    w <- ifelse(w == 'Inf' | is.na(w), 0, w)
+    lpwlp=(prior.weights*w)/sum(prior.weights*w)
+  }
   names(lpwlp) = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
 
   # the model average posterior as a mixture
@@ -6142,7 +6150,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       is_betabin = data.Q$data$is_betabin,
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-                      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM
+                      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+                      w.msg = w.msg
   )
 
   attr(ret_results, "class") <- c("BMADRQ", "BS")
