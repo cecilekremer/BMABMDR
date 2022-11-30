@@ -234,6 +234,7 @@ data_LN$bartlett.msg; data_LN$bartlett.p
 
 prior.weights = c(rep(1,16))
 FLBMD <- full.laplace_MAc(data_N, data_LN, prior.weights)
+FLBMD$w.msg
 # MA estimates
 FLBMD$MA
 # model weights

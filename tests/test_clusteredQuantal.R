@@ -30,6 +30,7 @@ test_that("Fit models clustered quantal",{
          )
 
     modelFit <- do.call("full.laplaceQ_MA", argListFit)
+    modelFit$w.msg
     modelFit$MA
     modelFit$gof_check
 
