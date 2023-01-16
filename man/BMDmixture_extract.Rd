@@ -4,9 +4,11 @@
 \alias{BMDmixture_extract}
 \title{function to extract BMD mixture (continuous data)}
 \usage{
-BMDmixture_extract(mod.obj, conv = FALSE)
+BMDmixture_extract(mod.obj, weight_type, conv = FALSE)
 }
 \arguments{
+\item{weight_type}{character indicating whether to use Laplace ('LP') or Bridge sampling ('BS') weights}
+
 \item{conv}{logical to indicate if mixture should be only based on converged
 models or all the models regardless of the convergence status}
 

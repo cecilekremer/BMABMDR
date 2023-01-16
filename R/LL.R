@@ -460,11 +460,6 @@ llfL4_NIc = function(x, d, n, nij, y, qval){
   }
   return(sum(ll))
 }
-#' @rdname llfE4_NI
-#' @export
-llfSM_N=function(x,nvec,dvec,mvec,s2vec){
-  sum(-0.5*nvec*log(2*pi)+0.5*nvec*x[length(dvec)+1]-0.5*(nvec-1)*s2vec*exp(x[length(dvec)+1])-0.5*nvec*((mvec-x[1:length(dvec)])^2)*exp(x[length(dvec)+1]))
-}
 #' @rdname llfE4_NIc
 #' @export
 llfE4_LNIc = function(x, d, n, nij, y, qval, shift){

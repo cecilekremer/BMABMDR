@@ -104,8 +104,6 @@ llfQE4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 llfP4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 
 llfL4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
-
-llfSM_N(x, nvec, dvec, mvec, s2vec)
 }
 \arguments{
 \item{x}{parameter values}

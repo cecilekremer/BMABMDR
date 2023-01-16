@@ -146,17 +146,20 @@ fun_sampling = function(mod, data, stv,
                              ,
                              show_messages = F, refresh = 0, verbose = F)
 
-  # while(is.na(dim(fitstan)[1])){
+  n.attempts <- 1
+  while(is.na(dim(fitstan)[1]) & n.attempts < 10){
 
-  # init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
-  #
-  # # save(init_ll, file = "init.RData")
-  # fitstan=try(rstan::sampling(mod,data = data,
-  #                             init=init_ll,iter = nriterations,
-  #                             chains = nrchains,warmup=warmup,seed=123,
-  #                             control = list(adapt_delta = delta,
-  #                                            max_treedepth =treedepth),
-  #                             show_messages = F, refresh = 0, verbose = F),silent=T)
+    init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+    fitstan=try(rstan::sampling(mod,data = data,
+                                init=init_ll,iter = nriterations,
+                                chains = nrchains,warmup=warmup,seed=123,
+                                control = list(adapt_delta = delta,
+                                               max_treedepth =treedepth),
+                                show_messages = F, refresh = 0, verbose = F),silent=T)
+    n.attempts <- n.attempts + 1
+
+  }
+
   if(is.na(dim(fitstan)[1])){
 
     fitstan <- NULL
@@ -296,7 +299,8 @@ fun_samplingC = function(mod, data, stv,
                              ,
                              show_messages = F, refresh = 0, verbose = F)
 
-  while(is.na(dim(fitstan)[1])){
+  n.attempts <- 1
+  while(is.na(dim(fitstan)[1]) & n.attempts < 10){
 
     init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
 
@@ -307,8 +311,16 @@ fun_samplingC = function(mod, data, stv,
                                 control = list(adapt_delta = delta,
                                                max_treedepth =treedepth),
                                 show_messages = F, refresh = 0, verbose = F),silent=T)
+
+    n.attempts <- n.attempts + 1
+
   }
 
+  if(is.na(dim(fitstan)[1])){
+
+    fitstan <- NULL
+
+  }
 
   return(fitstan)
 
@@ -410,18 +422,21 @@ fun_samplingQ = function(mod, data, stv,
                                             max_treedepth =treedepth),
                              show_messages = F, refresh = 0)
 
-  # while(is.na(dim(fitstan)[1])){
-  #
-  #   init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
-  #
-  #   fitstan=try(rstan::sampling(mod,data = data,
-  #                               init=init_ll,iter = nriterations,
-  #                               chains = nrchains,warmup=warmup,seed=123,
-  #                               control = list(adapt_delta = delta,
-  #                                              max_treedepth =treedepth),
-  #                               show_messages = F, refresh = 0),silent=T)
-  #
-  # }
+  n.attempts <- 1
+  while(is.na(dim(fitstan)[1]) & n.attempts < 10){
+
+    init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+
+    fitstan=try(rstan::sampling(mod,data = data,
+                                init=init_ll,iter = nriterations,
+                                chains = nrchains,warmup=warmup,seed=123,
+                                control = list(adapt_delta = delta,
+                                               max_treedepth =treedepth),
+                                show_messages = F, refresh = 0),silent=T)
+
+    n.attempts <- n.attempts + 1
+
+  }
 
   if(is.na(dim(fitstan)[1])){
 

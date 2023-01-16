@@ -1,13 +1,34 @@
 Package: BMABMDR
-Title: Bayesian Model Averaging (BMA) for benchmark dose (BMD) analysis in R
-Version: 0.0.0.9044
-Authors@R: 
-    person(given = "First",
-           family = "Last",
+Title: Bayesian Model Averaging for Benchmark Dose Analysis
+Version: 0.0.0.9046
+Authors@R: c(
+    person(given = "C\'ecile",
+           family = "Kremer",
            role = c("aut", "cre"),
-           email = "first.last@example.com",
-           comment = c(ORCID = "YOUR-ORCID-ID"))
-Description: What the package does (one paragraph).
+           email = "cecile.kremer@uhasselt.be",
+           comment = c(ORCID = "0000-0002-2081-7662")),
+    person(given = "Oluwafemi",
+           family = "Olusoji",
+           role = "aut"),
+    person(given = "Marc",
+           family = "Aerts",
+           role = "aut"),
+    person(given = "Ziv",
+           family = "Shkedy",
+           role = "aut"),
+    person(given = "Jos\'e",
+           family = "Cortinas Abrahantes",
+           role = "aut"),
+    person(given = "Machteld",
+           family = "Varewyck",
+           role = "ctb"),
+    person(given = "Wouter",
+           family = "Verlinden",
+           role = "ctb")
+    )
+Description: The BMABMDR package provides functions for benchmark dose analysis using Bayesian model averaging. The user can
+    specify whether a full Bayesian approach using bridge sampling is used, or a Laplace approximation which is considerably
+    faster. Various functions for plotting are provided.
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
@@ -47,5 +68,8 @@ LinkingTo:
     rstan (>= 2.18.1),
     StanHeaders (>= 2.18.0)
 Suggests:
-    testthat   
+    testthat (>= 3.0.0)
 SystemRequirements: GNU make
+Config/testthat/edition: 3
+URL: https://github.com/cecilekremer/BMABMDR
+BugReports: https://github.com/cecilekremer/BMABMDR/issues

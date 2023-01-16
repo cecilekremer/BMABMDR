@@ -4,7 +4,7 @@
 \alias{BMDQmixture_extract}
 \title{function to extract BMD mixture (quantal data)}
 \usage{
-BMDQmixture_extract(mod.obj, conv = FALSE)
+BMDQmixture_extract(mod.obj, weight_type, conv = FALSE)
 }
 \arguments{
 \item{conv}{logical to indicate if mixture should be only based on converged

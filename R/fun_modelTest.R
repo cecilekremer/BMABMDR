@@ -191,6 +191,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.LN$data$n)))
     BIC.SM = - 2 * llSM + ((data.LN$data$N + 1) * log(sum(data.LN$data$n)))
 
+    # print(means.SM);  print(pars.SM); print(pars.bestfit); print(llSM); print(llBestfit); print(best.fit)
+
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
@@ -610,8 +612,11 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       # pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
       #                                       paste0('par[', data.Q$data$N, ']'))], 2, median, na.rm = T)
       # means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median, na.rm = T)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:N, ']'),
-                                            paste0('par[', N, ']'))], 2, median, na.rm = T)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:N, ']')
+                                            # ,
+                                            # paste0('par[', N, ']')
+                                            )]
+                      , 2, median, na.rm = T)
       means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:N, ']')], 2, median, na.rm = T)
 
     } else if(data.Q$data$is_betabin == 1) {
@@ -659,7 +664,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
   if(data.Q$data$is_bin == 1){
     # llSM = llfSM_Q(pars.SM, data.Q$data$n, data.Q$data$x, data.Q$data$y)
-    llSM = llfSM_Q(pars.SM, n.a, dose.a, y.a)
+    llSM = llfSM_Q(pars.SM, n.a, dose.a, y.a,0)
 
   }else if(data.Q$data$is_betabin == 1){
     llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
@@ -668,14 +673,18 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   }
 
   if(data.Q$data$is_bin == 1){
-    BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n)))
+    BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n))) # parms: a, b, d
 
   }else{
-    BIC.bestfit = - 2 * llBestfit + (4 * log(sum(data.Q$data$n)))
+    BIC.bestfit = - 2 * llBestfit + (4 * log(sum(data.Q$data$n))) # parms: a, b, d, rho
 
   }
 
-  BIC.SM = - 2 * llSM + ((data.Q$data$N) * log(sum(data.Q$data$n)))
+  if(data.Q$data$is_bin == 1){
+    BIC.SM = - 2 * llSM + ((data.Q$data$N) * log(sum(data.Q$data$n)))
+  }else{
+    BIC.SM = - 2 * llSM + ((data.Q$data$N + 1) * log(sum(data.Q$data$n)))
+  }
 
   bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 

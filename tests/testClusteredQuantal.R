@@ -3,6 +3,8 @@
 # Author: wverlinden
 ###############################################################################
 
+dataDir <- '~/GitHub/BMABMDR/data/'
+
 
 test_that("Fit models clustered quantal",{
 

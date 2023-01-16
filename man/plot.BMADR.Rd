@@ -12,7 +12,7 @@ plot.BMADR(
   include_data = TRUE,
   all = TRUE,
   title,
-  log = T
+  log = FALSE
 )
 }
 \arguments{

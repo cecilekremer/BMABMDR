@@ -10,7 +10,6 @@
 #' @export summarize.indiv.data
 summarize.indiv.data <- function(data,
                                  type = c('continuous','quantal'), cluster = FALSE, covar = FALSE){
-  require('dplyr')
 
   if(type == 'continuous'){
 
@@ -65,7 +64,6 @@ summarize.indiv.data <- function(data,
 
     }else if(cluster == TRUE && covar == FALSE){
 
-      library(dplyr)
       indiv.data <- data.frame(dose = data[,1],
                                response = data[,2],
                                litter = data[,3])

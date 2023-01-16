@@ -22,6 +22,7 @@
 #' @export anydoseresponseN
 anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
+  # for multiple observations per dose group
   if(length(dose.a) != length(unique(dose.a))){
     dose = sort(unique(dose.a))
     N = length(dose)
@@ -106,7 +107,7 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
                             control = list(adapt_delta = delta,max_treedepth =treedepth),
                             show_messages = F, refresh = 0)
 
-  set.seed(1234)
+
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
   bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
   bf=bf(bridge_H0,bridge_SM)
@@ -181,30 +182,54 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
 
   priorH0 = list(
-    priormu = c(exp(gmean.a2[1]), -2*log(1.5*mean(sd.a))),
+    # priormu = c(exp(gmean.a2[1]), -2*log(1.5*mean(sd.a))),
+    priormu = c(mean.a[1], -2*log(1.5*mean(sd.a))),
     priorSigma = diag(c(1,1)),
     priorlb = 0.001,
-    priorub = 2*exp(gmean.a2[1])
+    # priorub = 2*exp(gmean.a2[1])
+    priorub = 2*mean.a[1]
   )
 
   priorSM = list(
-    priormu = c(exp(gmean.a2[1]),
-                diff(exp(gmean.a2)),
+    # priormu = c(exp(gmean.a2[1]),
+    #             diff(exp(gmean.a2)),
+    #             -2*log(1.5*mean(sd.a))),
+    priormu = c(mean.a[1],
+                diff(mean.a),
                 -2*log(1.5*mean(sd.a))),
     priorSigma = diag(c(1, rep(1, length(dose.a)-1), 1)),
     priorlb = 0.001,
-    priorub = c(2*exp(gmean.a2[1]),
-                max(abs(diff(exp(gmean.a2))))*10
+    # priorub = c(2*exp(gmean.a2[1]),
+    #             max(abs(diff(exp(gmean.a2))))*10
+    priorub = c(2*mean.a[1],
+                max(abs(diff(mean.a)))*10
     )
   )
 
-  svSM = list(par = c(exp(gmean.a2[1]), # background
-                      diff(exp(gmean.a2)),
+  # svSM = list(par = c(exp(gmean.a2[1]), # background
+  #                     diff(exp(gmean.a2)),
+  #                     log(1/mean(sd.a^2))) # invsigma2
+  # )
+  svSM = list(par = c(mean.a[1], # background
+                      diff(mean.a),
                       log(1/mean(sd.a^2))) # invsigma2
   )
 
-  svH0 = list(par = c(exp(gmean.a2[1]), log(1/mean(sd.a^2))))
+  # svH0 = list(par = c(exp(gmean.a2[1]), log(1/mean(sd.a^2))))
+  svH0 = list(par = c(mean.a[1], log(1/mean(sd.a^2))))
 
+
+  # data.modstanSM = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,shift=shift,
+  #                       priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
+  #                       priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+  #                       data_type=data_type, priorg = 4
+  # )
+  #
+  # data.modstanH0 = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,shift=shift,
+  #                       priormu=priorH0$priormu, priorSigma=priorH0$priorSigma,
+  #                       priorlb=priorH0$priorlb, priorub=priorH0$priorub,
+  #                       data_type=data_type, priorg = 4
+  # )
   data.modstanSM = list(N=N,n=n.a,m=gmean.a,s2=gsd.a^2,shift=shift,
                         priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                         priorlb=priorSM$priorlb, priorub=priorSM$priorub,
@@ -237,7 +262,7 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
                             control = list(adapt_delta = delta,max_treedepth =treedepth),
                             show_messages = F, refresh = 0)
 
-  set.seed(1234)
+
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
   bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
   bf=bf(bridge_H0,bridge_SM)
@@ -391,7 +416,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
                        control = list(adapt_delta = delta,max_treedepth =treedepth),
                        show_messages = F, refresh = 0)
 
-    set.seed(1234)
+
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
     bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
     bf=bf(bridge_H0,bridge_SM)
@@ -428,7 +453,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
                     qval=0)
 
 
-    BIC.H0 = - 2 * llH0 + (2 * log(sum(y!=0))) # 2 parameters: a and rho
+    BIC.H0 = - 2 * llH0 + (3 * log(sum(y!=0))) # 3 parameters: a, sigma and rho
 
     BIC.SM = - 2 * llSM + (N+2 * log(sum(y!=0))) # N mean parameters + variance + rho
 
@@ -499,7 +524,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
     )
 
     ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
-    svSM = list(par = ddy, # invsigma2
+    svSM = list(par = ddy,
                 rho = rhohat
     )
 
@@ -522,7 +547,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
       initf2 <- function(chain_id = 1) {
         rho = svNM[2]; dim(rho)=1
-        list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[2])), rho = rho ,alpha = chain_id)
+        list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[1])), rho = rho + rnorm(1, sd = 0.001*abs(rho)) ,alpha = chain_id)
       }
 
       init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
@@ -575,7 +600,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
                                     show_messages = F, refresh = 0)
       }
 
-      set.seed(1234)
+
       bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
       bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
       bf=bridgesampling::bf(bridge_H0,bridge_SM)
@@ -588,7 +613,7 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
       pH0 <- fitH0$par
       pars.H0 = pH0[names(pH0) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
-                                      paste0('par[', length(unique(dose.a)), ']'),
+                                      # paste0('par[', length(unique(dose.a)), ']'),
                                       'rho[1]')]
 
 
@@ -598,14 +623,14 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
       pSM <- fitSM$par
       pars.SM = pSM[names(pSM) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
-                                      paste0('par[', length(unique(dose.a)), ']'),
+                                      # paste0('par[', length(unique(dose.a)), ']'),
                                       'rho[1]')]
 
 
 
       llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
                       n.a, dose.a, y.a, 0,
-                      pars.SM[stringr::str_detect(names(pars.SM), 'rho')]) ## UPDATE --> rho? !!
+                      pars.SM[stringr::str_detect(names(pars.SM), 'rho')])
       llH0 = llfH02_Q(pars.H0[stringr::str_detect(names(pars.H0), 'a\\[')],
                       n.a, dose.a, y.a, 0,
                       pars.H0[stringr::str_detect(names(pars.H0), 'rho')])
@@ -721,7 +746,6 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
                                   show_messages = F, refresh = 0)
     }
 
-    set.seed(1234)
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
     bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
     bf=bridgesampling::bf(bridge_H0,bridge_SM)

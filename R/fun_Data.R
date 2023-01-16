@@ -794,7 +794,6 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
 
   ## cluster (ij) = combination of dose (i) and litter (j)
-  library(dplyr)
   indiv.data <- data.frame(dose = data[,1],
                            response = data[,2],
                            litter = data[,3])
@@ -1200,7 +1199,6 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
 
   ## cluster (ij) = combination of dose (i) and litter (j)
-  library(dplyr)
   indiv.data <- data.frame(dose = data[,1],
                            response = data[,2],
                            litter = data[,3])

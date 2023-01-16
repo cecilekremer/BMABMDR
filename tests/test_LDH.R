@@ -3,6 +3,8 @@
 # Author: wverlinden
 ###############################################################################
 
+dataDir <- '~/GitHub/BMABMDR/data/'
+
 
 test_that("LDH response is fitted",{
 
@@ -48,4 +50,11 @@ test_that("LDH response is fitted",{
       #   title = '', all = F
       # )
 
-    })
+modelPlot$BMDs
+modelPlot$weights
+modelPlot$model_fit
+modelPlot$model_fit_N
+modelPlot$model_fit_LN
+modelPlot$MA_fit
+
+})
