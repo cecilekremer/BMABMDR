@@ -99,7 +99,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[1]))
   }
   if(prior.weights[1]>0){
-    # print(1)
 
     fitstanE4_N = fun_sampling(stanmodels$mE4, data, start,
                                ndraws,nrchains,
@@ -173,7 +172,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[2]))
   }
   if(prior.weights[2]>0){
-    # print(2)
 
     fitstanIE4_N = fun_sampling(stanmodels$mIE4, data, start,
                                 ndraws,nrchains,
@@ -247,7 +245,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[3]))
   }
   if(prior.weights[3]>0){
-    # print(3)
 
     fitstanH4_N = fun_sampling(stanmodels$mH4, data, start,
                                ndraws,nrchains,
@@ -320,7 +317,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[4]))
   }
   if(prior.weights[4]>0){
-    # print(4)
     fitstanLN4_N = fun_sampling(stanmodels$mLN4, data, start,
                                 ndraws,nrchains,
                                 nriterations,warmup,
@@ -392,7 +388,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     shiny::incProgress(amount = 1/(nModels + 1), detail = names(get_models(type='continuous')[5]))
   }
   if(prior.weights[5]>0){
-    # print(5)
 
     fitstanG4_N = fun_sampling(stanmodels$mG4, data, start,
                                ndraws,nrchains,
@@ -1317,7 +1312,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   # # the model average posterior as a mixture
   count=round(lpwb*ndraws)
   names(count) = names(lpwb)
-  mabmd=(c( # normal
+  mabmd1=(c( # normal
     if("E4_N" %in% names(count)) sample(as.matrix(fitstanE4_N)[,2],count[names(count)=="E4_N"],replace=T),
     if("IE4_N" %in% names(count)) sample(as.matrix(fitstanIE4_N)[,2],count[names(count)=="IE4_N"],replace=T),
     if("H4_N" %in% names(count)) sample(as.matrix(fitstanH4_N)[,2],count[names(count)=="H4_N"],replace=T),
@@ -1336,10 +1331,17 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
   ))
-  macib=(quantile(mabmd,pvec))*data$maxD
+  if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
+    mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
+  macib=(quantile(mabmd1,pvec))*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
-  BMDq_bs = (quantile(mabmd, seq(0,1,0.005)))*data$maxD
+  BMDq_bs = (quantile(mabmd1, seq(0,1,0.005)))*data$maxD
 
 
   mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -1397,7 +1399,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     # # the model average posterior as a mixture
     count=round(lpwb.conv*ndraws)
     names(count) = names(lpwb.conv)
-    mabmd.conv=(c( # normal
+    mabmd.conv1=(c( # normal
       if("E4_N" %in% names(count)) sample(as.matrix(fitstanE4_N)[,2],count[names(count)=="E4_N"],replace=T),
       if("IE4_N" %in% names(count)) sample(as.matrix(fitstanIE4_N)[,2],count[names(count)=="IE4_N"],replace=T),
       if("H4_N" %in% names(count)) sample(as.matrix(fitstanH4_N)[,2],count[names(count)=="H4_N"],replace=T),
@@ -1416,10 +1418,17 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
       if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
     ))
-    macib.conv=(quantile(mabmd.conv,pvec))*data$maxD
+    if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
+      mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
+    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
     names(macib.conv)=c("BMDL","BMD","BMDU")
 
-    BMDq_bs_conv = (quantile(mabmd.conv, seq(0,1,0.005)))*data$maxD
+    BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005)))*data$maxD
 
 
     mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -1442,7 +1451,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     }
 
   }else{
-    w.bs.conv = NULL; macib.conv = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
+    w.bs.conv = NULL; macib.conv = NULL; mabmd.conv1 = NA; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
   }
 
 
@@ -1458,7 +1467,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   # getting the posterior modes and the hessian and the model specific posterior distributions
   if(prior.weights[1]>0){
-    print("pw1")
 
     optE4_NI <- fun_optim(stanmodels$mE4, data, start, ndraws, 123, pvec)
 
@@ -1484,7 +1492,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[1] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[2]>0){
-    print("pw2")
 
     optIE4_NI <- fun_optim(stanmodels$mIE4, data, start, ndraws, 123, pvec)
 
@@ -1509,7 +1516,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[2] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[3]>0){
-    print("pw3")
 
     optH4_NI <- fun_optim(stanmodels$mH4, data, start, ndraws, 123, pvec)
 
@@ -1534,7 +1540,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[3] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[4]>0){
-    print("pw4")
 
     optLN4_NI <- fun_optim(stanmodels$mLN4, data, start, ndraws, 123, pvec)
 
@@ -1560,15 +1565,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[4] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[5]>0){
-    print("pw5")
-
-    # if(data$is_increasing == 1){
-    #   data$init_b = qgamma(data$q/
-    #                          (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
-    # }else if(data$is_decreasing == 1){
-    #   data$init_b = qgamma((-data$q)/
-    #                          (optE4_NI$par[8]-1), rate=1.0, shape=optE4_NI$par[10])/optE4_NI$par[2]
-    # }
 
     optG4_NI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 
@@ -1594,7 +1590,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[5] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[6]>0){
-    print("pw6")
 
     optQE4_NI <- fun_optim(stanmodels$mQE4, data, startQ, ndraws, 123, pvec)
 
@@ -1620,7 +1615,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[6] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[7]>0){
-    print("pw7")
 
     optP4_NI <- fun_optim(stanmodels$mP4, data, start, ndraws, 123, pvec)
 
@@ -1645,7 +1639,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[7] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[8]>0){
-    print("pw8")
 
     optL4_NI <- fun_optim(stanmodels$mL4, data, start, ndraws, 123, pvec)
 
@@ -1679,7 +1672,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   llLN = c()
 
   if(prior.weights[9]>0){
-    print("pw9")
 
     optE4_LNI <- fun_optim(stanmodels$mE4, data, start, ndraws, 123, pvec)
 
@@ -1705,7 +1697,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[9] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[10]>0){
-    print("pw10")
 
     optIE4_LNI <- fun_optim(stanmodels$mIE4, data, start, ndraws, 123, pvec)
 
@@ -1731,7 +1722,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[10] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[11]>0){
-    print("pw11")
 
     optH4_LNI <- fun_optim(stanmodels$mH4, data, start, ndraws, 123, pvec)
 
@@ -1756,7 +1746,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[11] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[12]>0){
-    print("pw12")
 
     optLN4_LNI <- fun_optim(stanmodels$mLN4, data, start, ndraws, 123, pvec)
 
@@ -1782,16 +1771,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   #
   if(prior.weights[13]>0){
 
-    print("pw13")
-
-    # if(data$is_increasing == 1){
-    #   data$init_b = qgamma(log(1+data$q)/
-    #                          (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
-    # }else if(data$is_decreasing == 1){
-    #   data$init_b = qgamma(log(1-data$q)/
-    #                          (optE4_LNI$par[7]*(optE4_LNI$par[8]-1)), rate=1.0, shape=optE4_LNI$par[10])/optE4_LNI$par[2]
-    # }
-
     optG4_LNI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
@@ -1815,7 +1794,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[13] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[14]>0){
-    print("pw14")
 
     optQE4_LNI <- fun_optim(stanmodels$mQE4, data, startQ, ndraws, 123, pvec)
 
@@ -1840,7 +1818,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[14] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[15]>0){
-    print("pw15")
 
     optP4_LNI <- fun_optim(stanmodels$mP4, data, start, ndraws, 123, pvec)
 
@@ -1865,7 +1842,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[15] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[16]>0){
-    print("pw16")
 
     optL4_LNI <- fun_optim(stanmodels$mL4, data, start, ndraws, 123, pvec)
 
@@ -1925,7 +1901,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   w.msg <- ''
 
   max.ll = max(lls, na.rm = T)
-  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709) & prior.weights>0][1])){
+  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)][1])){
     lpw <- rep(0, 16)
     lpw[which(lls == max.ll)] <- 1
     w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
@@ -1937,7 +1913,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       warning('Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
     }
 
-    minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709) & prior.weights>0], na.rm = T)
+    minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
 
     if(prior.weights[1]>0){
       DIHE4h=det(-solve(optE4_NI$hessian))
@@ -2105,6 +2081,13 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(prior.weights[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
   ))
+  if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
+    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
   macilp=(quantile(mabmd,pvec))*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
@@ -2155,6 +2138,13 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       if(p.weights.new[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
       if(p.weights.new[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
     ))
+    if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
+      mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
     macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
 
@@ -2291,11 +2281,17 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                                     parsQE4LN, parsP4LN, parsL4LN),
                       BMDMixture = (mabmd)*data$maxD,
                       BMDMixture.conv = (mabmd.conv)*data$maxD,
+                      BMDMixtureBS = (mabmd1)*data$maxD,
+                      BMDMixture.convBS = mabmd.conv1*data$maxD,
                       divergences = divergences,
-                      data = data.frame(
+                      dataN = data.frame(
                         dose = c(data.N$data$x),
                         sd = sqrt(data.N$data$s2),
                         m = data.N$data$m),
+                      dataLN = data.frame(
+                        dose = c(data.LN$data$x),
+                        sd = sqrt(data.LN$data$s2),
+                        m = data.LN$data$m.org),
                       max.dose = data.N$data$maxD,
                       q = data.N$data$q,
                       # increasing = T,
@@ -2304,7 +2300,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       shift = data.LN$data$shift,
-                      w.msg = w.msg
+                      w.msg = w.msg, p.msg = p.msg
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")
@@ -3541,7 +3537,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   # # the model average posterior as a mixture
   count=round(lpwb*ndraws)
   names(count) = names(lpwb)
-  mabmd=(c( # normal
+  mabmd1=(c( # normal
     if("E4_N" %in% names(count)) sample(as.matrix(fitstanE4_N)[,2],count[names(count)=="E4_N"],replace=T),
     if("IE4_N" %in% names(count)) sample(as.matrix(fitstanIE4_N)[,2],count[names(count)=="IE4_N"],replace=T),
     if("H4_N" %in% names(count)) sample(as.matrix(fitstanH4_N)[,2],count[names(count)=="H4_N"],replace=T),
@@ -3560,10 +3556,17 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
   ))
-  macib=(quantile(mabmd,pvec))*data$maxD
+  if(TRUE %in% (mabmd1 > data$maxD)  && data$maxD > 1){
+    mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
+  macib=(quantile(mabmd1,pvec))*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
-  BMDq_bs = (quantile(mabmd, seq(0,1,0.005)))*data$maxD
+  BMDq_bs = (quantile(mabmd1, seq(0,1,0.005)))*data$maxD
 
 
   mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -3621,7 +3624,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     # # the model average posterior as a mixture
     count=round(lpwb.conv*ndraws)
     names(count) = names(lpwb.conv)
-    mabmd.conv=(c( # normal
+    mabmd.conv1=(c( # normal
       if("E4_N" %in% names(count)) sample(as.matrix(fitstanE4_N)[,2],count[names(count)=="E4_N"],replace=T),
       if("IE4_N" %in% names(count)) sample(as.matrix(fitstanIE4_N)[,2],count[names(count)=="IE4_N"],replace=T),
       if("H4_N" %in% names(count)) sample(as.matrix(fitstanH4_N)[,2],count[names(count)=="H4_N"],replace=T),
@@ -3640,10 +3643,17 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
       if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
     ))
-    macib.conv=(quantile(mabmd.conv,pvec))*data$maxD
+    if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
+      mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
+    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
     names(macib.conv)=c("BMDL","BMD","BMDU")
 
-    BMDq_bs_conv = (quantile(mabmd.conv, seq(0,1,0.005)))*data$maxD
+    BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005)))*data$maxD
 
 
     mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -3666,7 +3676,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     }
 
   }else{
-    w.bs.conv = NULL; macib.conv = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
+    w.bs.conv = NULL; macib.conv = NULL; mabmd.conv1 = NA; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
   }
 
 
@@ -3682,7 +3692,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
   # getting the posterior modes and the hessian and the model specific posterior distributions
   if(prior.weights[1]>0){
-    print("pw1")
 
     optE4_NI <- fun_optimC(stanmodels$mE4c, data, start, ndraws, 123, pvec)
 
@@ -3713,7 +3722,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[1] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[2]>0){
-    print("pw2")
 
     optIE4_NI <- fun_optimC(stanmodels$mIE4c, data, start, ndraws, 123, pvec)
 
@@ -3743,7 +3751,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[2] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[3]>0){
-    print("pw3")
 
     optH4_NI <- fun_optimC(stanmodels$mH4c, data, start, ndraws, 123, pvec)
 
@@ -3773,7 +3780,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[3] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[4]>0){
-    print("pw4")
 
     optLN4_NI <- fun_optimC(stanmodels$mLN4c, data, start, ndraws, 123, pvec)
 
@@ -3804,7 +3810,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[4] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[5]>0){
-    print("pw5")
 
     optG4_NI <- fun_optimC(stanmodels$mG4c, data, start, ndraws, 123, pvec)
 
@@ -3835,7 +3840,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[5] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[6]>0){
-    print("pw6")
 
     optQE4_NI <- fun_optimC(stanmodels$mQE4c, data, startQ, ndraws, 123, pvec)
 
@@ -3866,7 +3870,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[6] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[7]>0){
-    print("pw7")
 
     optP4_NI <- fun_optimC(stanmodels$mP4c, data, start, ndraws, 123, pvec)
 
@@ -3896,7 +3899,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[7] == 0){llN = c(llN,NA)}
   #
   if(prior.weights[8]>0){
-    print("pw8")
 
     optL4_NI <- fun_optimC(stanmodels$mL4c, data, start, ndraws, 123, pvec)
 
@@ -3935,7 +3937,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   llLN = c()
 
   if(prior.weights[9]>0){
-    print("pw9")
 
     optE4_LNI <- fun_optimC(stanmodels$mE4c, data, start, ndraws, 123, pvec)
 
@@ -3968,7 +3969,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[9] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[10]>0){
-    print("pw10")
 
     optIE4_LNI <- fun_optimC(stanmodels$mIE4c, data, start, ndraws, 123, pvec)
 
@@ -4001,7 +4001,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[10] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[11]>0){
-    print("pw11")
 
     optH4_LNI <- fun_optimC(stanmodels$mH4c, data, start, ndraws, 123, pvec)
 
@@ -4033,7 +4032,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[11] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[12]>0){
-    print("pw12")
 
     optLN4_LNI <- fun_optimC(stanmodels$mLN4c, data, start, ndraws, 123, pvec)
 
@@ -4066,8 +4064,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   #
   if(prior.weights[13]>0){
 
-    print("pw13")
-
     optG4_LNI <- fun_optimC(stanmodels$mG4c, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
@@ -4098,7 +4094,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[13] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[14]>0){
-    print("pw14")
 
     optQE4_LNI <- fun_optimC(stanmodels$mQE4c, data, startQ, ndraws, 123, pvec)
 
@@ -4130,7 +4125,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[14] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[15]>0){
-    print("pw15")
 
     optP4_LNI <- fun_optimC(stanmodels$mP4c, data, start, ndraws, 123, pvec)
 
@@ -4162,7 +4156,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   if(prior.weights[15] == 0){llLN = c(llLN,NA)}
   #
   if(prior.weights[16]>0){
-    print("pw16")
 
     optL4_LNI <- fun_optimC(stanmodels$mL4c, data, start, ndraws, 123, pvec)
 
@@ -4418,6 +4411,13 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     if(prior.weights[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
   ))
+  if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
+    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
   macilp=(quantile(mabmd,pvec))*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
@@ -4468,6 +4468,13 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       if(p.weights.new[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
       if(p.weights.new[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
     ))
+    if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
+      mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
     macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
 
@@ -4604,6 +4611,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                                     parsQE4LN, parsP4LN, parsL4LN),
                       BMDMixture = (mabmd)*data$maxD,
                       BMDMixture.conv = (mabmd.conv)*data$maxD,
+                      BMDMixtureBS = (mabmd1)*data$maxD,
+                      BMDMixture.convBS = mabmd.conv1*data$maxD,
                       divergences = divergences,
                       data = data.N$data$data,
                       max.dose = data.N$data$maxD,
@@ -4614,7 +4623,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       shift = data.LN$data$shift,
-                      w.msg = w.msg
+                      w.msg = w.msg, p.msg = p.msg
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")
@@ -5454,7 +5463,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   # # the model average posterior as a mixture
   count=round(lpwb*ndraws)
   names(count) = names(lpwb)
-  mabmd=(c( # normal
+  mabmd1=(c( # normal
     if("E4_Q" %in% names(count)) sample(as.matrix(fitstanE4_Q)[,2],count[names(count)=="E4_Q"],replace=T),
     if("IE4_Q" %in% names(count)) sample(as.matrix(fitstanIE4_Q)[,2],count[names(count)=="IE4_Q"],replace=T),
     if("H4_Q" %in% names(count)) sample(as.matrix(fitstanH4_Q)[,2],count[names(count)=="H4_Q"],replace=T),
@@ -5464,10 +5473,17 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,2],count[names(count)=="P4_Q"],replace=T),
     if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
   ))
-  macib=quantile(mabmd,pvec)*data$maxD
+  if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
+    mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
+  macib=quantile(mabmd1,pvec)*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
-  BMDq_bs = quantile(mabmd, seq(0,1,0.005))*data$maxD
+  BMDq_bs = quantile(mabmd1, seq(0,1,0.005))*data$maxD
 
   mods = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
   w.bs = rep(0, length(mods))
@@ -5512,7 +5528,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     # # the model average posterior as a mixture
     count=round(lpwb.conv*ndraws)
     names(count) = names(lpwb.conv)
-    mabmd.conv=(c( # normal
+    mabmd.conv1=(c( # normal
       if("E4_Q" %in% names(count)) sample(as.matrix(fitstanE4_Q)[,2],count[names(count)=="E4_Q"],replace=T),
       if("IE4_Q" %in% names(count)) sample(as.matrix(fitstanIE4_Q)[,2],count[names(count)=="IE4_Q"],replace=T),
       if("H4_Q" %in% names(count)) sample(as.matrix(fitstanH4_Q)[,2],count[names(count)=="H4_Q"],replace=T),
@@ -5522,10 +5538,17 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,2],count[names(count)=="P4_Q"],replace=T),
       if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
     ))
-    macib.conv <- quantile(mabmd.conv,pvec)*data$maxD
+    if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
+      mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
+    macib.conv <- quantile(mabmd.conv1,pvec)*data$maxD
     names(macib.conv) <- c("BMDL","BMD","BMDU")
 
-    BMDq_bs_conv <- quantile(mabmd.conv, seq(0,1,0.005))*data$maxD
+    BMDq_bs_conv <- quantile(mabmd.conv1, seq(0,1,0.005))*data$maxD
 
 
     mods = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
@@ -5546,7 +5569,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     }
 
   }else{
-    w.bs.conv = NULL; macib.conv = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
+    w.bs.conv = NULL; macib.conv = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL; mabmd.conv1 = NA
   }
 
   #----------------------------------
@@ -5556,8 +5579,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
   # getting the posterior modes and the hessian and the model specific posterior distributions
   if(prior.weights[1]>0){
-    print("pw1")
-    optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
+
+      optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optE4_Q[[3]]),TRUE,(optE4_Q[[3]]!=0)) | length(optE4_Q)!=9)){
       prior.weights[1] <- 0
@@ -5584,7 +5607,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[1] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[2]>0){
-    print("pw2")
     optIE4_Q = fun_optimQ(stanmodels$mIE4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optIE4_Q[[3]]),TRUE,(optIE4_Q[[3]]!=0)) | length(optIE4_Q)!=9)){
@@ -5612,7 +5634,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[2] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[3]>0){
-    print("pw3")
     optH4_Q = fun_optimQ(stanmodels$mH4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optH4_Q[[3]]),TRUE,(optH4_Q[[3]]!=0)) | length(optH4_Q)!=9)){
@@ -5640,7 +5661,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[3] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[4]>0){
-    print("pw4")
     optLN4_Q = fun_optimQ(stanmodels$mLN4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optLN4_Q[[3]]),TRUE,(optLN4_Q[[3]]!=0)) | length(optLN4_Q)!=9)){
@@ -5668,9 +5688,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[4] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[5]>0){
-    print("pw5")
-
-    # data$init_b <- qgamma(data$q, rate=1.0, shape=optE4_Q$par[6])/optE4_Q$par[2]
 
     optG4_Q = fun_optimQ(stanmodels$mG4_Q, data, start, ndraws, 123, pvec)
 
@@ -5699,7 +5716,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[5] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[6]>0){
-    print("pw6")
     optQE4_Q = fun_optimQ(stanmodels$mQE4_Q, data, startQ, ndraws, 123, pvec)
 
     if((ifelse(is.na(optQE4_Q[[3]]),TRUE,(optQE4_Q[[3]]!=0)) | length(optQE4_Q)!=9)){
@@ -5727,7 +5743,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[6] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[7]>0){
-    print("pw7")
     optP4_Q = fun_optimQ(stanmodels$mP4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optP4_Q[[3]]),TRUE,(optP4_Q[[3]]!=0)) | length(optP4_Q)!=9)){
@@ -5755,7 +5770,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[7] == 0){llQ = c(llQ,NA)}
   #
   if(prior.weights[8]>0){
-    print("pw8")
     optL4_Q = fun_optimQ(stanmodels$mL4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optL4_Q[[3]]),TRUE,(optL4_Q[[3]]!=0)) | length(optL4_Q)!=9)){
@@ -5983,6 +5997,13 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     if(prior.weights[8]>0) sample(as.matrix(fitstanL4_Q)[,2],count[8],replace=T)
 
   ))
+  if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
+    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
   macilp=quantile(mabmd,pvec)*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
@@ -6023,6 +6044,13 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       if(p.weights.new[7]>0) sample(as.matrix(fitstanP4_Q)[,2],count[7],replace=T),
       if(p.weights.new[8]>0) sample(as.matrix(fitstanL4_Q)[,2],count[8],replace=T)
     ))
+    if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
+      mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
     macilp.conv = quantile(mabmd.conv,pvec)*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
 
@@ -6138,6 +6166,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                    parsQE4Q, parsP4Q, parsL4Q),
                       BMDMixture = mabmd*data$maxD,
                       BMDMixture.conv = mabmd.conv*data$maxD,
+                      BMDMixtureBS = (mabmd1)*data$maxD,
+                      BMDMixture.convBS = mabmd.conv1*data$maxD,
                       divergences = divergences,
                       data = data.frame(
                         dose = c(data.Q$data$x),
@@ -6151,7 +6181,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-                      w.msg = w.msg
+                      w.msg = w.msg, p.msg = p.msg
   )
 
   attr(ret_results, "class") <- c("BMADRQ", "BS")

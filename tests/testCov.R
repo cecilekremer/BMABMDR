@@ -1,4 +1,6 @@
 
+dataDir <- '~/GitHub/BMABMDR/data/'
+
 
 #####################################
 ### SIMULATED DATA WITH COVARIATE ###

@@ -348,6 +348,7 @@ weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 #' function to extract BMD mixture (continuous data)
 #'
 #' @param mod_obj BMDBMA model object
+#' @param weight_type character indicating whether to use Laplace ('LP') or Bridge sampling ('BS') weights
 #' @param conv logical to indicate if mixture should be only based on converged
 #'             models or all the models regardless of the convergence status
 #'
@@ -355,15 +356,23 @@ weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 #'
 #' @export BMDmixture_extract
 #'
-BMDmixture_extract <- function(mod.obj, conv = FALSE){
+BMDmixture_extract <- function(mod.obj, weight_type, conv = FALSE){
 
-  if(is.BMADR2(mod.obj)[3] == 2 & conv == TRUE) {
+  if(is.BMADR2(mod.obj)[3] == 2 & weight_type == 'LP' & conv == TRUE) {
     BMDMixture <- data.frame(Model = "Model Averaged",
                              BMDMixture = mod.obj$BMDMixture.conv
     )
-  } else if(is.BMADR2(mod.obj)[3] == 2 & conv == FALSE) {
+  } else if(is.BMADR2(mod.obj)[3] == 2 & weight_type == 'LP' & conv == FALSE) {
     BMDMixture <- data.frame(Model = "Model Averaged",
                              BMDMixture = mod.obj$BMDMixture
+    )
+  } else if(is.BMADR2(mod.obj)[3] == 2 & weight_type == 'BS' & conv == FALSE) {
+    BMDMixture <- data.frame(Model = "Model Averaged",
+                             BMDMixture = mod.obj$BMDMixtureBS
+    )
+  } else if(is.BMADR2(mod.obj)[3] == 2 & weight_type == 'BS' & conv == TRUE) {
+    BMDMixture <- data.frame(Model = "Model Averaged",
+                             BMDMixture = mod.obj$BMDMixture.convBS
     )
   } else if(is.BMADR2(mod.obj)[2] == 2) {
 
@@ -387,16 +396,22 @@ BMDmixture_extract <- function(mod.obj, conv = FALSE){
 #'
 #' @export BMDQmixture_extract
 #'
-BMDQmixture_extract <- function(mod.obj, conv = FALSE){
+BMDQmixture_extract <- function(mod.obj, weight_type, conv = FALSE){
 
-  if(is.BMADRQ2(mod.obj)[3] == 2 & conv == TRUE) {
+  if(is.BMADRQ2(mod.obj)[3] == 2 & weight_type == 'BS' & conv == TRUE) {
     BMDMixture <- data.frame(Model = "Model Averaged",
-                             BMDMixture = mod.obj$BMDMixture.conv
+                             BMDMixture = mod.obj$BMDMixture.convBS
     )
-  } else if(is.BMADRQ2(mod.obj)[3] == 2 & conv == FALSE) {
+  } else if(is.BMADRQ2(mod.obj)[3] == 2 & weight_type == 'BS' & conv == FALSE) {
     BMDMixture <- data.frame(Model = "Model Averaged",
-                             BMDMixture = mod.obj$BMDMixture
+                             BMDMixture = mod.obj$BMDMixtureBS
     )
+  } else if(is.BMADRQ2(mod.obj)[3] == 2 & weight_type == 'LP' & conv == TRUE) {
+    BMDMixture <- data.frame(Model = "Model Averaged",
+                             BMDMixture = mod.obj$BMDMixture.conv)
+  } else if(is.BMADRQ2(mod.obj)[3] == 2 & weight_type == 'LP' & conv == FALSE) {
+    BMDMixture <- data.frame(Model = "Model Averaged",
+                             BMDMixture = mod.obj$BMDMixture)
   } else if(is.BMADRQ2(mod.obj)[2] == 2) {
 
     BMDMixture <- data.frame(Model = "Model Averaged",

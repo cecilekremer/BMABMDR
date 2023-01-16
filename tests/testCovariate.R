@@ -3,6 +3,9 @@
 # Author: wverlinden
 ###############################################################################
 
+dataDir <- '~/GitHub/BMABMDR/data/'
+
+
 test_that("Summary continuous data with covariate", {
 
   data.test <- read.csv(file.path(dataDir,'test_data.csv'), sep = ';')
@@ -88,7 +91,7 @@ test_that("quantal data with covariate", {
     n = rep(data$size, 2),
     covariate = c(rep('Male', 5), rep('Female', 5))
   )
-  anydoseresponseQ(data.input$dose, data.input$y, data.input$n, cluster = FALSE, use.mcmc = FALSE)
+  # anydoseresponseQ(data.input$dose, data.input$y, data.input$n, cluster = FALSE, use.mcmc = FALSE)
 
 
   q = 0.1

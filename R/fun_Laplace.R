@@ -1339,7 +1339,7 @@ full.laplace_MA=function(data.N, data.LN,
   w.msg <- ''
 
   max.ll = max(lls, na.rm = T)
-  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)][1])){
+  if(is.na(lls[which((max.ll-lls < 709) & prior.weights>0)][1])){
     lpw <- rep(0, 16)
     lpw[which(lls == max.ll)] <- 1
     w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
@@ -1351,7 +1351,7 @@ full.laplace_MA=function(data.N, data.LN,
       warning('Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
     }
 
-    minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
+    minll <- min(lls[which((max.ll-lls < 709) & prior.weights>0)], na.rm = T)
 
     if(prior.weights[1]>0){
       DIHE4h=det(-solve(optE4_NI$hessian))
@@ -1526,6 +1526,13 @@ full.laplace_MA=function(data.N, data.LN,
     if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
   ))
+  if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
+    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
@@ -1601,6 +1608,8 @@ full.laplace_MA=function(data.N, data.LN,
 
   ### Some additional checks
 
+  # print(maci)
+
   if(maci[2]/maci[1] > 20){
     print(warning('BMD/BMDL is larger than 20'))
   }
@@ -1637,10 +1646,14 @@ full.laplace_MA=function(data.N, data.LN,
     parsLN = list(parsE4LN, parsIE4LN, parsH4LN, parsLN4LN, parsG4LN,
                   parsQE4LN, parsP4LN, parsL4LN),
     BMDMixture = (mabmd)*data$maxD,
-    data = data.frame(
+    dataN = data.frame(
       dose = c(data.N$data$x),
       sd = sqrt(data.N$data$s2),
       m = data.N$data$m),
+    dataLN = data.frame(
+      dose = c(data.LN$data$x),
+      sd = sqrt(data.LN$data$s2),
+      m = data.LN$data$m.org),
     max.dose = data.N$data$maxD,
     q = data.N$data$q,
     # increasing = T,
@@ -1649,7 +1662,7 @@ full.laplace_MA=function(data.N, data.LN,
     means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
     shift = data.LN$data$shift,
-    w.msg = w.msg
+    w.msg = w.msg, p.msg = p.msg
   )
 
   attr(ret_results, "class") <- c("BMADR", "LP")
@@ -3090,6 +3103,13 @@ full.laplace_MAc=function(data.N, data.LN,
     if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
   ))
+  if(TRUE %in% (mabmd > data$maxD)  && data$maxD > 1){
+    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
@@ -3214,7 +3234,7 @@ full.laplace_MAc=function(data.N, data.LN,
     # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
     shift = data.LN$data$shift,
-    w.msg = w.msg
+    w.msg = w.msg, p.msg = p.msg
   )
 
   attr(ret_results, "class") <- c("BMADR", "LP")
@@ -4194,6 +4214,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     if(prior.weights[7]>0) sample(optP4_Q$theta_tilde[,2],count[7],replace=T),
     if(prior.weights[8]>0) sample(optL4_Q$theta_tilde[,2],count[8],replace=T)
   ))
+  if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
+    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  }else{
+    p.msg = ''
+  }
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
@@ -4300,7 +4327,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
     means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-    w.msg = w.msg
+    w.msg = w.msg, p.msg = p.msg
   )
 
   attr(ret_results, "class") <- c("BMADRQ", "LP")

@@ -1,8 +1,16 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9046
+
+* Updated plotting functions to use correct data (arithmetic vs geometric)
+
+* Model-averaged posterior truncated at maxDose^2; when this happens, a warning is included in the output as 'p.msg'
+
+* Model-specific BMD plot also truncated at maxDose^2
+
 ## Update 29/11/2022
 
-* Added 'log' option in plot.BMADR() function (defaults to TRUE to plot response on log10 scale)
+* Added 'log' option in plot.BMADR() function (defaults to FALSE, if TRUE the response is plotted on log10 scale)
 
 * Fixed gamlss error for continuous data
 
