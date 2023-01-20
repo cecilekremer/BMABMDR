@@ -13,7 +13,7 @@
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description The function a dataset as input and generates the data list and starting values needed by the stan
@@ -771,7 +771,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description The function takes a dataset as input and generates the data list and starting values needed by the stan
@@ -1624,7 +1624,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @return List with data and start values in correct format to be directly used within the BMA functions.
@@ -1655,17 +1655,18 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     doses = data[, 1]
     maxDose = max(doses)
     # dose.a = sort(unique(doses))
-    litter = data[,3]
+    # litter = data[,3]
     # N = length(dose.a)
-    y.a = rep(NA, length(unique(litter)))
-    n.a = rep(NA, length(unique(litter)))
-    dose.a = rep(NA, length(unique(litter)))
+    y.a = rep(NA, length(unique(doses)))
+    n.a = rep(NA, length(unique(doses)))
+    dose.a = rep(NA, length(unique(doses)))
     ybin = data[, 2]
+    n = data[, 3]
     id = 1
-    for(iu in unique(litter)){
-      y.a[id] = sum(ybin[litter == iu])
-      n.a[id] = sum(litter == iu)
-      dose.a[id] = unique(doses[litter == iu])
+    for(iu in unique(doses)){
+      y.a[id] = sum(ybin[doses == iu])
+      n.a[id] = sum(n[doses == iu])
+      dose.a[id] = unique(doses[doses == iu])
       id = id + 1
     }
     N = length(dose.a)
@@ -1845,7 +1846,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate on which parameters a covariate effect should be used. Defaults to 'all', other options are 'a_sigma2' and 'BMD_d'
 #'
@@ -3329,7 +3330,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d, should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate for which parameter a covariate effect should be included. Defaults to 'all', other options are 'background' or 'BMD_d'
 #'
