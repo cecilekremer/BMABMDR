@@ -4,7 +4,7 @@
 \alias{anydoseresponseQ}
 \title{Function to determine if there is a dose-response effect, for quantal endpoints}
 \usage{
-anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE)
+anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE)
 }
 \arguments{
 \item{dose.a}{ordered dose levels}
@@ -14,8 +14,6 @@ anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE)
 \item{n.a}{number of observations per dose level}
 
 \item{cluster}{logical variable indicating whether the data are clustered or not; if data are clustered, it is assumed that each line of data represents a specific litter}
-
-\item{use.mcmc}{logical indicating wheter MCMC (TRUE) or Laplace (FALSE, default) should be used for the case of clustered data}
 }
 \value{
 list containing estimated Bayes factor and the decision.
