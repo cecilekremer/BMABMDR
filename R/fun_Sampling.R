@@ -1331,6 +1331,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
   ))
+
+  macib=(quantile(mabmd1,pvec))*data$maxD
+  names(macib)=c("BMDL","BMD","BMDU") # original scale
+
   if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
     mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -1338,8 +1342,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   }else{
     p.msg = ''
   }
-  macib=(quantile(mabmd1,pvec))*data$maxD
-  names(macib)=c("BMDL","BMD","BMDU") # original scale
 
   BMDq_bs = (quantile(mabmd1, seq(0,1,0.005)))*data$maxD
 
@@ -1418,6 +1420,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
       if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
     ))
+
+    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
+    names(macib.conv)=c("BMDL","BMD","BMDU")
+
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
       mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -1425,8 +1431,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     }else{
       p.msg = ''
     }
-    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
-    names(macib.conv)=c("BMDL","BMD","BMDU")
 
     BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005)))*data$maxD
 
@@ -2081,6 +2085,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(prior.weights[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
   ))
+
+  macilp=(quantile(mabmd,pvec))*data$maxD
+  names(macilp)=c("BMDL","BMD","BMDU") # on original scale
+
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -2088,8 +2096,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   }else{
     p.msg = ''
   }
-  macilp=(quantile(mabmd,pvec))*data$maxD
-  names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
   BMDq_ls = (quantile(mabmd, seq(0,1,0.005)))*data$maxD
 
@@ -2138,6 +2144,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       if(p.weights.new[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
       if(p.weights.new[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
     ))
+
+    macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
+    names(macilp.conv)=c("BMDL","BMD","BMDU")
+
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
       mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -2145,8 +2155,6 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     }else{
       p.msg = ''
     }
-    macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
-    names(macilp.conv)=c("BMDL","BMD","BMDU")
 
     BMDq_ls_conv = (quantile(mabmd.conv, seq(0,1,0.005)))*data$maxD
 
@@ -3556,6 +3564,10 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
   ))
+
+  macib=(quantile(mabmd1,pvec))*data$maxD
+  names(macib)=c("BMDL","BMD","BMDU") # original scale
+
   if(TRUE %in% (mabmd1 > data$maxD)  && data$maxD > 1){
     mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -3563,8 +3575,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   }else{
     p.msg = ''
   }
-  macib=(quantile(mabmd1,pvec))*data$maxD
-  names(macib)=c("BMDL","BMD","BMDU") # original scale
 
   BMDq_bs = (quantile(mabmd1, seq(0,1,0.005)))*data$maxD
 
@@ -3643,6 +3653,10 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,2],count[names(count)=="P4_LN"],replace=T),
       if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
     ))
+
+    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
+    names(macib.conv)=c("BMDL","BMD","BMDU")
+
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
       mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -3650,8 +3664,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     }else{
       p.msg = ''
     }
-    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
-    names(macib.conv)=c("BMDL","BMD","BMDU")
 
     BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005)))*data$maxD
 
@@ -4411,6 +4423,10 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     if(prior.weights[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
   ))
+
+  macilp=(quantile(mabmd,pvec))*data$maxD
+  names(macilp)=c("BMDL","BMD","BMDU") # on original scale
+
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -4418,8 +4434,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   }else{
     p.msg = ''
   }
-  macilp=(quantile(mabmd,pvec))*data$maxD
-  names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
   BMDq_ls = (quantile(mabmd, seq(0,1,0.005)))*data$maxD
 
@@ -4468,6 +4482,10 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       if(p.weights.new[15]>0) sample(as.matrix(fitstanP4_LN)[,2],count[15],replace=T),
       if(p.weights.new[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
     ))
+
+    macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
+    names(macilp.conv)=c("BMDL","BMD","BMDU")
+
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
       mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -4475,8 +4493,6 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     }else{
       p.msg = ''
     }
-    macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
-    names(macilp.conv)=c("BMDL","BMD","BMDU")
 
     BMDq_ls_conv = (quantile(mabmd.conv, seq(0,1,0.005)))*data$maxD
 
@@ -5473,6 +5489,10 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,2],count[names(count)=="P4_Q"],replace=T),
     if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
   ))
+
+  macib=quantile(mabmd1,pvec)*data$maxD
+  names(macib)=c("BMDL","BMD","BMDU") # original scale
+
   if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
     mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -5480,8 +5500,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   }else{
     p.msg = ''
   }
-  macib=quantile(mabmd1,pvec)*data$maxD
-  names(macib)=c("BMDL","BMD","BMDU") # original scale
 
   BMDq_bs = quantile(mabmd1, seq(0,1,0.005))*data$maxD
 
@@ -5538,6 +5556,10 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,2],count[names(count)=="P4_Q"],replace=T),
       if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
     ))
+
+    macib.conv <- quantile(mabmd.conv1,pvec)*data$maxD
+    names(macib.conv) <- c("BMDL","BMD","BMDU")
+
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
       mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -5545,8 +5567,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     }else{
       p.msg = ''
     }
-    macib.conv <- quantile(mabmd.conv1,pvec)*data$maxD
-    names(macib.conv) <- c("BMDL","BMD","BMDU")
 
     BMDq_bs_conv <- quantile(mabmd.conv1, seq(0,1,0.005))*data$maxD
 
@@ -5997,6 +6017,10 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     if(prior.weights[8]>0) sample(as.matrix(fitstanL4_Q)[,2],count[8],replace=T)
 
   ))
+
+  macilp=quantile(mabmd,pvec)*data$maxD
+  names(macilp)=c("BMDL","BMD","BMDU") # on original scale
+
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -6004,8 +6028,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   }else{
     p.msg = ''
   }
-  macilp=quantile(mabmd,pvec)*data$maxD
-  names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
   BMDq_ls = quantile(mabmd, seq(0,1,0.005))*data$maxD
 
@@ -6044,6 +6066,10 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       if(p.weights.new[7]>0) sample(as.matrix(fitstanP4_Q)[,2],count[7],replace=T),
       if(p.weights.new[8]>0) sample(as.matrix(fitstanL4_Q)[,2],count[8],replace=T)
     ))
+
+    macilp.conv = quantile(mabmd.conv,pvec)*data$maxD
+    names(macilp.conv)=c("BMDL","BMD","BMDU")
+
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
       mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -6051,8 +6077,6 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     }else{
       p.msg = ''
     }
-    macilp.conv = quantile(mabmd.conv,pvec)*data$maxD
-    names(macilp.conv)=c("BMDL","BMD","BMDU")
 
     BMDq_ls_conv = quantile(mabmd.conv, seq(0,1,0.005))*data$maxD
 

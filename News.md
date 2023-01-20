@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9047
+
+* Updated anydoseresponseQ() to use the brms package
+
+* Model-averaged posterior is truncated AFTER calculating the credible interval
+
 ## Version 0.0.0.9046
 
 * Updated plotting functions to use correct data (arithmetic vs geometric)
