@@ -476,7 +476,6 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 #' @param y.a number of adverse events
 #' @param n.a number of observations per dose level
 #' @param cluster logical variable indicating whether the data are clustered or not; if data are clustered, it is assumed that each line of data represents a specific litter
-#' @param use.mcmc logical indicating wheter MCMC (TRUE) or Laplace (FALSE, default) should be used for the case of clustered data
 #'
 #' @description This function tests for any dose-response effect using Bayes factor.
 #'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
@@ -485,167 +484,185 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 #'
 #' @export anydoseresponseQ
 #'
-anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
+anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){#}, use.mcmc = FALSE){
 
-  ndr=30000;nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
+  # ndr=30000;nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
 
 
   if(cluster==TRUE){
 
-    yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
-    nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
+    data = data.frame(x = dose.a, y = y.a, n = n.a, zz = 1:length(dose.a))
 
-    yamean <- yasum/nasum
-    ydiff <- diff(yasum/nasum)
+    mod_clust_H0 = brms::brm(y | trials(n) ~ 1 + (1 | zz),
+                             data = data,
+                             family = binomial(link='logit'),
+                             save_pars = save_pars(all = TRUE),
+                             # chains = nrch, iter = nriter, warmup = wu,
+                             refresh = 0)
 
-    #tt1 <- prop.test(yasum[1], nasum[1])$conf.int
-    lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
-                  .Machine$double.xmin)
-    ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
+    mod_clust_SM = brms::brm(y | trials(n) ~ as.factor(x) + (1 | zz), # random intercept
+                             data = data,
+                             family = binomial(link='logit'),
+                             save_pars = save_pars(all = TRUE),
+                             refresh = 0)
 
+    BF_brms_bridge = brms::bayes_factor(mod_clust_H0, mod_clust_SM)
+    bf = BF_brms_bridge$bf
 
-    N <- length(dose.a)
-    datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
-    fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
-                  silent = TRUE)
-    rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
-    dim(rhohat) <- 1
-
-    priorH0 = list(
-      priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
-      priorlb = lbs,
-      priorub = ubs
-    )
-
-    priorSM = list(
-      priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
-      priorlb = lbs,
-      priorub = ubs
-    )
-
-    ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
-    svSM = list(par = ddy,
-                rho = rhohat
-    )
-
-    svH0 = list(par = max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rho = rhohat)
-
-    data.modstanSM = list(N=N,Ndose=length(unique(dose.a)),n=n.a,y=y.a,
-                          priormu=priorSM$priormu,
-                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
-                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin
-    )
-
-    data.modstanH0 = list(N=N,n=n.a,y=y.a, yint=y.a,nint=n.a,
-                          priormu=priorH0$priormu,
-                          priorlb=priorH0$priorlb, priorub=priorH0$priorub,
-                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin
-    )
-
-    if(use.mcmc == TRUE){
-      svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
-
-      initf2 <- function(chain_id = 1) {
-        rho = svNM[2]; dim(rho)=1
-        list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[1])), rho = rho + rnorm(1, sd = 0.001*abs(rho)) ,alpha = chain_id)
-      }
-
-      init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-      fitstanH0=rstan::sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                                control = list(adapt_delta = delta,max_treedepth =treedepth),
-                                show_messages = F, refresh = 0)
-      while(is.na(dim(fitstanH0)[1])){
-
-        init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-
-        fitstanH0 = rstan::sampling(stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
-                                    chains = nrch, warmup = warmup, seed = sd,
-                                    control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                    show_messages = F, refresh = 0)
-      }
-
-
-
-
-      # Fitting the saturated ANOVA model
-      # svSM=list(par=log(y.a))
-      # priorSM=prior_SM(dose.a, y.a, n.a)
-      # data.modstanSM=list(N=N, n=n.a, y=y.a, priormu=priorSM$priormu, priorSigma=priorSM$priorSigma)
-      #sampling(stanmodels$mSM2_Q,data = data.modstanSM, chains=1, init = list(svSM))
-      svH1=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
-
-      initf2 <- function(chain_id = 1) {
-        nns <- which(stringr::str_detect(names(svH1),'par'))
-        nns_rho <- which(stringr::str_detect(names(svH1),'rho'))
-
-        rho = svH1[nns_rho]; dim(rho)=1
-        list(par=svH1[nns] +
-               rnorm(length(nns), sd = 0.001*abs(svH1[nns])),
-             rho = rho + rnorm(length(nns_rho), sd = 0.001*abs(svH1[nns_rho])), alpha = chain_id)
-      }
-
-
-
-      init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
-      fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
-                                  control = list(adapt_delta = delta,max_treedepth =treedepth),
-                                  show_messages = F, refresh = 0)
-      while(is.na(dim(fitstanSM)[1])){
-
-        init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
-
-        fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
-                                    chains = nrch, warmup = warmup, seed = sd,
-                                    control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                    show_messages = F, refresh = 0)
-      }
-
-
-      bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
-      bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-      bf=bridgesampling::bf(bridge_H0,bridge_SM)
-      bf = bf$bf
-
-    }else if(use.mcmc == FALSE){
-
-      fitH0 = rstan::optimizing(stanmodels$mH0_Q, data = data.modstanH0, seed = as.integer(sd), draws = ndr, init = svH0, hessian = T)
-
-
-      pH0 <- fitH0$par
-      pars.H0 = pH0[names(pH0) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
-                                      # paste0('par[', length(unique(dose.a)), ']'),
-                                      'rho[1]')]
-
-
-
-      fitSM = rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, seed = as.integer(sd), draws = ndr, init = svSM, hessian = T)
-
-
-      pSM <- fitSM$par
-      pars.SM = pSM[names(pSM) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
-                                      # paste0('par[', length(unique(dose.a)), ']'),
-                                      'rho[1]')]
-
-
-
-      llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
-                      n.a, dose.a, y.a, 0,
-                      pars.SM[stringr::str_detect(names(pars.SM), 'rho')])
-      llH0 = llfH02_Q(pars.H0[stringr::str_detect(names(pars.H0), 'a\\[')],
-                      n.a, dose.a, y.a, 0,
-                      pars.H0[stringr::str_detect(names(pars.H0), 'rho')])
-
-
-      BIC.H0 = - 2 * llH0 + (2 * log(sum(n.a))) # 2 parameters: a and rho
-
-      # BIC.SM = - 2 * llSM + (N+1 * log(sum(n.a)))
-      BIC.SM = - 2 * llSM + (length(unique(dose.a))+1 * log(sum(n.a)))
-
-
-
-      bf = exp(-0.5 * (BIC.H0 - BIC.SM))
-
-    }
+    # yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
+    # nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
+    #
+    # yamean <- yasum/nasum
+    # ydiff <- diff(yasum/nasum)
+    #
+    # #tt1 <- prop.test(yasum[1], nasum[1])$conf.int
+    # lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
+    #               .Machine$double.xmin)
+    # ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
+    #
+    #
+    # N <- length(dose.a)
+    # datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
+    # fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
+    #               silent = TRUE)
+    # rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    # dim(rhohat) <- 1
+    #
+    # priorH0 = list(
+    #   priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
+    #   priorlb = lbs,
+    #   priorub = ubs
+    # )
+    #
+    # priorSM = list(
+    #   priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
+    #   priorlb = lbs,
+    #   priorub = ubs
+    # )
+    #
+    # ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
+    # svSM = list(par = ddy,
+    #             rho = rhohat
+    # )
+    #
+    # svH0 = list(par = max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rho = rhohat)
+    #
+    # data.modstanSM = list(N=N,Ndose=length(unique(dose.a)),n=n.a,y=y.a,
+    #                       priormu=priorSM$priormu,
+    #                       priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+    #                       is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin
+    # )
+    #
+    # data.modstanH0 = list(N=N,n=n.a,y=y.a, yint=y.a,nint=n.a,
+    #                       priormu=priorH0$priormu,
+    #                       priorlb=priorH0$priorlb, priorub=priorH0$priorub,
+    #                       is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin
+    # )
+    #
+    # if(use.mcmc == TRUE){
+    #   svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
+    #
+    #   initf2 <- function(chain_id = 1) {
+    #     rho = svNM[2]; dim(rho)=1
+    #     list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[1])), rho = rho + rnorm(1, sd = 0.001*abs(rho)) ,alpha = chain_id)
+    #   }
+    #
+    #   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+    #   fitstanH0=rstan::sampling(stanmodels$mH0_Q,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+    #                             control = list(adapt_delta = delta,max_treedepth =treedepth),
+    #                             show_messages = F, refresh = 0)
+    #   while(is.na(dim(fitstanH0)[1])){
+    #
+    #     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+    #
+    #     fitstanH0 = rstan::sampling(stanmodels$mH0_Q, data = data.modstanH0, init=init_ll, iter = nriterations,
+    #                                 chains = nrch, warmup = warmup, seed = sd,
+    #                                 control = list(adapt_delta = delta, max_treedepth =treedepth),
+    #                                 show_messages = F, refresh = 0)
+    #   }
+    #
+    #
+    #
+    #
+    #   # Fitting the saturated ANOVA model
+    #   # svSM=list(par=log(y.a))
+    #   # priorSM=prior_SM(dose.a, y.a, n.a)
+    #   # data.modstanSM=list(N=N, n=n.a, y=y.a, priormu=priorSM$priormu, priorSigma=priorSM$priorSigma)
+    #   #sampling(stanmodels$mSM2_Q,data = data.modstanSM, chains=1, init = list(svSM))
+    #   svH1=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+    #
+    #   initf2 <- function(chain_id = 1) {
+    #     nns <- which(stringr::str_detect(names(svH1),'par'))
+    #     nns_rho <- which(stringr::str_detect(names(svH1),'rho'))
+    #
+    #     rho = svH1[nns_rho]; dim(rho)=1
+    #     list(par=svH1[nns] +
+    #            rnorm(length(nns), sd = 0.001*abs(svH1[nns])),
+    #          rho = rho + rnorm(length(nns_rho), sd = 0.001*abs(svH1[nns_rho])), alpha = chain_id)
+    #   }
+    #
+    #
+    #
+    #   init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
+    #   fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriter,chains = nrch, warmup=wu, seed=sd,
+    #                               control = list(adapt_delta = delta,max_treedepth =treedepth),
+    #                               show_messages = F, refresh = 0)
+    #   while(is.na(dim(fitstanSM)[1])){
+    #
+    #     init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+    #
+    #     fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations,
+    #                                 chains = nrch, warmup = warmup, seed = sd,
+    #                                 control = list(adapt_delta = delta, max_treedepth =treedepth),
+    #                                 show_messages = F, refresh = 0)
+    #   }
+    #
+    #
+    #   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
+    #   bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
+    #   bf=bridgesampling::bf(bridge_H0,bridge_SM)
+    #   bf = bf$bf
+    #
+    # }else if(use.mcmc == FALSE){
+    #
+    #   fitH0 = rstan::optimizing(stanmodels$mH0_Q, data = data.modstanH0, seed = as.integer(sd), draws = ndr, init = svH0, hessian = T)
+    #
+    #
+    #   pH0 <- fitH0$par
+    #   pars.H0 = pH0[names(pH0) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
+    #                                   # paste0('par[', length(unique(dose.a)), ']'),
+    #                                   'rho[1]')]
+    #
+    #
+    #
+    #   fitSM = rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, seed = as.integer(sd), draws = ndr, init = svSM, hessian = T)
+    #
+    #
+    #   pSM <- fitSM$par
+    #   pars.SM = pSM[names(pSM) %in% c(paste0('a[', 1:length(unique(dose.a)), ']'),
+    #                                   # paste0('par[', length(unique(dose.a)), ']'),
+    #                                   'rho[1]')]
+    #
+    #
+    #
+    #   llSM = llfSM2_Q(pars.SM[stringr::str_detect(names(pars.SM), 'a\\[')],
+    #                   n.a, dose.a, y.a, 0,
+    #                   pars.SM[stringr::str_detect(names(pars.SM), 'rho')])
+    #   llH0 = llfH02_Q(pars.H0[stringr::str_detect(names(pars.H0), 'a\\[')],
+    #                   n.a, dose.a, y.a, 0,
+    #                   pars.H0[stringr::str_detect(names(pars.H0), 'rho')])
+    #
+    #
+    #   BIC.H0 = - 2 * llH0 + (2 * log(sum(n.a))) # 2 parameters: a and rho
+    #
+    #   # BIC.SM = - 2 * llSM + (N+1 * log(sum(n.a)))
+    #   BIC.SM = - 2 * llSM + (length(unique(dose.a))+1 * log(sum(n.a)))
+    #
+    #
+    #
+    #   bf = exp(-0.5 * (BIC.H0 - BIC.SM))
+    #
+    # }
 
   } else {
 
@@ -668,11 +685,10 @@ anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE, use.mcmc = FALSE){
 
     data = data.frame(x = dose.a, y = y.a, n = n.a)
 
-    mod_H0 = brms::brm(y | trials(n) ~ 1, data = data, family = binomial, save_pars = save_pars(all = T), refresh = 0)#,
-    # prior = set_prior("uniform(0.00783568, 0.04192749)", class = "Intercept"))
+    mod_H0 = brms::brm(y | trials(n) ~ 1, data = data, family = binomial, save_pars = save_pars(all = T), refresh = 0)
     mod_SM = brms::brm(y | trials(n) ~ as.factor(x), data = data, family = binomial, save_pars = save_pars(all = T), refresh = 0)
     BF_brms_bridge = brms::bayes_factor(mod_H0, mod_SM)
-    bf = BF_brms_bridge$bf # in favor of SM
+    bf = BF_brms_bridge$bf
 
     # priorH0 = list(
     #   priormu = max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),

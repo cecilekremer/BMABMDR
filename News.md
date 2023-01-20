@@ -2,7 +2,7 @@
 
 ## Version 0.0.0.9047
 
-* Updated anydoseresponseQ() to use the brms package
+* Updated anydoseresponseQ() to use the brms package --> 'use.mcmc' argument is gone now
 
 * Model-averaged posterior is truncated AFTER calculating the credible interval
 
