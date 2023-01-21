@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9048
+
+* Fixed dependency issue in anydoseresponse for continuous data
+
 ## Version 0.0.0.9047
 
 * Updated anydoseresponseQ() to use the brms package --> 'use.mcmc' argument is gone now
