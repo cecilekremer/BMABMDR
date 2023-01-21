@@ -110,7 +110,7 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
   bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-  bf=bf(bridge_H0,bridge_SM)
+  bf=bridgesampling::bf(bridge_H0,bridge_SM)
   # pb=post_prob(bridge_sampler(fitstanH0, silent=T),bridge_sampler(fitstanSM, silent=T))
   # print(bf)
   # print(pb)
@@ -265,7 +265,7 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
 
   bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
   bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-  bf=bf(bridge_H0,bridge_SM)
+  bf=bridgesampling::bf(bridge_H0,bridge_SM)
   # pb=post_prob(bridge_sampler(fitstanH0, silent=T),bridge_sampler(fitstanSM, silent=T))
   # print(bf)
   # print(pb)
@@ -419,7 +419,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
     bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-    bf=bf(bridge_H0,bridge_SM)
+    bf=bridgesampling::bf(bridge_H0,bridge_SM)
     # pb=post_prob(bridge_sampler(fitstanH0, silent=T),bridge_sampler(fitstanSM, silent=T))
     # print(bf)
     # print(pb)
