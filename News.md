@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9049
+
+* Fixed covariates plot and summary tables to be on original dose range
+
 ## Version 0.0.0.9048
 
 * Fixed dependency issue in anydoseresponse for continuous data
