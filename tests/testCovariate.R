@@ -32,6 +32,7 @@ test_that("Summary continuous data with covariate", {
                                pvec = c(0.05, 0.5, 0.95),
                                prior.weights = prior.weights)
 
+  FLBMD$MA
   FLBMD$summary
 
   # Plots
