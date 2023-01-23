@@ -1925,6 +1925,12 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     testNLN <- NLN_test(datind)
   }
 
+  original.data <- data.frame(x = dose.a*maxDose,
+                              y = mean.a,
+                              s = sd.a,
+                              n = n.a,
+                              cov = covar)
+
   covar_lvls <- unique(covar)
   nlevels <- length(unique(covar))
   ## Bartlett test of homoscedasticity
@@ -2007,7 +2013,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
     for(i in 1:nlevels) {
       obs.min[i] = mean.a[dose.a == 0 & covar == covar_lvls[i]][1]
-      obs.max[i] = mean.a[dose.a == max(dose.a) & covar == covar_lvls[i]][1]
+      obs.max[i] = mean.a[dose.a == max(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
 
       # obs.min[i] = min(mean.a[covar == covar_lvls[i]])
       # obs.max[i] = max(mean.a[covar == covar_lvls[i]])
@@ -2527,7 +2533,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
                                is_increasing = is_increasing, truncd = truncd, truncdQ = truncdQ,
                                is_decreasing = is_decreasing, is_informative_a = is_informative_a,
                                is_informative_c = is_informative_c,
-                               is_informative_BMD = is_informative_BMD),
+                               is_informative_BMD = is_informative_BMD,
+                               org.data = original.data),
                    # start values
                    start=list(par1=sv.a,
                               par2=bmd.sv, pars3i=pars3i,
@@ -2700,6 +2707,12 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     mean.a2 = exp(gmean.a3)
   }
 
+  original.data <- data.frame(x = dose.a*maxDose,
+                              y = mean.a,
+                              s = sd.a,
+                              n = n.a,
+                              cov = covar)
+
   covar_lvls <- unique(covar)
   nlevels <- length(unique(covar))
   ## Bartlett test of homoscedasticity
@@ -2765,7 +2778,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     obs.min <- obs.max <- min.min <- mode.min <- max.min <- min.max <- max.max <- mode.max <- numeric(nlevels)
     for(i in 1:nlevels) {
       obs.min[i] = mean.a[dose.a == 0 & covar == covar_lvls[i]][1]
-      obs.max[i] = mean.a[dose.a == max(dose.a) & covar == covar_lvls[i]][1]
+      obs.max[i] = mean.a[dose.a == max(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
 
       if(obs.min[i] < obs.max[i]) {
 
@@ -3282,7 +3295,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                                is_increasing = is_increasing, truncd = truncd, truncdQ = truncdQ,
                                is_decreasing = is_decreasing, is_informative_a = is_informative_a,
                                is_informative_c = is_informative_c,
-                               is_informative_BMD = is_informative_BMD),
+                               is_informative_BMD = is_informative_BMD,
+                               org.data = original.data),
                    # start values
                    start=list(par1=sv.a,
                               par2=bmd.sv, pars3i=pars3i,
@@ -3373,6 +3387,11 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     covar = indiv.data$cov
     dose.a = dose.a/maxDose
   }
+
+  original.data = data.frame(x = dose.a*maxDose,
+                             y = y.a,
+                             n = n.a,
+                             cov = covar)
 
   covar_lvls = unique(covar)
   nlevels = length(unique(covar))
@@ -3716,7 +3735,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
                 priorlb = priorlb1a, priorub = priorub1a, priorSigma = priorSigma1a,
                 eps = 1.0E-06, priorgama = priorgama, trt_ind = trt_ind,
                 init_b = 1, is_informative_a = is_informative_a, is_informative_BMD = is_informative_BMD,
-                is_bin = is_bin, is_betabin = is_betabin),
+                is_bin = is_bin, is_betabin = is_betabin, org.data = original.data),
     # start values
     start = start,
     startQ = startQ

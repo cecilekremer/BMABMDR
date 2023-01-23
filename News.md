@@ -1,9 +1,14 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9051
+
+* Fixed plot for quantal covariates (accounting for different dose levels between covariate levels)
+
+* Updated implementation for continuous covariates accounting for different dose levels
+
 ## Version 0.0.0.9050
 
 * Fixed BMD shape for informative prior (should not default to 4)
-
 
 ## Version 0.0.0.9049
 
