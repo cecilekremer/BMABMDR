@@ -1530,6 +1530,8 @@ full.laplace_MA=function(data.N, data.LN,
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
+  print(maci)
+
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -5780,14 +5782,14 @@ full.laplace_MA_Cov = function(data, # the summary data
         if(!is.vector(get(paste0('BMD_',m)))){
           # if(dim(get(paste0('BMD_', m)))[1] == data_NCOV_all$data$nlevels){
           for(i in 1:data_NCOV_all$data$nlevels){
-            BMDL <- c(BMDL, get(paste0('BMD_',m))[i, 1])
-            BMD <- c(BMD, get(paste0('BMD_',m))[i, 2])
-            BMDU <- c(BMDU, get(paste0('BMD_',m))[i, 3])
+            BMDL <- c(BMDL, get(paste0('BMD_',m))[i, 1]*data_N_noCOV$data$maxD)
+            BMD <- c(BMD, get(paste0('BMD_',m))[i, 2]*data_N_noCOV$data$maxD)
+            BMDU <- c(BMDU, get(paste0('BMD_',m))[i, 3]*data_N_noCOV$data$maxD)
           }
         }else{
-          BMDL <- c(BMDL, rep(get(paste0('BMD_',m))[1], each = data_NCOV_all$data$nlevels))
-          BMD <- c(BMD, rep(get(paste0('BMD_',m))[2], each = data_NCOV_all$data$nlevels))
-          BMDU <- c(BMDU, rep(get(paste0('BMD_',m))[3], each = data_NCOV_all$data$nlevels))
+          BMDL <- c(BMDL, rep(get(paste0('BMD_',m))[1]*data_N_noCOV$data$maxD, each = data_NCOV_all$data$nlevels))
+          BMD <- c(BMD, rep(get(paste0('BMD_',m))[2]*data_N_noCOV$data$maxD, each = data_NCOV_all$data$nlevels))
+          BMDU <- c(BMDU, rep(get(paste0('BMD_',m))[3]*data_N_noCOV$data$maxD, each = data_NCOV_all$data$nlevels))
         }
       }else{
         BMDL <- c(BMDL, rep(NA, data_NCOV_all$data$nlevels))
@@ -5812,9 +5814,9 @@ full.laplace_MA_Cov = function(data, # the summary data
 
     for(m in model[1:16]){
       if(!is.na(get(paste0('BMD_', m)))){
-        BMDL <- c(BMDL, get(paste0('BMD_',m))[1])
-        BMD <- c(BMD, get(paste0('BMD_',m))[2])
-        BMDU <- c(BMDU, get(paste0('BMD_',m))[3])
+        BMDL <- c(BMDL, get(paste0('BMD_',m))[1]*data_N_noCOV$data$maxD)
+        BMD <- c(BMD, get(paste0('BMD_',m))[2]*data_N_noCOV$data$maxD)
+        BMDU <- c(BMDU, get(paste0('BMD_',m))[3]*data_N_noCOV$data$maxD)
 
       }else{
         BMDL <- c(BMDL, NA)
@@ -5860,6 +5862,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                 n = data_NCOV_all$data$n,
                                 cov = data_NCOV_all$data$covariate
               ),
+              maxDose = data_N_noCOV$data$maxD,
               BMD_Mixture = BMDq,
               parE4_N = parE4_N,
               parIE4_N = parIE4_N,
@@ -6652,14 +6655,14 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
         if(!is.vector(get(paste0('BMD_',m)))){
 
           for(i in 1:data_all$data$nlevels){
-            BMDL <- c(BMDL, get(paste0('BMD_',m))[i, 1])
-            BMD <- c(BMD, get(paste0('BMD_',m))[i, 2])
-            BMDU <- c(BMDU, get(paste0('BMD_',m))[i, 3])
+            BMDL <- c(BMDL, get(paste0('BMD_',m))[i, 1]*data_all$data$maxD)
+            BMD <- c(BMD, get(paste0('BMD_',m))[i, 2]*data_all$data$maxD)
+            BMDU <- c(BMDU, get(paste0('BMD_',m))[i, 3]*data_all$data$maxD)
           }
         }else{
-          BMDL <- c(BMDL, rep(get(paste0('BMD_',m))[1], each = data_all$data$nlevels))
-          BMD <- c(BMD, rep(get(paste0('BMD_',m))[2], each = data_all$data$nlevels))
-          BMDU <- c(BMDU, rep(get(paste0('BMD_',m))[3], each = data_all$data$nlevels))
+          BMDL <- c(BMDL, rep(get(paste0('BMD_',m))[1]*data_all$data$maxD, each = data_all$data$nlevels))
+          BMD <- c(BMD, rep(get(paste0('BMD_',m))[2]*data_all$data$maxD, each = data_all$data$nlevels))
+          BMDU <- c(BMDU, rep(get(paste0('BMD_',m))[3]*data_all$data$maxD, each = data_all$data$nlevels))
         }
       }else{
         BMDL <- c(BMDL, rep(NA, data_all$data$nlevels))
@@ -6684,9 +6687,9 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
 
     for(m in model[1:8]){
       if(!is.na(get(paste0('BMD_', m)))){
-        BMDL <- c(BMDL, get(paste0('BMD_',m))[1])
-        BMD <- c(BMD, get(paste0('BMD_',m))[2])
-        BMDU <- c(BMDU, get(paste0('BMD_',m))[3])
+        BMDL <- c(BMDL, get(paste0('BMD_',m))[1]*data_all$data$maxD)
+        BMD <- c(BMD, get(paste0('BMD_',m))[2]*data_all$data$maxD)
+        BMDU <- c(BMDU, get(paste0('BMD_',m))[3]*data_all$data$maxD)
 
       }else{
         BMDL <- c(BMDL, NA)
@@ -6724,6 +6727,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                 cov = data_all$data$covariate
               ),
               summary = model.weight,
+              maxDose = data_all$data$maxD,
               BMD_Mixture = BMDq,
               parE4_Q = parE4_Q,
               parIE4_Q = parIE4_Q,
