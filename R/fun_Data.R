@@ -294,7 +294,6 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
     if(!is.na(prior.BMD[2])){
       BMD.mode = prior.BMD[2]/maxDose
-      shape.BMD = 4
     }else{
       BMD.mode = (prior.BMD[1]/maxDose) + (((prior.BMD[3]/maxDose) - prior.BMD[1]/maxDose)/2)
     }
@@ -641,7 +640,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
     if(!is.na(prior.BMD[2])){
       BMD.mode = prior.BMD[2]/maxDose
-      shape.BMD = 4
     }else{
       BMD.mode = (prior.BMD[1]/maxDose) + (((prior.BMD[3]/maxDose) - prior.BMD[1]/maxDose)/2)
     }
@@ -986,7 +984,6 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
     if(!is.na(prior.BMD[2])){
       BMD.mode = prior.BMD[2]/maxDose
-      shape.BMD = 4
     }else{
       BMD.mode = (prior.BMD[1]/maxDose) + (((prior.BMD[3]/maxDose) - prior.BMD[1]/maxDose)/2)
     }
@@ -1407,7 +1404,6 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
     if(!is.na(prior.BMD[2])){
       BMD.mode = prior.BMD[2]/maxDose
-      shape.BMD = 4
     }else{
       BMD.mode = (prior.BMD[1]/maxDose) + (((prior.BMD[3]/maxDose) - prior.BMD[1]/maxDose)/2)
     }
@@ -1760,7 +1756,6 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 
     if(!is.na(prior.BMD[2])){
       BMD.mode = prior.BMD[2]/maxDose
-      shape.BMD = 4
     }else{
       BMD.mode = (prior.BMD[1]/maxDose) + (((prior.BMD[3]/maxDose) - prior.BMD[1]/maxDose)/2)
     }

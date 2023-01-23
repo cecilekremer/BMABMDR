@@ -1,5 +1,10 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9050
+
+* Fixed BMD shape for informative prior (should not default to 4)
+
+
 ## Version 0.0.0.9049
 
 * Fixed covariates plot and summary tables to be on original dose range
