@@ -345,79 +345,163 @@ plot.BMADR <- function(mod.obj,
   mod.obj$dataLN <- mod.obj$dataLN[order(mod.obj$dataLN$dose), ] #order the data by dose
 
   dose <- sort(unique(mod.obj$dataN$dose)/max(mod.obj$dataN$dose))
-  ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
-  lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
-  bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
-  bmdlo <- BMDW$BMDL/mod.obj$max.dose
-  lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
-                     log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
-                     log10(min(dose[dose > 0])/4))
-  ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
-                   min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
-                   min(dose[dose > 0])/4)
-
-  if(clustered == F){
-    orig.y <- log(NtoLN(mod.obj$dataN$m,mod.obj$dataN$sd))[1:length(mod.obj$dataN$dose)]
-    orig.s <- log(NtoLN(mod.obj$dataN$m,mod.obj$dataN$sd))[(length(mod.obj$dataN$dose)+1):(2*length(mod.obj$dataN$dose))]
-    orig_ptdataN <- data.frame(dose = (mod.obj$dataN$dose),
-                               dose2 = rep(ddd, times = table(mod.obj$dataN$dose)),
-                               lg10d = rep(lg10d, times = table(mod.obj$dataN$dose)),
-                               m = (mod.obj$dataN$m),
-                               sd = (mod.obj$dataN$sd),
-                               log10m = log10(exp(orig.y)),
-                               log10s = log10(exp(orig.s))
-    )
-    orig_ptdataLN <- data.frame(dose = mod.obj$dataLN$dose,
-                                dose2 = rep(ddd, times = table(mod.obj$dataLN$dose)),
-                                lg10d = rep(lg10d, times = table(mod.obj$dataLN$dose)),
-                                m = (mod.obj$dataLN$m),
-                                sd = (mod.obj$dataLN$sd),
-                                log10m = log10(exp(mod.obj$dataLN$m)),
-                                log10s = log10(exp(mod.obj$dataLN$sd))
-    )
-
-  }else if(clustered == T){
-    orig_ptdata <- data.frame(dose = (mod.obj$dataN$dose),
-                              dose2 = rep(ddd, times = table(mod.obj$dataN$dose)),
-                              lg10d = rep(lg10d, times = table(mod.obj$dataN$dose)),
-                              y = mod.obj$dataN$response,
-                              yl = log(mod.obj$dataN$response),
-                              log10y = log10(mod.obj$dataN$response))
+  if(min(dose) == 0){
+    ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
+    lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
+    bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
+    bmdlo <- BMDW$BMDL/mod.obj$max.dose
+    lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(dose[dose > 0])/4))
+    ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(dose[dose > 0])/4)
+  }else{
+    ddd <- c(min(dose)/4, dose)
+    lg10d <- c(log10(min(dose)/4), log10(dose))
+    bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
+    bmdlo <- BMDW$BMDL/mod.obj$max.dose
+    lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(dose)/4))
+    ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(dose)/4)
   }
 
-  if(clustered == T){
 
-    ## overall mean
-    means.all <- mod.obj$dataN %>%
-      dplyr::group_by(dose) %>%
-      dplyr::summarise(mresp = mean(response),
-                       mlresp = mean(log(response)))
-    means.litter <- mod.obj$dataN %>%
-      dplyr::group_by(dose, litter) %>%
-      dplyr::summarise(mresp = mean(response),
-                       mlresp = mean(log(response)))
+  if(min(dose) == 0){
+    if(clustered == F){
+      orig.y <- log(NtoLN(mod.obj$dataN$m,mod.obj$dataN$sd))[1:length(mod.obj$dataN$dose)]
+      orig.s <- log(NtoLN(mod.obj$dataN$m,mod.obj$dataN$sd))[(length(mod.obj$dataN$dose)+1):(2*length(mod.obj$dataN$dose))]
+      orig_ptdataN <- data.frame(dose = (mod.obj$dataN$dose),
+                                 dose2 = rep(ddd, times = table(mod.obj$dataN$dose)),
+                                 lg10d = rep(lg10d, times = table(mod.obj$dataN$dose)),
+                                 m = (mod.obj$dataN$m),
+                                 sd = (mod.obj$dataN$sd),
+                                 log10m = log10(exp(orig.y)),
+                                 log10s = log10(exp(orig.s))
+      )
+      orig_ptdataLN <- data.frame(dose = mod.obj$dataLN$dose,
+                                  dose2 = rep(ddd, times = table(mod.obj$dataLN$dose)),
+                                  lg10d = rep(lg10d, times = table(mod.obj$dataLN$dose)),
+                                  m = (mod.obj$dataLN$m),
+                                  sd = (mod.obj$dataLN$sd),
+                                  log10m = log10(exp(mod.obj$dataLN$m)),
+                                  log10s = log10(exp(mod.obj$dataLN$sd))
+      )
 
-    means.all$dose = means.all$dose/max(means.all$dose)
-    means.litter$dose = means.litter$dose/max(means.litter$dose)
+    }else if(clustered == T){
+      orig_ptdata <- data.frame(dose = (mod.obj$dataN$dose),
+                                dose2 = rep(ddd, times = table(mod.obj$dataN$dose)),
+                                lg10d = rep(lg10d, times = table(mod.obj$dataN$dose)),
+                                y = mod.obj$dataN$response,
+                                yl = log(mod.obj$dataN$response),
+                                log10y = log10(mod.obj$dataN$response))
+    }
+
+    if(clustered == T){
+
+      ## overall mean
+      means.all <- mod.obj$dataN %>%
+        dplyr::group_by(dose) %>%
+        dplyr::summarise(mresp = mean(response),
+                         mlresp = mean(log(response)))
+      means.litter <- mod.obj$dataN %>%
+        dplyr::group_by(dose, litter) %>%
+        dplyr::summarise(mresp = mean(response),
+                         mlresp = mean(log(response)))
+
+      means.all$dose = means.all$dose/max(means.all$dose)
+      means.litter$dose = means.litter$dose/max(means.litter$dose)
+
+    }
+
+    mod.obj$dataN$lg10d <- rep(lg10d, times = table(mod.obj$dataN$dose))
+    mod.obj$dataN$dose2 <- rep(ddd, times = table(mod.obj$dataN$dose))
+    mod.obj$dataLN$lg10d <- rep(lg10d, times = table(mod.obj$dataLN$dose))
+    mod.obj$dataLN$dose2 <- rep(ddd, times = table(mod.obj$dataLN$dose))
+
+    if(clustered == F){
+      mod.obj$dataN$lg10m <- log10(exp(orig.y))
+      mod.obj$dataN$lg10s <- log10(exp(orig.s))
+      mod.obj$dataLN$lg10m <- log10(exp(mod.obj$dataLN$m))
+      mod.obj$dataLN$lg10s <- log10(exp(mod.obj$dataLN$s))
+    }else if(clustered == T){
+      # means.all$lg10m <- log10(means.all$mresp)
+      # means.litter$lg10m <- log10(means.litter$mresp)
+      means.all$dose[means.all$dose==0] = ddd[1]
+      means.litter$dose[means.litter$dose==0] = ddd[1]
+    }
+
+  }else{
+
+    if(clustered == F){
+      orig.y <- log(NtoLN(mod.obj$dataN$m,mod.obj$dataN$sd))[1:length(mod.obj$dataN$dose)]
+      orig.s <- log(NtoLN(mod.obj$dataN$m,mod.obj$dataN$sd))[(length(mod.obj$dataN$dose)+1):(2*length(mod.obj$dataN$dose))]
+      orig_ptdataN <- data.frame(dose = (mod.obj$dataN$dose),
+                                 dose2 = rep(ddd[2:(length(unique(mod.obj$dataN$dose))+1)], times = table(mod.obj$dataN$dose)),
+                                 lg10d = rep(lg10d[2:(length(unique(mod.obj$dataN$dose))+1)], times = table(mod.obj$dataN$dose)),
+                                 m = (mod.obj$dataN$m),
+                                 sd = (mod.obj$dataN$sd),
+                                 log10m = log10(exp(orig.y)),
+                                 log10s = log10(exp(orig.s))
+      )
+      orig_ptdataLN <- data.frame(dose = mod.obj$dataLN$dose,
+                                  dose2 = rep(ddd[2:(length(unique(mod.obj$dataLN$dose))+1)], times = table(mod.obj$dataLN$dose)),
+                                  lg10d = rep(lg10d[2:(length(unique(mod.obj$dataLN$dose))+1)], times = table(mod.obj$dataLN$dose)),
+                                  m = (mod.obj$dataLN$m),
+                                  sd = (mod.obj$dataLN$sd),
+                                  log10m = log10(exp(mod.obj$dataLN$m)),
+                                  log10s = log10(exp(mod.obj$dataLN$sd))
+      )
+
+    }else if(clustered == T){
+      orig_ptdata <- data.frame(dose = (mod.obj$dataN$dose),
+                                dose2 = rep(ddd[2:(length(unique(mod.obj$dataN$dose))+1)], times = table(mod.obj$dataN$dose)),
+                                lg10d = rep(lg10d[2:(length(unique(mod.obj$dataN$dose))+1)], times = table(mod.obj$dataN$dose)),
+                                y = mod.obj$dataN$response,
+                                yl = log(mod.obj$dataN$response),
+                                log10y = log10(mod.obj$dataN$response))
+    }
+
+    if(clustered == T){
+
+      ## overall mean
+      means.all <- mod.obj$dataN %>%
+        dplyr::group_by(dose) %>%
+        dplyr::summarise(mresp = mean(response),
+                         mlresp = mean(log(response)))
+      means.litter <- mod.obj$dataN %>%
+        dplyr::group_by(dose, litter) %>%
+        dplyr::summarise(mresp = mean(response),
+                         mlresp = mean(log(response)))
+
+      means.all$dose = means.all$dose/max(means.all$dose)
+      means.litter$dose = means.litter$dose/max(means.litter$dose)
+
+    }
+
+    mod.obj$dataN$lg10d <- rep(lg10d[2:(length(unique(mod.obj$dataN$dose))+1)], times = table(mod.obj$dataN$dose))
+    mod.obj$dataN$dose2 <- rep(ddd[2:(length(unique(mod.obj$dataN$dose))+1)], times = table(mod.obj$dataN$dose))
+    mod.obj$dataLN$lg10d <- rep(lg10d[2:(length(unique(mod.obj$dataLN$dose))+1)], times = table(mod.obj$dataLN$dose))
+    mod.obj$dataLN$dose2 <- rep(ddd[2:(length(unique(mod.obj$dataLN$dose))+1)], times = table(mod.obj$dataLN$dose))
+
+    if(clustered == F){
+      mod.obj$dataN$lg10m <- log10(exp(orig.y))
+      mod.obj$dataN$lg10s <- log10(exp(orig.s))
+      mod.obj$dataLN$lg10m <- log10(exp(mod.obj$dataLN$m))
+      mod.obj$dataLN$lg10s <- log10(exp(mod.obj$dataLN$s))
+    }
+    # else if(clustered == T){
+    #   # means.all$lg10m <- log10(means.all$mresp)
+    #   # means.litter$lg10m <- log10(means.litter$mresp)
+    #   means.all$dose[means.all$dose==0] = ddd[1]
+    #   means.litter$dose[means.litter$dose==0] = ddd[1]
+    # }
 
   }
 
-  mod.obj$dataN$lg10d <- rep(lg10d, times = table(mod.obj$dataN$dose))
-  mod.obj$dataN$dose2 <- rep(ddd, times = table(mod.obj$dataN$dose))
-  mod.obj$dataLN$lg10d <- rep(lg10d, times = table(mod.obj$dataLN$dose))
-  mod.obj$dataLN$dose2 <- rep(ddd, times = table(mod.obj$dataLN$dose))
-
-  if(clustered == F){
-    mod.obj$dataN$lg10m <- log10(exp(orig.y))
-    mod.obj$dataN$lg10s <- log10(exp(orig.s))
-    mod.obj$dataLN$lg10m <- log10(exp(mod.obj$dataLN$m))
-    mod.obj$dataLN$lg10s <- log10(exp(mod.obj$dataLN$s))
-  }else if(clustered == T){
-    # means.all$lg10m <- log10(means.all$mresp)
-    # means.litter$lg10m <- log10(means.litter$mresp)
-    means.all$dose[means.all$dose==0] = ddd[1]
-    means.litter$dose[means.litter$dose==0] = ddd[1]
-  }
 
 
   dgr <- seq(min(lg10d), abs(min(lg10d)), by=0.01)
@@ -540,7 +624,7 @@ plot.BMADR <- function(mod.obj,
   # }
   if(mod.obj$max.dose > 1){
     respBMDBMDW$BMDU <- ifelse(((respBMDBMDW$BMDU > mod.obj$max.dose^2) &
-                                 ((respBMDBMDW$BMDU/respBMDBMDW$BMD)/(respBMDBMDW$BMD/respBMDBMDW$BMDL)) > 10) |
+                                  ((respBMDBMDW$BMDU/respBMDBMDW$BMD)/(respBMDBMDW$BMD/respBMDBMDW$BMDL)) > 10) |
                                  respBMDBMDW$BMDU > 10*mod.obj$max.dose^2,
                                # mod.obj$max.dose^2,
                                2*(respBMDBMDW$BMD - respBMDBMDW$BMDL),
@@ -720,6 +804,13 @@ plot.BMADR <- function(mod.obj,
                       "LN4", "G4", "QE4",
                       "P4", "L4")
 
+
+  if(min(mod.obj$dataN$dose) == 0){
+    plot.labs = dose*mod.obj$max.dose
+  }else{
+    plot.labs = c(0, dose*mod.obj$max.dose)
+  }
+
   if(clustered == F){
 
     ymin = 10^min(mod.obj$dataN$lg10m - 2*mod.obj$dataN$lg10s, na.rm=T)
@@ -775,7 +866,7 @@ plot.BMADR <- function(mod.obj,
                                2*mod.obj$max.dose) ) +
       # scale_x_continuous(trans = 'log10', labels = scales::comma,
       #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-      scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+      scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
       # scale_linetype_manual(values = lty,
       # labels = c('LogNormal', 'Normal')) +
@@ -850,7 +941,7 @@ plot.BMADR <- function(mod.obj,
                                2*mod.obj$max.dose) ) +
       # scale_x_continuous(trans = 'log10', labels = scales::comma,
       #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-      scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+      scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
       scale_color_manual(values = md_cls,
@@ -914,7 +1005,7 @@ plot.BMADR <- function(mod.obj,
                                2*mod.obj$max.dose) ) +
       # scale_x_continuous(trans = 'log10', labels = scales::comma,
       #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-      scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+      scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
       theme(strip.text = element_text(size = 15, face = "bold"),
@@ -947,7 +1038,7 @@ plot.BMADR <- function(mod.obj,
                                  color = Model),
                    linetype = "dotted", alpha = 0.6,
                    size = 0.8, inherit.aes = FALSE, show.legend = FALSE) +
-      scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+      scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
 
       geom_jitter(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = y),
@@ -1057,7 +1148,7 @@ plot.BMADR <- function(mod.obj,
                                2*mod.obj$max.dose) ) +
       # scale_x_continuous(trans = 'log10', labels = scales::comma,
       #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-      scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+      scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
       scale_color_manual(values = md_cls,
@@ -1121,7 +1212,7 @@ plot.BMADR <- function(mod.obj,
                                2*mod.obj$max.dose) ) +
       # scale_x_continuous(trans = 'log10', labels = scales::comma,
       #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-      scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+      scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
       theme(strip.text = element_text(size = 15, face = "bold"),
@@ -1209,7 +1300,7 @@ plot.BMADR <- function(mod.obj,
                     ylim =  c(min(BMDMixture2$yres)*0.9, max(BMDMixture2$yres)*1.1)) +
     # scale_x_continuous(trans = 'log10', labels = scales::comma,
     #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-    scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+    scale_x_continuous(trans = 'log10', labels = plot.labs,
                        breaks = ddd*mod.obj$max.dose) +
     theme(strip.text = element_text(size = 15, face = "bold"),
           axis.text = element_text(size = 10, face = "bold"),
@@ -1436,17 +1527,31 @@ plot.BMADRQ <- function(mod.obj,
   mod.obj$data <- mod.obj$data[order(mod.obj$data$dose), ]
 
   dose <- sort(unique(mod.obj$data$dose)/max(mod.obj$data$dose))
-  ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
-  lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
-  bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
-  bmdlo <- BMDW$BMDL/mod.obj$max.dose
+  if(min(dose) == 0){
+    ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
+    lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
+    bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
+    bmdlo <- BMDW$BMDL/mod.obj$max.dose
 
-  lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
-                     log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
-                     log10(min(dose[dose > 0])/4))
-  ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
-                   min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
-                   min(dose[dose > 0])/4)
+    lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(dose[dose > 0])/4))
+    ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(dose[dose > 0])/4)
+  }else{
+    ddd <- c(min(dose)/4, dose)
+    lg10d <- c(log10(min(dose)/4), log10(dose))
+    bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
+    bmdlo <- BMDW$BMDL/mod.obj$max.dose
+    lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(dose)/4))
+    ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(dose)/4)
+  }
+
 
   orig.p <- (mod.obj$data$y/mod.obj$data$n)
   orig.ps <- log(orig.p + .Machine$double.xmin)
@@ -1456,12 +1561,22 @@ plot.BMADRQ <- function(mod.obj,
                                          n = sum(n)) )
 
   #dplyr::summarise(dplyr::group_by(mod.obj$data, dose), n = sum(n))
-  orig_ptdata <- merge(data.frame(dose = mod.obj$data$dose,
-                                  dose2 = rep(ddd, times = table(mod.obj$data$dose)),
-                                  lg10d = rep(lg10d, times = table(mod.obj$data$dose))
-  ), mps, by = "dose")
-  mod.obj$data$lg10d <- rep(lg10d, times = table(mod.obj$data$dose))
-  mod.obj$data$dose2 <- rep(ddd, times = table(mod.obj$data$dose))
+  if(min(dose) == 0){
+    orig_ptdata <- merge(data.frame(dose = mod.obj$data$dose,
+                                    dose2 = rep(ddd, times = table(mod.obj$data$dose)),
+                                    lg10d = rep(lg10d, times = table(mod.obj$data$dose))
+    ), mps, by = "dose")
+    mod.obj$data$lg10d <- rep(lg10d, times = table(mod.obj$data$dose))
+    mod.obj$data$dose2 <- rep(ddd, times = table(mod.obj$data$dose))
+  }else{
+    orig_ptdata <- merge(data.frame(dose = mod.obj$data$dose,
+                                    dose2 = rep(ddd[2:(length(unique(mod.obj$data$dose))+1)], times = table(mod.obj$data$dose)),
+                                    lg10d = rep(lg10d[2:(length(unique(mod.obj$data$dose))+1)], times = table(mod.obj$data$dose))
+    ), mps, by = "dose")
+    mod.obj$data$lg10d <- rep(lg10d[2:(length(unique(mod.obj$data$dose))+1)], times = table(mod.obj$data$dose))
+    mod.obj$data$dose2 <- rep(ddd[2:(length(unique(mod.obj$data$dose))+1)], times = table(mod.obj$data$dose))
+  }
+
 
   dgr <- seq(min(lg10d), abs(min(lg10d)), by=0.01)
   #dgr2 <- seq(min(ddd), abs(max(ddd)), by=0.01)
@@ -1688,6 +1803,12 @@ plot.BMADRQ <- function(mod.obj,
   #ymin = min(10^mod.obj$data$lg10m - 2*exp(orig.s), na.rm=T)
   #ymax = max(10^mod.obj$data$lg10m + 2*exp(orig.s), na.rm=T)
 
+  if(min(mod.obj$data$dose) == 0){
+    plot.labs = dose*mod.obj$max.dose
+  }else{
+    plot.labs = c(0, dose*mod.obj$max.dose)
+  }
+
   pplot <- ggplot(data = preds2,
                   aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                       color = Model)) +
@@ -1722,9 +1843,9 @@ plot.BMADRQ <- function(mod.obj,
     scale_color_manual(values = md_cls,
                        labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
                                   "QuadExp", "Probit", "Logistic")) +
-    #  scale_x_continuous(trans = 'log10', labels = scales::comma,
-    #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-    scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+     # scale_x_continuous(trans = 'log10', labels = scales::comma,
+     #                   breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
+    scale_x_continuous(trans = 'log10', labels = plot.labs,
                        breaks = ddd*mod.obj$max.dose) +
     theme_minimal() +
     theme(strip.text = element_text(size = 15, face = "bold"),
@@ -1802,7 +1923,9 @@ plot.BMADRQ <- function(mod.obj,
                     ylim = c(min(BMDMixture2$yres), max(BMDMixture2$yres)) ) +
     # scale_x_continuous(trans = 'log10', labels = scales::comma,
     #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
-    scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+    # scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
+    #                    breaks = ddd*mod.obj$max.dose) +
+    scale_x_continuous(trans = 'log10', labels = plot.labs,
                        breaks = ddd*mod.obj$max.dose) +
     theme(strip.text = element_text(size = 15, face = "bold"),
           axis.text = element_text(size = 10, face = "bold"),

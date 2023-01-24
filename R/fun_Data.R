@@ -166,7 +166,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
   ## Observed background and maximum response
 
-  obs.min = mean.a[dose.a == 0][1]
+  obs.min = mean.a[dose.a == min(dose.a)][1]
   obs.max = mean.a[dose.a == max(dose.a)][1]
 
   ### Family 1
@@ -520,7 +520,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
   ## Observed background and maximum response
 
-  obs.min = mean.a[dose.a == 0][1]
+  obs.min = mean.a[dose.a == min(dose.a)][1]
   obs.max = mean.a[dose.a == max(dose.a)][1]
 
   ### Family 1
@@ -839,7 +839,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
   ## Observed background and maximum response
 
-  obs.min = mean(indiv.data$response[indiv.data$dose==0])
+  obs.min = mean(indiv.data$response[indiv.data$dose==min(indiv.data$dose)])
   obs.max = mean(indiv.data$response[indiv.data$dose==maxDose])
 
   is_informative_BMD = 0
@@ -1277,7 +1277,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
   ## Observed background and maximum response
 
-  obs.min = mean(indiv.data$response[indiv.data$dose==0])
+  obs.min = mean(indiv.data$response[indiv.data$dose==min(indiv.data$dose)])
   obs.max = mean(indiv.data$response[indiv.data$dose==maxDose])
 
   ### Family 1
@@ -2012,7 +2012,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     obs.min <- obs.max <- min.min <- mode.min <- max.min <- min.max <- max.max <- mode.max <- numeric(nlevels)
 
     for(i in 1:nlevels) {
-      obs.min[i] = mean.a[dose.a == 0 & covar == covar_lvls[i]][1]
+      obs.min[i] = mean.a[dose.a == min(dose.a) & covar == covar_lvls[i]][1]
       obs.max[i] = mean.a[dose.a == max(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
 
       # obs.min[i] = min(mean.a[covar == covar_lvls[i]])
@@ -2777,7 +2777,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
     obs.min <- obs.max <- min.min <- mode.min <- max.min <- min.max <- max.max <- mode.max <- numeric(nlevels)
     for(i in 1:nlevels) {
-      obs.min[i] = mean.a[dose.a == 0 & covar == covar_lvls[i]][1]
+      obs.min[i] = mean.a[dose.a == min(dose.a) & covar == covar_lvls[i]][1]
       obs.max[i] = mean.a[dose.a == max(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
 
       if(obs.min[i] < obs.max[i]) {
@@ -3429,8 +3429,8 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     for(i in 1:nlevels){
 
       ## Default range on background
-      miny.a[i] <- sum(y.a[dose.a == 0 & covar == covar_lvls[i]])
-      minn.a[i] <- sum(n.a[dose.a == 0 & covar == covar_lvls[i]])
+      miny.a[i] <- sum(y.a[dose.a == min(dose.a) & covar == covar_lvls[i]])
+      minn.a[i] <- sum(n.a[dose.a == min(dose.a) & covar == covar_lvls[i]])
 
       a.min[i] <- ifelse(miny.a[i] != 0,
                          max(c(prop.test(miny.a[i], minn.a[i])$conf.int[1]/2, 1/(10*minn.a[i]))),
@@ -3469,8 +3469,8 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
   }else{
 
     ## Default range on background
-    miny.a <- sum(y.a2[dose.a == 0])
-    minn.a <- sum(n.a2[dose.a == 0])
+    miny.a <- sum(y.a2[dose.a == min(dose.a)])
+    minn.a <- sum(n.a2[dose.a == min(dose.a)])
 
     a.min <- ifelse(miny.a != 0,
                     max(c(prop.test(miny.a, minn.a)$conf.int[1]/2, 1/(10*minn.a))),
