@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9052
+
+* Updated plots to allow for non-zero first dose
+
+* Updated continuous PREP_DATA functions to allow for non-zero first dose
+
 ## Version 0.0.0.9051
 
 * Fixed plot for quantal covariates (accounting for different dose levels between covariate levels)
