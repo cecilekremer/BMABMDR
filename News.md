@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9053
+
+* Updated x-range for plot_priorQ
+
+* Changed covariate plot to log10-scale for dose 
+
 ## Version 0.0.0.9052
 
 * Updated plots to allow for non-zero first dose
