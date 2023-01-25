@@ -278,7 +278,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_asigma2 <- fun_optimCov(model, data_asigma2$data,
                                  data_asigma2$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9)){
+  if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$theta_tilde))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_asigma2 <- NA
@@ -294,7 +294,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_dBMD <- fun_optimCov(model, data_dBMD$data,
                               data_dBMD$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_dBMD[[3]]),TRUE,(optMod_dBMD[[3]]!=0)) | length(optMod_dBMD)!=9)){
+  if((ifelse(is.na(optMod_dBMD[[3]]),TRUE,(optMod_dBMD[[3]]!=0)) | length(optMod_dBMD)!=9 | ('Inf' %in% optMod_dBMD$theta_tilde))){
     prior.weightsCov[2] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_dBMD <- NA
@@ -309,7 +309,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_all <- fun_optimCov(model, data_all$data,
                              data_all$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_all[[3]]),TRUE,(optMod_all[[3]]!=0)) | length(optMod_all)!=9)){
+  if((ifelse(is.na(optMod_all[[3]]),TRUE,(optMod_all[[3]]!=0)) | length(optMod_all)!=9 | ('Inf' %in% optMod_all$theta_tilde))){
     prior.weightsCov[3] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_all <- NA
@@ -324,7 +324,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_none <- fun_optim(model.none, data_none$data,
                            data_none$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_none[[3]]),TRUE,(optMod_none[[3]]!=0)) | length(optMod_none)!=9)){
+  if((ifelse(is.na(optMod_none[[3]]),TRUE,(optMod_none[[3]]!=0)) | length(optMod_none)!=9 | ('Inf' %in% optMod_none$theta_tilde))){
     prior.weightsCov[4] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA
@@ -364,27 +364,30 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
         if(grepl('QE4', model_name)){
           w_dBMD <- fun.w.QE4(optMod_dBMD, lld = ll_dBMD, min.ll = minll, nlevels = data_dBMD$data$nlevels,
                               dataMod = data_dBMD, covar = 'BMD_d')
+        }else{
+          w_dBMD <- fun.w(optMod_dBMD, lld = ll_dBMD, min.ll = minll, nlevels = data_dBMD$data$nlevels,
+                          dataMod = data_dBMD, covar = 'BMD_d')
         }
-        w_dBMD <- fun.w(optMod_dBMD, lld = ll_dBMD, min.ll = minll, nlevels = data_dBMD$data$nlevels,
-                        dataMod = data_dBMD, covar = 'BMD_d')
       }else{w_dBMD <- 0}
 
       if(prior.weightsCov[3] > 0){
         if(grepl('QE4', model_name)){
           w_all <- fun.w.QE4(optMod_all, lld = ll_all, min.ll = minll, nlevels = data_all$data$nlevels,
                              dataMod = data_all, covar = 'all')
+        }else{
+          w_all <- fun.w(optMod_all, lld = ll_all, min.ll = minll, nlevels = data_all$data$nlevels,
+                         dataMod = data_all, covar = 'all')
         }
-        w_all <- fun.w(optMod_all, lld = ll_all, min.ll = minll, nlevels = data_all$data$nlevels,
-                       dataMod = data_all, covar = 'all')
       }else{w_all <- 0}
 
       if(prior.weightsCov[4] > 0){
         if(grepl('QE4', model_name)){
           w_none <- fun.w.QE4(optMod_none, lld = ll_none, min.ll = minll, nlevels = 1,
                               dataMod = data_none, covar = 'none')
+        }else{
+          w_none <- fun.w(optMod_none, lld = ll_none, min.ll = minll, nlevels = 1,
+                          dataMod = data_none, covar = 'none')
         }
-        w_none <- fun.w(optMod_none, lld = ll_none, min.ll = minll, nlevels = 1,
-                        dataMod = data_none, covar = 'none')
       }else{w_none <- 0}
 
       w <- c(w_asigma2, w_dBMD, w_all, w_none)

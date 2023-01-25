@@ -2012,11 +2012,12 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     obs.min <- obs.max <- min.min <- mode.min <- max.min <- min.max <- max.max <- mode.max <- numeric(nlevels)
 
     for(i in 1:nlevels) {
-      obs.min[i] = mean.a[dose.a == min(dose.a) & covar == covar_lvls[i]][1]
+      obs.min[i] = mean.a[dose.a == min(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
       obs.max[i] = mean.a[dose.a == max(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
 
-      # obs.min[i] = min(mean.a[covar == covar_lvls[i]])
-      # obs.max[i] = max(mean.a[covar == covar_lvls[i]])
+    }
+
+    for(i in 1:nlevels){
 
       if(obs.min[i] < obs.max[i]) {
 
@@ -2139,7 +2140,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
   } else {
 
-    obs.min = mean.a2[dose.a2 == 0][1]
+    obs.min = mean.a2[dose.a2 == min(dose.a)][1]
     obs.max = mean.a2[dose.a2 == max(dose.a)][1]
 
     if(obs.min < obs.max) {
@@ -2776,9 +2777,13 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
   if(covariate == 'a_sigma2' | covariate == 'all') {
 
     obs.min <- obs.max <- min.min <- mode.min <- max.min <- min.max <- max.max <- mode.max <- numeric(nlevels)
+
     for(i in 1:nlevels) {
-      obs.min[i] = mean.a[dose.a == min(dose.a) & covar == covar_lvls[i]][1]
+      obs.min[i] = mean.a[dose.a == min(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
       obs.max[i] = mean.a[dose.a == max(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]][1]
+    }
+
+    for(i in 1:nlevels){
 
       if(obs.min[i] < obs.max[i]) {
 
@@ -2901,7 +2906,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
   } else {
 
-    obs.min = mean.a2[dose.a2 == 0][1]
+    obs.min = mean.a2[dose.a2 == min(dose.a)][1]
     obs.max = mean.a2[dose.a2 == max(dose.a)][1]
 
     if(obs.min < obs.max) {
@@ -3429,8 +3434,12 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     for(i in 1:nlevels){
 
       ## Default range on background
-      miny.a[i] <- sum(y.a[dose.a == min(dose.a) & covar == covar_lvls[i]])
-      minn.a[i] <- sum(n.a[dose.a == min(dose.a) & covar == covar_lvls[i]])
+      miny.a[i] <- sum(y.a[dose.a == min(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]])
+      minn.a[i] <- sum(n.a[dose.a == min(dose.a[covar == covar_lvls[i]]) & covar == covar_lvls[i]])
+
+    }
+
+    for(i in 1:nlevels){
 
       a.min[i] <- ifelse(miny.a[i] != 0,
                          max(c(prop.test(miny.a[i], minn.a[i])$conf.int[1]/2, 1/(10*minn.a[i]))),

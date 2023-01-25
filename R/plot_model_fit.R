@@ -17,6 +17,18 @@ basic.plot <- function(x, model_name, increasing){
   x$data$geom.s <- NtoLN(x$data$y, x$data$s)[(dim(x$data)[1]+1):(2*dim(x$data)[1])]
   maxDose <- x$maxDose
 
+  dose = unique(x$data$x)
+
+  x$data$x2 = ifelse(x$data$x == 0, log10(min(x$data$x[x$data$x != 0])/4), log10(x$data$x))
+
+  if(min(dose) == 0){
+    plot.labs = dose
+    plot.breaks = c(log10(min(dose[dose!=0])/4), log10(dose[2:length(dose)]))
+  }else{
+    plot.labs = c(0, dose)
+    plot.breaks = c(log10(min(dose[dose!=0])/4), log10(dose))
+  }
+
   # if(increasing == TRUE){
 
   model_pars <- get('x')[[paste0('par',model_name)]]
@@ -36,23 +48,29 @@ basic.plot <- function(x, model_name, increasing){
                   'par4[1]')
 
         if(grepl('_LN',model_name)){
-          temp <- c(temp, exp(DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q, x$shift)))
+          temp <- c(temp, exp(DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift)))
         }else{
-          temp <- c(temp, DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q, x$shift))
+          temp <- c(temp, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift))
         }
       }
       if(grepl('_LN',model_name)){
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = geom.y, colour = cov)) +
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                               y = temp,
+                               cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }else{
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y, colour = cov)) +
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                               y = temp,
+                               cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - s, ymax = geom.y + s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = y - s, ymax = y + s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
       for(i in 1:length(covar)){
@@ -61,23 +79,29 @@ basic.plot <- function(x, model_name, increasing){
                   'par3',
                   paste0('par4[',i,']'))
         if(grepl('_LN',model_name)){
-          temp1 <- c(temp1, exp(DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q, x$shift)))
+          temp1 <- c(temp1, exp(DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift)))
         }else{
-          temp1 <- c(temp1, DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q, x$shift))
+          temp1 <- c(temp1, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift))
         }
       }
       if(grepl('_LN',model_name)){
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp1, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = geom.y, colour = cov)) +
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                               y = temp1,
+                               cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))          +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }else{
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp1, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y, colour = cov)) +
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                               y = temp1,
+                               cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - s, ymax = geom.y + s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = y - s, ymax = y + s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }
 
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
@@ -90,41 +114,49 @@ basic.plot <- function(x, model_name, increasing){
                   paste0('par4[',i,']')
         )
         if(grepl('_LN',model_name)){
-          temp2 <- c(temp2, exp(DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q, x$shift)))
+          temp2 <- c(temp2, exp(DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift)))
         }else{
-          temp2 <- c(temp2, DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q, x$shift))
+          temp2 <- c(temp2, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift))
         }
 
       }
       if(grepl('_LN',model_name)){
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp2, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = geom.y, colour = cov)) +
-          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))          +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                               y = temp2,
+                               cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
+          geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }else{
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp2, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y, colour = cov)) +
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                               y = temp2,
+                               cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))+
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - s, ymax = geom.y + s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = y - s, ymax = y + s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }
 
     }else{
       if(grepl('_LN',model_name)){
-        temp3 <- c(temp3, exp(DRM(par = model_pars[c(1,2,9,4)], seq(0,maxDose,0.01)/maxDose, x$q, x$shift)))
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp3)
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = geom.y, colour = cov)) +
+        temp3 <- c(temp3, exp(DRM(par = model_pars[c(1,2,9,4)], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift)))
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)), y = temp3)
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y)) +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }else{
-        temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], seq(0,maxDose,0.01)/maxDose, x$q, x$shift))
-        dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp3)
-        p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y, colour = cov)) +
+        temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift))
+        dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)), y = temp3)
+        p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y)) +
-          geom_errorbar(data = x$data, mapping = aes(x = x, ymin = y - s, ymax = geom.y + s, colour = cov),
-                        size = 1, width = NA, linetype = 'dotted')
+          geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = y - s, ymax = y + s, colour = cov),
+                        size = 1, width = NA, linetype = 'dotted') +
+          scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
       }
     }
 
@@ -148,6 +180,18 @@ basic.plotQ <- function(x, model_name){
   temp <- temp1 <- temp2 <- temp3 <- NULL
   maxDose <- x$maxDose
 
+  dose = unique(x$data$x)
+
+  x$data$x2 = ifelse(x$data$x == 0, log10(min(x$data$x[x$data$x != 0])/4), log10(x$data$x))
+
+  if(min(dose) == 0){
+    plot.labs = dose
+    plot.breaks = c(log10(min(dose[dose!=0])/4), log10(dose[2:length(dose)]))
+  }else{
+    plot.labs = c(0, dose)
+    plot.breaks = c(log10(min(dose[dose!=0])/4), log10(dose))
+  }
+
   if(!is.na(x$summary$Submodel[x$summary$Model==model_name][1])){
 
 
@@ -157,11 +201,14 @@ basic.plotQ <- function(x, model_name){
                   'par2[1]',
 
                   'par3[1]')
-        temp <- c(temp, DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q))
+        temp <- c(temp, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q))
       }
-      dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-      p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y/n, colour = cov)) +
-        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+                             y = temp,
+                             cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+      p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
+        scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
 
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'BMD_d'){
       for(i in 1:length(covar)){
@@ -170,11 +217,13 @@ basic.plotQ <- function(x, model_name){
 
                   paste0('par3[',i,']'))
         # lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
-        temp1 <- c(temp1, DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q))
+        temp1 <- c(temp1, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q))
       }
-      dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp1, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-      p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y/n, colour = cov)) +
-        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)), y = temp1,
+                             cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+      p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
+        scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
 
     }else if(x$summary$Submodel[x$summary$Model==model_name][1] == 'all'){
 
@@ -187,18 +236,21 @@ basic.plotQ <- function(x, model_name){
         )
 
         # lines(seq(0,1,0.01), DRM(par = model_pars[pars], seq(0,1,0.01), x$q), col = i, lwd = 2)
-        temp2 <- c(temp2, DRM(par = model_pars[pars], seq(0,maxDose,0.01)/maxDose, x$q))
+        temp2 <- c(temp2, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q))
       }
-      dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp2, cov = rep(covar, each = length(seq(0,maxDose,0.01))))
-      p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y/n, colour = cov)) +
-        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))
+      dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)), y = temp2,
+                             cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+      p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
+        scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
 
     }else{
       # lines(seq(0,1,0.01), DRM(par = model_pars[c(1,2,9,4)], seq(0,1,0.01), x$q), col = 1, lwd = 2)
-      temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], seq(0,maxDose,0.01)/maxDose, x$q))
-      dataTemp <- data.frame(x = seq(0,maxDose,0.01), y = temp3)
-      p <- ggplot() + geom_point(data = x$data, aes(x = x, y = y/n, colour = cov)) +
-        geom_line(data = dataTemp, aes(x = x, y = y))
+      temp3 <- c(temp3, DRM(par = model_pars[c(1,2,9,4)], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q))
+      dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)), y = temp3)
+      p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y/n, colour = cov)) +
+        geom_line(data = dataTemp, aes(x = x, y = y)) +
+        scale_x_continuous(trans = 'log10', labels = plot.labs, breaks = plot.breaks)
     }
 
     subtit <- paste0(paste0('Best submodel: ', paste0(x$summary$Submodel[x$summary$Model==model_name][1])," ("),
