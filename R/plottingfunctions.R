@@ -903,7 +903,6 @@ plot.BMADR <- function(mod.obj,
       labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
            y = expression(response),
            caption = "data and vertical bars based on geometric sample means and standard deviations") +
-
       geom_segment(data = preds_min[preds_min$Distribution=="LN",],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
                                  xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
@@ -944,7 +943,7 @@ plot.BMADR <- function(mod.obj,
       scale_x_continuous(trans = 'log10', labels = plot.labs,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
-      scale_color_manual(values = md_cls,
+      scale_colour_manual(values = md_cls,
                          labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
                                     "QuadExp", "Probit", "Logistic")) +
       theme_minimal() +
