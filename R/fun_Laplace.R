@@ -5802,6 +5802,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                Weight = rep(round(lpw[1:16],4), each = data_NCOV_all$data$nlevels),
                                Submodel = rep(best.sub.which, each = data_NCOV_all$data$nlevels),
                                Submodel.weight = rep(best.sub.weight, each = data_NCOV_all$data$nlevels),
+                               Covariate = rep(data_NCOV_all$data$covariate, 16),
                                BMDL = BMDL, BMD = BMD, BMDU = BMDU
                                # LogLik = best.sub.loglik,
     )
@@ -6676,6 +6677,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                Weight = rep(round(lpw[1:8],4), each = data_all$data$nlevels),
                                Submodel = rep(best.sub.which, each = data_all$data$nlevels),
                                Submodel.weight = rep(best.sub.weight, each = data_all$data$nlevels),
+                               Covariate = rep(data_all$data$covariate, 8),
                                BMDL = BMDL, BMD = BMD, BMDU = BMDU
                                # LogLik = best.sub.loglik,
     )

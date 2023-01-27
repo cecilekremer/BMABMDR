@@ -447,42 +447,61 @@ NLN_test <- function(datind) {
   rownames(lognormtestres) <- rnames
 
   #normtestres
-  if (sum(normtestres[,2], na.rm = T)>0){
-    warning("there is evidence against normality at level 5%")
-    msg_5N <- "there is evidence against normality at level 5%"
-  } else {
-    warning("there is no evidence against normality at level 5%")
-    msg_5N <- "there is no evidence against normality at level 5%"
+  normtestres <- as.data.frame(normtestres)
+  msg_5N_overall <- paste0('there is no evidence against normality across dose levels at level 5%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
+  msg_10N_overall <- paste0('there is no evidence against normality across dose levels at level 10%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
+  msg_5N_dose <- 'there is no evidence against normality for any of the dose levels at level 5%'
+  msg_10N_dose <- 'there is no evidence against normality for any of the dose levels at level 10%'
+  if(normtestres[(length(doseunique)+1),2] == 1){
+    msg_5N_overall <- paste0('there is evidence against normality across dose levels at level 5%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
+    warning(paste0('there is evidence against normality across dose levels at level 5%, p-value ', round(normtestres[(length(doseunique)+1),1],4)))
   }
-  if (sum(normtestres[,3], na.rm = T)>0) {
-    warning("there is evidence against normality at level 10%")
-    msg_10N <- "there is evidence against normality at level 10%"
-  } else {
-    warning("there is no evidence against normality at level 10%")
-    msg_10N <- "there is no evidence against normality at level 10%"
+  if(normtestres[(length(doseunique)+1),3] == 1){
+    msg_10N_overall <- paste0('there is evidence against normality across dose levels at level 10%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
+    warning(paste0('there is evidence against normality across dose levels at level 10%, p-value ', round(normtestres[(length(doseunique)+1),1],4)))
+  }
+  if(sum(normtestres[(1:length(doseunique)),2], na.rm = T) > 0){
+    msg_5N_dose <- paste0('there is evidence against normality at level 5% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),2] == 1), ]), collapse=', '))
+    warning(paste0('there is evidence against normality at level 5% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),2] == 1), ]), collapse=', ')))
+  }
+  if(sum(normtestres[(1:length(doseunique)),3], na.rm = T) > 0){
+    msg_10N_dose <- paste0('there is evidence against normality at level 10% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),3] == 1), ]), collapse=', '))
+    warning(paste0('there is evidence against normality at level 10% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),3] == 1), ]), collapse=', ')))
   }
 
   #lognormtestres
-  if (sum(lognormtestres[,2], na.rm = T)>0) {
-    warning("there is evidence against log-normality at level 5%")
-    msg_5LN <- "there is evidence against log-normality at level 5%"
-  } else {
-    warning("there is no evidence against log-normality at level 5%")
-    msg_5LN <- "there is no evidence against log-normality at level 5%"
+  lognormtestres <- as.data.frame(lognormtestres)
+  msg_5LN_overall <- paste0('there is no evidence against log-normality across dose levels at level 5%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
+  msg_10LN_overall <- paste0('there is no evidence against log-normality across dose levels at level 10%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
+  msg_5LN_dose <- 'there is no evidence against log-normality for any of the dose levels at level 5%'
+  msg_10LN_dose <- 'there is no evidence against log-normality for any of the dose levels at level 10%'
+  if(lognormtestres[(length(doseunique)+1),2] == 1){
+    msg_5LN_overall <- paste0('there is evidence against log-normality across dose levels at level 5%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
+    warning(paste0('there is evidence against log-normality across dose levels at level 5%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4)))
   }
-  if (sum(lognormtestres[,3], na.rm = T)>0) {
-    warning("there is evidence against log-normality at level 10%")
-    msg_10LN <- "there is evidence against log-normality at level 10%"
-  } else {
-    warning("there is no evidence against log-normality at level 10%")
-    msg_10LN <- "there is no evidence against log-normality at level 10%"
+  if(lognormtestres[(length(doseunique)+1),3] == 1){
+    msg_10LN_overall <- paste0('there is evidence against log-normality across dose levels at level 10%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
+    warning(paste0('there is evidence against log-normality across dose levels at level 10%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4)))
+  }
+  if(sum(lognormtestres[(1:length(doseunique)),2], na.rm = T) > 0){
+    msg_5LN_dose <- paste0('there is evidence against log-normality at level 5% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),2] == 1), ]), collapse=', '))
+    warning(paste0('there is evidence against log-normality at level 5% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),2] == 1), ]), collapse=', ')))
+  }
+  if(sum(lognormtestres[(1:length(doseunique)),3], na.rm = T) > 0){
+    msg_10LN_dose <- paste0('there is evidence against log-normality at level 10% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),3] == 1), ]), collapse=', '))
+    warning(paste0('there is evidence against log-normality at level 10% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),3] == 1), ]), collapse=', ')))
   }
 
+
   return(list(
-    msg_5N = msg_5N,
-    msg_10N = msg_10N,
-    msg_5LN = msg_5LN,
-    msg_10LN = msg_10LN,
+    msg_5N_overall = msg_5N_overall,
+    msg_5N_dose = msg_5N_dose,
+    msg_10N_overall = msg_10N_overall,
+    msg_10N_dose = msg_10N_dose,
+    msg_5LN_overall = msg_5LN_overall,
+    msg_5LN_dose = msg_5LN_dose,
+    msg_10LN_overall = msg_10LN_overall,
+    msg_10LN_dose = msg_10LN_dose,
     normal_test = normtestres,
     lognormal_test = lognormtestres
 
