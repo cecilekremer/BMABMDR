@@ -618,7 +618,11 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_bkg <- fun_optimQCov(model, data_bkg$data,
                               data_bkg$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_bkg[[3]]),TRUE,(optMod_bkg[[3]]!=0)) | length(optMod_bkg)!=9)){
+  if(is.na(optMod_bkg[1][1])){
+    prior.weightsCov[2] <- 0
+    # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    ll_bkg <- NA
+  }else if((ifelse(is.na(optMod_bkg[[3]]),TRUE,(optMod_bkg[[3]]!=0)) | length(optMod_bkg)!=9 | ('Inf' %in% optMod_bkg$theta_tilde))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_bkg <- NA
@@ -633,7 +637,11 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_dBMD <- fun_optimQCov(model, data_dBMD$data,
                                data_dBMD$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_dBMD[[3]]),TRUE,(optMod_dBMD[[3]]!=0)) | length(optMod_dBMD)!=9)){
+  if(is.na(optMod_dBMD[1][1])){
+    prior.weightsCov[2] <- 0
+    # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    ll_dBMD <- NA
+  }else if((ifelse(is.na(optMod_dBMD[[3]]),TRUE,(optMod_dBMD[[3]]!=0)) | length(optMod_dBMD)!=9 | ('Inf' %in% optMod_dBMD$theta_tilde))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_dBMD <- NA
@@ -648,7 +656,11 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_all <- fun_optimQCov(model, data_all$data,
                               data_all$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_all[[3]]),TRUE,(optMod_all[[3]]!=0)) | length(optMod_all)!=9)){
+  if(is.na(optMod_all[1][1])){
+    prior.weightsCov[2] <- 0
+    # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    ll_all <- NA
+  }else if((ifelse(is.na(optMod_all[[3]]),TRUE,(optMod_all[[3]]!=0)) | length(optMod_all)!=9 | ('Inf' %in% optMod_all$theta_tilde))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_all <- NA
@@ -663,7 +675,11 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_none <- fun_optimQ(model.none, data_none$data,
                             data_none$start, ndraws, seed, pvec)
 
-  if((ifelse(is.na(optMod_none[[3]]),TRUE,(optMod_none[[3]]!=0)) | length(optMod_none)!=9)){
+  if(is.na(optMod_none[1][1])){
+    prior.weightsCov[2] <- 0
+    # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+    ll_none <- NA
+  }else if((ifelse(is.na(optMod_none[[3]]),TRUE,(optMod_none[[3]]!=0)) | length(optMod_none)!=9 | ('Inf' %in% optMod_none$theta_tilde))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA
