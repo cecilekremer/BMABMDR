@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9056
+
+* Updated quantal covariate analysis
+
 ## Version 0.0.0.9055
 
 * Fixed error continuous covariate analysis (to do for quantal)
