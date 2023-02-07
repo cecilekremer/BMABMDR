@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## Version 0.0.0.9057
+
+* Fixed covariate plot
+
 ## Version 0.0.0.9056
 
 * Updated quantal covariate analysis
