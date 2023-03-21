@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{summary.BMADR}
 \alias{summary.BMADR}
-\title{summary function for BMABMDR objects}
+\title{Summary function for BMDBMA model objects}
 \usage{
 summary.BMADR(
   mod.obj,
@@ -24,5 +24,5 @@ summary.BMADR(
 datatframe containing BMDs, weights and parameters per model
 }
 \description{
-summary function for BMABMDR objects
+Summary function for BMDBMA model objects
 }

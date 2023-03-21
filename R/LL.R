@@ -1,5 +1,5 @@
 
-#' Loglikelihood functions for the different dose response models
+#' Loglikelihood functions for the different dose response models, for continuous data
 #'
 #' @param x parameter values
 #' @param nvec vector containing the number of observations at each dose level
@@ -9,7 +9,7 @@
 #' @param qval BMR
 #' @param shift value of the shift for negative geometric means
 #'
-#' @return .
+#' @return loglikelihood value
 #'
 #' @export
 #'
@@ -184,17 +184,17 @@ llfL4_LND=function(x,nvec,dvec,mvec,s2vec,qval,shift){
 }
 
 
-#' Loglikelihood functions for the different dose response models
+#' Loglikelihood functions for the different dose response models, for clustered continuous data
 #'
 #' @param x parameter values
 #' @param d dose levels
-#' @param n observations per dose level
-#' @param nij observations per dose x litter combination
+#' @param n number of observations per dose level
+#' @param nij number of observations per dose x litter combination
 #' @param y observed responses
 #' @param qval BMR
 #' @param shift value of the shift for negative geometric means
 #'
-#' @return .
+#' @return loglikelihood value
 #'
 #' @export
 #'
@@ -1333,7 +1333,7 @@ llfL4_LNDc = function(x, d, n, nij, y, qval, shift){
   return(sum(ll))
 }
 
-#' Loglikelihood functions for the different dose response models
+#' Loglikelihood functions for the different dose response models, for quantal data
 #'
 #' @param x parameter values
 #' @param nvec vector containing the number of observations at each dose level
@@ -1341,7 +1341,7 @@ llfL4_LNDc = function(x, d, n, nij, y, qval, shift){
 #' @param yvec vector containing the number of adverse events at each dose level
 #' @param qval BMR
 #'
-#' @return .
+#' @return loglikelihood value
 #'
 #' @export
 #'
@@ -1407,7 +1407,7 @@ llfH0_Q=function(x,nvec,dvec,yvec,qval){
 
 ### Beta-Binomial
 
-#' Loglikelihood functions for the different dose response models
+#' Loglikelihood functions for the different dose response models, for clustered quantal data
 #'
 #' @param x parameter values
 #' @param nvec vector containing the number of observations at each dose level
@@ -1416,7 +1416,7 @@ llfH0_Q=function(x,nvec,dvec,yvec,qval){
 #' @param qval BMR
 #' @param rho intra-cluster correlation parameter
 #'
-#' @return .
+#' @return loglikelihood value
 #'
 #' @export
 #'
@@ -1555,7 +1555,7 @@ llfH02_Q=function(x,nvec,dvec,yvec,qval,rho){
         lgamma(abet + bbet + 1.0E-05))
 }
 
-#' Loglikelihood functions for the different dose response models
+#' Loglikelihood functions for the different dose response models, for continuous data with covariates
 #'
 #' @param pars parameter values
 #' @param x vector containing the unique ordered dose levels
@@ -1568,7 +1568,7 @@ llfH02_Q=function(x,nvec,dvec,yvec,qval,rho){
 #' @param nlevels number of covariate levels
 #' @param trt_ind matrix indicating which reponse corresponds to which covariate level
 #'
-#' @return .
+#' @return loglikelihood value
 #'
 #' @export
 #'
@@ -3804,7 +3804,7 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
 }
 
 
-#' Loglikelihood functions for the different dose response models
+#' Loglikelihood functions for the different dose response models, for quantal data with covariates
 #'
 #' @param pars parameter values
 #' @param x vector containing the unique ordered dose levels
@@ -3815,7 +3815,7 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
 #' @param nlevels number of covariate levels
 #' @param trt_ind matrix indicating which reponse corresponds to which covariate level
 #'
-#' @return .
+#' @return loglikelihood value
 #'
 #' @export
 #'

@@ -5,9 +5,19 @@
 #' @param cluster logical indicating whether the data include a litter effect (defaults to FALSE)
 #' @param covar logical indicating whether the data include a covariate (defaults to FALSE)
 #'
+#' @examples
+#' summarize.indiv.data(das5$data[,c(1,11)], type = 'continuous', cluster = FALSE, covar = FALSE)
+#' summarize.indiv.data(das5$data[,c(1,11,2)], type = 'continuous', cluster = FALSE, covar = TRUE)
+#' summarize.indiv.data(das5$data[,c(1,11,10)], type = 'continuous', cluster = TRUE, covar = FALSE)
+#' \dontrun{
+#' # This gives error because covariates not implemented for clustered data
+#' summarize.indiv.data(das5$data[,c(1,11,10,2)], type = 'continuous', cluster = TRUE, covar = TRUE)
+#' }
+#'
 #' @return dataframe of summary data
 #'
 #' @export summarize.indiv.data
+#'
 summarize.indiv.data <- function(data,
                                  type = c('continuous','quantal'), cluster = FALSE, covar = FALSE){
 

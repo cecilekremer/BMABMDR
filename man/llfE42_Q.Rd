@@ -11,7 +11,7 @@
 \alias{llfL42_Q}
 \alias{llfSM2_Q}
 \alias{llfH02_Q}
-\title{Loglikelihood functions for the different dose response models}
+\title{Loglikelihood functions for the different dose response models, for clustered quantal data}
 \usage{
 llfE42_Q(x, nvec, dvec, yvec, qval, rho)
 
@@ -47,8 +47,8 @@ llfH02_Q(x, nvec, dvec, yvec, qval, rho)
 \item{rho}{intra-cluster correlation parameter}
 }
 \value{
-.
+loglikelihood value
 }
 \description{
-Loglikelihood functions for the different dose response models
+Loglikelihood functions for the different dose response models, for clustered quantal data
 }

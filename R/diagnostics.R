@@ -10,50 +10,50 @@
 posterior_diag <- function(model_stan,
                            pars = c('par1', "par2", "par3", "d",
                                     "invsigma2", "lp__")) {
-  
+
   color_scheme_set("darkgray")
   if(class(model_stan)[1] == "CmdStanMCMC") {
-    
-    
+
+
     posterior_draws <- as_draws_matrix(model_stan$draws())
     lp_draws <- lapply(pars, function(i) {
       as_draws_matrix(model_stan$draws(i))
     })
-    
+
     rhats <- unlist(lapply(lp_draws, Rhat))
-    
+
   } else {
-    
+
     posterior_draws <- as_draws_matrix(model_stan)
     rhats <- rhat(model_stan)
     neffs <- neff_ratio(model_stan, pars)
-    
+
   }
-  
+
   lp_draws <- log_posterior(model_stan)
   neffs <- neff_ratio(model_stan, pars)
   nts_model <- nuts_params(model_stan)
-  
+
   ## Convergence traceplots
   tplt <- mcmc_trace(posterior_draws, pars = pars) +
     labs(x = 'Iteration', y = 'Draws') +
     theme(axis.text = element_text(size = 10, face = "bold"))
   # print(tplt)
-  
+
   ## MCMC intervals
   # int_plt1 <- mcmc_intervals(posterior_draws, pars = pars,
   #                   prob = 0.60,
   #                   prob_outer = 0.95) +
   #   theme(axis.text = element_text(size = 10, face = "bold"))
   # print(int_plt1)
-  
+
   ## MCMC Density
   int_plt2 <- mcmc_areas(posterior_draws, pars = pars,
                          prob = 0.60,
                          prob_outer = 0.95) +
     theme(axis.text = element_text(size = 10, face = "bold"))
   # print(int_plt2)
-  
+
   ## Univarite plot per chain
   # vio_plt <- mcmc_violin(posterior_draws, pars = pars,
   #             probs = c(0.1, 0.5, 0.9)) +
@@ -61,8 +61,8 @@ posterior_diag <- function(model_stan,
   #   theme(axis.text = element_text(size = 10, face = "bold"))+
   #   yaxis_text(hjust = 0)
   # print(vio_plt)
-  
-  
+
+
   ## Scatter plot
   plt_pairs <- mcmc_pairs(posterior_draws, np = nts_model,
                           pars = pars,
@@ -70,13 +70,13 @@ posterior_diag <- function(model_stan,
   #labs()
   #theme(axis.text = element_text(size = 10, face = "bold"))
   # print(plt_pairs)
-  
-  
+
+
   ## Divergence Transitions
   #plt_nuts <- mcmc_nuts_divergence(nts_model, lp = lp_draws) #+
   #theme(axis.text = element_text(size = 10, face = "bold"))
   #print(plt_nuts)
-  
+
   ########## Traduitional Convergence
   color_scheme_set("brightblue")
   ## Autocorrelation
@@ -85,7 +85,7 @@ posterior_diag <- function(model_stan,
     theme(axis.text = element_text(size = 10, face = "bold")) +
     ggtitle('Autocorrelation')
   #print(autcoor)
-  
+
   ## Rhat
   color_scheme_set("brightblue")
   rhat_plot <- mcmc_rhat(rhats) +
@@ -94,7 +94,7 @@ posterior_diag <- function(model_stan,
     theme(axis.text = element_text(size = 10, face = "bold")) +
     ggtitle(expression(hat(R)))
   #print(rhat_plot)
-  
+
   ## N efficiency
   color_scheme_set("brightblue")
   neff_plot <- mcmc_neff(neffs) +
@@ -104,15 +104,15 @@ posterior_diag <- function(model_stan,
     yaxis_text(hjust = 0) +
     theme(axis.text = element_text(size = 10, face = "bold")) +
     ggtitle(expression(N[eff]))
-  
+
   #print(neff_plot)
   classic_plts <- ggarrange(autcoor, rhat_plot, neff_plot,
                             ncol = 2, nrow = 2)
-  
+
   # print(classic_plts)
-  
+
   #return(NULL)
-  
+
 }
 
 #' Function for internal use
@@ -127,50 +127,50 @@ posterior_diag <- function(model_stan,
 posterior_diagC <- function(model_stan,
                             pars = c('par1', "par2", "par3", "d",
                                      "invsigma2","rho_cluster", "lp__")) {
-  
+
   color_scheme_set("darkgray")
   if(class(model_stan)[1] == "CmdStanMCMC") {
-    
-    
+
+
     posterior_draws <- as_draws_matrix(model_stan$draws())
     lp_draws <- lapply(pars, function(i) {
       as_draws_matrix(model_stan$draws(i))
     })
-    
+
     rhats <- unlist(lapply(lp_draws, Rhat))
-    
+
   } else {
-    
+
     posterior_draws <- as_draws_matrix(model_stan)
     rhats <- rhat(model_stan)
     neffs <- neff_ratio(model_stan, pars)
-    
+
   }
-  
+
   lp_draws <- log_posterior(model_stan)
   neffs <- neff_ratio(model_stan, pars)
   nts_model <- nuts_params(model_stan)
-  
+
   ## Convergence traceplots
   tplt <- mcmc_trace(posterior_draws, pars = pars) +
     labs(x = 'Iteration', y = 'Draws') +
     theme(axis.text = element_text(size = 10, face = "bold"))
   # print(tplt)
-  
+
   ## MCMC intervals
   # int_plt1 <- mcmc_intervals(posterior_draws, pars = pars,
   #                   prob = 0.60,
   #                   prob_outer = 0.95) +
   #   theme(axis.text = element_text(size = 10, face = "bold"))
   # print(int_plt1)
-  
+
   ## MCMC Density
   int_plt2 <- mcmc_areas(posterior_draws, pars = pars,
                          prob = 0.60,
                          prob_outer = 0.95) +
     theme(axis.text = element_text(size = 10, face = "bold"))
   # print(int_plt2)
-  
+
   ## Univarite plot per chain
   # vio_plt <- mcmc_violin(posterior_draws, pars = pars,
   #             probs = c(0.1, 0.5, 0.9)) +
@@ -178,8 +178,8 @@ posterior_diagC <- function(model_stan,
   #   theme(axis.text = element_text(size = 10, face = "bold"))+
   #   yaxis_text(hjust = 0)
   # print(vio_plt)
-  
-  
+
+
   ## Scatter plot
   plt_pairs <- mcmc_pairs(posterior_draws, np = nts_model,
                           pars = pars,
@@ -187,13 +187,13 @@ posterior_diagC <- function(model_stan,
   #labs()
   #theme(axis.text = element_text(size = 10, face = "bold"))
   # print(plt_pairs)
-  
-  
+
+
   ## Divergence Transitions
   #plt_nuts <- mcmc_nuts_divergence(nts_model, lp = lp_draws) #+
   #theme(axis.text = element_text(size = 10, face = "bold"))
   #print(plt_nuts)
-  
+
   ########## Traduitional Convergence
   color_scheme_set("brightblue")
   ## Autocorrelation
@@ -202,7 +202,7 @@ posterior_diagC <- function(model_stan,
     theme(axis.text = element_text(size = 10, face = "bold")) +
     ggtitle('Autocorrelation')
   #print(autcoor)
-  
+
   ## Rhat
   color_scheme_set("brightblue")
   rhat_plot <- mcmc_rhat(rhats) +
@@ -211,7 +211,7 @@ posterior_diagC <- function(model_stan,
     theme(axis.text = element_text(size = 10, face = "bold")) +
     ggtitle(expression(hat(R)))
   #print(rhat_plot)
-  
+
   ## N efficiency
   color_scheme_set("brightblue")
   neff_plot <- mcmc_neff(neffs) +
@@ -221,15 +221,15 @@ posterior_diagC <- function(model_stan,
     yaxis_text(hjust = 0) +
     theme(axis.text = element_text(size = 10, face = "bold")) +
     ggtitle(expression(N[eff]))
-  
+
   #print(neff_plot)
   classic_plts <- ggarrange(autcoor, rhat_plot, neff_plot,
                             ncol = 2, nrow = 2)
-  
+
   # print(classic_plts)
-  
+
   #return(NULL)
-  
+
 }
 
 
@@ -240,7 +240,7 @@ posterior_diagC <- function(model_stan,
 #' @param nrchains default 3; number of MCMC chains
 #' @param pars parameters
 #'
-#' @return .
+#' @return a table with convergence diagnostics
 #'
 #' @export convergence_deci
 #'
@@ -248,155 +248,151 @@ convergence_deci <- function(model_stan,
                              nrchains = 3,
                              pars = c('par1', "par2", "par3", "d",
                                       "invsigma2", "lp__")) {
-  
-  
+
+
   #posterior_draws <- as.array(model_stan)
   #lp_draws <- log_posterior(model_stan)
   if("CmdStanMCMC" %in% class(model_stan)) {
-    
+
     lp_draws <- lapply(pars, function(i) {
       as_draws_matrix(model_stan$draws(i))
     })
-    
-    
+
+
     #rhats <- rhats[names(rhats) %in% pars]
-    
+
   } else {
-    
+
     lp_draws <- lapply(pars, function(i) {
       extract_variable_matrix(model_stan, i)
     })
-    
+
     #rhats <- bayesplot::rhat(model_stan)
     #rhats <- rhats[names(rhats) %in% pars]
     #rhats <- rhat(model_stan)
     #rhats <- rhats[names(rhats) %in% pars]
-    
-    
+
+
   }
-  
+
   rhats <- unlist(lapply(lp_draws, Rhat))
   ess_b <- unlist(lapply(lp_draws, ess_bulk))
   ess_t <- unlist(lapply(lp_draws, ess_tail))
-  
+
   #neffs <- neff_ratio(model_stan)
   #neffs <- neffs[names(neffs) %in% pars]
-  
-  
-  
+
+
+
   #Rhat > 1.01 or 1.05 is problematic
   test_rhat <- (rhats < 1.01)
   test_rhat[is.na(test_rhat)] <- FALSE
   report_rhat <- ifelse(test_rhat == TRUE, 1, 0)
-  
+
   if(sum(test_rhat) < length(pars)) {
-    
+
     problem_rhat <- pars[which(test_rhat == FALSE)]
     err_msg_rhat <- paste0("Rhat > 1.01 for the following parameters; ",
-                           problem_rhat, "\n")
+                           paste(problem_rhat, collapse = ","), "\n")
   } else err_msg_rhat <- ""
-  
+
   #bulk and tail ESS should be above nchain*100
-  
+
   test_bulk <- ess_b >= (100 * nrchains)
   test_bulk[is.na(test_bulk)] <- FALSE
   report_bulk <- ifelse(test_bulk == TRUE, 1, 0)
-  
+
   test_tail <- ess_t >= (100 * nrchains)
   test_tail[is.na(test_tail)] <- FALSE
   report_tail <- ifelse(test_tail == TRUE, 1, 0)
-  
+
   if(sum(test_bulk) < length(pars) & sum(test_tail) < length(pars)) {
-    
+
     problem_bulk <- pars[which(test_bulk == FALSE)]
-    err_msg_bulk <- paste0("Sampling not efficeintly done for the bulk of the posterior distributions of ",
-                           problem_bulk, ".",
+    err_msg_bulk <- paste0("Sampling not efficiently done for the bulk of the posterior distributions of ",
+                           paste(problem_bulk, collapse = ","), ".",
                            " Measures of central tendency cannot be trusted.\n")
-    
+
     problem_tail <- pars[which(test_tail == FALSE)]
-    err_msg_tail <- paste0("Sampling not efficeintly done at the tail of the posterior distributions of ",
-                           problem_tail, ".",
+    err_msg_tail <- paste0("Sampling not efficiently done at the tail of the posterior distributions of ",
+                           paste(problem_tail, collapse = ","), ".",
                            " Quantile estimates cannot be trusted.\n")
-    
+
     # stop(paste(err_msg_bulk, err_msg_tail, "Increasing the number
     #      of iterations might help.", sep = " "))
-    
+
   } else if(sum(test_bulk) == length(pars) & sum(test_tail) < length(pars)) {
-    
+
     problem_tail <- pars[which(test_tail == FALSE)]
-    err_msg_tail <- paste0("Sampling not efficeintly done at the tail of the posterior distributions of ",
-                           problem_tail, ".",
+    err_msg_tail <- paste0("Sampling not efficiently done at the tail of the posterior distributions of ",
+                           paste(problem_tail, collapse = ","), ".",
                            " Quantile estimates cannot be trusted.\n")
     err_msg_bulk <- ""
-    
+
     # stop(paste(err_msg_tail, "Increasing the number
     #      of iterations might help.", sep = " "))
-    
+
   } else if(sum(test_bulk) < length(pars) & sum(test_tail) == length(pars)) {
-    
+
     problem_bulk <- pars[which(test_bulk == FALSE)]
-    err_msg_bulk <- paste0("Sampling not efficeintly done for the bulk of the posterior distributions of ",
+    err_msg_bulk <- paste0("Sampling not efficiently done for the bulk of the posterior distributions of ",
                            problem_bulk, ".",
                            " Measures of central tendency cannot be trusted.\n")
     err_msg_tail <- ""
-    
+
     # stop(paste(err_msg_bulk, "Increasing the number
     #      of iterations might help.", sep = " "))
-    
+
   } else {
     err_msg_bulk <- ""
     err_msg_tail <- ""
   }
-  
-  
+
+
   if(nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat, err_msg_bulk, err_msg_tail,
-                   "Increasing the number of iterations might help.\n"))
+
+    warning(gettextf("%1$s, %2$s, %3$s; increasing the number of iterations might help", err_msg_rhat, err_msg_bulk, err_msg_tail))
     msg_label <- "Severe Convergence Issues.\n"
-    
+
   } else if(nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & !nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat, err_msg_bulk,
-                   "Increasing the number of iterations might help.\n"))
+
+    warning(gettextf("%1$s, %2$s; increasing the number of iterations might help", err_msg_rhat, err_msg_bulk))
     msg_label <- "Problems with Rhat and Bulk of the posterior distribution.\n"
-    
+
   } else if(nzchar(err_msg_rhat[1]) & !nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat, err_msg_tail,
-                   "Increasing the number of iterations might help.\n"))
+
+    warning(gettextf("%1$s, %2$s; increasing the number of iterations might help", err_msg_rhat, err_msg_tail))
     msg_label <- 'Problems with Rhat and Tail of the posterior distribution.\n'
-    
+
   } else if(!nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_bulk, err_msg_tail,
-                   "Please check if Rhat < 1.01. Also, check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted.\n"))
+
+    warning(gettextf("%1$s, %2$s; please check if Rhat < 1.01; also check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted",
+                     err_msg_bulk, err_msg_tail))
     msg_label <- 'Problems with Bulk and Tail of the posterior distribution.\n'
-    
+
   } else if(nzchar(err_msg_rhat[1]) & !nzchar(err_msg_bulk[1]) & !nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat,
-                   "Please check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted.\n"))
+
+    warning(gettextf("%1$s; please check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted", err_msg_rhat))
     msg_label <- 'Problems with Rhat.\n'
-    
+
   } else if(!nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & !nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_bulk,
-                   "Problems with Bulk of the posterior distribution. Please check if Rhat < 1.01.  Also check the trace and autocorrelation plot to see if measures of central tendency can be trusted.\n"))
+
+    warning(gettextf("%1$s; problems with Bulk of the posterior distribution, please check if Rhat < 1.01; also check the trace and autocorrelation plot to see if measures of central tendency can be trusted",
+                     err_msg_bulk))
     #msg_label <- 'Problems with Bulk of the posterior distribution.\n'
-    
+
   } else if(!nzchar(err_msg_rhat[1]) & !nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_tail,
-                   "Problems with Tail of the posterior distribution. Please check if Rhat < 1.01. Also check the trace and autocorrelation plot to see if quantiles can be trusted.\n"))
+
+    warning(gettextf("%1$s; problems with Tail of the posterior distribution; please check if Rhat < 1.01; also check the trace and autocorrelation plot to see if quantiles can be trusted",
+                     err_msg_tail))
     #msg_label <- 'Problems with Tail of the posterior distribution.\n'
-    
+
   } else {
     msg_label <- 'convergence achieved.\n'
     message('convergence achieved.\n')
   }
-  
-  
+
+
   err_table <- data.frame(Parameters = pars,
                           Rhat = rhats,
                           Bulk_ESS = ess_b,
@@ -405,11 +401,11 @@ convergence_deci <- function(model_stan,
                           Bulk_Convergence = report_bulk,
                           Tail_Convergence = report_tail
   )
-  
-  
+
+
   return(err_table)
-  
-  
+
+
 }
 
 #' Function for internal use; decides if model has converged based on Rhat, bulk and tail ESS
@@ -418,7 +414,7 @@ convergence_deci <- function(model_stan,
 #' @param nrchains default 3; number of MCMC chains
 #' @param pars parameters
 #'
-#' @return .
+#' @return a table with convergence diagnostics
 #'
 #' @export convergence_deciC
 #'
@@ -426,155 +422,151 @@ convergence_deciC <- function(model_stan,
                               nrchains = 3,
                               pars = c('par1', "par2", "par3", "d",
                                        "invsigma2","rho_cluster", "lp__")) {
-  
-  
+
+
   #posterior_draws <- as.array(model_stan)
   #lp_draws <- log_posterior(model_stan)
   if("CmdStanMCMC" %in% class(model_stan)) {
-    
+
     lp_draws <- lapply(pars, function(i) {
       as_draws_matrix(model_stan$draws(i))
     })
-    
-    
+
+
     #rhats <- rhats[names(rhats) %in% pars]
-    
+
   } else {
-    
+
     lp_draws <- lapply(pars, function(i) {
       extract_variable_matrix(model_stan, i)
     })
-    
+
     #rhats <- bayesplot::rhat(model_stan)
     #rhats <- rhats[names(rhats) %in% pars]
     #rhats <- rhat(model_stan)
     #rhats <- rhats[names(rhats) %in% pars]
-    
-    
+
+
   }
-  
+
   rhats <- unlist(lapply(lp_draws, Rhat))
   ess_b <- unlist(lapply(lp_draws, ess_bulk))
   ess_t <- unlist(lapply(lp_draws, ess_tail))
-  
+
   #neffs <- neff_ratio(model_stan)
   #neffs <- neffs[names(neffs) %in% pars]
-  
-  
-  
+
+
+
   #Rhat > 1.01 or 1.05 is problematic
   test_rhat <- (rhats < 1.01)
   test_rhat[is.na(test_rhat)] <- FALSE
   report_rhat <- ifelse(test_rhat == TRUE, 1, 0)
-  
+
   if(sum(test_rhat) < length(pars)) {
-    
+
     problem_rhat <- pars[which(test_rhat == FALSE)]
     err_msg_rhat <- paste0("Rhat > 1.01 for the following parameters; ",
-                           problem_rhat, "\n")
+                           paste(problem_rhat, collapse = ","), "\n")
   } else err_msg_rhat <- ""
-  
+
   #bulk and tail ESS should be above nchain*100
-  
+
   test_bulk <- ess_b >= (100 * nrchains)
   test_bulk[is.na(test_bulk)] <- FALSE
   report_bulk <- ifelse(test_bulk == TRUE, 1, 0)
-  
+
   test_tail <- ess_t >= (100 * nrchains)
   test_tail[is.na(test_tail)] <- FALSE
   report_tail <- ifelse(test_tail == TRUE, 1, 0)
-  
+
   if(sum(test_bulk) < length(pars) & sum(test_tail) < length(pars)) {
-    
+
     problem_bulk <- pars[which(test_bulk == FALSE)]
-    err_msg_bulk <- paste0("Sampling not efficeintly done for the bulk of the posterior distributions of ",
-                           problem_bulk, ".",
+    err_msg_bulk <- paste0("Sampling not efficiently done for the bulk of the posterior distributions of ",
+                           paste(problem_bulk, ","), ".",
                            " Measures of central tendency cannot be trusted.\n")
-    
+
     problem_tail <- pars[which(test_tail == FALSE)]
-    err_msg_tail <- paste0("Sampling not efficeintly done at the tail of the posterior distributions of ",
-                           problem_tail, ".",
+    err_msg_tail <- paste0("Sampling not efficiently done at the tail of the posterior distributions of ",
+                           paste(problem_tail, collapse = ","), ".",
                            " Quantile estimates cannot be trusted.\n")
-    
+
     # stop(paste(err_msg_bulk, err_msg_tail, "Increasing the number
     #      of iterations might help.", sep = " "))
-    
+
   } else if(sum(test_bulk) == length(pars) & sum(test_tail) < length(pars)) {
-    
+
     problem_tail <- pars[which(test_tail == FALSE)]
-    err_msg_tail <- paste0("Sampling not efficeintly done at the tail of the posterior distributions of ",
-                           problem_tail, ".",
+    err_msg_tail <- paste0("Sampling not efficiently done at the tail of the posterior distributions of ",
+                           paste(problem_tail, collapse = ","), ".",
                            " Quantile estimates cannot be trusted.\n")
     err_msg_bulk <- ""
-    
+
     # stop(paste(err_msg_tail, "Increasing the number
     #      of iterations might help.", sep = " "))
-    
+
   } else if(sum(test_bulk) < length(pars) & sum(test_tail) == length(pars)) {
-    
+
     problem_bulk <- pars[which(test_bulk == FALSE)]
-    err_msg_bulk <- paste0("Sampling not efficeintly done for the bulk of the posterior distributions of ",
-                           problem_bulk, ".",
+    err_msg_bulk <- paste0("Sampling not efficiently done for the bulk of the posterior distributions of ",
+                           paste(problem_bulk, collapse = ","), ".",
                            " Measures of central tendency cannot be trusted.\n")
     err_msg_tail <- ""
-    
+
     # stop(paste(err_msg_bulk, "Increasing the number
     #      of iterations might help.", sep = " "))
-    
+
   } else {
     err_msg_bulk <- ""
     err_msg_tail <- ""
   }
-  
-  
+
+
   if(nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat, err_msg_bulk, err_msg_tail,
-                   "Increasing the number of iterations might help.\n"))
+
+    warning(gettextf("%1$s, %2$s, %3$s; increasing the number of iterations might help", err_msg_rhat, err_msg_bulk, err_msg_tail))
     msg_label <- "Severe Convergence Issues.\n"
-    
+
   } else if(nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & !nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat, err_msg_bulk,
-                   "Increasing the number of iterations might help.\n"))
+
+    warning(gettextf("%1$s, %2$s; increasing the number of iterations might help", err_msg_rhat, err_msg_bulk))
     msg_label <- "Problems with Rhat and Bulk of the posterior distribution.\n"
-    
+
   } else if(nzchar(err_msg_rhat[1]) & !nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat, err_msg_tail,
-                   "Increasing the number of iterations might help.\n"))
+
+    warning(gettextf("%1$s, %2$s; increasing the number of iterations might help", err_msg_rhat, err_msg_tail))
     msg_label <- 'Problems with Rhat and Tail of the posterior distribution.\n'
-    
+
   } else if(!nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_bulk, err_msg_tail,
-                   "Please check if Rhat < 1.01. Also, check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted.\n"))
+
+    warning(gettextf("%1$s, %2$s; please check if Rhat < 1.01; also check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted",
+                     err_msg_bulk, err_msg_tail))
     msg_label <- 'Problems with Bulk and Tail of the posterior distribution.\n'
-    
+
   } else if(nzchar(err_msg_rhat[1]) & !nzchar(err_msg_bulk[1]) & !nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_rhat,
-                   "Please check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted.\n"))
+
+    warning(gettextf("%1$s; please check the trace and autocorrelation plot to see if measures of central tendency and quantiles can be trusted", err_msg_rhat))
     msg_label <- 'Problems with Rhat.\n'
-    
+
   } else if(!nzchar(err_msg_rhat[1]) & nzchar(err_msg_bulk[1]) & !nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_bulk,
-                   "Problems with Bulk of the posterior distribution. Please check if Rhat < 1.01.  Also check the trace and autocorrelation plot to see if measures of central tendency can be trusted.\n"))
+
+    warning(gettextf("%1$s; problems with Bulk of the posterior distribution; please check if Rhat < 1.01; also check the trace and autocorrelation plot to see if measures of central tendency can be trusted",
+                     err_msg_bulk))
     #msg_label <- 'Problems with Bulk of the posterior distribution.\n'
-    
+
   } else if(!nzchar(err_msg_rhat[1]) & !nzchar(err_msg_bulk[1]) & nzchar(err_msg_tail[1])) {
-    
-    warning(paste0(err_msg_tail,
-                   "Problems with Tail of the posterior distribution. Please check if Rhat < 1.01. Also check the trace and autocorrelation plot to see if quantiles can be trusted.\n"))
+
+    warning(gettextf("%1$s; problems with Tail of the posterior distribution; please check if Rhat < 1.01; also check the trace and autocorrelation plot to see if quantiles can be trusted",
+                     err_msg_tail))
     #msg_label <- 'Problems with Tail of the posterior distribution.\n'
-    
+
   } else {
     msg_label <- 'convergence achieved.\n'
     message('convergence achieved.\n')
   }
-  
-  
+
+
   err_table <- data.frame(Parameters = pars,
                           Rhat = rhats,
                           Bulk_ESS = ess_b,
@@ -583,10 +575,10 @@ convergence_deciC <- function(model_stan,
                           Bulk_Convergence = report_bulk,
                           Tail_Convergence = report_tail
   )
-  
-  
+
+
   return(err_table)
-  
-  
+
+
 }
 

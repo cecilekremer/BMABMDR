@@ -2,9 +2,12 @@
 % Please edit documentation in R/output.R
 \name{BMDMA_extract}
 \alias{BMDMA_extract}
-\title{function to extract model averaged BMD (continuous dataa)}
+\alias{BMDMAQ_extract}
+\title{Function to extract model averaged BMD}
 \usage{
 BMDMA_extract(mod.obj, conv = FALSE)
+
+BMDMAQ_extract(mod.obj, conv = FALSE)
 }
 \arguments{
 \item{conv}{logical to indicate if mixture should be only based on converged
@@ -16,5 +19,5 @@ models or all the models regardless of the convergence status}
 dataframe containing BMDL, BMD and BMDU
 }
 \description{
-function to extract model averaged BMD (continuous dataa)
+Function to extract model averaged BMD
 }

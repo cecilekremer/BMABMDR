@@ -2,22 +2,25 @@
 % Please edit documentation in R/output.R
 \name{outLP}
 \alias{outLP}
-\title{Output function for estimated model parameter from each model}
+\alias{outLPQ}
+\title{Function to retrieve estimated model parameters for each model}
 \usage{
 outLP(par_obj, pvec, max.dose, clustered = F)
+
+outLPQ(par_obj, pvec, max.dose, rho = FALSE)
 }
 \arguments{
 \item{par_obj}{list containing parameter draws from either Laplace or MCMC fit}
 
 \item{pvec}{probability vector to compute credible interval for the BMD.}
 
-\item{max.dose}{maximum dose tested}
+\item{max.dose}{maximum dose level}
 
 \item{clustered}{logical indicating whether data are clustered (T) or not (F, default)}
 }
 \value{
-dataframe containing model estimates
+dataframe containing model parameter estimates
 }
 \description{
-Output function for estimated model parameter from each model
+Function to retrieve estimated model parameters for each model
 }

@@ -5,7 +5,7 @@
 \alias{fun.w.QE4}
 \alias{fun.wQ}
 \alias{fun.wQ.QE4}
-\title{Function to perform model selection when including a covariate effect (used internally)}
+\title{Function to calculate weights for Laplace including a covariate effect (used internally)}
 \usage{
 fun.w(
   optMod,
@@ -60,5 +60,11 @@ fun.wQ.QE4(
 .
 }
 \description{
-This function computes Laplace weights for model selection
+This function computes Laplace weights for a submodel
+}
+\examples{
+\dontrun{
+fun.w(optMod_asigma2, lld = ll_asigma2, min.ll = minll, nlevels = data_asigma2$data$nlevels, dataMod = data_asigma2, covar = 'a_sigma2')
+}
+
 }

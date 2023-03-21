@@ -2,9 +2,12 @@
 % Please edit documentation in R/output.R
 \name{BMDmixture_extract}
 \alias{BMDmixture_extract}
-\title{function to extract BMD mixture (continuous data)}
+\alias{BMDQmixture_extract}
+\title{Function to extract BMD mixture}
 \usage{
 BMDmixture_extract(mod.obj, weight_type, conv = FALSE)
+
+BMDQmixture_extract(mod.obj, weight_type, conv = FALSE)
 }
 \arguments{
 \item{weight_type}{character indicating whether to use Laplace ('LP') or Bridge sampling ('BS') weights}
@@ -18,5 +21,5 @@ models or all the models regardless of the convergence status}
 dataframe containing Mixture per model
 }
 \description{
-function to extract BMD mixture (continuous data)
+Function to extract BMD mixture
 }

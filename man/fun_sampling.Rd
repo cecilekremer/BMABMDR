@@ -10,13 +10,13 @@ fun_sampling(
   mod,
   data,
   stv,
-  ndraws = ndraws,
-  nrchains = nrchains,
-  nriterations = nriterations,
-  warmup = warmup,
-  delta = delta,
-  treedepth = treedepth,
-  seed = seed,
+  ndraws,
+  nrchains,
+  nriterations,
+  warmup,
+  delta,
+  treedepth,
+  seed,
   pvec
 )
 
@@ -24,13 +24,13 @@ fun_samplingC(
   mod,
   data,
   stv,
-  ndraws = ndraws,
-  nrchains = nrchains,
-  nriterations = nriterations,
-  warmup = warmup,
-  delta = delta,
-  treedepth = treedepth,
-  seed = seed,
+  ndraws,
+  nrchains,
+  nriterations,
+  warmup,
+  delta,
+  treedepth,
+  seed,
   pvec
 )
 
@@ -38,20 +38,20 @@ fun_samplingQ(
   mod,
   data,
   stv,
-  ndraws = ndraws,
-  nrchains = nrchains,
-  nriterations = nriterations,
-  warmup = warmup,
-  delta = delta,
-  treedepth = treedepth,
-  seed = seed,
+  ndraws,
+  nrchains,
+  nriterations,
+  warmup,
+  delta,
+  treedepth,
+  seed,
   pvec
 )
 }
 \arguments{
 \item{mod}{stan model}
 
-\item{data}{list containing data values to be passed to the stan model file}
+\item{data}{list containing the data to be passed to the stan model file}
 
 \item{stv}{list of starting values}
 
@@ -59,21 +59,27 @@ fun_samplingQ(
 
 \item{nrchains}{number of MCMC chains}
 
-\item{nriterations}{number of MCMC iterations}
+\item{nriterations}{number of MCMC iterations per chain}
 
 \item{warmup}{number of MCMC iterations for warmup}
 
-\item{delta}{adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.}
+\item{delta}{adapt_delta value for the HMC in stan. See \link[rstan]{sampling} for more details}
 
-\item{treedepth}{tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more}
+\item{treedepth}{tree_depth value for the HMC in stan. See \link[rstan]{sampling} for more details}
 
 \item{seed}{random seed for reproducibility}
 
 \item{pvec}{probability vector to compute credible interval for the BMD}
 }
 \value{
-a stan results object
+An object of S4 class \code{stanfit} representing the fitted results.
 }
 \description{
 Function to perform MCMC sampling for a given dose-response model (used internally).
+}
+\examples{
+\dontrun{
+fun_sampling(stanmodels$mE4, data, start, 30000, 3, 3000, 1000, 0.8, 15, 123, c(0.05,0.5,0.95))
+}
+
 }

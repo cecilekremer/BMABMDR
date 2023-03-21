@@ -10,7 +10,7 @@ logit(x)
 \item{x}{value}
 }
 \value{
-.
+logit of x
 }
 \description{
 Function for internal use

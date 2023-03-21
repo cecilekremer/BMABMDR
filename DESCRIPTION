@@ -1,6 +1,6 @@
 Package: BMABMDR
+Version: 0.0.0.9058
 Title: Bayesian Model Averaging for Benchmark Dose Analysis
-Version: 0.0.0.9057
 Authors@R: c(
     person(given = "C\'ecile",
            family = "Kremer",
@@ -32,10 +32,10 @@ Description: The BMABMDR package provides functions for benchmark dose analysis 
 License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
     license
 Encoding: UTF-8
+NeedsCompilation: true
 LazyData: true
 Roxygen: list(markdown = TRUE)
 RoxygenNote: 7.2.1
-Biarch: true
 Depends: 
     R (>= 3.5.0)
 Imports: 
@@ -47,18 +47,15 @@ Imports:
     rstantools (>= 2.1.1),
     brms,
     RColorBrewer,
-    bbmle,
     dplyr,
     plyr,
     bridgesampling,
-    forcats,
     bayesplot,
     gamlss,
     ggplot2,
     ggpubr,
     mc2d,
     mvtnorm,
-    numDeriv,
     posterior,
     truncnorm
 LinkingTo: 

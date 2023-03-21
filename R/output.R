@@ -1,13 +1,12 @@
 
-#' Output function for estimated model parameter from each model
+#' Function to retrieve estimated model parameters for each model
 #'
 #' @param par_obj list containing parameter draws from either Laplace or MCMC fit
 #' @param pvec probability vector to compute credible interval for the BMD.
-#' @param max.dose maximum dose tested
+#' @param max.dose maximum dose level
 #' @param clustered logical indicating whether data are clustered (T) or not (F, default)
 #'
-#' @return dataframe containing model estimates
-#'
+#' @return dataframe containing model parameter estimates
 #'
 #' @export outLP
 #'
@@ -58,18 +57,8 @@ outLP <- function(par_obj, pvec, max.dose, clustered = F){
   return(ret)
 }
 
-#' Output function for estimated model parameter from each model (quantal data)
-#'
-#' @param par_obj list containing parameter draws from either Laplace or MCMC fit
-#' @param pvec probability vector to compute credible interval for the BMD.
-#' @param max.dose maximum dose tested
-#' @param rho should be set to TRUE if data is clustered
-#'
-#' @return dataframe containing model estimates
-#'
-#'
-#' @export outLPQ
-#'
+#' @rdname outLP
+#' @export
 outLPQ <- function(par_obj, pvec, max.dose, rho = FALSE) {
   ret <- t(data.frame(
     # # transformed parameters
@@ -89,11 +78,10 @@ outLPQ <- function(par_obj, pvec, max.dose, rho = FALSE) {
   return(ret)
 }
 
-
-#' function to extract the sampled values for the model parameters and the BMD (continuous data)
+#' Function to extract the sampled values for the model parameters and the BMD
 #'
 #' @param mod_obj model object either of class stanfit or stanfitOptim
-#' @param pars parameters to be extracted.
+#' @param pars names of parameters to be extracted.
 #' @param model_name name of the model to be extracted
 #'
 #' @return dataframe containing model estimates
@@ -153,16 +141,8 @@ par_extract <- function(mod_obj, pars = c(letters[1:4],"k",
 
 }
 
-#' function to extract the sampled values for the model parameters and the BMD (clustered continuous data)
-#'
-#' @param mod_obj model object either of class stanfit or stanfitOptim
-#' @param pars parameters to be extracted.
-#' @param model_name name of the model to be extracted
-#'
-#' @return dataframe containing model estimates
-#'
-#' @export par_extract
-#'
+#' @rdname par_extract
+#' @export
 par_extractC <- function(mod_obj, pars = c(letters[1:4],"k",
                                            paste0("par",1:6,""),
                                            "invsigma2","mu_inf","mu_0","rho_cluster"), model_name) {
@@ -217,19 +197,8 @@ par_extractC <- function(mod_obj, pars = c(letters[1:4],"k",
 
 }
 
-
-
-#' function to extract the sampled values for the model parameters and the BMD (quantal data)
-#'
-#' @param mod_obj model object either of class stanfit or stanfitOptim
-#' @param pars parameters to be extracted.
-#' @param model_name name of the model to be extracted
-#' @param rho should be set to TRUE if data is clustered
-#'
-#' @return dataframe containing model estimates
-#'
-#' @export parq_extract
-#'
+#' @rdname par_extract
+#' @export
 parq_extract <- function(mod_obj, pars = c(letters[c(1,2,4)], "BMD",
                                            paste0("par",1:3), "min_response"),
                          model_name, rho = FALSE) {
@@ -270,7 +239,7 @@ parq_extract <- function(mod_obj, pars = c(letters[c(1,2,4)], "BMD",
 
 }
 
-#' function to turn the vector of weights into dataframe (quantal data)
+#' Function to turn the vector of weights into dataframe
 #'
 #' @param mod_obj model object either of class stanfit or stanfitOptim
 #' @param type type of weight to be extracted. It can be either of BS (bridge sampling), LP (Laplace) and
@@ -308,16 +277,8 @@ weightsQ_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 }
 
 
-#' function to turn the vector of weights into dataframe (continuous data)
-#'
-#' @param mod_obj model object either of class stanfit or stanfitOptim
-#' @param type type of weight to be extracted. It can be either of BS (bridge sampling), LP (Laplace) and
-#'             both to extract bridge sampling and laplace approximation.
-#'
-#' @return dataframe containing model estimates
-#'
-#' @export weights_extract
-#'
+#' @rdname weightsQ_extract
+#' @export
 weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
   type <- match.arg(type)
   if(is.BMADR2(mod.obj)[3] == 2 & type == 'BS'){
@@ -345,7 +306,7 @@ weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 
 }
 
-#' function to extract BMD mixture (continuous data)
+#' Function to extract BMD mixture
 #'
 #' @param mod_obj BMDBMA model object
 #' @param weight_type character indicating whether to use Laplace ('LP') or Bridge sampling ('BS') weights
@@ -386,16 +347,8 @@ BMDmixture_extract <- function(mod.obj, weight_type, conv = FALSE){
 
 }
 
-#' function to extract BMD mixture (quantal data)
-#'
-#' @param mod_obj BMDBMA model object
-#' @param conv logical to indicate if mixture should be only based on converged
-#'             models or all the models regardless of the convergence status
-#'
-#' @return dataframe containing Mixture per model
-#'
-#' @export BMDQmixture_extract
-#'
+#' @rdname BMDmixture_extract
+#' @export
 BMDQmixture_extract <- function(mod.obj, weight_type, conv = FALSE){
 
   if(is.BMADRQ2(mod.obj)[3] == 2 & weight_type == 'BS' & conv == TRUE) {
@@ -424,8 +377,7 @@ BMDQmixture_extract <- function(mod.obj, weight_type, conv = FALSE){
 
 }
 
-
-#' function to extract model averaged BMD (continuous dataa)
+#' Function to extract model averaged BMD
 #'
 #' @param mod_obj BMDBMA model object
 #' @param conv logical to indicate if mixture should be only based on converged
@@ -466,16 +418,8 @@ BMDMA_extract <- function(mod.obj, conv = FALSE) {
 
 }
 
-#' function to extract model averaged BMD (quantal dataa)
-#'
-#' @param mod_obj BMDBMA model object
-#' @param conv logical to indicate if mixture should be only based on converged
-#'             models or all the models regardless of the convergence status
-#'
-#' @return dataframe containing BMDL, BMD and BMDU
-#'
-#' @export BMDMAQ_extract
-#'
+#' @rdname BMDMA_extract
+#' @export
 BMDMAQ_extract <- function(mod.obj, conv = FALSE) {
 
   if(is.BMADRQ2(mod.obj)[3] == 2 & conv == TRUE) {
@@ -508,7 +452,7 @@ BMDMAQ_extract <- function(mod.obj, conv = FALSE) {
 }
 
 
-#' function to get the median of the needed parameters for predicted values
+#' Function to get the median of the needed parameters for predicted values
 #'
 #' @param mod_obj BMDBMA model object
 #' @param type type of endpoint, either 'continuous' or 'quantal'
@@ -604,7 +548,7 @@ par_med <- function(mod.obj, type = c('continuous', 'quantal'), clustered = F) {
 }
 
 
-#' function to extract the BMDL,BMD and BMDU
+#' Function to extract the BMDL,BMD and BMDU
 #'
 #' @param mod_obj BMDBMA model object
 #' @param pvec vector of probabilities, defaults to c(0.05, 0.5, 0.95)
@@ -670,12 +614,12 @@ BMDLU <- function(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c('continuous', 'qu
   return(ret2)
 }
 
-#' function to get predicted values from the DRMs (continuous data)
+#' Function to get predicted values from the DRMs
 #'
 #' @param mod.obj BMDBMA model object
 #' @param dose vector of dose values to use for prediction
 #' @param type dose response model type, either 'increasing' or 'decreasing'
-#' @param what prediction of interest. It can either be "predicted" or "response_at_BMD"
+#' @param what prediction of interest, can be either "predicted" or "response_at_BMD"
 #' @param model_averaged option to compute model averaged prediction. Defaults to FALSE
 #' @param clustered logical indicating wheter data are clustered (T) or not (F, default)
 #' @param weight_type type of weight to be used. It can either be "BS" for bridge sampling or
@@ -817,20 +761,8 @@ predict.BMADR <- function(mod.obj, dose,
 }
 
 
-#' function to get predicted values from the DRMs (quantal data)
-#'
-#' @param mod.obj BMDBMA model object
-#' @param dose vector of dose values to use for prediction
-#' @param what prediction of interest. It can either be "predicted" or "response_at_BMD"
-#' @param model_averaged option to compute model averaged prediction. Defaults to FALSE
-#' @param weight_type type of weight to be used. It can either be "BS" for bridge sampling or
-#'              "LP" for Laplace approximation
-#'
-#' @return dataframe of model prediction per model or
-#'         list with dataframe of model preditions and model-averaged predictions
-#'
-#' @export predict.BMADRQ
-#'
+#' @rdname predict.BMADR
+#' @export
 predict.BMADRQ <- function(mod.obj, dose,
                            what = c("predicted", "resp_at_BMD"),
                            model_averaged = FALSE,
@@ -954,7 +886,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
 }
 
-#' function to get BMDs and weights
+#' Function to get BMDs and weights
 #'
 #' @param mod_obj BMDBMA model object
 #' @param type type of endpoint, either 'continuous' or 'quantal'
@@ -1005,7 +937,7 @@ BMDWeights <- function(mod.obj, type = c('continuous', 'quantal')) {
 
 }
 
-#' print function for BMABMDR objects
+#' Function to print estimated BMDs and model weights for a BMDBMA model object
 #'
 #' @param mod_obj BMDBMA model object
 #' @param type type of endpoint, either 'continuous' or 'quantal'
@@ -1015,13 +947,12 @@ BMDWeights <- function(mod.obj, type = c('continuous', 'quantal')) {
 #' @export print.BMADR
 #'
 print.BMADR <- function(mod.obj, type = c('continuous', 'quantal')) {
-  message("Here are the estimated BMDs per model along with their weights")
+  # message("below are the estimated BMDs per model along with their weights")
   print(knitr::kable(BMDWeights(mod.obj, type),
                      row.names = FALSE))
 }
 
-
-#' summary function for BMABMDR objects
+#' Summary function for BMDBMA model objects
 #'
 #' @param mod_obj BMDBMA model object
 #' @param type type of endpoint, can be 'continuous' or 'quantal'

@@ -2,30 +2,56 @@
 % Please edit documentation in R/anydoseresponse.R
 \name{anydoseresponseN}
 \alias{anydoseresponseN}
-\title{Function to determine if there is a dose-response effect, for the normal distribution}
+\alias{anydoseresponseLN}
+\alias{anydoseresponseC}
+\alias{anydoseresponseQ}
+\title{Function to determine if there is a dose-response effect}
 \usage{
 anydoseresponseN(dose.a, mean.a, sd.a, n.a)
+
+anydoseresponseLN(dose.a, mean.a, sd.a, n.a)
+
+anydoseresponseC(data, use.mcmc = FALSE)
+
+anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE)
 }
 \arguments{
 \item{dose.a}{ordered dose levels}
 
-\item{mean.a}{mean response}
+\item{mean.a}{arithmetic mean response per ordered dose level}
 
-\item{sd.a}{standard deviation}
+\item{sd.a}{arithmetic standard deviation per ordered dose level}
 
-\item{n.a}{number of observations per dose level}
+\item{n.a}{number of observations per ordered dose level}
+
+\item{data}{the individual data (ordered as dose, response, litter)}
+
+\item{use.mcmc}{logical indicating whether to use MCMC or Laplace approximation (defaults to FALSE)}
+
+\item{y.a}{number of adverse events per ordered dose level}
+
+\item{cluster}{logical for Quantal data indicating whether the data are clustered or not; if data are clustered, it is assumed that each line of data represents a specific litter}
 }
 \value{
-list containing Bayes factor and decision.
+\code{bf} bayes factor
+
+\code{bf.message} decision on dose-response effect
 }
 \description{
 This function tests for any dose-response effect using Bayes factor.
-It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
+It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+
+\code{anydoseresponseN} is used to test for dose-response effect for continuous data assuming the normal distribution.
+
+\code{anydoseresponseLN} is used to test for dose-response effect for continuous data assuming the lognormal distribution.
+
+\code{anydoseresponseC} is used to test for dose-response effect for clustered continuous data (i.e. with litter effect).
+
+\code{anydoseresponseQ} is used to test for dose-response effect for quantal data.
 }
 \examples{
 
-# We use the first 5 rows because those are observations from subjects belonging to the same group.
-data("immunotoxicityData.rda")  #load the immunotoxicity data
+# We use the first 5 rows because those are observations from subjects belonging to the same covariate level
 anydoseresponseN(dose.a = immunotoxicityData$Dose[1:5],
                  mean.a = immunotoxicityData$Mean[1:5],
                  sd.a = immunotoxicityData$SD[1:5],

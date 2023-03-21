@@ -1,52 +1,86 @@
 
-#' Perform model averaging using Full Laplace method
+#' Model averaging using Full Laplace method
 #'
-#' @param data.N the input data as returned by function PREP_DATA_N
-#' @param data.LN the input data as returned by function PREP_DATA_LN
-#' @param prior.weights a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)
+#' @param data.N the input data as returned by function PREP_DATA_N or PREP_DATA_N_C for clustered data
+#' @param data.LN the input data as returned by function PREP_DATA_LN or PREP_DATA_LN_C for clustered data
+#' @param data.Q the input data as returned by function PREP_DATA_Q
+#' @param prior.weights a vector specifying which of the 16 (continuous) or 8 (quantal) models should be included (1 = include, 0 = exclude)
 #' @param ndraws the number of draws, default 30000
-#' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
+#' @param seed random seed, default 123
+#' @param pvec vector specifying the three BMD quantiles of interest (default 90% CrI)
 #'
 #' @examples
-#'  # we use the first 5 rows because those are observations from subjects belonging to the same group.
-#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
 #'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
-#'                        sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'                        sumstats = TRUE, sd = TRUE, q = 0.1)
 #'  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
-#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'                          sumstats = TRUE, sd = TRUE, q = 0.1) #'
+#'  FLBMD <- full.laplace_MA(data_N, data_LN, prior.weights = c(rep(1,4), rep(0,12)))
 #'
-#'  pvec <- c(0.05, 0.5, 0.95)
-#'  prior.weights <- rep(1, 16); ndr <- 30000
-#'  FLBMD <- full.laplace_MA(data_N,data_LN,prior.weights,
-#'                        ndraws=ndr,seed=123,pvec=pvec)
+#' @description This function performs model averaging using the full Laplace approximation. By default, all 16 models are included for continuous data, and all 8 models for quantal data.
+#'              Models can be excluded by setting their respective weight to 0 in \code{prior.weights}. The order of models fitted can be obtained using the \code{\link{get_models()}} function.
 #'
-#' @description Using Laplace approximation, we compute the parameters and weights of each model.
+#' `full.laplace_MA` is used for continuous data
+#'
+#' `full.laplace_MAc` is used for clustered continuous data (i.e. with litter effect)
+#'
+#' `full.laplaceQ_MA` is used for quantal data (with or without litter effect)
 #'
 #' @importFrom truncnorm dtruncnorm
 #'
-#' @return
-#' \enumerate{
-#'   \item E4_N parameter estimates from the (Exponential, Normal) model
-#'   \item IE4_N parameter estimates from the (Inverse Exponential, Normal) model
-#'   \item H4_N parameter estimates from the (Hill, Normal) model
-#'   \item LN4_N parameter estimates from the (Log-normal, Normal)
-#'   \item G4_N parameter estimates from the (Gamma, Normal) model
-#'   \item QE4_N parameter estimates from the (Quadratic Exponential, Normal) model
-#'   \item P4_N parameter estimates from the (Probit, Normal) model
-#'   \item L4_N parameter estimates from the (Logit, Normal) model
-#'   \item E4_LN parameter estimates from the (Exponential, Log-normal) model
-#'   \item IE4_LN parameter estimates from the (Inverse Exponential, Log-normal) model
-#'   \item H4_LN parameter estimates from the (Hill, Log-normal) model
-#'   \item LN4_LN parameter estimates from the (Log-normal, Log-normal)
-#'   \item G4_LN parameter estimates from the (Gamma, Log-normal) model
-#'   \item QE4_LN parameter estimates from the (Quadratic Exponential, Log-normal) model
-#'   \item P4_LN parameter estimates from the (Probit, Log-normal) model
-#'   \item L4_LN parameter estimates from the (Logit, Log-normal) model
-#'   \item MA  Model averaged BMD credible interval
-#'   \item weights Model weights used in the averaging
-#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
-#' }
+#' @return The function returns a BMDBMA model object, which is a list containing the following objects:
+#' @return `E4_N` parameter estimates from the (Exponential, Normal) model
+#' @return `IE4_N` parameter estimates from the (Inverse Exponential, Normal) model
+#' @return `H4_N` parameter estimates from the (Hill, Normal) model
+#' @return `LN4_N` parameter estimates from the (Log-normal, Normal)
+#' @return `G4_N` parameter estimates from the (Gamma, Normal) model
+#' @return `QE4_N` parameter estimates from the (Quadratic Exponential, Normal) model
+#' @return `P4_N` parameter estimates from the (Probit, Normal) model
+#' @return `L4_N` parameter estimates from the (Logit, Normal) model
+#' @return `E4_LN` parameter estimates from the (Exponential, Log-normal) model
+#' @return `IE4_LN` parameter estimates from the (Inverse Exponential, Log-normal) model
+#' @return `H4_LN` parameter estimates from the (Hill, Log-normal) model
+#' @return `LN4_LN` parameter estimates from the (Log-normal, Log-normal)
+#' @return `G4_LN` parameter estimates from the (Gamma, Log-normal) model
+#' @return `QE4_LN` parameter estimates from the (Quadratic Exponential, Log-normal) model
+#' @return `P4_LN` parameter estimates from the (Probit, Log-normal) model
+#' @return `L4_LN` parameter estimates from the (Logit, Log-normal) model
+#' @return `E4_Q` parameter estimates from the (Exponential, Quantal) model
+#' @return `IE4_Q` parameter estimates from the (Inverse Exponential, Quantal) model
+#' @return `H4_Q` parameter estimates from the (Hill, Quantal) model
+#' @return `LN4_Q` parameter estimates from the (Lognormal, Quantal) model
+#' @return `G4_Q` parameter estimates from the (Gamma, Quantal) model
+#' @return `QE4_Q` parameter estimates from the (Quadratic Exponential, Quantal) model
+#' @return `P4_Q` parameter estimates from the (Probit, Quantal) model
+#' @return `L4_Q` parameter estimates from the (Logit, Quantal) model
+#' @return `MA`  Model averaged BMD credible interval
+#' @return `weights` Model weights used in the averaging
+#' @return `bf` Bayes factor comparing the best model against saturated ANOVA model
+#' @return `covs` matrix with covariances between parameters b-d and BMD-d
+#' @return `corrs` matrix with correlation between parameters b-d and BMD-d
+#' @return `p.msg` warning message if model averaged posterior has been truncated
+#' @return `w.msg` warning message if Laplace weights could not be computed and one model gets all the weight
+#' @return `shift` shift value for lognormal data
+#' @return `BIC.SM` BIC value of saturated model, used to test for GOF
+#' @return `BIC.bestfit` BIC value of best fitting model, used to test for GOF
+#' @return `means.SM` mean response per dose level estimated from the saturated model, used to test for GOF
+#' @return `gof_check` GOF message
+#' @return `models_included` vector containing the names of models included in the model averaging
+#' @return `q` BMR
+#' @return `max.dose` maximum dose level (original scale)
+#' @return `dataN` normal summary data used for analysis
+#' @return `dataLN` lognormal summary data used for analysis
+#' @return `BMDMixture` vector of length \code{ndraws} containing the draws from the model-averaged posterior
+#' @return `MA_dr` vector containing the model-averaged response at each dose level
+#' @return `MA_post` vector containing the 0.5%-percentiles of the model-averaged posterior
+#' @return `llN` vector containing the loglikelihood values of the Normal models
+#' @return `llLN` vector containing the loglikelihood values of the Lognormal models
+#' @return `parsN` list containing the fitted Normal models
+#' @return `parsLN` list containing the fitted Lognormal models
+#' @return `is_bin` logical indicating whether binomial (no litter) model was used
+#' @return `is_betabin` logical indicating whether betabinomial (with litter) model was used
+#' @return `data` quantal summary data used for analysis
+#' @return `parsQ` list containing the fitted Quantal models
+#' @return `llQ` vector containing the loglikelihood values of the Quantal models
 #'
 #' @export full.laplace_MA
 #'
@@ -85,7 +119,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
       prior.weights[1] <- 0
-      warning('Difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4N <- par_extract(optE4_NI, model_name = "E4_N")
@@ -169,7 +203,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
       prior.weights[2] <- 0
-      warning('Difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4N <- par_extract(optIE4_NI, model_name = "IE4_N")
@@ -243,7 +277,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
       prior.weights[3] <- 0
-      warning('Difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4N <- par_extract(optH4_NI, model_name = "H4_N")
@@ -317,7 +351,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
       prior.weights[4] <- 0
-      warning('Difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4N <- par_extract(optLN4_NI, model_name = "LN4_N")
@@ -398,7 +432,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
       prior.weights[5] <- 0
-      warning('Difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4N <- par_extract(optG4_NI, model_name = "G4_N")
@@ -470,7 +504,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
       prior.weights[6] <- 0
-      warning('Difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4N <- par_extract(optQE4_NI, model_name = "QE4_N")
@@ -542,7 +576,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
       prior.weights[7] <- 0
-      warning('Difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4N <- par_extract(optP4_NI, model_name = "P4_N")
@@ -614,7 +648,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
       prior.weights[8] <- 0
-      warning('Difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4N <- par_extract(optL4_NI, model_name = "L4_N")
@@ -696,7 +730,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
       prior.weights[9] <- 0
-      warning('Difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4LN <- par_extract(optE4_LNI, model_name = "E4_LN")
@@ -781,7 +815,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
       prior.weights[10] <- 0
-      warning('Difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4LN <- par_extract(optIE4_LNI, model_name = "IE4_LN")
@@ -855,7 +889,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
       prior.weights[11] <- 0
-      warning('Difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4LN <- par_extract(optH4_LNI, model_name = "H4_LN")
@@ -929,7 +963,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
       prior.weights[12] <- 0
-      warning('Difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4LN <- par_extract(optLN4_LNI, model_name = "LN4_LN")
@@ -1012,7 +1046,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
       prior.weights[13] <- 0
-      warning('Difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4LN <- par_extract(optG4_LNI, model_name = "G4_LN")
@@ -1086,7 +1120,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
       prior.weights[14] <- 0
-      warning('Difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4LN <- par_extract(optQE4_LNI, model_name = "QE4_LN")
@@ -1160,7 +1194,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
       prior.weights[15] <- 0
-      warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4LN <- par_extract(optP4_LNI, model_name = "P4_LN")
@@ -1235,7 +1269,7 @@ full.laplace_MA=function(data.N, data.LN,
 
     if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
       prior.weights[16] <- 0
-      warning('Difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4LN <- par_extract(optL4_LNI, model_name = "L4_LN")
@@ -1347,8 +1381,8 @@ full.laplace_MA=function(data.N, data.LN,
   }else{
 
     if(FALSE %in% ((max.ll-lls[!is.na(lls)]) < 709)){
-      w.msg <- 'Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help'
-      warning('Not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
+      w.msg <- 'not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help'
+      warning('not all models were used in computation of Laplace weights, some models set to 0; using another prior for parameter d might help')
     }
 
     minll <- min(lls[which((max.ll-lls < 709) & prior.weights>0)], na.rm = T)
@@ -1530,8 +1564,6 @@ full.laplace_MA=function(data.N, data.LN,
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
-  print(maci)
-
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
     p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
@@ -1615,13 +1647,13 @@ full.laplace_MA=function(data.N, data.LN,
   # print(maci)
 
   if(maci[2]/maci[1] > 20){
-    print(warning('BMD/BMDL is larger than 20'))
+    warning('BMD/BMDL is larger than 20')
   }
   if(maci[3]/maci[1] > 50){
-    print(warning('BMDU/BMDL is larger than 50'))
+    warning('BMDU/BMDL is larger than 50')
   }
   if(maci[2] < (data.N$data$x[2]*data.N$data$maxD/10)){
-    print(warning('BMD is 10 times lower than the lowest non-zero dose'))
+    warning('BMD is 10 times lower than the lowest non-zero dose')
   }
 
   ### best fitting model vs saturated ANOVA model
@@ -1629,7 +1661,7 @@ full.laplace_MA=function(data.N, data.LN,
   nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
   bfTest <- modelTest(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
                       seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
-  print(warning(bfTest$warn.bf))
+  warning(bfTest$warn.bf)
 
 
   ret_results <- list(
@@ -1711,7 +1743,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
       prior.weights[1] <- 0
-      warning('Difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4N <- par_extractC(optE4_NI, model_name = "E4_N")
@@ -1784,7 +1816,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
       prior.weights[2] <- 0
-      warning('Difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4N <- par_extractC(optIE4_NI, model_name = "IE4_N")
@@ -1857,7 +1889,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
       prior.weights[3] <- 0
-      warning('Difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4N <- par_extractC(optH4_NI, model_name = "H4_N")
@@ -1930,7 +1962,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
       prior.weights[4] <- 0
-      warning('Difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4N <- par_extractC(optLN4_NI, model_name = "LN4_N")
@@ -2002,7 +2034,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
       prior.weights[5] <- 0
-      warning('Difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4N <- par_extractC(optG4_NI, model_name = "G4_N")
@@ -2074,7 +2106,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
       prior.weights[6] <- 0
-      warning('Difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4N <- par_extractC(optQE4_NI, model_name = "QE4_N")
@@ -2146,7 +2178,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
       prior.weights[7] <- 0
-      warning('Difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4N <- par_extractC(optP4_NI, model_name = "P4_N")
@@ -2217,7 +2249,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
       prior.weights[8] <- 0
-      warning('Difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4N <- par_extractC(optL4_NI, model_name = "L4_N")
@@ -2298,7 +2330,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
       prior.weights[9] <- 0
-      warning('Difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4LN <- par_extractC(optE4_LNI, model_name = "E4_LN")
@@ -2373,7 +2405,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
       prior.weights[10] <- 0
-      warning('Difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4LN <- par_extractC(optIE4_LNI, model_name = "IE4_LN")
@@ -2447,7 +2479,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
       prior.weights[11] <- 0
-      warning('Difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4LN <- par_extractC(optH4_LNI, model_name = "H4_LN")
@@ -2521,7 +2553,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
       prior.weights[12] <- 0
-      warning('Difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4LN <- par_extractC(optLN4_LNI, model_name = "LN4_LN")
@@ -2596,7 +2628,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
       prior.weights[13] <- 0
-      warning('Difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4LN <- par_extractC(optG4_LNI, model_name = "G4_LN")
@@ -2670,7 +2702,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
       prior.weights[14] <- 0
-      warning('Difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4LN <- par_extractC(optQE4_LNI, model_name = "QE4_LN")
@@ -2744,7 +2776,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
       prior.weights[15] <- 0
-      warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4LN <- par_extractC(optP4_LNI, model_name = "P4_LN")
@@ -2819,7 +2851,7 @@ full.laplace_MAc=function(data.N, data.LN,
 
     if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
       prior.weights[16] <- 0
-      warning('Difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4LN <- par_extractC(optL4_LNI, model_name = "L4_LN")
@@ -3191,13 +3223,13 @@ full.laplace_MAc=function(data.N, data.LN,
   ### Some additional checks
 
   if(maci[2]/maci[1] > 20){
-    print(warning('BMD/BMDL is larger than 20'))
+    warning('BMD/BMDL is larger than 20')
   }
   if(maci[3]/maci[1] > 50){
-    print(warning('BMDU/BMDL is larger than 50'))
+    warning('BMDU/BMDL is larger than 50')
   }
   if(maci[2] < (data.N$data$x[2]*data.N$data$maxD/10)){
-    print(warning('BMD is 10 times lower than the lowest non-zero dose'))
+    warning('BMD is 10 times lower than the lowest non-zero dose')
   }
 
   ### best fitting model vs saturated ANOVA model
@@ -3249,36 +3281,8 @@ full.laplace_MAc=function(data.N, data.LN,
 }
 
 
-
-#' Perform model averaging using Full Laplace method
-#'
-#' @param data.Q the input data as returned by function PREP_DATA_QE
-#' @param prior.weights a vector specifying which of the 8 models should be included (1 = include, 0 = exclude)
-#' @param ndraws the number of draws, default 30000
-#' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
-#'
-#' @description Using Laplace approximation, we compute the parameters and weights of each model.
-#'
-#' @importFrom truncnorm dtruncnorm
-#'
-#' @return
-#' \enumerate{
-#'   \item E4_Q parameter estimates from the exponential model
-#'   \item IE4_Q parameter estimates from the inverse-exponential model
-#'   \item H4_Q parameter estimates from the Hill model
-#'   \item LN4_Q parameter estimates from the lognormal
-#'   \item G4_Q parameter estimates from the gamma model
-#'   \item QE4_Q parameter estimates from the quadratic-exponential model
-#'   \item P4_Q parameter estimates from the probit model
-#'   \item L4_Q parameter estimates from the logit model
-#'   \item MA  Model averaged BMD credible interval
-#'   \item weights Model weights used in the averaging
-#'   \item bf Bayes factor comparing the best model against saturated ANOVA model
-#' }
-#'
-#' @export full.laplaceQ_MA
-#'
+#' @rdname full.laplace_MA
+#' @export
 full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                           ndraws=30000,seed=123,pvec=c(0.05,0.5,0.95)){
 
@@ -3310,7 +3314,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optE4_Q[[3]]),TRUE,(optE4_Q[[3]]!=0)) | length(optE4_Q)!=9)){
       prior.weights[1] <- 0
-      warning('Difficulties fitting the Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3401,7 +3405,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optIE4_Q[[3]]),TRUE,(optIE4_Q[[3]]!=0)) | length(optIE4_Q)!=9)){
       prior.weights[2] <- 0
-      warning('Difficulties fitting the Inverse Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3492,7 +3496,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optH4_Q[[3]]),TRUE,(optH4_Q[[3]]!=0)) | length(optH4_Q)!=9)){
       prior.weights[3] <- 0
-      warning('Difficulties fitting the Hill model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3582,7 +3586,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optLN4_Q[[3]]),TRUE,(optLN4_Q[[3]]!=0)) | length(optLN4_Q)!=9)){
       prior.weights[4] <- 0
-      warning('Difficulties fitting the Lognormal model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3673,7 +3677,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     optG4_Q <- fun_optimQ(stanmodels$mG4_Q, data, start, ndraws, 123, pvec)
     if((ifelse(is.na(optG4_Q[[3]]),TRUE,(optG4_Q[[3]]!=0)) | length(optG4_Q)!=9)){
       prior.weights[5] <- 0
-      warning('Difficulties fitting the Gamma model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3761,7 +3765,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optQE4_Q[[3]]),TRUE,(optQE4_Q[[3]]!=0)) | length(optQE4_Q)!=9)){
       prior.weights[6] <- 0
-      warning('Difficulties fitting the Quadratic Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3849,7 +3853,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optP4_Q[[3]]),TRUE,(optP4_Q[[3]]!=0)) | length(optP4_Q)!=9)){
       prior.weights[7] <- 0
-      warning('Difficulties fitting the Probit model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -3937,7 +3941,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
     if((ifelse(is.na(optL4_Q[[3]]),TRUE,(optL4_Q[[3]]!=0)) | length(optL4_Q)!=9)){
       prior.weights[8] <- 0
-      warning('Difficulties fitting the Logit model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit model; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -4259,13 +4263,13 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   ### Some additional checks
 
   if(maci[2]/maci[1] > 20){
-    print(warning('BMD/BMDL is larger than 20'))
+    warning('BMD/BMDL is larger than 20')
   }
   if(maci[3]/maci[1] > 50){
-    print(warning('BMDU/BMDL is larger than 50'))
+    warning('BMDU/BMDL is larger than 50')
   }
   if(maci[2] < (data.Q$data$x[2]*data.Q$data$maxD/10)){
-    print(warning('BMD is 10 times lower than the lowest non-zero dose'))
+    warning('BMD is 10 times lower than the lowest non-zero dose')
   }
 
   ### best fitting model vs saturated ANOVA model
@@ -4343,44 +4347,64 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 }
 
 
-#' Perform model averaging using Full Laplace method
+#' Perform model averaging using Full Laplace method for data with covariate effect
 #'
-#' @param data the summary data, with columns: dose, response, sd, n, covariate
+#' @param data the summary data, with columns: dose, response, sd, n, covariate level for continuous; dose, number of adverse events, n, covariate for quantal
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
 #' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
 #' @param q specified BMR
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
-#' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)#
-#' @param prior.weights a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
+#' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+#' @param prior.weights a vector specifying which of the 16 (continuous) or 8 (quantal) models should be included (1 = include, 0 = exclude)
 #' @param ndraws the number of draws, default 30000
 #' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
+#' @param pvec vector specifying the three BMD quantiles of interest (default 90% CrI)
 #'
-#' @description Using Laplace approximation, we compute the parameters and weights of each model.
+#' @description This function performs model averaging using the full Laplace approximation. By default, all 16 models are included for continuous data, and all 8 models for quantal data.
+#'              Models can be excluded by setting their respective weight to 0 in \code{prior.weights}. The order of models fitted can be obtained using the \code{get_models()} function.
+#'
+#'  `full.laplace_MA_Cov` is used for continuous data
+#'
+#'  `full.laplace_MA_Q_Cov` is used for quantal data
+#'
+#' @examples
+#' summ.data = data.frame(x = data_cont_covariate$Dose, y = data_cont_covariate$Response, s = data_cont_covariate$SD, n = data_cont_covariate$N, cov = data_cont_covariate$Covariate)
+#' FLBMD <- full.laplace_MA_Cov(summ.data, sumstats = T, sd = T, q = 0.05, prior.d = 'N11', extended = T, ndraws = 30000, seed = 123, pvec = c(0.05, 0.5, 0.95), prior.weights = rep(1,16))
 #'
 #' @importFrom truncnorm dtruncnorm
 #'
-#' @return
-#' \enumerate{
-#'   \item E4_N parameter estimates from the (Exponential, Normal) model
-#'   \item IE4_N parameter estimates from the (Inverse Exponential, Normal) model
-#'   \item H4_N parameter estimates from the (Hill, Normal) model
-#'   \item LN4_N parameter estimates from the (Log-normal, Normal)
-#'   \item G4_N parameter estimates from the (Gamma, Normal) model
-#'   \item QE4_N parameter estimates from the (Quadratic Exponential, Normal) model
-#'   \item P4_N parameter estimates from the (Probit, Normal) model
-#'   \item L4_N parameter estimates from the (Logit, Normal) model
-#'   \item E4_LN parameter estimates from the (Exponential, Log-normal) model
-#'   \item IE4_LN parameter estimates from the (Inverse Exponential, Log-normal) model
-#'   \item H4_LN parameter estimates from the (Hill, Log-normal) model
-#'   \item LN4_LN parameter estimates from the (Log-normal, Log-normal)
-#'   \item G4_LN parameter estimates from the (Gamma, Log-normal) model
-#'   \item QE4_LN parameter estimates from the (Quadratic Exponential, Log-normal) model
-#'   \item P4_LN parameter estimates from the (Probit, Log-normal) model
-#'   \item L4_LN parameter estimates from the (Logit, Log-normal) model
-#'   \item MA  Model averaged BMD credible interval
-#'   \item weights Model weights used in the averaging
-#' }
+#' @return `MA` Model averaged BMD credible interval per covariate level (in case of an effect)
+#' @return `weights` Weights for the best fitting submodels used in model averaging
+#' @return `summary` Summary table of results
+#' @return `data` Data used in analysis
+#' @return `maxDose` Maximum dose level (original scale)
+#' @return `BMD_Mixture` 0.5%-percentiles of the model averaged posterior for the BMD
+#' @return `parE4_N` Estimated parameters for the (Exponential, Normal) model
+#' @return `parIE4_N` Estimated parameters for the (Inverse Exponential, Normal) model
+#' @return `parH4_N` Estimated parameters for the (Hill, Normal) model
+#' @return `parLN4_N` Estimated parameters for the (Lognormal, Normal) model
+#' @return `parG4_N` Estimated parameters for the (Gamma, Normal) model
+#' @return `parQE4_N` Estimated parameters for the (Quadratic Exponential, Normal) model
+#' @return `parP4_N` Estimated parameters for the (Probit, Normal) model
+#' @return `parL4_N` Estimated parameters for the (Logit, Normal) model
+#' @return `parE4_LN` Estimated parameters for the (Exponential, Lognormal) model
+#' @return `parIE4_LN` Estimated parameters for the (Inverse Exponential, Lognormal) model
+#' @return `parH4_LN` Estimated parameters for the (Hill, Lognormal) model
+#' @return `parLN4_LN` Estimated parameters for the (Lognormal, Lognormal) model
+#' @return `parG4_LN` Estimated parameters for the (Gamma, Lognormal) model
+#' @return `parQE4_LN` Estimated parameters for the (Quadratic Exponential, Lognormal) model
+#' @return `parP4_LN` Estimated parameters for the (Probit, Lognormal) model
+#' @return `parL4_LN` Estimated parameters for the (Logit, Lognormal) model
+#' @return `parE4_Q` Estimated parameters for the (Exponential, Quantal) model
+#' @return `parIE4_Q` Estimated parameters for the (Inverse Exponential, Quantal) model
+#' @return `parH4_Q` Estimated parameters for the (Hill, Quantal) model
+#' @return `parLN4_Q` Estimated parameters for the (Lognormal, Quantal) model
+#' @return `parG4_Q` Estimated parameters for the (Gamma, Quantal) model
+#' @return `parQE4_Q` Estimated parameters for the (Quadratic Exponential, Quantal) model
+#' @return `parP4_Q` Estimated parameters for the (Probit, Quantal) model
+#' @return `parL4_Q` Estimated parameters for the (Logit, Quantal) model
+#' @return `shift` shift in case of negative geometric means
+#' @return `q` BMR
 #'
 #' @export full.laplace_MA_Cov
 #'
@@ -5889,38 +5913,8 @@ full.laplace_MA_Cov = function(data, # the summary data
 }
 
 
-#' Perform model averaging using Full Laplace method
-#'
-#' @param data the summary data, with columns: dose, number of adverse events, n, covariate
-#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
-#' @param q specified BMR
-#' @param prior.d prior distribution for parameter d, should be either N11 (default) or EPA
-#' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)#
-#' @param prior.weights a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)
-#' @param ndraws the number of draws, default 30000
-#' @param seed default 123
-#' @param pvec vector specifying the three BMD quantiles of interest
-#'
-#' @description Using Laplace approximation, we compute the parameters and weights of each model.
-#'
-#' @importFrom truncnorm dtruncnorm
-#'
-#' @return
-#' \enumerate{
-#'   \item E4_Q parameter estimates from the exponential model
-#'   \item IE4_Q parameter estimates from the inverse-exponential model
-#'   \item H4_Q parameter estimates from the Hill model
-#'   \item LN4_Q parameter estimates from the lognormal
-#'   \item G4_Q parameter estimates from the gamma model
-#'   \item QE4_Q parameter estimates from the quadratic-exponential model
-#'   \item P4_Q parameter estimates from the probit model
-#'   \item L4_Q parameter estimates from the logit model
-#'   \item MA  Model averaged BMD credible interval
-#'   \item weights Model weights used in the averaging
-#' }
-#'
-#' @export full.laplace_MA_Q_Cov
-#'
+#' @rdname full.laplace_MA_Cov
+#' @export
 full.laplace_MA_Q_Cov = function(data, # the summary data
                                  sumstats = TRUE,
                                  q = 0.1,

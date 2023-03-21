@@ -6,29 +6,22 @@
 \alias{fun_optimQ}
 \alias{fun_optimCov}
 \alias{fun_optimQCov}
-\title{Function to perform Laplace approximation for a given dose-response model.}
+\title{Function to perform Laplace approximation for a given dose-response model (used internally).}
 \usage{
-fun_optim(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
+fun_optim(mod, data, stv, ndraws, seed, pvec)
 
-fun_optimC(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
+fun_optimC(mod, data, stv, ndraws, seed, pvec)
 
-fun_optimQ(
-  mod,
-  data,
-  stv,
-  ndraws = ndraws,
-  seed = seed,
-  pvec = c(0.05, 0.5, 0.95)
-)
+fun_optimQ(mod, data, stv, ndraws, seed, pvec)
 
-fun_optimCov(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
+fun_optimCov(mod, data, stv, ndraws, seed, pvec)
 
-fun_optimQCov(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
+fun_optimQCov(mod, data, stv, ndraws, seed, pvec)
 }
 \arguments{
 \item{mod}{stan model}
 
-\item{data}{list containing data values to be passed to the stan model file}
+\item{data}{list containing the data to be passed to the stan model}
 
 \item{stv}{list of starting values}
 
@@ -39,8 +32,14 @@ fun_optimQCov(mod, data, stv, ndraws = ndraws, seed = seed, pvec)
 \item{pvec}{probability vector to compute credible interval for the BMD}
 }
 \value{
-a stan results object
+a stan results object, which is a list containing point estimates, value of the log-posterior, value of the return code from the optimizer, Hessian matrix, matrix of parameter draws
 }
 \description{
-Function to perform Laplace approximation for a given dose-response model.
+Function to perform Laplace approximation for a given dose-response model (used internally).
+}
+\examples{
+\dontrun{
+fun_optim(stanmodels$mE4, data, start, 30000, 123, c(0.05,0.5,0.95))
+}
+
 }

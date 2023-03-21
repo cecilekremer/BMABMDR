@@ -2,9 +2,12 @@
 % Please edit documentation in R/output.R
 \name{weightsQ_extract}
 \alias{weightsQ_extract}
-\title{function to turn the vector of weights into dataframe (quantal data)}
+\alias{weights_extract}
+\title{Function to turn the vector of weights into dataframe}
 \usage{
 weightsQ_extract(mod.obj, type = c("BS", "LP", "both"))
+
+weights_extract(mod.obj, type = c("BS", "LP", "both"))
 }
 \arguments{
 \item{type}{type of weight to be extracted. It can be either of BS (bridge sampling), LP (Laplace) and
@@ -16,5 +19,5 @@ both to extract bridge sampling and laplace approximation.}
 dataframe containing model estimates
 }
 \description{
-function to turn the vector of weights into dataframe (quantal data)
+Function to turn the vector of weights into dataframe
 }

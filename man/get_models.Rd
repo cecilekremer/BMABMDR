@@ -15,3 +15,8 @@ list of all available models
 \description{
 Obtain a list of all available models
 }
+\examples{
+get_models('continuous')
+get_models('quantal')
+
+}

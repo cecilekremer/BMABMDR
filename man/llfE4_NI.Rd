@@ -35,7 +35,7 @@
 \alias{llfQE4_LND}
 \alias{llfP4_LND}
 \alias{llfL4_LND}
-\title{Loglikelihood functions for the different dose response models}
+\title{Loglikelihood functions for the different dose response models, for continuous data}
 \usage{
 llfE4_NI(x, nvec, dvec, mvec, s2vec, qval)
 
@@ -121,8 +121,8 @@ llfL4_LND(x, nvec, dvec, mvec, s2vec, qval, shift)
 \item{shift}{value of the shift for negative geometric means}
 }
 \value{
-.
+loglikelihood value
 }
 \description{
-Loglikelihood functions for the different dose response models
+Loglikelihood functions for the different dose response models, for continuous data
 }

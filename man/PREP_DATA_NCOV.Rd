@@ -3,8 +3,7 @@
 \name{PREP_DATA_NCOV}
 \alias{PREP_DATA_NCOV}
 \alias{PREP_DATA_LNCOV}
-\title{Function to set data in the correct input format for model-averaging functions.
-This function also generates appropriate start values and uninformative priors for each model}
+\title{Function to set data in the correct input format for model-averaging functions, for continuous data with covariate effect (used internally)}
 \usage{
 PREP_DATA_NCOV(
   data,
@@ -41,7 +40,7 @@ PREP_DATA_LNCOV(
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, response, sd (or se), n, covariate (if given)}
+\item{data}{a dataframe with input data, order of columns should be: dose, response, SD or SE, n, covariate level}
 
 \item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
 
@@ -63,7 +62,7 @@ PREP_DATA_LNCOV(
 
 \item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior}
 
-\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)}
+\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 
@@ -73,6 +72,6 @@ PREP_DATA_LNCOV(
 List with data and start values in correct format to be directly used within the model-averaging functions.
 }
 \description{
-The function takes a dataset as input and generates the data list and starting values needed by the stan
+The function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
 models to be fitted.
 }

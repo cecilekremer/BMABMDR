@@ -2,15 +2,24 @@
 % Please edit documentation in R/output.R
 \name{predict.BMADR}
 \alias{predict.BMADR}
-\title{function to get predicted values from the DRMs (continuous data)}
+\alias{predict.BMADRQ}
+\title{Function to get predicted values from the DRMs}
 \usage{
-predict.BMADR(
+\method{predict}{BMADR}(
   mod.obj,
   dose,
   type = c("increasing", "decreasing"),
   what = c("predicted", "resp_at_BMD"),
   model_averaged = FALSE,
   clustered = FALSE,
+  weight_type = c("BS", "LP")
+)
+
+\method{predict}{BMADRQ}(
+  mod.obj,
+  dose,
+  what = c("predicted", "resp_at_BMD"),
+  model_averaged = FALSE,
   weight_type = c("BS", "LP")
 )
 }
@@ -21,7 +30,7 @@ predict.BMADR(
 
 \item{type}{dose response model type, either 'increasing' or 'decreasing'}
 
-\item{what}{prediction of interest. It can either be "predicted" or "response_at_BMD"}
+\item{what}{prediction of interest, can be either "predicted" or "response_at_BMD"}
 
 \item{model_averaged}{option to compute model averaged prediction. Defaults to FALSE}
 
@@ -35,5 +44,5 @@ dataframe of model prediction per model or
 list with dataframe of model preditions and model-averaged predictions
 }
 \description{
-function to get predicted values from the DRMs (continuous data)
+Function to get predicted values from the DRMs
 }

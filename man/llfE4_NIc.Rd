@@ -36,7 +36,7 @@
 \alias{llfQE4_LNDc}
 \alias{llfP4_LNDc}
 \alias{llfL4_LNDc}
-\title{Loglikelihood functions for the different dose response models}
+\title{Loglikelihood functions for the different dose response models, for clustered continuous data}
 \usage{
 llfE4_NIc(x, d, n, nij, y, qval)
 
@@ -113,9 +113,9 @@ llfL4_LNDc(x, d, n, nij, y, qval, shift)
 
 \item{d}{dose levels}
 
-\item{n}{observations per dose level}
+\item{n}{number of observations per dose level}
 
-\item{nij}{observations per dose x litter combination}
+\item{nij}{number of observations per dose x litter combination}
 
 \item{y}{observed responses}
 
@@ -124,8 +124,8 @@ llfL4_LNDc(x, d, n, nij, y, qval, shift)
 \item{shift}{value of the shift for negative geometric means}
 }
 \value{
-.
+loglikelihood value
 }
 \description{
-Loglikelihood functions for the different dose response models
+Loglikelihood functions for the different dose response models, for clustered continuous data
 }

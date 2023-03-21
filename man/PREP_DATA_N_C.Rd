@@ -3,8 +3,7 @@
 \name{PREP_DATA_N_C}
 \alias{PREP_DATA_N_C}
 \alias{PREP_DATA_LN_C}
-\title{Function to set data in the correct input format for model-averaging functions.
-This function also generates appropriate start values and uninformative priors for each model}
+\title{Function to set data in the correct input format for model-averaging functions, for clustered continuous data}
 \usage{
 PREP_DATA_N_C(
   data,
@@ -49,14 +48,36 @@ PREP_DATA_LN_C(
 
 \item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior}
 
-\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)}
+\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 }
 \value{
-List with data and start values in correct format to be directly used within the model-averaging functions.
+\code{data} list containing the data and prior distributions
+
+\code{start} list containing start values for the model parameters
+
+\code{startQ} list containing start values for the quadratic exponential model
+
+\code{shapiro.p} p-value of the Shapiro-Wilks test for normality
+
+\code{bartlett.p} p-value of the Bartlett test for homoskedasticity
+
+\code{shapiro.msg} message with result of test for normality
+
+\code{bartlett.msg} message with result of test for homoskedasticity
 }
 \description{
-The function takes a dataset as input and generates the data list and starting values needed by the stan
-models to be fitted.
+This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
+models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
+For example, setting the shape parameter to 2 results in a slightly peaked prior distribution.
+}
+\examples{
+
+data.input <- das5$data
+data.input <- data.frame(dose = data.input$dose, response = data.input$foetalweight, litter = data.input$number)
+
+# default priors
+data_N <- PREP_DATA_N_C(data.input, q = 0.05, prior.d = 'N11')
+
 }

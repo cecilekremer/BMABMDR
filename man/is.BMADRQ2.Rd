@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{is.BMADRQ2}
 \alias{is.BMADRQ2}
-\title{function to check if object is of class BMADR and its subcalsses}
+\title{function to check if object is of class BMADR and its subcalsses for internal use}
 \usage{
 is.BMADRQ2(x)
 }
@@ -13,7 +13,7 @@ is.BMADRQ2(x)
 1, 2 or 3 if object is of class BMABMDRQ using Laplace or BMABMDRQ using MCMC.
 }
 \description{
-function to check if object is of class BMADR and its subcalsses
+function to check if object is of class BMADR and its subcalsses for internal use
 }
 \examples{
  x <- c(1, 5, 4)

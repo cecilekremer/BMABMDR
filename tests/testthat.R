@@ -5,9 +5,9 @@
 # Learn more about the roles of various files in:
 # * https://r-pkgs.org/tests.html
 # * https://testthat.r-lib.org/reference/test_package.html#special-files
+Sys.setenv("R_TESTS" = "")
 
 library(testthat)
 library(BMABMDR)
-library(gamlss)
 
 test_check("BMABMDR")

@@ -10,7 +10,7 @@ expit(x)
 \item{x}{value}
 }
 \value{
-.
+expit of x
 }
 \description{
 Function for internal use

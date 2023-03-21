@@ -9,7 +9,7 @@
 \alias{llfQE4_Q_Cov}
 \alias{llfP4_Q_Cov}
 \alias{llfL4_Q_Cov}
-\title{Loglikelihood functions for the different dose response models}
+\title{Loglikelihood functions for the different dose response models, for quantal data with covariates}
 \usage{
 llfE4_Q_Cov(
   pars,
@@ -117,8 +117,8 @@ llfL4_Q_Cov(
 \item{trt_ind}{matrix indicating which reponse corresponds to which covariate level}
 }
 \value{
-.
+loglikelihood value
 }
 \description{
-Loglikelihood functions for the different dose response models
+Loglikelihood functions for the different dose response models, for quantal data with covariates
 }

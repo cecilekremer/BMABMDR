@@ -2,7 +2,8 @@
 % Please edit documentation in R/fun_Laplace.R
 \name{full.laplace_MA_Cov}
 \alias{full.laplace_MA_Cov}
-\title{Perform model averaging using Full Laplace method}
+\alias{full.laplace_MA_Q_Cov}
+\title{Perform model averaging using Full Laplace method for data with covariate effect}
 \usage{
 full.laplace_MA_Cov(
   data,
@@ -16,9 +17,21 @@ full.laplace_MA_Cov(
   seed = 123,
   pvec = c(0.05, 0.5, 0.95)
 )
+
+full.laplace_MA_Q_Cov(
+  data,
+  sumstats = TRUE,
+  q = 0.1,
+  prior.d = "N11",
+  extended = TRUE,
+  prior.weights = rep(1, 8),
+  ndraws = 30000,
+  seed = 123,
+  pvec = c(0.05, 0.5, 0.95)
+)
 }
 \arguments{
-\item{data}{the summary data, with columns: dose, response, sd, n, covariate}
+\item{data}{the summary data, with columns: dose, response, sd, n, covariate level for continuous; dose, number of adverse events, n, covariate for quantal}
 
 \item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
 
@@ -26,40 +39,93 @@ full.laplace_MA_Cov(
 
 \item{q}{specified BMR}
 
-\item{prior.d}{prior distribution for parameter d, should be either N11 (default) or EPA}
+\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
-\item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)#}
+\item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 
-\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
+\item{prior.weights}{a vector specifying which of the 16 (continuous) or 8 (quantal) models should be included (1 = include, 0 = exclude)}
 
 \item{ndraws}{the number of draws, default 30000}
 
 \item{seed}{default 123}
 
-\item{pvec}{vector specifying the three BMD quantiles of interest}
+\item{pvec}{vector specifying the three BMD quantiles of interest (default 90\% CrI)}
 }
 \value{
-\enumerate{
-\item E4_N parameter estimates from the (Exponential, Normal) model
-\item IE4_N parameter estimates from the (Inverse Exponential, Normal) model
-\item H4_N parameter estimates from the (Hill, Normal) model
-\item LN4_N parameter estimates from the (Log-normal, Normal)
-\item G4_N parameter estimates from the (Gamma, Normal) model
-\item QE4_N parameter estimates from the (Quadratic Exponential, Normal) model
-\item P4_N parameter estimates from the (Probit, Normal) model
-\item L4_N parameter estimates from the (Logit, Normal) model
-\item E4_LN parameter estimates from the (Exponential, Log-normal) model
-\item IE4_LN parameter estimates from the (Inverse Exponential, Log-normal) model
-\item H4_LN parameter estimates from the (Hill, Log-normal) model
-\item LN4_LN parameter estimates from the (Log-normal, Log-normal)
-\item G4_LN parameter estimates from the (Gamma, Log-normal) model
-\item QE4_LN parameter estimates from the (Quadratic Exponential, Log-normal) model
-\item P4_LN parameter estimates from the (Probit, Log-normal) model
-\item L4_LN parameter estimates from the (Logit, Log-normal) model
-\item MA  Model averaged BMD credible interval
-\item weights Model weights used in the averaging
-}
+\code{MA} Model averaged BMD credible interval per covariate level (in case of an effect)
+
+\code{weights} Weights for the best fitting submodels used in model averaging
+
+\code{summary} Summary table of results
+
+\code{data} Data used in analysis
+
+\code{maxDose} Maximum dose level (original scale)
+
+\code{BMD_Mixture} 0.5\%-percentiles of the model averaged posterior for the BMD
+
+\code{parE4_N} Estimated parameters for the (Exponential, Normal) model
+
+\code{parIE4_N} Estimated parameters for the (Inverse Exponential, Normal) model
+
+\code{parH4_N} Estimated parameters for the (Hill, Normal) model
+
+\code{parLN4_N} Estimated parameters for the (Lognormal, Normal) model
+
+\code{parG4_N} Estimated parameters for the (Gamma, Normal) model
+
+\code{parQE4_N} Estimated parameters for the (Quadratic Exponential, Normal) model
+
+\code{parP4_N} Estimated parameters for the (Probit, Normal) model
+
+\code{parL4_N} Estimated parameters for the (Logit, Normal) model
+
+\code{parE4_LN} Estimated parameters for the (Exponential, Lognormal) model
+
+\code{parIE4_LN} Estimated parameters for the (Inverse Exponential, Lognormal) model
+
+\code{parH4_LN} Estimated parameters for the (Hill, Lognormal) model
+
+\code{parLN4_LN} Estimated parameters for the (Lognormal, Lognormal) model
+
+\code{parG4_LN} Estimated parameters for the (Gamma, Lognormal) model
+
+\code{parQE4_LN} Estimated parameters for the (Quadratic Exponential, Lognormal) model
+
+\code{parP4_LN} Estimated parameters for the (Probit, Lognormal) model
+
+\code{parL4_LN} Estimated parameters for the (Logit, Lognormal) model
+
+\code{parE4_Q} Estimated parameters for the (Exponential, Quantal) model
+
+\code{parIE4_Q} Estimated parameters for the (Inverse Exponential, Quantal) model
+
+\code{parH4_Q} Estimated parameters for the (Hill, Quantal) model
+
+\code{parLN4_Q} Estimated parameters for the (Lognormal, Quantal) model
+
+\code{parG4_Q} Estimated parameters for the (Gamma, Quantal) model
+
+\code{parQE4_Q} Estimated parameters for the (Quadratic Exponential, Quantal) model
+
+\code{parP4_Q} Estimated parameters for the (Probit, Quantal) model
+
+\code{parL4_Q} Estimated parameters for the (Logit, Quantal) model
+
+\code{shift} shift in case of negative geometric means
+
+\code{q} BMR
 }
 \description{
-Using Laplace approximation, we compute the parameters and weights of each model.
+This function performs model averaging using the full Laplace approximation. By default, all 16 models are included for continuous data, and all 8 models for quantal data.
+Models can be excluded by setting their respective weight to 0 in \code{prior.weights}. The order of models fitted can be obtained using the \code{get_models()} function.
+
+\code{full.laplace_MA_Cov} is used for continuous data
+
+\code{full.laplace_MA_Q_Cov} is used for quantal data
+}
+\examples{
+summ.data = data.frame(x = data_cont_covariate$Dose, y = data_cont_covariate$Response, s = data_cont_covariate$SD, n = data_cont_covariate$N, cov = data_cont_covariate$Covariate)
+FLBMD <- full.laplace_MA_Cov(summ.data, sumstats = T, sd = T, q = 0.05, prior.d = 'N11', extended = T, ndraws = 30000, seed = 123, pvec = c(0.05, 0.5, 0.95), prior.weights = rep(1,16))
+
 }

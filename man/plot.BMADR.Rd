@@ -2,7 +2,8 @@
 % Please edit documentation in R/plottingfunctions.R
 \name{plot.BMADR}
 \alias{plot.BMADR}
-\title{Function to plot the results for continuous endpoints}
+\alias{plot.BMADRQ}
+\title{Function to plot the analysis results}
 \usage{
 plot.BMADR(
   mod.obj,
@@ -10,31 +11,52 @@ plot.BMADR(
   clustered = FALSE,
   weight_type = c("BS", "LP"),
   include_data = TRUE,
-  all = TRUE,
+  all = FALSE,
   title,
   log = FALSE
+)
+
+plot.BMADRQ(
+  mod.obj,
+  weight_type = c("BS", "LP"),
+  include_data = TRUE,
+  all = TRUE,
+  title
 )
 }
 \arguments{
 \item{mod.obj}{BMDBMA model object}
 
-\item{type}{dose-response type. It can either be "increasing" or "decreasing"}
+\item{type}{dose-response type for continuous endpoints. It can either be "increasing" or "decreasing"}
 
 \item{clustered}{logical indicating whether clustered data is used}
 
-\item{weight_type}{type of model weight to be plotted. It can either be "BS" or "LP"}
+\item{weight_type}{type of model weight to be plotted. It can either be "BS" (for bridge sampling) or "LP" (for full laplace)}
 
-\item{include_data}{logical argument to indicate if data should be included in the plots. Defaults to TRUE}
+\item{include_data}{logical argument to indicate if data should be included in the plots of model fits. Defaults to TRUE}
 
-\item{all}{logical argument to indicate if all plots should be displayed}
+\item{all}{logical argument to indicate if all plots should be displayed in the same window}
 
-\item{title}{title of the plot}
+\item{title}{title of the plot (if all = TRUE)}
 
 \item{log}{logical whether the fit of Normal models should be on log10-scale (log = T) or original scale (log = F)}
 }
 \value{
-.
+A plot of estimated BMD credible intervals, model weights, model fits, and model-averaged fit with posterior density of the BMD
 }
 \description{
-Function to plot the results for continuous endpoints
+Function to plot the analysis results
+}
+\examples{
+data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
+data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
+FLBMD <- full.laplace_MA(data_N,data_LN)
+plotFL <- plot.BMADR(FLBMD, type = 'increasing', clustered = FALSE, weight_type = 'LP', include_data = TRUE, all = FALSE, title = '', log = FALSE)
+plotFL$BMDs # credible intervals
+plotFL$weights # model weights
+plotFL$model_fit # fit of all models
+plotFL$model_fit_N # fit of normal models
+plotFL$model_fit_LN # fit of lognormal models
+plotFL$MA_fit # model-averaged fit with BMD density
+
 }

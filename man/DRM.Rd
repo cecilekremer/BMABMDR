@@ -12,7 +12,7 @@ DRM(Model, type = c("increasing", "decreasing", "quantal"))
 \item{type}{increasing or decreasing}
 }
 \value{
-.
+The function for the DRM
 }
 \description{
 Function for internal use

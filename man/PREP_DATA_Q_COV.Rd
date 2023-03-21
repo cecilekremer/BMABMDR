@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_Data.R
 \name{PREP_DATA_Q_COV}
 \alias{PREP_DATA_Q_COV}
-\title{Function to set data in the correct format}
+\title{Function to set data in the correct format, for quantal data with covariate effect (used internally)}
 \usage{
 PREP_DATA_Q_COV(
   data,
@@ -19,7 +19,7 @@ PREP_DATA_Q_COV(
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n}
+\item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n, covariate level}
 
 \item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
 
@@ -35,7 +35,7 @@ PREP_DATA_Q_COV(
 
 \item{cluster}{logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE}
 
-\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)}
+\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 
@@ -45,6 +45,5 @@ PREP_DATA_Q_COV(
 List with data and start values in correct format to be directly used within the BMA functions.
 }
 \description{
-This function also generates appropriate start values and uninformative priors for each model
-Input should be given as arithmetic mean and standard deviation on the original scale
+Function to set data in the correct format, for quantal data with covariate effect (used internally)
 }

@@ -1,9 +1,16 @@
 
-#' Basic plotting for the methods using covariates
+#' Basic dose-response plots for covariate analysis
 #'
 #' @param x BMDBMA model object
-#' @param model_name model for which the fit should be plotted (one of get_models('continuous'))
+#' @param model_name model for which the fit should be plotted (one of get_models())
 #' @param increasing logical indicating whether the continuous data are increasing (T) or decreasing (F)
+#'
+#' @examples
+#' data.test <- das1$data
+#' ind.data <- data.frame(x = data.test$Dose, y = data.test$LDH, cov = data.test$sex)
+#' ind.data <- ind.data[which(!is.na(ind.data$y)),]
+#' FLBMD <- full.laplace_MA_Cov(data = ind.data, prior.weights = c(rep(1,4), rep(0,12)), sumstats = FALSE, q = 0.5, prior.d = 'N11')
+#' basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
 #'
 #' @return a basic plot
 #'

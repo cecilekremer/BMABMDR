@@ -38,35 +38,51 @@ fun_cov_selectionQ(
 )
 }
 \arguments{
-\item{model}{stan model including covariates}
+\item{model}{stan model with covariate effect}
 
 \item{model_name}{model name}
 
-\item{model.none}{stan model without covariates}
+\item{model.none}{stan model without covariate effect}
 
 \item{loglik}{function to compute log-likelihood}
 
-\item{data_asigma2}{data when covariate is a_sigma2}
+\item{data_asigma2}{data for covariate effect on a_sigma2}
 
-\item{data_dBMD}{data when covariate is BMD_d}
+\item{data_dBMD}{data for covariate effect on BMD_d}
 
-\item{data_all}{data when covariate is all}
+\item{data_all}{data for covariate effect on all}
 
-\item{data_none}{data when covariate is none}
+\item{data_none}{data for covariate effect on none}
 
-\item{prior.weightsCov}{vector of prior weights for the 4 submodels (defaults to rep(1,4), equal weight)}
+\item{prior.weightsCov}{vector of prior weights for the 4 submodels (defaults to rep(1,4), equal weight for each submodel)}
 
 \item{pvec}{vector of probabilities for BMD credible interval}
 
-\item{ndraws}{ndraws}
+\item{ndraws}{number of draws from posterior}
 
-\item{td}{truncation for d in QE4 model}
+\item{td}{truncation for prior on d in QE4 model}
 
 \item{seed}{random seed for reproducibility}
 }
 \value{
-.
+A list containing submodel weights, all fitted submodels, best submodel
 }
 \description{
 This function selects the best-fitting submodel
+}
+\examples{
+\dontrun{
+fun_cov_selection(model = stanmodels$mE4COV,
+model_name = 'E4_N',
+model.none = stanmodels$mE4,
+loglik = ifelse(data_NCOV_all$data$data_type == 1, llfE4_NI_Cov, llfE4_ND_Cov),
+data_asigma2 = data_NCOV_asigma2,
+data_dBMD = data_NCOV_dBMD,
+data_all = data_NCOV_all,
+data_none = data_N_noCOV,
+prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
+pvec = pvec,
+ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
+}
+
 }

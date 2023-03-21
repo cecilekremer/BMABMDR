@@ -2,7 +2,7 @@
 % Please edit documentation in R/classes.R
 \name{is.BMADR2}
 \alias{is.BMADR2}
-\title{function to check if object is of class BMADR and its subcalsses}
+\title{function to check if object is of class BMADR and its subcalsses for internal use}
 \usage{
 is.BMADR2(x)
 }
@@ -10,10 +10,10 @@ is.BMADR2(x)
 \item{x}{any R object}
 }
 \value{
-TRUE if object is of class stanfitOptim. FALSE otherwise
+1, 2 or 3 if object is of class BMABMDR using Laplace or BMABMDR using MCMC
 }
 \description{
-function to check if object is of class BMADR and its subcalsses
+function to check if object is of class BMADR and its subcalsses for internal use
 }
 \examples{
  x <- c(1, 5, 4)

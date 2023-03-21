@@ -33,7 +33,7 @@
 \alias{llfQE4_LND_Cov}
 \alias{llfP4_LND_Cov}
 \alias{llfL4_LND_Cov}
-\title{Loglikelihood functions for the different dose response models}
+\title{Loglikelihood functions for the different dose response models, for continuous data with covariates}
 \usage{
 llfE4_NI_Cov(
   pars,
@@ -473,8 +473,8 @@ llfL4_LND_Cov(
 \item{trt_ind}{matrix indicating which reponse corresponds to which covariate level}
 }
 \value{
-.
+loglikelihood value
 }
 \description{
-Loglikelihood functions for the different dose response models
+Loglikelihood functions for the different dose response models, for continuous data with covariates
 }

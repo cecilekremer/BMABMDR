@@ -1,5 +1,5 @@
 
-#' Function to perform model selection when including a covariate effect (used internally)
+#' Function to calculate weights for Laplace including a covariate effect (used internally)
 #'
 #' @param optMod model
 #' @param lld loglikelihood
@@ -8,7 +8,12 @@
 #' @param dataMod data for optMod
 #' @param covar which parameters depend on covariate
 #'
-#' @description This function computes Laplace weights for model selection
+#' @description This function computes Laplace weights for a submodel
+#'
+#' @examples
+#' \dontrun{
+#' fun.w(optMod_asigma2, lld = ll_asigma2, min.ll = minll, nlevels = data_asigma2$data$nlevels, dataMod = data_asigma2, covar = 'a_sigma2')
+#' }
 #'
 #' @importFrom truncnorm dtruncnorm
 #'
@@ -129,7 +134,6 @@ fun.w <- function(optMod, lld, min.ll, nlevels,
 
   return(w1)
 }
-
 #' @rdname fun.w
 #' @export
 fun.w.QE4 <- function(optMod, lld, min.ll, nlevels,
@@ -246,27 +250,40 @@ fun.w.QE4 <- function(optMod, lld, min.ll, nlevels,
   return(w1)
 }
 
-
-
 #' Function to perform model selection when including a covariate effect (used internally)
 #'
-#' @param model stan model including covariates
+#' @param model stan model with covariate effect
 #' @param model_name model name
-#' @param model.none stan model without covariates
+#' @param model.none stan model without covariate effect
 #' @param loglik function to compute log-likelihood
-#' @param data_asigma2 data when covariate is a_sigma2
-#' @param data_dBMD data when covariate is BMD_d
-#' @param data_all data when covariate is all
-#' @param data_none data when covariate is none
-#' @param prior.weightsCov vector of prior weights for the 4 submodels (defaults to rep(1,4), equal weight)
+#' @param data_asigma2 data for covariate effect on a_sigma2
+#' @param data_dBMD data for covariate effect on BMD_d
+#' @param data_all data for covariate effect on all
+#' @param data_none data for covariate effect on none
+#' @param prior.weightsCov vector of prior weights for the 4 submodels (defaults to rep(1,4), equal weight for each submodel)
 #' @param pvec vector of probabilities for BMD credible interval
-#' @param ndraws ndraws
-#' @param td truncation for d in QE4 model
+#' @param ndraws number of draws from posterior
+#' @param td truncation for prior on d in QE4 model
 #' @param seed random seed for reproducibility
 #'
 #' @description This function selects the best-fitting submodel
 #'
-#' @return .
+#' @examples
+#' \dontrun{
+#' fun_cov_selection(model = stanmodels$mE4COV,
+#' model_name = 'E4_N',
+#' model.none = stanmodels$mE4,
+#' loglik = ifelse(data_NCOV_all$data$data_type == 1, llfE4_NI_Cov, llfE4_ND_Cov),
+#' data_asigma2 = data_NCOV_asigma2,
+#' data_dBMD = data_NCOV_dBMD,
+#' data_all = data_NCOV_all,
+#' data_none = data_N_noCOV,
+#' prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
+#' pvec = pvec,
+#' ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
+#' }
+#'
+#' @return A list containing submodel weights, all fitted submodels, best submodel
 #'
 #' @export fun_cov_selection
 #'
@@ -353,7 +370,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   lls <- c(ll_asigma2, ll_dBMD, ll_all, ll_none)
   if(sum(is.na(lls)) == 4){
     # print(warning(paste0('Problems fitting model ', model_name, ', this model was excluded from the analysis.')))
-    warning(paste0('Problems fitting model ', model_name, ', this model was excluded from the analysis.'))
+    warning(gettextf('Problems fitting model %1$s, this model was excluded from the analysis', model_name))
     return(NULL)
   }else{
     max.ll = max(lls, na.rm = T)
@@ -694,7 +711,7 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   lls <- c(ll_bkg, ll_dBMD, ll_all, ll_none)
   if(sum(is.na(lls)) == 4){
     # print(warning(paste0('Problems fitting model ', model_name, ', this model was excluded from the analysis.')))
-    warning(paste0('Problems fitting model ', model_name, ', this model was excluded from the analysis.'))
+    warning(gettextf('Problems fitting model %1$s, this model was excluded from the analysis', model_name))
     return(NULL)
   }else{
     max.ll = max(lls, na.rm = T)

@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{print.BMADR}
 \alias{print.BMADR}
-\title{print function for BMABMDR objects}
+\title{Function to print estimated BMDs and model weights for a BMDBMA model object}
 \usage{
 \method{print}{BMADR}(mod.obj, type = c("continuous", "quantal"))
 }
@@ -15,5 +15,5 @@
 datatframe containing BMDs and weights per model
 }
 \description{
-print function for BMABMDR objects
+Function to print estimated BMDs and model weights for a BMDBMA model object
 }

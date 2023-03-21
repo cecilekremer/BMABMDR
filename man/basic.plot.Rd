@@ -3,7 +3,7 @@
 \name{basic.plot}
 \alias{basic.plot}
 \alias{basic.plotQ}
-\title{Basic plotting for the methods using covariates}
+\title{Basic dose-response plots for covariate analysis}
 \usage{
 basic.plot(x, model_name, increasing)
 
@@ -12,7 +12,7 @@ basic.plotQ(x, model_name)
 \arguments{
 \item{x}{BMDBMA model object}
 
-\item{model_name}{model for which the fit should be plotted (one of get_models('continuous'))}
+\item{model_name}{model for which the fit should be plotted (one of get_models())}
 
 \item{increasing}{logical indicating whether the continuous data are increasing (T) or decreasing (F)}
 }
@@ -20,5 +20,13 @@ basic.plotQ(x, model_name)
 a basic plot
 }
 \description{
-Basic plotting for the methods using covariates
+Basic dose-response plots for covariate analysis
+}
+\examples{
+data.test <- das1$data
+ind.data <- data.frame(x = data.test$Dose, y = data.test$LDH, cov = data.test$sex)
+ind.data <- ind.data[which(!is.na(ind.data$y)),]
+FLBMD <- full.laplace_MA_Cov(data = ind.data, prior.weights = c(rep(1,4), rep(0,12)), sumstats = FALSE, q = 0.5, prior.d = 'N11')
+basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
+
 }

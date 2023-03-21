@@ -2,7 +2,7 @@
 #'
 #' @param x value
 #'
-#' @return .
+#' @return expit of x
 #'
 #' @export expit
 #'
@@ -12,7 +12,7 @@ expit=function(x) 1/(1+exp(-pi*x/sqrt(3)))
 #'
 #' @param x value
 #'
-#' @return .
+#' @return logit of x
 #'
 #' @export logit
 #'
@@ -22,7 +22,7 @@ logit=function(x) sqrt(3)/pi*log(x/(1-x))
 #'
 #' @param p value
 #'
-#' @return .
+#' @return rounded value
 #'
 #' @export rnd
 #'
@@ -30,16 +30,13 @@ rnd=function(p) (p<0.5)*round(p,1)+(p>=0.5)*floor(p*10)/10
 
 #' Function to convert arithmetic to geometric mean/standard deviation
 #'
-#'
-#'
 #' @param am Arithmetic means per odered dose level, on original scale
 #' @param asd Arithmetic standard deviations per odered dose level, on original scale
 #'
-#' @description Converst arithmetic mean (sd) on original scale to geometric mean (sd) to be used in log-normal distribution
+#' @description Converts arithmetic mean (sd) on original scale to geometric mean (sd) to be used in log-normal distribution
 #'
 #' @examples
-#'  data("immunotoxicityData.rda")
-#'  NtoLN(am = immunotoxicityData$Mean, asd = immunotoxicityData$SD)
+#' NtoLN(am = immunotoxicityData$Mean[1:5], asd = immunotoxicityData$SD[1:5])
 #'
 #' @return Vector containing the geometric means and standard deviations per ordered dose level.
 #'
@@ -57,11 +54,10 @@ NtoLN=function(am,asd){
 #' @param gm Geometric means per odered dose level, on original scale
 #' @param gsd Geometric standard deviations per odered dose level, on original scale
 #'
-#' @description Converst geometric mean (sd) on original scale to arithmetic mean (sd) to be used in normal distribution
+#' @description Converts geometric mean (sd) on original scale to arithmetic mean (sd) to be used in normal distribution
 #'
 #' @examples
-#'  data("immunotoxicityData.rda")
-#'  LNtoN(gm = immunotoxicityData$Mean, gsd = immunotoxicityData$SD)
+#' LNtoN(gm = immunotoxicityData$Mean[1:5], gsd = immunotoxicityData$SD[1:5])
 #'
 #' @return Vector containing the arithmetic means and standard deviations per ordered dose level.
 #'
@@ -74,14 +70,17 @@ LNtoN=function(gm,gsd){
 }
 
 
-#' Function for internal use
+#' Function for internal use to determine if DR curve flattens out for continuous data
 #'
-#' @param dose value
-#' @param mean value
+#' @param dose ordered dose levels
+#' @param mean mean response per ordered dose level
 #' @param n value
 #' @param inc logical variable to indicate if the dose-resonse curve is increasing or decreasing
 #'
-#' @return .logical value indicating if the dose-response curve is flat or not
+#' @examples
+#' flat(immunotoxicityData$Dose[1:5], immunotoxicityData$Mean[1:5], immunotoxicityData$n[1:5], inc = TRUE)
+#'
+#' @return logical value indicating if the dose-response curve is flat or not
 #'
 #' @export flat
 #'
@@ -91,7 +90,7 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
     if(length(unique(dose)) == length(dose)){
       dat = data.frame(dose,mean)
       datf=data.frame(yy=mean,xx=dose+0.0001)
-      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
         flat = F
       }else{
@@ -111,7 +110,7 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
       }
       dat = data.frame(dose.i,mean.i)
       datf=data.frame(yy=mean.i,xx=dose.i+0.0001)
-      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
         flat = F
       }else{
@@ -127,7 +126,7 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
     if(length(unique(dose)) == length(dose)){
       dat = data.frame(dose,mean)
       datf=data.frame(yy=mean,xx=dose+0.0001)
-      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
         flat = F
       }else{
@@ -146,7 +145,7 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
       }
       dat = data.frame(dose.i,mean.i)
       datf=data.frame(yy=mean.i,xx=dose.i+0.0001)
-      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
         flat = F
       }else{
@@ -161,12 +160,16 @@ flat = function(dose,mean,n,inc){ # To determine if DR curve flattens or not
 
 }
 
-#' Function for internal use
+#' Function for internal use to determine if DR curve flattens out for clustered continuous data
 #'
 #' @param dose value
 #' @param mean value
 #' @param inc logical variable to indicate if the dose-resonse curve is increasing or decreasing
-#' @return .logical value indicating if the dose-response curve is flat or not
+#' @return logical value indicating if the dose-response curve is flat or not
+#'
+#' @examples
+#' summ.data <- summarize.indiv.data(das5$data[,c(1,11,10)], type = 'continuous', cluster = T)
+#' flatC(summ.data$Dose, summ.data$Response, inc = FALSE)
 #'
 #' @export flatC
 #'
@@ -175,8 +178,8 @@ flatC = function(dose.a,mean.a,inc){ # To determine if DR curve flattens or not
   if(inc==TRUE){
     # dat = data.frame(dose,mean)
     # datf=data.frame(yy=mean.a,xx=dose.a+0.0001)
-    # fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-    fpfit=try(gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=NO), silent = T)
+    # fpfit=gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf)
+    fpfit=try(gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=gamlss.dist::NO()), silent = T)
     if(class(fpfit)[1] == 'try-error'){
       flat = F
     }else{
@@ -188,8 +191,8 @@ flatC = function(dose.a,mean.a,inc){ # To determine if DR curve flattens or not
   }else if(inc==FALSE){
     # dat = data.frame(dose,mean)
     # datf=data.frame(yy=mean.a,xx=dose.a+0.0001)
-    # fpfit=gamlss::gamlss(yy~fp(xx),family=NO,data=datf)
-    fpfit=try(gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=NO), silent = T)
+    # fpfit=gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf)
+    fpfit=try(gamlss::gamlss(mean.a~fp(dose.a+0.0001),family=gamlss.dist::NO()), silent = T)
     if(class(fpfit)[1] == 'try-error'){
       flat = F
     }else{
@@ -202,7 +205,7 @@ flatC = function(dose.a,mean.a,inc){ # To determine if DR curve flattens or not
 
 }
 
-#' Functions to get parameters for PERT prior
+#' Functions to get parameters for PERT prior (internal use)
 #'
 #' @param a minimum
 #' @param b most likely value
@@ -224,17 +227,8 @@ fun.alpha = function(a,b,c,g){
   return(s)
   # return((shape*b + c - 5*a)/(c-a))
 }
-#' Functions to get parameters for PERT prior
-#'
-#' @param a minimum
-#' @param b most likely value
-#' @param c maximum
-#' @param g shape
-#'
-#' @return .
-#'
-#' @export fun.beta
-#'
+#' @rdname fun.alpha
+#' @export
 fun.beta = function(a,b,c,g){
   # if((b-a) == (c-b)){
   #   c = c + 0.0001
@@ -247,7 +241,8 @@ fun.beta = function(a,b,c,g){
   return(s)
   # return((5*c - a - shape*b)/(c-a))
 }
-#' Functions to get parameters for PERT prior
+
+#' Functions to get parameters for PERT prior (internal use)
 #'
 #' @param x value
 #' @param lb value
@@ -271,66 +266,15 @@ pert_dist = function(x,lb,ub,s1,s2){
   # )
 }
 
-#' Function to check if the mean for the Dose-Response data is approaching or at its asymptote
-#' for internal use
-#'
-#' @param dose value
-#' @param response value
-#' @param h step size for the derivative
-#' @param B number of bootstraps
-#'
-#' @return .
-#' @export flat2
-#'
-flat2 <- function(dose, response, h = 1/1000, B = 200) {
-
-  md_data <- data.frame(dose = (dose/max(dose)) + 1.0e-5,
-                        response = response)
-
-  pseudo_dose <- seq(0, 1, by = h) + 1.0e-5
-
-  dd <- matrix(NA, nrow = length(pseudo_dose)-1, ncol = B)
-
-  for(i in 1:B) {
-    ss <- sample(1:nrow(md_data), replace = TRUE)
-
-    p_data <- md_data[ss,]
-
-    fpm <- try(gamlss::gamlss(response ~ fp(dose),
-                              data = p_data, family = NO,
-                              control = gamlss::gamlss.control(trace = FALSE)),
-               silent = TRUE)
-
-
-    if(class(fpm)[1] != 'try-error') {
-
-      ffp_pred2 <- try(predict(fpm, what = 'mu',
-                               newdata = data.frame(dose = pseudo_dose),
-                               data = p_data), silent = TRUE)
-      #compute the diff
-      dd[,i] <- diff(ffp_pred2, lag = 1, differences = 1)/h
-
-    } else dd[,i] <- NA
-
-  }
-
-  #compute the quantiles of h
-  qdiff <- apply(dd, 1, quantile, probs = c(0.025, 0.975), na.rm = TRUE)
-  #check if the quantile range contains 0
-  test <- apply(qdiff, 2, function(x) {
-    return(x[1] <= 0 & x[2] >= 0)
-  })
-  flat <- ifelse(sum(test)==ncol(qdiff), T, F)
-  return(list(last3_derivative = dd, qts =  qdiff, decision = flat))
-
-}
-
 #' Bartlett function for testing constant variance and co-efficient of variation; H0 equal variances
 #'
 #' @param sd standard deviation per dose group
 #' @param n number of observations per dose group
 #'
-#' @return pvalue for the Bartlett's test
+#' @examples
+#' bartlett(immunotoxicityData$SD[1:5], immunotoxicityData$n[1:5])
+#'
+#' @return test statistic and p-value for the Bartlett's test
 #' @export bartlett
 #'
 bartlett <- function(sd,n){
@@ -348,6 +292,10 @@ bartlett <- function(sd,n){
 #' Obtain a list of all available models
 #'
 #' @param type one of 'continuous' or 'quantal'
+#'
+#' @examples
+#' get_models('continuous')
+#' get_models('quantal')
 #'
 #' @return list of all available models
 #'
@@ -390,6 +338,8 @@ get_models <- function(type = c('continuous', 'quantal')){
 #'
 #' @param datind a dataframe containing dose (must be named x) and response named y
 #'
+#' dat <- data.frame(x = das5$data$dose, y = das5$data$foetalweight)
+#' NLN_test(dat)
 #'
 #' @return a list of p-values and messages confirming the normality or lognormality of the data
 #'
@@ -448,48 +398,48 @@ NLN_test <- function(datind) {
 
   #normtestres
   normtestres <- as.data.frame(normtestres)
-  msg_5N_overall <- paste0('there is no evidence against normality across dose levels at level 5%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
-  msg_10N_overall <- paste0('there is no evidence against normality across dose levels at level 10%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
-  msg_5N_dose <- 'there is no evidence against normality for any of the dose levels at level 5%'
-  msg_10N_dose <- 'there is no evidence against normality for any of the dose levels at level 10%'
+  msg_5N_overall <- gettextf('there is no evidence against normality across dose levels at level 0.05 (p-value %1$5.4f)', round(normtestres[(length(doseunique)+1),1],4))
+  msg_10N_overall <- gettextf('there is no evidence against normality across dose levels at level 0.10 (p-value %1$5.4f)', round(normtestres[(length(doseunique)+1),1],4))
+  msg_5N_dose <- 'there is no evidence against normality for any of the dose levels at level 0.05'
+  msg_10N_dose <- 'there is no evidence against normality for any of the dose levels at level 0.10'
   if(normtestres[(length(doseunique)+1),2] == 1){
-    msg_5N_overall <- paste0('there is evidence against normality across dose levels at level 5%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
-    warning(paste0('there is evidence against normality across dose levels at level 5%, p-value ', round(normtestres[(length(doseunique)+1),1],4)))
+    msg_5N_overall <-  gettextf("there is evidence against normality across dose levels at level 0.05 (p-value %1$5.4f)", round(normtestres[(length(doseunique)+1),1],4))
+    warning(gettextf("there is evidence against normality across dose levels at level 0.05 (p-value %1$5.4f)", round(normtestres[(length(doseunique)+1),1],4)))
   }
   if(normtestres[(length(doseunique)+1),3] == 1){
-    msg_10N_overall <- paste0('there is evidence against normality across dose levels at level 10%, p-value ', round(normtestres[(length(doseunique)+1),1],4))
-    warning(paste0('there is evidence against normality across dose levels at level 10%, p-value ', round(normtestres[(length(doseunique)+1),1],4)))
+    msg_10N_overall <- gettextf('there is evidence against normality across dose levels at level 0.10 (p-value %1$5.4f)', round(normtestres[(length(doseunique)+1),1],4))
+    warning(gettextf('there is evidence against normality across dose levels at level 0.10 (p-value %1$5.4f)', round(normtestres[(length(doseunique)+1),1],4)))
   }
   if(sum(normtestres[(1:length(doseunique)),2], na.rm = T) > 0){
-    msg_5N_dose <- paste0('there is evidence against normality at level 5% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),2] == 1), ]), collapse=', '))
-    warning(paste0('there is evidence against normality at level 5% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),2] == 1), ]), collapse=', ')))
+    msg_5N_dose <- gettextf('there is evidence against normality at level 0.05 for dose %1$s', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),2] == 1), ]), collapse=', '))
+    warning(gettextf('there is evidence against normality at level 0.05 for dose %1$s', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),2] == 1), ]), collapse=', ')))
   }
   if(sum(normtestres[(1:length(doseunique)),3], na.rm = T) > 0){
-    msg_10N_dose <- paste0('there is evidence against normality at level 10% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),3] == 1), ]), collapse=', '))
-    warning(paste0('there is evidence against normality at level 10% for dose ', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),3] == 1), ]), collapse=', ')))
+    msg_10N_dose <- gettextf('there is evidence against normality at level 0.10 for dose %1$s', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),3] == 1), ]), collapse=', '))
+    warning(gettextf('there is evidence against normality at level 0.10 for dose %1$s', paste(rownames(normtestres[which(normtestres[(1:length(doseunique)),3] == 1), ]), collapse=', ')))
   }
 
   #lognormtestres
   lognormtestres <- as.data.frame(lognormtestres)
-  msg_5LN_overall <- paste0('there is no evidence against log-normality across dose levels at level 5%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
-  msg_10LN_overall <- paste0('there is no evidence against log-normality across dose levels at level 10%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
-  msg_5LN_dose <- 'there is no evidence against log-normality for any of the dose levels at level 5%'
-  msg_10LN_dose <- 'there is no evidence against log-normality for any of the dose levels at level 10%'
+  msg_5LN_overall <- gettextf('there is no evidence against log-normality across dose levels at level 0.05 (p-value %1$5.4f)', round(lognormtestres[(length(doseunique)+1),1],4))
+  msg_10LN_overall <- gettextf('there is no evidence against log-normality across dose levels at level 0.10 (p-value %1$5.4f)', round(lognormtestres[(length(doseunique)+1),1],4))
+  msg_5LN_dose <- 'there is no evidence against log-normality for any of the dose levels at level 0.05'
+  msg_10LN_dose <- 'there is no evidence against log-normality for any of the dose levels at level 0.10'
   if(lognormtestres[(length(doseunique)+1),2] == 1){
-    msg_5LN_overall <- paste0('there is evidence against log-normality across dose levels at level 5%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
-    warning(paste0('there is evidence against log-normality across dose levels at level 5%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4)))
+    msg_5LN_overall <- gettextf('there is evidence against log-normality across dose levels at level 0.05 (p-value %1$5.4f)', round(lognormtestres[(length(doseunique)+1),1],4))
+    warning(gettextf('there is evidence against log-normality across dose levels at level 0.05 (p-value %1$5.4f)', round(lognormtestres[(length(doseunique)+1),1],4)))
   }
   if(lognormtestres[(length(doseunique)+1),3] == 1){
-    msg_10LN_overall <- paste0('there is evidence against log-normality across dose levels at level 10%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4))
-    warning(paste0('there is evidence against log-normality across dose levels at level 10%, p-value ', round(lognormtestres[(length(doseunique)+1),1],4)))
+    msg_10LN_overall <- gettextf('there is evidence against log-normality across dose levels at level 0.10 (p-value %1$5.4f)', round(lognormtestres[(length(doseunique)+1),1],4))
+    warning(gettextf('there is evidence against log-normality across dose levels at level 0.10 (p-value %1$5.4f)', round(lognormtestres[(length(doseunique)+1),1],4)))
   }
   if(sum(lognormtestres[(1:length(doseunique)),2], na.rm = T) > 0){
-    msg_5LN_dose <- paste0('there is evidence against log-normality at level 5% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),2] == 1), ]), collapse=', '))
-    warning(paste0('there is evidence against log-normality at level 5% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),2] == 1), ]), collapse=', ')))
+    msg_5LN_dose <- gettextf('there is evidence against log-normality at level 0.05 for dose %1$s', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),2] == 1), ]), collapse=', '))
+    warning(gettextf('there is evidence against log-normality at level 0.05 for dose %1$s', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),2] == 1), ]), collapse=', ')))
   }
   if(sum(lognormtestres[(1:length(doseunique)),3], na.rm = T) > 0){
-    msg_10LN_dose <- paste0('there is evidence against log-normality at level 10% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),3] == 1), ]), collapse=', '))
-    warning(paste0('there is evidence against log-normality at level 10% for dose ', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),3] == 1), ]), collapse=', ')))
+    msg_10LN_dose <- gettextf('there is evidence against log-normality at level 0.10 for dose %1$s', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),3] == 1), ]), collapse=', '))
+    warning(gettextf('there is evidence against log-normality at level 0.10 for dose %1$s', paste(rownames(lognormtestres[which(lognormtestres[(1:length(doseunique)),3] == 1), ]), collapse=', ')))
   }
 
 

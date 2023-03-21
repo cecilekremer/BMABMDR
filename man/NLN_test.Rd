@@ -7,7 +7,10 @@
 NLN_test(datind)
 }
 \arguments{
-\item{datind}{a dataframe containing dose (must be named x) and response named y}
+\item{datind}{a dataframe containing dose (must be named x) and response named y
+
+dat <- data.frame(x = das5$data$dose, y = das5$data$foetalweight)
+NLN_test(dat)}
 }
 \value{
 a list of p-values and messages confirming the normality or lognormality of the data
