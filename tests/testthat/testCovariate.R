@@ -3,11 +3,9 @@
 # Author: wverlinden
 ###############################################################################
 
-dataDir <- '~/GitHub/BMABMDR/data/'
-
-
 test_that("Summary continuous data with covariate", {
 
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data.test <- read.csv(file.path(dataDir,'test_data.csv'), sep = ';')
 
   summ.data <- data.frame(
@@ -32,20 +30,20 @@ test_that("Summary continuous data with covariate", {
                                pvec = c(0.05, 0.5, 0.95),
                                prior.weights = prior.weights)
 
-  FLBMD$MA
-  FLBMD$summary
+  expect_type(FLBMD, 'list')
+  expect_true(is.numeric(FLBMD$MA))
+  expect_true(is.data.frame(FLBMD$summary))
 
   # Plots
   pt <- basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
-  pt
-  pt <- basic.plot(FLBMD, model_name = 'E4_LN', increasing = T)
-  pt
+  expect_true(is.ggplot(pt))
 
 
 })
 
 test_that("Individual continuous data with covariate", {
 
+  dataDir <- '~/GitHub/BMABMDR/data/'
   load(file.path(dataDir, "das1.rda"))
   data.test <- das1$data
 
@@ -70,19 +68,19 @@ test_that("Individual continuous data with covariate", {
     prior.d = 'N11'
   )
 
-  FLBMD$summary
+  expect_type(FLBMD, 'list')
+  expect_true(is.data.frame(FLBMD$summary))
 
   # Plots
   pt <- basic.plot(FLBMD, model_name = 'E4_N', increasing = T)
-  pt
-  pt <- basic.plot(FLBMD, model_name = 'E4_LN', increasing = T)
-  pt
+  expect_true(is.ggplot(pt))
 
 })
 
 
 test_that("quantal data with covariate", {
 
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data <- read.csv(file.path(dataDir, "example_quantal.csv"))
 
   # Each covariate level should be present in each dose group
@@ -103,17 +101,18 @@ test_that("quantal data with covariate", {
     q = q
   )
 
-  modelFit$summary
+  expect_true(is.data.frame(modelFit$summary))
 
   # Plots
   pt <- basic.plotQ(modelFit, model_name = 'E4_Q')
-  pt
+  expect_true(is.ggplot(pt))
 
   # Fit without covariate
   data.input.Q <- PREP_DATA_QA(data = data.input, q = q, sumstats = T)
   modelFit <- full.laplaceQ_MA(data.input.Q, prior.weights = rep(1,8), pvec = c(0.05,0.5,0.95))
-  modelFit$MA
-  modelFit$gof_check
+  expect_s3_class(modelFit, 'BMADRQ')
+  # modelFit$MA
+  # modelFit$gof_check
 
 })
 

@@ -1,60 +1,66 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
-## Version 0.0.0.9057
+## BMABMDR 0.0.0.9058
+
+* reversed BF in modelTest
+
+* updated package documentation
+
+## BMABMDR 0.0.0.9057
 
 * Fixed covariate plot
 
-## Version 0.0.0.9056
+## BMABMDR 0.0.0.9056
 
 * Updated quantal covariate analysis
 
-## Version 0.0.0.9055
+## BMABMDR 0.0.0.9055
 
 * Fixed error continuous covariate analysis (to do for quantal)
 
-## Version 0.0.0.9054
+## BMABMDR 0.0.0.9054
 
 * Updated output of Shapiro Wilks test to be more specific
 
 * Added covariate levels to summary table in full.laplace_MA_Cov()
 
-## Version 0.0.0.9053
+## BMABMDR 0.0.0.9053
 
 * Updated x-range for plot_priorQ
 
 * Changed covariate plot to log10-scale for dose 
 
-## Version 0.0.0.9052
+## BMABMDR 0.0.0.9052
 
 * Updated plots to allow for non-zero first dose
 
 * Updated continuous PREP_DATA functions to allow for non-zero first dose
 
-## Version 0.0.0.9051
+## BMABMDR 0.0.0.9051
 
 * Fixed plot for quantal covariates (accounting for different dose levels between covariate levels)
 
 * Updated implementation for continuous covariates accounting for different dose levels
 
-## Version 0.0.0.9050
+## BMABMDR 0.0.0.9050
 
 * Fixed BMD shape for informative prior (should not default to 4)
 
-## Version 0.0.0.9049
+## BMABMDR 0.0.0.9049
 
 * Fixed covariates plot and summary tables to be on original dose range
 
-## Version 0.0.0.9048
+## BMABMDR 0.0.0.9048
 
 * Fixed dependency issue in anydoseresponse for continuous data
 
-## Version 0.0.0.9047
+## BMABMDR 0.0.0.9047
 
 * Updated anydoseresponseQ() to use the brms package --> 'use.mcmc' argument is gone now
 
 * Model-averaged posterior is truncated AFTER calculating the credible interval
 
-## Version 0.0.0.9046
+## BMABMDR 0.0.0.9046
 
 * Updated plotting functions to use correct data (arithmetic vs geometric)
 

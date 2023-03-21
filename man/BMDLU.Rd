@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{BMDLU}
 \alias{BMDLU}
-\title{function to extract the BMDL,BMD and BMDU}
+\title{Function to extract the BMDL,BMD and BMDU}
 \usage{
 BMDLU(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c("continuous", "quantal"))
 }
@@ -17,5 +17,5 @@ BMDLU(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c("continuous", "quantal"))
 datatframe containing BMDLs, BMDs and BMDUs per model
 }
 \description{
-function to extract the BMDL,BMD and BMDU
+Function to extract the BMDL,BMD and BMDU
 }

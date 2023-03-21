@@ -15,10 +15,9 @@ LNtoN(gm, gsd)
 Vector containing the arithmetic means and standard deviations per ordered dose level.
 }
 \description{
-Converst geometric mean (sd) on original scale to arithmetic mean (sd) to be used in normal distribution
+Converts geometric mean (sd) on original scale to arithmetic mean (sd) to be used in normal distribution
 }
 \examples{
- data("immunotoxicityData.rda")
- LNtoN(gm = immunotoxicityData$Mean, gsd = immunotoxicityData$SD)
+LNtoN(gm = immunotoxicityData$Mean[1:5], gsd = immunotoxicityData$SD[1:5])
 
 }

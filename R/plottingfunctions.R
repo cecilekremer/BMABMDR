@@ -1,211 +1,10 @@
 
 #' Function for internal use
 #'
-#' @param DR_df dataframe containing individual-level dose response data
-#' @param DRM_df dataframe for dose-response model
-#' @param x_DR_df name of the x varaibel in the individual-level dose response data.
-#'                Typically dose.
-#' @param y_DR_df name of the y variable in the individual-level dose response data.
-#' @param x_DRM_df name of the x variable in the dose response curve data. Typically dose
-#' @param y_DRM_df name of the y variable in the individual-level dose response data.
-#' @param col_DRM color scheme
-#'
-#' @return .
-#'
-#' @export DR_scatter
-#'
-DR_scatter <- function(DR_df = NULL, DRM_df = NULL,
-                       x_DR_df, y_DR_df,
-                       x_DRM_df, y_DRM_df,
-                       col_DRM = brewer.pal(3, "Set1")[1]) {
-
-  if(!is.null(DR_df)) {
-
-    base_plt <- ggplot(data = DR_df, aes_string(x = x_DR_df,
-                                                y = y_DR_df)) +
-      geom_point(size = 4, shape = 19,
-                 alpha = 0.4) +
-      labs(x = 'Dose', y = 'Response') +
-      theme_minimal()
-  }
-
-  mx_x <- max(DR_df[, x_DR_df])
-
-  if(!is.null(DR_df) & is.null(DRM_df)) {
-
-    p1 <-  base_plt +
-      #scale_x_continuous(breaks = seq(0, mx_x, leng)) +
-      theme(strip.text = element_text(size = 15, face = "bold"),
-            axis.text = element_text(size = 10, face = "bold"),
-            axis.title = element_text(size = 15, face = "bold"),
-            legend.text = element_text(size = 10, face = "bold"),
-            legend.title = element_text(size = 15, face = "bold"),
-            panel.spacing = unit(5, "lines"),
-            legend.position = "top",
-            legend.direction = "horizontal",
-            title = element_text(size = 15, face = "bold"))
-
-  } else if(is.null(DR_df) & !is.null(DRM_df)) {
-
-    mx_x <- max(DRM_df[, x_DRM_df])
-
-    p1 <- ggplot(data = DRM_df, aes_string(x = x_DRM_df,
-                                           y = y_DRM_df,
-                                           group = 1)) +
-      geom_line(size = 3.5, color = col_DRM) +
-      labs(x = 'Dose', y = 'Response') +
-      theme_minimal() +
-      #scale_x_continuous(breaks = seq(0, mx_x, by = 0.1)) +
-      theme(strip.text = element_text(size = 15, face = "bold"),
-            axis.text = element_text(size = 10, face = "bold"),
-            axis.title = element_text(size = 20, face = "bold"),
-            legend.text = element_text(size = 10, face = "bold"),
-            legend.title = element_text(size = 20, face = "bold"),
-            panel.spacing = unit(5, "lines"),
-            legend.position = "top",
-            legend.direction = "horizontal",
-            title = element_text(size = 20, face = "bold"))
-
-  } else if(!is.null(DR_df) & !is.null(DRM_df)) {
-
-    p1 <- base_plt +
-      geom_line(data = DRM_df,
-                aes_string(x = x_DRM_df,
-                           y = y_DRM_df,
-                           group = 1),
-                color = col_DRM, size = 3.5) +
-      labs(x = 'Dose', y = 'Response') +
-      theme_minimal() +
-      #scale_x_continuous(breaks = seq(0, mx_x, by = 0.1)) +
-      theme(strip.text = element_text(size = 15, face = "bold"),
-            axis.text = element_text(size = 10, face = "bold"),
-            axis.title = element_text(size = 20, face = "bold"),
-            legend.text = element_text(size = 10, face = "bold"),
-            legend.title = element_text(size = 20, face = "bold"),
-            panel.spacing = unit(5, "lines"),
-            legend.position = "top",
-            legend.direction = "horizontal",
-            plot.title = element_text(hjust = 0.5),
-            title = element_text(size = 20, face = "bold"))
-
-  } else return(stop("Check the inputs"))
-
-  return(p1)
-
-}
-
-#' Function for internal use
-#'
-#' @param BMD_DF dataframe containing BMD, BMDL and BMDU
-#' @param BMD.true true value for BMD. Only necessary if such exist
-#' @param x value
-#' @param BMD BMD
-#' @param BMDL BMDL
-#' @param BMDU BMDU
-#' @param xlab x-axis label
-#' @param ylab y-axis label
-#' @param title title
-#'
-#' @return .
-#'
-#' @export plot_BMD
-#'
-plot_BMD <- function(BMD_DF, BMD.true = NULL,
-                     x, BMD, BMDL, BMDU,
-                     xlab = "Dataset",
-                     ylab = expression(log[10](BMD)),
-                     title = "BMD Estimate") {
-
-  p1 <- ggplot(data = BMD_DF, aes_string(x = x, y = BMD, group = 1)) +
-    geom_errorbar(aes_string(ymin = BMDL,
-                             ymax = BMDU),
-                  position = position_dodge(0.4),
-                  width = 0.1, size = 1.3) +
-    geom_point(size = 6,
-               position = position_dodge(0.8),
-               color = RColorBrewer::brewer.pal(4, "Set1")[2]) +
-    labs(x = xlab, y = ylab, title = title) +
-    theme_minimal() +
-    theme(strip.text = element_text(size = 15, face = "bold"),
-          axis.text = element_text(size = 10, face = "bold"),
-          axis.title = element_text(size = 15, face = "bold"),
-          legend.text = element_text(size = 10, face = "bold"),
-          legend.title = element_text(size = 15, face = "bold"),
-          panel.spacing = unit(5, "lines"),
-          legend.position = "top",
-          legend.direction = "horizontal",
-          plot.title = element_text(hjust = 0.5),
-          title = element_text(size = 15, face = "bold"))
-
-  if(!is.null(BMD.true)) {
-
-    p1 <- p1 + geom_hline(yintercept = BMD.true,
-                          linetype = "dashed", size = 3)  #+
-    #scale_color_manual(values = colls)
-  }
-
-  return(p1)
-}
-
-#' Function for internal use
-#'
-#' @param BMD_DF dataframe containing BMD, BMDL and BMDU
-#' @param BMD.true true value for BMD. Only necessary if such exist
-#' @param to_plot which value to plot
-#' @param xlab x-axis label
-#' @param title title
-#'
-#' @return .
-#'
-#' @export density_BMD
-#'
-density_BMD <- function(BMD_DF, BMD.true = NULL,
-                        to_plot = c("BMD",
-                                    "BMDL",
-                                    "BMDU"),
-                        xlab = expression(log[10](BMD)),
-                        title = "MLE") {
-  # meds <- median(BMD_DF[,  to_plot])
-  p1 <- ggplot(data = BMD_DF, aes_string(x = to_plot)) +
-    geom_density(fill = "#377EB8") +
-    theme_minimal() +
-    labs(x = xlab, y = "Density",
-         title = title) +
-    # geom_vline(xintercept = 1,
-    #            linetype = "dotted", size = 3,
-    #            color = "#4DAF4A") +
-    theme(strip.text = element_text(size = 15, face = "bold"),
-          axis.text = element_text(size = 10, face = "bold"),
-          axis.title = element_text(size = 15, face = "bold"),
-          legend.text = element_text(size = 10, face = "bold"),
-          legend.title = element_text(size = 15, face = "bold"),
-          panel.spacing = unit(5, "lines"),
-          legend.position = "top",
-          legend.direction = "horizontal",
-          plot.title = element_text(hjust = 0.5),
-          title = element_text(size = 15, face = "bold"))
-
-  if(!is.null(BMD.true)) {
-    p1 <- p1 + geom_vline(xintercept = BMD.true,
-                          linetype = "dashed", size = 3)
-
-  }#else{
-  #  p1 <- p1 #+ geom_vline(xintercept = 1,
-  #          #                linetype = "dotted", size = 3,
-  #          #                color = "#4DAF4A")
-  #}
-
-  return(p1)
-
-}
-
-
-#' Function for internal use
-#'
 #' @param Model which model
 #' @param type increasing or decreasing
 #'
-#' @return .
+#' @return The function for the DRM
 #'
 #' @export DRM
 #'
@@ -273,18 +72,30 @@ DRM <- function(Model, type = c("increasing", "decreasing", "quantal")) {
 }
 
 
-#' Function to plot the results for continuous endpoints
+#' Function to plot the analysis results
 #'
 #' @param mod.obj BMDBMA model object
-#' @param type dose-response type. It can either be "increasing" or "decreasing"
+#' @param type dose-response type for continuous endpoints. It can either be "increasing" or "decreasing"
 #' @param clustered logical indicating whether clustered data is used
-#' @param weight_type type of model weight to be plotted. It can either be "BS" or "LP"
-#' @param include_data logical argument to indicate if data should be included in the plots. Defaults to TRUE
-#' @param all logical argument to indicate if all plots should be displayed
-#' @param title title of the plot
+#' @param weight_type type of model weight to be plotted. It can either be "BS" (for bridge sampling) or "LP" (for full laplace)
+#' @param include_data logical argument to indicate if data should be included in the plots of model fits. Defaults to TRUE
+#' @param all logical argument to indicate if all plots should be displayed in the same window
+#' @param title title of the plot (if all = TRUE)
 #' @param log logical whether the fit of Normal models should be on log10-scale (log = T) or original scale (log = F)
 #'
-#' @return .
+#' @examples
+#' data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
+#' data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
+#' FLBMD <- full.laplace_MA(data_N,data_LN)
+#' plotFL <- plot.BMADR(FLBMD, type = 'increasing', clustered = FALSE, weight_type = 'LP', include_data = TRUE, all = FALSE, title = '', log = FALSE)
+#' plotFL$BMDs # credible intervals
+#' plotFL$weights # model weights
+#' plotFL$model_fit # fit of all models
+#' plotFL$model_fit_N # fit of normal models
+#' plotFL$model_fit_LN # fit of lognormal models
+#' plotFL$MA_fit # model-averaged fit with BMD density
+#'
+#' @return A plot of estimated BMD credible intervals, model weights, model fits, and model-averaged fit with posterior density of the BMD
 #'
 #' @export plot.BMADR
 #'
@@ -293,7 +104,7 @@ plot.BMADR <- function(mod.obj,
                        clustered = FALSE,
                        weight_type = c("BS", "LP"),
                        include_data = TRUE,
-                       all = TRUE, title, log = FALSE
+                       all = FALSE, title, log = FALSE
 ) {
   type <- match.arg(type)
   weight_type <- match.arg(weight_type)
@@ -1487,17 +1298,8 @@ plot.BMADR <- function(mod.obj,
 
 
 
-#' plot function for the BMD estimates, model weights, model predictions and model average predictions (Quantal dat)
-#'
-#' @param mod.obj BMDBMA model object
-#' @param weight_type type of model weight to be plotted. It can either be "BS" or "LP"
-#' @param include_data logical argument to indicate if data should be included in the plots. Defaults to TRUE
-#' @param all logical argument to indicate if all plots should be displayed
-#' @param title title of the plot
-#'
-#' @return object of class ggplot
-#' @export plot.BMADRQ
-#'
+#' @rdname plot.BMADR
+#' @export
 plot.BMADRQ <- function(mod.obj,
                         weight_type = c("BS", "LP"),
                         include_data = TRUE,

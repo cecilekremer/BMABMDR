@@ -15,10 +15,9 @@ NtoLN(am, asd)
 Vector containing the geometric means and standard deviations per ordered dose level.
 }
 \description{
-Converst arithmetic mean (sd) on original scale to geometric mean (sd) to be used in log-normal distribution
+Converts arithmetic mean (sd) on original scale to geometric mean (sd) to be used in log-normal distribution
 }
 \examples{
- data("immunotoxicityData.rda")
- NtoLN(am = immunotoxicityData$Mean, asd = immunotoxicityData$SD)
+NtoLN(am = immunotoxicityData$Mean[1:5], asd = immunotoxicityData$SD[1:5])
 
 }

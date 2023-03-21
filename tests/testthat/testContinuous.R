@@ -1,10 +1,10 @@
 
-dataDir <- '~/GitHub/BMABMDR/data/'
-
 
 test_that("Prepare data (individual continuous)", {
 
+
   # Read in data
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data <- read.csv(file.path(dataDir, "EggShellThickness.csv"))
 
   summ.data <- data.frame(
@@ -34,18 +34,15 @@ test_that("Prepare data (individual continuous)", {
     sd = sd,
     extended = extended
   )
+
+  expect_type(data_N, 'list')
+  expect_type(data_LN, 'list')
+
 })
 
 test_that("Prepare data (summary continuous)", {
 
-  # Continuous data
-  #      dose = c(0,6.25,12.5,25,50,100)
-  #      mean = c(10.87143,10.16669,10.81050,10.41179,12.38305,18.47681)
-  #      sd = c(1.804554,1.805939,3.858265,1.626007,2.045695,2.322449)
-  #      n = rep(10,6)
-  #
-  #      summ.data = data.frame(x = dose, y = mean, s = sd, n = n)
-
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data <- read.table(file.path(dataDir, "test_data_cont.txt"), header = T, sep = "\t", dec = ".")
 
   summ.data <- data.frame(
@@ -57,6 +54,9 @@ test_that("Prepare data (summary continuous)", {
 
   ADRN <- anydoseresponseN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
   ADRLN <- anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
+
+  expect_type(ADRN, 'list')
+  expect_type(ADRLN, 'list')
 
   ## Preparing data
   # bmr
@@ -86,6 +86,8 @@ test_that("Prepare data (summary continuous)", {
 
   # data_N = PREP_DATA_N(summ.data, sumstats = T, q = q, sd = T, prior.d = 'N11', extended = T)#,
 
+  expect_type(data_N, 'list')
+  expect_type(data_LN, 'list')
 
   # informative, for example:
   # data_N = PREP_DATA_N(summ.data, sumstats = T, q = q, bkg = c(8,10.58,12), maxy = c(18,20.28,22), prior.BMD = c(20,40,60), shape.BMD = 4)
@@ -95,6 +97,7 @@ test_that("Prepare data (summary continuous)", {
 
 test_that("Laplace approximation summary cont data", {
 
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data <- read.table(file.path(dataDir, "test_data_cont.txt"), header = T, sep = "\t", dec = ".")
 
   summ.data <- data.frame(
@@ -134,6 +137,9 @@ test_that("Laplace approximation summary cont data", {
     extended = extended
   )
 
+  expect_type(data_N, 'list')
+  expect_type(data_LN, 'list')
+
   # sampling specification
   ndr=30000
   nrch=3
@@ -158,40 +164,29 @@ test_that("Laplace approximation summary cont data", {
     pvec=pvec,
     plot=F)
 
-  FLBMD$w.msg
 
   # MA estimates
-  # expect_equal(FLBMD$MA, c(BMDL = 20.95212, BMD = 36.93779, BMDU = 54.18734), tolerance = 1E-05)
+  expect_s3_class(FLBMD, 'BMADR')
+  expect_true(is.numeric(FLBMD$MA))
   # model weights
-  expect_is(FLBMD$weights, "numeric")
+  expect_true(is.numeric(FLBMD$weights))
   # model-specific fit
-  expect_is(FLBMD$E4_N, "matrix")
-  # test whether best-fitting model fits wel (BF < 10 means equally well as saturated model; BF > 10 means best fit is better than saturated model)
-  # expect_equal(FLBMD$bf, 41.60845)
+  expect_true(is.matrix(FLBMD$E4_N))
 
   # plot output
   pFLBMD = plot.BMADR(FLBMD, weight_type = "LP", include_data = T, all = F, title = '', log = F)
-  expect_is(pFLBMD, "list")
+  expect_type(pFLBMD, "list")
   expect_equal(names(pFLBMD), c("BMDs", "weights", "model_fit_N", "model_fit_LN", "model_fit", "MA_fit"))
 
-  pFLBMD$BMDs
-  pFLBMD$weights
-  pFLBMD$model_fit_N
-  pFLBMD$model_fit_LN
-  pFLBMD$model_fit
-  pFLBMD$MA_fit
-
   # plot prior vs posterior
-  plot_prior(FLBMD, data_N$data, "E4_N", parms = T)
-  plot_prior(FLBMD, data_N$data, "E4_N", parms = F)
-  plot_prior(FLBMD, data_N$data, "P4_N", parms = T)
-  plot_prior(FLBMD, data_LN$data, "L4_LN", parms = T)
+  expect_true(is.ggplot(plot_prior(FLBMD, data_N$data, "E4_N", parms = T)))
 
 })
 
 
 test_that("Dose-response effect continuous", {
 
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data <- read.table(file.path(dataDir, "test_data_cont.txt"), header = T, sep = "\t", dec = ".")
 
   summ.data <- data.frame(
@@ -201,23 +196,18 @@ test_that("Dose-response effect continuous", {
     n = data[, "N"]
   )
 
+  adr <- anydoseresponseN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
+  adrln <- anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
 
-  test <- summarize.indiv.data(summ.data, type = "continuous")
-
-  # normal distribution
-  # expect_is(anydoseresponseN(test$Dose, test$Response, test$SD, test$N),
-  #           "list")
-  # lognormal distribution
-  # expect_is(anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n),
-  #           "list")
-  anydoseresponseN(test$Dose, test$Response, test$SD, test$N)
-  anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
+  expect_type(adr, 'list')
+  expect_type(adrln, 'list')
 
 })
 
 
 test_that("Sampling continuous data", {
 
+  dataDir <- '~/GitHub/BMABMDR/data/'
   data <- read.table(file.path(dataDir, "test_data_cont.txt"), header = T, sep = "\t", dec = ".")
 
   summ.data <- data.frame(
@@ -269,38 +259,32 @@ test_that("Sampling continuous data", {
     extended = extended
   )
 
+  expect_type(data_N, 'list')
+  expect_type(data_LN, 'list')
+
   SBMD = sampling_MA(data_N, data_LN,
                      prior.weights,
                      ndraws=ndr, nrchains=nrch,
                      nriterations=nriter, warmup=wu, delta=dl,
                      treedepth=trd, seed=sd, pvec=pvec)
 
-  SBMD$w.msg
-  SBMD$p.msg
+  expect_s3_class(SBMD, 'BMADR')
 
   # MA estimates
-  SBMD$MA_bridge_sampling
-  SBMD$MA_laplace
+  expect_true(is.numeric(SBMD$MA_bridge_sampling))
   # convergence & divergence
-  SBMD$convergence
-  SBMD$divergences*100 # percentage of iterations that were divergent
+  # SBMD$convergence
+  # SBMD$divergences*100 # percentage of iterations that were divergent
   # model-specific fit
-  SBMD$E4_N
-  # test whether best-fitting model fits wel (BF < 10 means equally well as saturated model; BF > 10 means best fit is better than saturated model)
-  SBMD$bf
+  expect_true(is.matrix(SBMD$E4_N))
 
   # plot output
   pSBMD = plot.BMADR(SBMD, weight_type = "LP", include_data = T, all = F, title = '', log = F)
-  pSBMD$BMDs
-  pSBMD$weights
-  pSBMD$model_fit_N
-  pSBMD$model_fit_LN
-  pSBMD$model_fit
-  pSBMD$MA_fit
+  expect_type(pSBMD, 'list')
+  expect_equal(names(pSBMD), c("BMDs", "weights", "model_fit_N", "model_fit", "MA_fit"))
 
   # plot prior vs posterior
-  plot_prior(SBMD, data_N$data, "E4_N", parms = T)
-  plot_prior(SBMD, data_LN$data, "P4_LN", parms = T)
+  expect_true(is.ggplot(plot_prior(SBMD, data_N$data, "E4_N", parms = T)))
 
 })
 

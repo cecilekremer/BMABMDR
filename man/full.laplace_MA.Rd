@@ -3,7 +3,8 @@
 \name{full.laplace_MA}
 \alias{full.laplace_MA}
 \alias{full.laplace_MAc}
-\title{Perform model averaging using Full Laplace method}
+\alias{full.laplaceQ_MA}
+\title{Model averaging using Full Laplace method}
 \usage{
 full.laplace_MA(
   data.N,
@@ -23,57 +24,154 @@ full.laplace_MAc(
   seed = 123,
   pvec = c(0.05, 0.5, 0.95)
 )
+
+full.laplaceQ_MA(
+  data.Q,
+  prior.weights = rep(1, 8),
+  ndraws = 30000,
+  seed = 123,
+  pvec = c(0.05, 0.5, 0.95)
+)
 }
 \arguments{
-\item{data.N}{the input data as returned by function PREP_DATA_N}
+\item{data.N}{the input data as returned by function PREP_DATA_N or PREP_DATA_N_C for clustered data}
 
-\item{data.LN}{the input data as returned by function PREP_DATA_LN}
+\item{data.LN}{the input data as returned by function PREP_DATA_LN or PREP_DATA_LN_C for clustered data}
 
-\item{prior.weights}{a vector specifying which of the 16 models should be included (1 = include, 0 = exclude)}
+\item{prior.weights}{a vector specifying which of the 16 (continuous) or 8 (quantal) models should be included (1 = include, 0 = exclude)}
 
 \item{ndraws}{the number of draws, default 30000}
 
-\item{seed}{default 123}
+\item{seed}{random seed, default 123}
 
-\item{pvec}{vector specifying the three BMD quantiles of interest}
+\item{pvec}{vector specifying the three BMD quantiles of interest (default 90\% CrI)}
+
+\item{data.Q}{the input data as returned by function PREP_DATA_Q}
 }
 \value{
-\enumerate{
-\item E4_N parameter estimates from the (Exponential, Normal) model
-\item IE4_N parameter estimates from the (Inverse Exponential, Normal) model
-\item H4_N parameter estimates from the (Hill, Normal) model
-\item LN4_N parameter estimates from the (Log-normal, Normal)
-\item G4_N parameter estimates from the (Gamma, Normal) model
-\item QE4_N parameter estimates from the (Quadratic Exponential, Normal) model
-\item P4_N parameter estimates from the (Probit, Normal) model
-\item L4_N parameter estimates from the (Logit, Normal) model
-\item E4_LN parameter estimates from the (Exponential, Log-normal) model
-\item IE4_LN parameter estimates from the (Inverse Exponential, Log-normal) model
-\item H4_LN parameter estimates from the (Hill, Log-normal) model
-\item LN4_LN parameter estimates from the (Log-normal, Log-normal)
-\item G4_LN parameter estimates from the (Gamma, Log-normal) model
-\item QE4_LN parameter estimates from the (Quadratic Exponential, Log-normal) model
-\item P4_LN parameter estimates from the (Probit, Log-normal) model
-\item L4_LN parameter estimates from the (Logit, Log-normal) model
-\item MA  Model averaged BMD credible interval
-\item weights Model weights used in the averaging
-\item bf Bayes factor comparing the best model against saturated ANOVA model
-}
+The function returns a BMDBMA model object, which is a list containing the following objects:
+
+\code{E4_N} parameter estimates from the (Exponential, Normal) model
+
+\code{IE4_N} parameter estimates from the (Inverse Exponential, Normal) model
+
+\code{H4_N} parameter estimates from the (Hill, Normal) model
+
+\code{LN4_N} parameter estimates from the (Log-normal, Normal)
+
+\code{G4_N} parameter estimates from the (Gamma, Normal) model
+
+\code{QE4_N} parameter estimates from the (Quadratic Exponential, Normal) model
+
+\code{P4_N} parameter estimates from the (Probit, Normal) model
+
+\code{L4_N} parameter estimates from the (Logit, Normal) model
+
+\code{E4_LN} parameter estimates from the (Exponential, Log-normal) model
+
+\code{IE4_LN} parameter estimates from the (Inverse Exponential, Log-normal) model
+
+\code{H4_LN} parameter estimates from the (Hill, Log-normal) model
+
+\code{LN4_LN} parameter estimates from the (Log-normal, Log-normal)
+
+\code{G4_LN} parameter estimates from the (Gamma, Log-normal) model
+
+\code{QE4_LN} parameter estimates from the (Quadratic Exponential, Log-normal) model
+
+\code{P4_LN} parameter estimates from the (Probit, Log-normal) model
+
+\code{L4_LN} parameter estimates from the (Logit, Log-normal) model
+
+\code{E4_Q} parameter estimates from the (Exponential, Quantal) model
+
+\code{IE4_Q} parameter estimates from the (Inverse Exponential, Quantal) model
+
+\code{H4_Q} parameter estimates from the (Hill, Quantal) model
+
+\code{LN4_Q} parameter estimates from the (Lognormal, Quantal) model
+
+\code{G4_Q} parameter estimates from the (Gamma, Quantal) model
+
+\code{QE4_Q} parameter estimates from the (Quadratic Exponential, Quantal) model
+
+\code{P4_Q} parameter estimates from the (Probit, Quantal) model
+
+\code{L4_Q} parameter estimates from the (Logit, Quantal) model
+
+\code{MA}  Model averaged BMD credible interval
+
+\code{weights} Model weights used in the averaging
+
+\code{bf} Bayes factor comparing the best model against saturated ANOVA model
+
+\code{covs} matrix with covariances between parameters b-d and BMD-d
+
+\code{corrs} matrix with correlation between parameters b-d and BMD-d
+
+\code{p.msg} warning message if model averaged posterior has been truncated
+
+\code{w.msg} warning message if Laplace weights could not be computed and one model gets all the weight
+
+\code{shift} shift value for lognormal data
+
+\code{BIC.SM} BIC value of saturated model, used to test for GOF
+
+\code{BIC.bestfit} BIC value of best fitting model, used to test for GOF
+
+\code{means.SM} mean response per dose level estimated from the saturated model, used to test for GOF
+
+\code{gof_check} GOF message
+
+\code{models_included} vector containing the names of models included in the model averaging
+
+\code{q} BMR
+
+\code{max.dose} maximum dose level (original scale)
+
+\code{dataN} normal summary data used for analysis
+
+\code{dataLN} lognormal summary data used for analysis
+
+\code{BMDMixture} vector of length \code{ndraws} containing the draws from the model-averaged posterior
+
+\code{MA_dr} vector containing the model-averaged response at each dose level
+
+\code{MA_post} vector containing the 0.5\%-percentiles of the model-averaged posterior
+
+\code{llN} vector containing the loglikelihood values of the Normal models
+
+\code{llLN} vector containing the loglikelihood values of the Lognormal models
+
+\code{parsN} list containing the fitted Normal models
+
+\code{parsLN} list containing the fitted Lognormal models
+
+\code{is_bin} logical indicating whether binomial (no litter) model was used
+
+\code{is_betabin} logical indicating whether betabinomial (with litter) model was used
+
+\code{data} quantal summary data used for analysis
+
+\code{parsQ} list containing the fitted Quantal models
+
+\code{llQ} vector containing the loglikelihood values of the Quantal models
 }
 \description{
-Using Laplace approximation, we compute the parameters and weights of each model.
+This function performs model averaging using the full Laplace approximation. By default, all 16 models are included for continuous data, and all 8 models for quantal data.
+Models can be excluded by setting their respective weight to 0 in \code{prior.weights}. The order of models fitted can be obtained using the \code{\link{get_models()}} function.
+
+\code{full.laplace_MA} is used for continuous data
+
+\code{full.laplace_MAc} is used for clustered continuous data (i.e. with litter effect)
+
+\code{full.laplaceQ_MA} is used for quantal data (with or without litter effect)
 }
 \examples{
- # we use the first 5 rows because those are observations from subjects belonging to the same group.
- data("immunotoxicityData.rda")  #load the immunotoxicity data
  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
-                       sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+                       sumstats = TRUE, sd = TRUE, q = 0.1)
  data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
-                         sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
-
- pvec <- c(0.05, 0.5, 0.95)
- prior.weights <- rep(1, 16); ndr <- 30000
- FLBMD <- full.laplace_MA(data_N,data_LN,prior.weights,
-                       ndraws=ndr,seed=123,pvec=pvec)
+                         sumstats = TRUE, sd = TRUE, q = 0.1) #'
+ FLBMD <- full.laplace_MA(data_N, data_LN, prior.weights = c(rep(1,4), rep(0,12)))
 
 }

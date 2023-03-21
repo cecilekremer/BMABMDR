@@ -3,8 +3,7 @@
 \name{PREP_DATA_N}
 \alias{PREP_DATA_N}
 \alias{PREP_DATA_LN}
-\title{Function to set data in the correct input format for model-averaging functions.
-This function also generates appropriate start values and uninformative priors for each model}
+\title{Function to set data in the correct input format for model-averaging functions, for continuous data}
 \usage{
 PREP_DATA_N(
   data,
@@ -39,13 +38,13 @@ PREP_DATA_LN(
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, response, sd (or se), n, covariate (if given)}
+\item{data}{a dataframe with input data, order of columns should be: dose, response, SD or SE (for summary data only), n (for summary data only), covariate level (if given)}
 
-\item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided}
+\item{sumstats}{logical indicating whether summary (TRUE, default) or individual-level (FALSE) data is provided}
 
-\item{geom.stats}{logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics}
+\item{geom.stats}{logicial indicating whether, if summary data are provided, these are geometric (TRUE) or arithmetic (FALSE, default) summary statistics}
 
-\item{sd}{logical indicating whether standard deviation (T, default) or standard error (F) is provided}
+\item{sd}{logical indicating whether standard deviation (TRUE, default) or standard error (FALSE) is provided}
 
 \item{q}{specified BMR}
 
@@ -59,33 +58,44 @@ PREP_DATA_LN(
 
 \item{shape.c}{shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution}
 
-\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior}
+\item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 for a peaked informative prior}
 
-\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)}
+\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 }
 \value{
-List with data and start values in correct format to be directly used within the model-averaging functions.
+\code{data} list containing data and prior distributions
+
+\code{start} list containing start values for the model parameters
+
+\code{startQ} list containing start values for the quadratic exponential model
+
+\code{test.var} result of test for homoskedasticity
+
+\code{test.NLN} result of normality test if individual-level data are given
 }
 \description{
-The function a dataset as input and generates the data list and starting values needed by the stan
-models to be fitted.
+This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
+models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
+For example, setting the shape parameter to 2 results in a slightly peaked prior distribution.
 }
 \examples{
 
- # we use the first 5 rows because those are observations from subjects belonging to the same group.
- data("immunotoxicityData.rda")  #load the immunotoxicity data
- data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
- sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+# default priors
+data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
 
- data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
-                       sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
+# informative prior on the background response
+data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06))
 
-
- data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+# informative prior on the BMD (peaked)
+data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
                        sd = TRUE, q = 0.1,
-                       prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
+                       prior.BMD = c(0.06, 0.25, 1), shape.BMD = 4)
 
+# informative prior on the BMD (flat uniform)
+data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+                       sd = TRUE, q = 0.1,
+                       prior.BMD = c(0.06, 0.25, 1))
 
 }

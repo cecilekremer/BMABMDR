@@ -1,41 +1,47 @@
 
-#' Function to set data in the correct input format for model-averaging functions.
-#' This function also generates appropriate start values and uninformative priors for each model
+#' Function to set data in the correct input format for model-averaging functions, for continuous data
 #'
-#' @param data a dataframe with input data, order of columns should be: dose, response, sd (or se), n, covariate (if given)
-#' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
-#' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics
-#' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
+#' @param data a dataframe with input data, order of columns should be: dose, response, SD or SE (for summary data only), n (for summary data only), covariate level (if given)
+#' @param sumstats logical indicating whether summary (TRUE, default) or individual-level (FALSE) data is provided
+#' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (TRUE) or arithmetic (FALSE, default) summary statistics
+#' @param sd logical indicating whether standard deviation (TRUE, default) or standard error (FALSE) is provided
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional, can be NA), and maximum value for the background response. Defaults to NULL (non-informative prior)
 #' @param maxy vector containing minimum, most likely (optional, can be NA), and maximum value for the response at dose infinity. Defaults to NULL (non-informative prior)
 #' @param prior.BMD vector containing minimum, most likely (optional, can be NA), and maximum value for the BMD. Defaults to NULL (non-informative prior)
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
-#' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 for a peaked informative prior
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
-#' @description The function a dataset as input and generates the data list and starting values needed by the stan
-#'              models to be fitted.
+#' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
+#'              models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
+#'              For example, setting the shape parameter to 2 results in a slightly peaked prior distribution.
 #'
 #' @examples
 #'
-#'  # we use the first 5 rows because those are observations from subjects belonging to the same group.
-#'  data("immunotoxicityData.rda")  #load the immunotoxicity data
-#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
-#'  sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
+#'# default priors
+#'data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
 #'
-#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
-#'                        sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06)) #example with informative prior on background
+#'# informative prior on the background response
+#'data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1, bkg = c(0.62, 1.34, 2.06))
 #'
-#'
-#'  data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+#'# informative prior on the BMD (peaked)
+#'data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
 #'                        sd = TRUE, q = 0.1,
-#'                        prior.BMD = c(0.06, 0.25, 1)) #example with informative priors on the BMD
+#'                        prior.BMD = c(0.06, 0.25, 1), shape.BMD = 4)
 #'
+#'# informative prior on the BMD (flat uniform)
+#'data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE,
+#'                        sd = TRUE, q = 0.1,
+#'                        prior.BMD = c(0.06, 0.25, 1))
 #'
-#' @return List with data and start values in correct format to be directly used within the model-averaging functions.
+#' @return `data` list containing data and prior distributions
+#' @return `start` list containing start values for the model parameters
+#' @return `startQ` list containing start values for the quadratic exponential model
+#' @return `test.var` result of test for homoskedasticity
+#' @return `test.NLN` result of normality test if individual-level data are given
 #'
 #' @export PREP_DATA_N
 #'
@@ -146,11 +152,11 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   # on the original scale (constant variance)
   b.test.N <- bartlett(sd.a, n.a)
   if(b.test.N[2]>=0.05){
-    test.var = paste0('Distributional assumption of constant variance are met, Bartlett test p-value is ',
+    test.var = gettextf('distributional assumption of constant variance is met, Bartlett test p-value is %1$5.4f',
                       round(b.test.N[2], 4))
     message(test.var)
   }else if(b.test.N[2]<0.05){
-    test.var = paste0('Distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is ', round(b.test.N[2], 4))
+    test.var = gettextf('distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is %1$5.4f', round(b.test.N[2], 4))
     warning(test.var)
   }
 
@@ -191,15 +197,15 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
       max.max = 2*mode.max
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
 
     ## Check appropriateness of BMR value
     if(mean.a[1]*(1+q) > mean.a[N]){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
 
@@ -221,15 +227,15 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
       # max.max = obs.min
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on half the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on half the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
 
     ## Check appropriateness of BMR value
     if(mean.a[1]*(1-q) < mean.a[N]){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
   }
@@ -253,7 +259,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     }
 
   }else{
-    message("Default prior choices used on background")
+    message("default prior choices used on background")
   }
 
   ## If info on max response is given
@@ -274,7 +280,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     }
 
   }else{
-    message("Default prior choices used on fold change")
+    message("default prior choices used on fold change")
   }
 
   ## Default prior BMD
@@ -305,7 +311,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
     }
 
   }else {
-    message("Default prior choices used on BMD")
+    message("default prior choices used on BMD")
   }
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -345,9 +351,9 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   }
 
   datf=data.frame(yy=mean.a,xx=dose.a+0.00000000000001)
-  fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO,data=datf), silent = T)
+  fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
   if(class(fpfit)[1] == 'try-error'){
-    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    message('could not fit fractional polynomial, BMD start value is set to 0.05')
     bmd.sv = 0.05
   }else{
     RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)), data = datf)
@@ -501,10 +507,10 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   # on the log scale (constant coefficient of variation)
   b.test.LN <- bartlett(gsd.a, n.a)
   if(b.test.LN[2]>=0.05){
-    test.var = paste0('Distributional assumption of constant variance (on log-scale) are met, Bartlett test p-value is ', round(b.test.LN[2], 4))
+    test.var = gettextf('distributional assumption of constant variance (on log-scale) is met, Bartlett test p-value is %1$5.4f', round(b.test.LN[2], 4))
     message(test.var)
   }else if(b.test.LN[2]<0.05){
-    test.var = paste0('Distributional assumption of constant variance (on log-scale) are not met, Bartlett test p-value is ', round(b.test.LN[2], 4))
+    test.var = gettextf('distributional assumption of constant variance (on log-scale) is not met, Bartlett test p-value is %1$5.4f', round(b.test.LN[2], 4))
     warning(test.var)
   }
 
@@ -542,15 +548,15 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
       max.max = 2*mode.max
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
 
     ## Check appropriateness of BMR value
     if(mean.a[1]*(1+q) > mean.a[N]){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
   }else if(mean.a[1] > mean.a[N]){
@@ -568,14 +574,14 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
       max.max = obs.min*(1-q-0.01)
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been has been based on half the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been has been based on half the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
     ## Check appropriateness of BMR value
     if(mean.a[1]*(1-q) < mean.a[N]){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
   }
@@ -599,7 +605,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     }
 
   }else{
-    message("Default prior choices used on background")
+    message("default prior choices used on background")
   }
 
   ## If info on max response is given
@@ -620,7 +626,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     }
 
   }else{
-    message("Default prior choices used on fold change")
+    message("default prior choices used on fold change")
   }
 
   ## Default prior BMD
@@ -651,7 +657,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     }
 
   }else {
-    message("Default prior choices used on BMD")
+    message("default prior choices used on BMD")
   }
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -694,7 +700,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   datf=data.frame(yy=mean.a,xx=dose.a+0.00000000000001)
   fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
   if(class(fpfit)[1] == 'try-error'){
-    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    message('could not fit fractional polynomial, BMD start value is set to 0.05')
     bmd.sv = 0.05
   }else{
     RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf, type = "response")
@@ -755,11 +761,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
 }
 
-
-
-
-#' Function to set data in the correct input format for model-averaging functions.
-#' This function also generates appropriate start values and uninformative priors for each model
+#' Function to set data in the correct input format for model-averaging functions, for clustered continuous data
 #'
 #' @param data a dataframe with individual-level input data, order of columns should be: dose, response, litter
 #' @param q specified BMR
@@ -769,13 +771,28 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
-#' @description The function takes a dataset as input and generates the data list and starting values needed by the stan
-#'              models to be fitted.
+#' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
+#'              models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
+#'              For example, setting the shape parameter to 2 results in a slightly peaked prior distribution.
 #'
-#' @return List with data and start values in correct format to be directly used within the model-averaging functions.
+#' @examples
+#'
+#' data.input <- das5$data
+#' data.input <- data.frame(dose = data.input$dose, response = data.input$foetalweight, litter = data.input$number)
+#'
+#' # default priors
+#' data_N <- PREP_DATA_N_C(data.input, q = 0.05, prior.d = 'N11')
+#'
+#' @return `data` list containing the data and prior distributions
+#' @return `start` list containing start values for the model parameters
+#' @return `startQ` list containing start values for the quadratic exponential model
+#' @return `shapiro.p` p-value of the Shapiro-Wilks test for normality
+#' @return `bartlett.p` p-value of the Bartlett test for homoskedasticity
+#' @return `shapiro.msg` message with result of test for normality
+#' @return `bartlett.msg` message with result of test for homoskedasticity
 #'
 #' @export PREP_DATA_N_C
 #'
@@ -883,14 +900,14 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
       max.max = 2*mode.max
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
     ## Check appropriateness of BMR value
     if(obs.min*(1+q) > obs.max){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
 
@@ -912,14 +929,14 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
       # max.max = obs.min
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on half the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on half the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
     ## Check appropriateness of BMR value
     if(obs.min*(1-q) < obs.max){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
   }
@@ -943,7 +960,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     }
 
   }else{
-    message("Default prior choices used on background")
+    message("default prior choices used on background")
   }
 
   ## If info on max response is given
@@ -964,7 +981,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     }
 
   }else{
-    message("Default prior choices used on fold change")
+    message("default prior choices used on fold change")
   }
 
   ## Default prior BMD
@@ -995,7 +1012,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     }
 
   }else {
-    message("Default prior choices used on BMD")
+    message("default prior choices used on BMD")
   }
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -1038,9 +1055,9 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
   # start value BMD
   datf = data.frame(yy=data[,2], xx=data[,1]/max(data[,1])+0.00000000000001)
-  fpfit = try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf))
+  fpfit = try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf))
   if(class(fpfit)[1] == 'try-error'){
-    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    message('could not fit fractional polynomial, BMD start value is set to 0.05')
     bmd.sv = 0.05
   }else{
     RISK = function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf)-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
@@ -1115,10 +1132,10 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   b.test.N <- bartlett.test(indiv.data$res, indiv.data$dose)
   # b.test.N <- bartlett(sd.a, n.a)
   if(b.test.N$p.value>=0.05){
-    test.var = paste0('Distributional assumption of constant variance for the normal distribution is met, Bartlett test p-value is ', round(b.test.N$p.value, 4))
+    test.var = gettextf('distributional assumption of constant variance for the normal distribution is met, Bartlett test p-value is %1$5.4f', round(b.test.N$p.value, 4))
     message(test.var)
   }else if(b.test.N$p.value<0.05){
-    test.var = paste0('Distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is ', round(b.test.N$p.value, 4))
+    test.var = gettextf('distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is %1$5.4f', round(b.test.N$p.value, 4))
     warning(test.var)
   }
 
@@ -1126,11 +1143,11 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   norm.test.N <- shapiro.test(indiv.data$res)
   # b.test.N <- bartlett(sd.a, n.a)
   if(norm.test.N$p.value>=0.05){
-    test.varN = paste0('Distributional assumption of normality of residuals for the normal distribution is met, Shapiro test p-value is ',
+    test.varN = gettextf('distributional assumption of normality of residuals for the normal distribution is met, Shapiro test p-value is %1$5.4f',
                        round(norm.test.N$p.value, 4))
     message(test.varN)
   }else if(norm.test.N$p.value<0.05){
-    test.varN = paste0('Distributional assumption of normality of residuals for the normal distribution is not met, Shapiro test p-value is ',
+    test.varN = gettextf('distributional assumption of normality of residuals for the normal distribution is not met, Shapiro test p-value is %1$5.4f',
                        round(norm.test.N$p.value, 4))
     warning(test.varN)
   }
@@ -1182,7 +1199,6 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   return(ret.list)
 
 }
-
 
 #' @rdname PREP_DATA_N_C
 #' @export
@@ -1302,15 +1318,15 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
       max.max = 2*mode.max
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on 3 times the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
 
     ## Check appropriateness of BMR value
     if(obs.min*(1+q) > obs.max){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
 
@@ -1332,15 +1348,15 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
       # max.max = obs.min
 
       warning(
-        "The data do not contain information on the asymptote, and the default prior for fold change has been based on half the observed maximum.
-            Please provide prior input on the maximum response by specifying 'maxy', if available."
+        "the data do not contain information on the asymptote, and the default prior for fold change has been based on half the observed maximum;
+            please provide prior input on the maximum response by specifying 'maxy', if available"
       )
     }
 
 
     ## Check appropriateness of BMR value
     if(obs.min*(1-q) < obs.max){
-      warning('The data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary.')
+      warning('the data do not contain values corresponding to the chosen BMR, lowering the specified value of q may be necessary')
     }
 
   }
@@ -1363,7 +1379,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     }
 
   }else{
-    message("Default prior choices used on background")
+    message("default prior choices used on background")
   }
 
   ## If info on max response is given
@@ -1384,7 +1400,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     }
 
   }else{
-    message("Default prior choices used on fold change")
+    message("default prior choices used on fold change")
   }
 
   ## Default prior BMD
@@ -1415,7 +1431,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     }
 
   }else {
-    message("Default prior choices used on BMD")
+    message("default prior choices used on BMD")
   }
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -1456,9 +1472,9 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   }
 
   datf = data.frame(yy=data$response,xx=(data$dose/max(data$dose))+0.00000000000001)
-  fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+  fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
   if(class(fpfit)[1] == 'try-error'){
-    message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+    message('could not fit fractional polynomial, BMD start value is set to 0.05')
     bmd.sv = 0.05
   }else{
     RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c(x)),data=datf)-predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
@@ -1534,10 +1550,10 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   b.test.N <- bartlett.test(indiv.data$res, indiv.data$dose)
   # b.test.N <- bartlett(sd.a, n.a)
   if(b.test.N$p.value>=0.05){
-    test.var = paste0('Distributional assumption of constant variance for the lognormal distribution is met, Bartlett test p-value is ', round(b.test.N$p.value, 4))
+    test.var = gettextf('distributional assumption of constant variance for the lognormal distribution is met, Bartlett test p-value is %1$5.4f', round(b.test.N$p.value, 4))
     message(test.var)
   }else if(b.test.N$p.value<0.05){
-    test.var = paste0('Distributional assumption of constant variance for the lognormal distribution is not met, Bartlett test p-value is ', round(b.test.N$p.value, 4))
+    test.var = gettextf('distributional assumption of constant variance for the lognormal distribution is not met, Bartlett test p-value is %1$5.4f', round(b.test.N$p.value, 4))
     warning(test.var)
   }
 
@@ -1545,11 +1561,11 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   norm.test.N <- shapiro.test(indiv.data$res)
   # b.test.N <- bartlett(sd.a, n.a)
   if(norm.test.N$p.value>=0.05){
-    test.varN = paste0('Distributional assumption of normality of residuals for the lognormal distribution is met, Shapiro test p-value is ',
+    test.varN = gettextf('distributional assumption of normality of residuals for the lognormal distribution is met, Shapiro test p-value is %1$5.4f',
                        round(norm.test.N$p.value, 4))
     message(test.varN)
   }else if(norm.test.N$p.value<0.05){
-    test.varN = paste0('Distributional assumption of normality of residuals for the lognormal distribution is not met, Shapiro test p-value is ',
+    test.varN = gettextf('distributional assumption of normality of residuals for the lognormal distribution is not met, Shapiro test p-value is %1$5.4f',
                        round(norm.test.N$p.value, 4))
     warning(test.varN)
   }
@@ -1605,25 +1621,33 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
 }
 
-
-
-#' Function to set data in the correct format
+#' Function to set data in the correct format, for quantal data
 #'
-#' This function also generates appropriate start values and uninformative priors for each model
-#' Input should be given as arithmetic mean and standard deviation on the original scale
-#'
-#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no, litter in case of individual data)
+#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no in case of individual data)
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional), and maximum value for the background response. Defaults to NULL (non-informative prior)
 #' @param prior.BMD vector containing minimum, most likely (optional), and maximum value for the BMD. Defaults to NULL (non-informative prior)
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param cluster logical variable to indicate if data is clustered (i.e. litter effect). TRUE = clustered data. Defaults to FALSE
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
-#' @return List with data and start values in correct format to be directly used within the BMA functions.
+#' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
+#'              models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
+#'              For example, setting the shape parameter to 2 results in a slightly peaked prior distribution.
+#'
+#' @examples
+#' # default priors
+#' dataQ = PREP_DATA_QA(data = data_quantal, q = 0.1, sumstats = T)
+#'
+#' # litter effect
+#' dataQ = PREP_DATA_QA(data_quantal_litter, cluster = T, q = 0.1)
+#'
+#' @return `data` list containing data and prior distributions
+#' @return `start` list containing start values for the model parameters
+#' @return `startQ` list containing start values for the quadratic exponential model#'
 #'
 #' @export PREP_DATA_QA
 #'
@@ -1672,12 +1696,12 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 
   datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
   if(cluster == FALSE) {
-    fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BI(mu.link = 'logit'),data=datf)
+    fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BI(mu.link = 'logit'),data=datf)
 
   } else if(cluster == TRUE) {
-    fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BB,
+    fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BB(),
                    sigma.formula = ~1,data=datf)
-    fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
+    fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=gamlss.dist::BB(), data=datf),
                   silent = TRUE)
     rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
 
@@ -1733,7 +1757,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     is_informative_a = 1
 
   }else {
-    message("Default prior choices used on background")
+    message("default prior choices used on background")
   }
 
   # Prior on a
@@ -1769,7 +1793,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     is_informative_BMD = 1
 
   }else {
-    message("Default prior choices used on BMD")
+    message("default prior choices used on BMD")
   }
 
   BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -1827,10 +1851,9 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 }
 
 
-#' Function to set data in the correct input format for model-averaging functions.
-#' This function also generates appropriate start values and uninformative priors for each model
+#' Function to set data in the correct input format for model-averaging functions, for continuous data with covariate effect (used internally)
 #'
-#' @param data a dataframe with input data, order of columns should be: dose, response, sd (or se), n, covariate (if given)
+#' @param data a dataframe with input data, order of columns should be: dose, response, SD or SE, n, covariate level
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
 #' @param geom.stats logicial indicating whether, if summary data are provided, these are geometric (T) or arithmetic (F, default) summary statistics
 #' @param sd logical indicating whether standard deviation (T, default) or standard error (F) is provided
@@ -1841,13 +1864,13 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate on which parameters a covariate effect should be used. Defaults to 'all', other options are 'a_sigma2' and 'BMD_d'
 #'
-#' @description The function takes a dataset as input and generates the data list and starting values needed by the stan
+#' @description The function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
 #'              models to be fitted.
-
+#'
 #' @return List with data and start values in correct format to be directly used within the model-averaging functions.
 #'
 #' @export PREP_DATA_NCOV
@@ -1957,13 +1980,11 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     for(i in 1:nlevels){
       b.test.N <- bartlett(sd.a[covar == covar_lvls[i]], n.a[covar == covar_lvls[i]])
       if(b.test.N[2]>=0.05){
-        test.var[i] = paste0('Distributional assumption of constant variance are met for group ', covar_lvls[i],
-                             ' Bartlett test p-value is ',
-                             round(b.test.N[2], 4))
+        test.var[i] = gettextf('distributional assumption of constant variance are met for group %1$s, Bartlett test p-value is %2$5.4f', covar_lvls[i], round(b.test.N[2], 4))
         message(test.var[i])
       }else if(b.test.N[2]<0.05){
-        test.var[i] = paste0('Distributional assumption of constant variance for the normal distribution is not met for group ',
-                             covar_lvls[i], ' Bartlett test p-value is ', round(b.test.N[2], 4))
+        test.var[i] = gettextf('distributional assumption of constant variance for the normal distribution is not met for group %1$s, Bartlett test p-value is %2$5.4f',
+                             covar_lvls[i], round(b.test.N[2], 4))
         warning(test.var[i])
       }
       prmean.s[i] =-2*log(1.5*mean(sd.a[covar == covar_lvls[i]]))
@@ -1977,13 +1998,11 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     b.test.N <- bartlett(sd.a2, n.a2)
 
     if(b.test.N[2]>=0.05){
-      test.var = paste0('Distributional assumption of constant variance are met for ',
-                        'Bartlett test p-value is ',
+      test.var = gettextf('distributional assumption of constant variance is met, Bartlett test p-value is %1$5.4f',
                         round(b.test.N[2], 4))
       message(test.var)
     }else if(b.test.N[2]<0.05){
-      test.var = paste0('Distributional assumption of constant variance for the normal distribution is not met for ',
-                        ' Bartlett test p-value is ', round(b.test.N[2], 4))
+      test.var = gettextf('distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is  %1$5.4f', round(b.test.N[2], 4))
       warning(test.var)
     }
 
@@ -2042,8 +2061,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
         ## Check appropriateness of BMR value
         if(obs.min[i]*(1+q) > obs.max[i]){
-          warning(paste0("The data do not contain values corresponding to the chosen BMR for group ", i,
-                         " lowering the specified value of q may be necessary."))
+          warning(gettextf("the data do not contain values corresponding to the chosen BMR for group %1$d, lowering the specified value of q may be necessary", i))
         }
 
       } else if(obs.min[i] > obs.max[i]){
@@ -2065,8 +2083,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
         ## Check appropriateness of BMR value
         if(obs.min[i]*(1-q) < obs.max[i]){
-          warning(paste0("The data do not contain values corresponding to the chosen BMR for group ", i,
-                         " lowering the specified value of q may be necessary."))
+          warning(gettextf("the data do not contain values corresponding to the chosen BMR for group %1$d, lowering the specified value of q may be necessary", i))
         }
 
       }
@@ -2089,7 +2106,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
         }
 
       }else{
-        message("Default prior choices used on background")
+        message("default prior choices used on background")
       }
 
       ## If info on max response is given
@@ -2110,7 +2127,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
         }
 
       }else{
-        message("Default prior choices used on fold change")
+        message("default prior choices used on fold change")
       }
 
     }
@@ -2165,8 +2182,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
       ## Check appropriateness of BMR value
       if(obs.min*(1+q) > obs.max){
-        warning('The data do not contain values corresponding to the chosen BMR,
-                lowering the specified value of q may be necessary.')
+        warning('the data do not contain values corresponding to the chosen BMR,
+                lowering the specified value of q may be necessary')
       }
 
     } else if(obs.min > obs.max){
@@ -2189,8 +2206,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
       ## Check appropriateness of BMR value
       if(obs.min*(1-q) < obs.max){
-        warning('The data do not contain values corresponding to the chosen BMR,
-                lowering the specified value of q may be necessary.')
+        warning('the data do not contain values corresponding to the chosen BMR,
+                lowering the specified value of q may be necessary')
       }
 
     }
@@ -2213,7 +2230,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       }
 
     }else{
-      message("Default prior choices used on background")
+      message("default prior choices used on background")
     }
 
     ## If info on max response is given
@@ -2234,7 +2251,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       }
 
     }else{
-      message("Default prior choices used on fold change")
+      message("default prior choices used on fold change")
     }
 
 
@@ -2270,9 +2287,9 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       # start value BMD
       datf=data.frame(yy=mean.a[covar == covar_lvls[i]],
                       xx=dose.a[covar == covar_lvls[i]]+0.00000000000001)
-      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
-        message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+        message('could not fit fractional polynomial, BMD start value is set to 0.05')
         bmd.sv[i] = 0.05
       }else{
         RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
@@ -2311,7 +2328,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       }
 
     }else {
-      message("Default prior choices used on BMD")
+      message("default prior choices used on BMD")
     }
 
     BMD.vec <- matrix(c(BMD.min, BMD.mode, BMD.max), nrow = nlevels, ncol = 3)
@@ -2331,9 +2348,9 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     # start value BMD
     datf=data.frame(yy=mean.a2,
                     xx=dose.a2+0.00000000000001)
-    fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+    fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
     if(class(fpfit)[1] == 'try-error'){
-      message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+      message('could not fit fractional polynomial, BMD start value is set to 0.05')
       bmd.sv = 0.05
     }else{
       RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
@@ -2371,7 +2388,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       }
 
     }else {
-      message("Default prior choices used on BMD")
+      message("default prior choices used on BMD")
     }
 
     BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -2726,13 +2743,12 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     for(i in 1:nlevels){
       b.test.LN <- bartlett(gsd.a[covar == covar_lvls[i]], n.a[covar == covar_lvls[i]])
       if(b.test.LN[2]>=0.05){
-        test.var[i] = paste0('Distributional assumption of constant coefficient of variation is met for group ', covar_lvls[i],
-                             ' Bartlett test p-value is ',
-                             round(b.test.LN[2], 4))
+        test.var[i] = gettextf('distributional assumption of constant coefficient of variation is met for group %1$s, Bartlett test p-value is %2$5.4f ', covar_lvls[i],
+                                                          round(b.test.LN[2], 4))
         message(test.var[i])
       }else if(b.test.LN[2]<0.05){
-        test.var[i] = paste0('Distributional assumption of constant coefficient of variation for the lognormal distribution is not met for group ',
-                             covar_lvls[i], ' Bartlett test p-value is ', round(b.test.LN[2], 4))
+        test.var[i] = gettextf('distributional assumption of constant coefficient of variation for the lognormal distribution is not met for group %1$s, Bartlett test p-value is %2$5.4f',
+                             covar_lvls[i], round(b.test.LN[2], 4))
         warning(test.var[i])
       }
       prmean.s[i] =-2*log(1.5*mean(gsd.a[covar == covar_lvls[i]]))
@@ -2744,13 +2760,12 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     b.test.LN <- bartlett(gsd.a2, n.a2)
 
     if(b.test.LN[2]>=0.05){
-      test.var = paste0('Distributional assumption of constant coefficient of variation are met for ',
-                        'Bartlett test p-value is ',
+      test.var = gettext('distributional assumption of constant coefficient of variation is met, Bartlett test p-value is %1$5.4f',
                         round(b.test.LN[2], 4))
       message(test.var)
     }else if(b.test.LN[2]<0.05){
-      test.var = paste0('Distributional assumption of constant coefficient variaiton for the lognormal distribution is not met for ',
-                        ' Bartlett test p-value is ', round(b.test.LN[2], 4))
+      test.var = gettextf('distributional assumption of constant coefficient variation for the lognormal distribution is not met, Bartlett test p-value is %1$5.4f',
+                          round(b.test.LN[2], 4))
       warning(test.var)
     }
 
@@ -2808,8 +2823,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
         ## Check appropriateness of BMR value
         if(obs.min[i]*(1+q) > obs.max[i]){
-          warning(paste0("The data do not contain values corresponding to the chosen BMR for group ", i,
-                         " lowering the specified value of q may be necessary."))
+          warning(gettextf("the data do not contain values corresponding to the chosen BMR for group %1$d, lowering the specified value of q may be necessary", i))
         }
 
       } else if(obs.min[i] > obs.max[i]){
@@ -2831,8 +2845,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
         ## Check appropriateness of BMR value
         if(obs.min[i]*(1-q) < obs.max[i]){
-          warning(paste0("The data do not contain values corresponding to the chosen BMR for group ", i,
-                         " lowering the specified value of q may be necessary."))
+          warning(gettextf("the data do not contain values corresponding to the chosen BMR for group %1$d, lowering the specified value of q may be necessary", i))
         }
 
       }
@@ -2855,7 +2868,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
         }
 
       }else{
-        message("Default prior choices used on background")
+        message("default prior choices used on background")
       }
 
       ## If info on max response is given
@@ -2876,7 +2889,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
         }
 
       }else{
-        message("Default prior choices used on fold change")
+        message("default prior choices used on fold change")
       }
 
     }
@@ -2931,8 +2944,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
       ## Check appropriateness of BMR value
       if(obs.min*(1+q) > obs.max){
-        warning('The data do not contain values corresponding to the chosen BMR,
-                lowering the specified value of q may be necessary.')
+        warning('the data do not contain values corresponding to the chosen BMR,
+                lowering the specified value of q may be necessary')
       }
 
     } else if(obs.min > obs.max){
@@ -2955,8 +2968,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
       ## Check appropriateness of BMR value
       if(obs.min*(1-q) < obs.max){
-        warning('The data do not contain values corresponding to the chosen BMR,
-                lowering the specified value of q may be necessary.')
+        warning('the data do not contain values corresponding to the chosen BMR,
+                lowering the specified value of q may be necessary')
       }
 
     }
@@ -2979,7 +2992,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       }
 
     }else{
-      message("Default prior choices used on background")
+      message("default prior choices used on background")
     }
 
     ## If info on max response is given
@@ -3000,7 +3013,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       }
 
     }else{
-      message("Default prior choices used on fold change")
+      message("default prior choices used on fold change")
     }
 
 
@@ -3036,9 +3049,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       # start value BMD
       datf=data.frame(yy=mean.a[covar == covar_lvls[i]],
                       xx=dose.a[covar == covar_lvls[i]]+0.00000000000001)
-      fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+      fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
-        message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+        message('could not fit fractional polynomial, BMD start value is set to 0.05')
         bmd.sv[i] = 0.05
       }else{
         RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
@@ -3077,7 +3090,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       }
 
     }else {
-      message("Default prior choices used on BMD")
+      message("default prior choices used on BMD")
     }
 
     BMD.vec <- matrix(c(BMD.min, BMD.mode, BMD.max), nrow = nlevels, ncol = 3)
@@ -3097,9 +3110,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     # start value BMD
     datf=data.frame(yy=mean.a2,
                     xx=dose.a2+0.00000000000001)
-    fpfit=try(gamlss::gamlss(yy~fp(xx),family=NO(),data=datf), silent = T)
+    fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
     if(class(fpfit)[1] == 'try-error'){
-      message('Could not fit fractional polynomial, BMD start value is set to 0.05')
+      message('could not fit fractional polynomial, BMD start value is set to 0.05')
       bmd.sv = 0.05
     }else{
       RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
@@ -3137,7 +3150,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       }
 
     }else {
-      message("Default prior choices used on BMD")
+      message("default prior choices used on BMD")
     }
 
     BMD.vec <- c(BMD.min, BMD.mode, BMD.max)
@@ -3331,12 +3344,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
 }
 
-#' Function to set data in the correct format
+#' Function to set data in the correct format, for quantal data with covariate effect (used internally)
 #'
-#' This function also generates appropriate start values and uninformative priors for each model
-#' Input should be given as arithmetic mean and standard deviation on the original scale
-#'
-#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n
+#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n, covariate level
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional), and maximum value for the background response. Defaults to NULL (non-informative prior)
@@ -3344,7 +3354,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate for which parameter a covariate effect should be included. Defaults to 'all', other options are 'background' or 'BMD_d'
 #'
@@ -3467,7 +3477,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       is_informative_a = 1
 
     }else {
-      message("Default prior choices used on background")
+      message("default prior choices used on background")
     }
 
     # Prior on a
@@ -3506,7 +3516,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       is_informative_a = 1
 
     }else {
-      message("Default prior choices used on background")
+      message("default prior choices used on background")
     }
 
     # Prior on a
@@ -3525,7 +3535,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
 
       datf = data.frame(yy = y.a[covar == covar_lvls[i]], n.a = n.a[covar == covar_lvls[i]], xx = dose.a[covar == covar_lvls[i]])
       if(cluster == FALSE) {
-        fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BI(mu.link = 'logit'),data=datf)
+        fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BI(mu.link = 'logit'),data=datf)
       }
       # else if(cluster == TRUE) {
       #   fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BB,
@@ -3572,7 +3582,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       is_informative_BMD = 1
 
     }else {
-      message("Default prior choices used on BMD")
+      message("default prior choices used on BMD")
     }
 
     BMD.vec <- matrix(c(BMD.min, BMD.mode, BMD.max), nrow = nlevels, ncol = 3)
@@ -3582,7 +3592,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
 
     datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
     if(cluster == FALSE) {
-      fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BI(mu.link = 'logit'),data=datf)
+      fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BI(mu.link = 'logit'),data=datf)
     }
     # else if(cluster == TRUE) {
     #   fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=BB,
@@ -3628,7 +3638,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       is_informative_BMD = 1
 
     }else {
-      message("Default prior choices used on BMD")
+      message("default prior choices used on BMD")
     }
 
     BMD.vec <- c(BMD.min, BMD.mode, BMD.max)

@@ -2,25 +2,30 @@
 #'  Function to perform MCMC sampling for a given dose-response model (used internally).
 #'
 #' @param mod stan model
-#' @param data list containing data values to be passed to the stan model file
+#' @param data list containing the data to be passed to the stan model file
 #' @param stv list of starting values
 #' @param ndraws number of draws to be made from the posterior distribution
 #' @param nrchains number of MCMC chains
-#' @param nriterations number of MCMC iterations
+#' @param nriterations number of MCMC iterations per chain
 #' @param warmup  number of MCMC iterations for warmup
-#' @param delta adapt_delta value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
-#' @param treedepth tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more
+#' @param delta adapt_delta value for the HMC in stan. See \link[rstan]{sampling} for more details
+#' @param treedepth tree_depth value for the HMC in stan. See \link[rstan]{sampling} for more details
 #' @param seed random seed for reproducibility
 #' @param pvec probability vector to compute credible interval for the BMD
 #'
-#' @return a stan results object
+#' @examples
+#' \dontrun{
+#' fun_sampling(stanmodels$mE4, data, start, 30000, 3, 3000, 1000, 0.8, 15, 123, c(0.05,0.5,0.95))
+#' }
+#'
+#' @return An object of S4 class \code{stanfit} representing the fitted results.
 #'
 #' @export fun_sampling
 #'
 fun_sampling = function(mod, data, stv,
-                        ndraws = ndraws,nrchains=nrchains,
-                        nriterations=nriterations,warmup=warmup,
-                        delta=delta,treedepth=treedepth,seed=seed,pvec){
+                        ndraws,nrchains,
+                        nriterations,warmup,
+                        delta,treedepth,seed,pvec){
 
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
@@ -170,14 +175,12 @@ fun_sampling = function(mod, data, stv,
   return(fitstan)
 
 }
-
-
 #' @rdname fun_sampling
 #' @export
 fun_samplingC = function(mod, data, stv,
-                         ndraws = ndraws,nrchains=nrchains,
-                         nriterations=nriterations,warmup=warmup,
-                         delta=delta,treedepth=treedepth,seed=seed,pvec){
+                         ndraws,nrchains,
+                         nriterations,warmup,
+                         delta,treedepth,seed,pvec){
 
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
@@ -325,13 +328,12 @@ fun_samplingC = function(mod, data, stv,
   return(fitstan)
 
 }
-
 #' @rdname fun_sampling
 #' @export
 fun_samplingQ = function(mod, data, stv,
-                         ndraws = ndraws,nrchains=nrchains,
-                         nriterations=nriterations,warmup=warmup,
-                         delta=delta,treedepth=treedepth,seed=seed,pvec){
+                         ndraws,nrchains,
+                         nriterations,warmup,
+                         delta,treedepth,seed,pvec){
 
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)

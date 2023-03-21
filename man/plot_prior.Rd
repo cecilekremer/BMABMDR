@@ -3,7 +3,7 @@
 \name{plot_prior}
 \alias{plot_prior}
 \alias{plot_priorQ}
-\title{plot function for the prior and posterior distributio of parameter estimates}
+\title{Plot function for the prior and posterior distribution of model parameters}
 \usage{
 plot_prior(mod.obj, data, model_name, parms = TRUE, clustered = FALSE)
 
@@ -12,15 +12,11 @@ plot_priorQ(mod.obj, data, model_name)
 \arguments{
 \item{mod.obj}{BMDBMA model object}
 
-\item{data}{data list from the \code{\link{PREP_DATA_N}} or \code{\link{PREP_DATA_LN}}}
+\item{data}{data list obtained using \code{\link{PREP_DATA_N}} or \code{\link{PREP_DATA_LN}}}
 
-\item{model_name}{name of the model whose parameters are to be plotted
-It can be either of c("E4_N","IE4_N","H4_N","LN4_N","G4_N",
-"QE4_N","P4_N","L4_N",
-"E4_LN","IE4_LN","H4_LN","LN4_LN",
-"G4_LN","QE4_LN","P4_LN","L4_LN")}
+\item{model_name}{name of the model whose parameters are to be plotted (one of \code{get_models()})}
 
-\item{parms}{logical indicating if foldchange or maximum response should be plotted. Defaults to TRUE}
+\item{parms}{logical indicating if fold change (T, default) or maximum response (F) should be plotted}
 
 \item{clustered}{logical indicating whether the data are clustered (T) or not (F, default)}
 }
@@ -28,5 +24,13 @@ It can be either of c("E4_N","IE4_N","H4_N","LN4_N","G4_N",
 object of class ggplot
 }
 \description{
-plot function for the prior and posterior distributio of parameter estimates
+Plot function for the prior and posterior distribution of model parameters
+}
+\examples{
+data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
+data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]), sumstats = TRUE, sd = TRUE, q = 0.1)
+FLBMD <- full.laplace_MA(data_N,data_LN)
+plot_prior(FLBMD, data_N$data, 'E4_N')
+plot_prior(FLBMD, data_LN$data, 'E4_LN')
+
 }

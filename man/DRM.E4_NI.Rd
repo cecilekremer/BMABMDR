@@ -124,25 +124,24 @@ DRM.P4_Q(par, x, q)
 DRM.L4_Q(par, x, q)
 }
 \arguments{
-\item{par}{parameters in the order a, c (for continuous data only), d, b}
+\item{par}{parameters in the order min response, BMD, fold change (for continuous data only), d}
 
-\item{x}{unique ordered dose levels}
+\item{x}{unique rescaled ordered dose levels}
 
 \item{q}{specified BMR}
 
 \item{shift}{shift in the response in case of negative geometric means}
 }
 \value{
-Vector containing the expected response at each dose level
+Vector containing the expected response at each (rescaled) dose level
 }
 \description{
-the mean/median dose-response model per dose-level.
+the mean/median response per dose-level
 }
 \details{
 These are the dose response models used internally in the BMA functions.
 }
 \examples{
-data("immunotoxicityData.rda")  #load the immunotoxicity data
-DRM.E4_NI(par = c(1.06, 0.015, 0.2, 1), x = immunotoxicityData$Dose[1:5], q = 0.1)
+DRM.E4_NI(par = c(1.06, 0.3, 5.6, 1), x = immunotoxicityData$Dose[1:5]/max(immunotoxicityData$Dose[1:5]), q = 0.1)
 
 }

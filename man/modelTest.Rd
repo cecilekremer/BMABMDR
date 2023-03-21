@@ -3,7 +3,8 @@
 \name{modelTest}
 \alias{modelTest}
 \alias{modelTestC}
-\title{Function to test whether the best fitting model fits the data well, compared to a saturated (non-monotone) model}
+\alias{modelTestQ}
+\title{Function used internally to test whether the best fitting model fits the data well, compared to a saturated (non-monotone) model}
 \usage{
 modelTest(
   best.fit,
@@ -34,15 +35,29 @@ modelTestC(
   delta,
   treedepth
 )
+
+modelTestQ(
+  best.fit,
+  data.Q,
+  stanBest,
+  type,
+  seed,
+  ndraws,
+  nrchains,
+  nriterations,
+  warmup,
+  delta,
+  treedepth
+)
 }
 \arguments{
-\item{best.fit}{best fitting model name}
+\item{best.fit}{model name}
 
 \item{data.N}{object as given by PREP_DATA_N}
 
 \item{data.LN}{object as given by PREP_DATA_LN}
 
-\item{stanBest}{stan object for the best fitting model}
+\item{stanBest}{stan object for the model given in \code{best.fit}}
 
 \item{type}{estimation type. Laplace or MCMC}
 
@@ -61,26 +76,12 @@ Defaults to 0.8.}
 
 \item{treedepth}{tree_depth value for the HMC in stan. See \code{\link[rstan]{sampling}} for more.
 Defaults to 10.}
+
+\item{data.Q}{object as given by PREP_DATA_Q}
 }
 \value{
-Bayes factor for the best fitting model compared to the saturated ANOVA model. A Bayes factor > 0.1 indicates the best fitting model fits equally well as the ANOVA model.
+Bayes factor for the best fitting model compared to the saturated ANOVA model.
 }
 \description{
-The function compares the best fitting model to the saturated model using an approximation to BIC.
-}
-\examples{
-# we use the first 5 rows because those are observations from subjects belonging to the same group.
- data("immunotoxicityData.rda")  #load the immunotoxicity data
- data_N <- PREP_DATA_N(data = as.data.frame(immunotoxicityData[1:5,]),
-                       sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
- data_LN <- PREP_DATA_LN(data = as.data.frame(immunotoxicityData[1:5,]),
-                         sumstats = TRUE, sd = TRUE, q = 0.1) #example with default priors
-
- pvec <- c(0.05, 0.5, 0.95)
- nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;ndr=30000
- modelTest(best.fit = 'E4_N', data.N = data_N, data.LN = data_LN,
-           stanBest = 'mE4_N', type = 'Laplace',
-           seed = 123, ndraws= 30000, nrchains = 3,
-           nriterations=nriter, warmup=wu, delta=dl, treedepth=trd)
-
+The function compares a dose-response model to the saturated model using an approximation to BIC.
 }

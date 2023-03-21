@@ -10,7 +10,7 @@ rnd(p)
 \item{p}{value}
 }
 \value{
-.
+rounded value
 }
 \description{
 Function for internal use

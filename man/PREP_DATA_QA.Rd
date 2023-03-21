@@ -2,7 +2,7 @@
 % Please edit documentation in R/fun_Data.R
 \name{PREP_DATA_QA}
 \alias{PREP_DATA_QA}
-\title{Function to set data in the correct format}
+\title{Function to set data in the correct format, for quantal data}
 \usage{
 PREP_DATA_QA(
   data,
@@ -18,7 +18,7 @@ PREP_DATA_QA(
 )
 }
 \arguments{
-\item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no, litter in case of individual data)}
+\item{data}{a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no in case of individual data)}
 
 \item{sumstats}{logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)}
 
@@ -32,16 +32,29 @@ PREP_DATA_QA(
 
 \item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior}
 
-\item{cluster}{logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE}
+\item{cluster}{logical variable to indicate if data is clustered (i.e. litter effect). TRUE = clustered data. Defaults to FALSE}
 
-\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default), EPA or N05 (for a N(0.5,0.5) prior)}
+\item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 }
 \value{
-List with data and start values in correct format to be directly used within the BMA functions.
+\code{data} list containing data and prior distributions
+
+\code{start} list containing start values for the model parameters
+
+\code{startQ} list containing start values for the quadratic exponential model#'
 }
 \description{
-This function also generates appropriate start values and uninformative priors for each model
-Input should be given as arithmetic mean and standard deviation on the original scale
+This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
+models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
+For example, setting the shape parameter to 2 results in a slightly peaked prior distribution.
+}
+\examples{
+# default priors
+dataQ = PREP_DATA_QA(data = data_quantal, q = 0.1, sumstats = T)
+
+# litter effect
+dataQ = PREP_DATA_QA(data_quantal_litter, cluster = T, q = 0.1)
+
 }

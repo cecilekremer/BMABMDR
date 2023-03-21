@@ -1,0 +1,88 @@
+---
+output: github_document
+---
+
+<!-- README.md is generated from README.Rmd. Please edit that file -->
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  warning = FALSE,
+  comment = "#>",
+  fig.path = "man/figures/README-",
+  out.width = "100%"
+)
+```
+
+# BMABMDR
+
+<!-- badges: start -->
+<!-- badges: end -->
+
+BMABMDR is an R package for Bayesian model averaging in benchmark dose estimation. Its two main functions are:
+
+* `full.laplace_MA()` to perform model averaging using Laplace approximation
+
+* `sampling_MA()` to perform model averaging using Bridge sampling
+
+## Installation
+
+You can install the development version of BMABMDR from [GitHub](https://github.com/) with:
+
+``` r
+# install.packages("devtools")
+devtools::install_github("cecilekremer/BMABMDR")
+```
+
+## Example
+
+This is a basic example which shows you how to use the package:
+
+```{r example}
+library(BMABMDR)
+
+## Set summary data
+
+summ.data <- data.frame(x = c(0,0.5,1,2,3),
+                        y = c(7.534954, 10.500018, 13.886423, 15.192057, 15.331456),
+                        s = c(0.3131743, 0.6299896, 0.8874875, 0.8709575, 0.8501652),
+                        n = c(20, 20, 20, 20, 20))
+
+## Check if there is a dose-response effect
+
+anydoseresponseN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
+anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
+
+## Prepare data to pass to main functions
+
+data_N <- PREP_DATA_N(data = summ.data,
+                       sumstats = TRUE, sd = TRUE, q = 0.05)
+data_LN <- PREP_DATA_LN(data = summ.data,
+                       sumstats = TRUE, sd = TRUE, q = 0.05)
+
+## Perform model averaging using Laplace approximation
+
+# We include only Family 1 for the Normal distribution in this example
+FLBMD <- full.laplace_MA(data_N, data_LN, prior.weights = c(rep(1, 4), rep(0, 12)))
+
+# Plot results
+pFLBMD <- plot.BMADR(FLBMD, type = 'increasing', weight_type = 'LP', title = '')
+pFLBMD$BMDs
+pFLBMD$weights
+pFLBMD$model_fit_N
+pFLBMD$MA_fit
+
+## Perform model averaging using Bridge sampling
+
+SBMD <- sampling_MA(data_N, data_LN, prior.weights = c(rep(1, 4), rep(0, 12)))
+
+# Plot results
+pSBMD <- plot.BMADR(SBMD, type = 'increasing', weight_type = 'BS', title = '')
+
+```
+
+## Getting help
+
+If you encounter a bug, please file an issue with a minimal reproducible example on [GitHub](https://github.com/cecilekremer/BMABMDR/issues).
+
+

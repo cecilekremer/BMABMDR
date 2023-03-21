@@ -2,7 +2,7 @@
 % Please edit documentation in R/output.R
 \name{BMDWeights}
 \alias{BMDWeights}
-\title{function to get BMDs and weights}
+\title{Function to get BMDs and weights}
 \usage{
 BMDWeights(mod.obj, type = c("continuous", "quantal"))
 }
@@ -15,5 +15,5 @@ BMDWeights(mod.obj, type = c("continuous", "quantal"))
 datatframe containing BMDs and weights per model
 }
 \description{
-function to get BMDs and weights
+Function to get BMDs and weights
 }

@@ -2,9 +2,12 @@
 % Please edit documentation in R/FUNs.R
 \name{fun.alpha}
 \alias{fun.alpha}
-\title{Functions to get parameters for PERT prior}
+\alias{fun.beta}
+\title{Functions to get parameters for PERT prior (internal use)}
 \usage{
 fun.alpha(a, b, c, g)
+
+fun.beta(a, b, c, g)
 }
 \arguments{
 \item{a}{minimum}
@@ -19,5 +22,5 @@ fun.alpha(a, b, c, g)
 .
 }
 \description{
-Functions to get parameters for PERT prior
+Functions to get parameters for PERT prior (internal use)
 }

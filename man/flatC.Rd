@@ -2,7 +2,7 @@
 % Please edit documentation in R/FUNs.R
 \name{flatC}
 \alias{flatC}
-\title{Function for internal use}
+\title{Function for internal use to determine if DR curve flattens out for clustered continuous data}
 \usage{
 flatC(dose.a, mean.a, inc)
 }
@@ -14,8 +14,13 @@ flatC(dose.a, mean.a, inc)
 \item{mean}{value}
 }
 \value{
-.logical value indicating if the dose-response curve is flat or not
+logical value indicating if the dose-response curve is flat or not
 }
 \description{
-Function for internal use
+Function for internal use to determine if DR curve flattens out for clustered continuous data
+}
+\examples{
+summ.data <- summarize.indiv.data(das5$data[,c(1,11,10)], type = 'continuous', cluster = T)
+flatC(summ.data$Dose, summ.data$Response, inc = FALSE)
+
 }

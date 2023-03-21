@@ -2,7 +2,7 @@
 % Please edit documentation in R/FUNs.R
 \name{pert_dist}
 \alias{pert_dist}
-\title{Functions to get parameters for PERT prior}
+\title{Functions to get parameters for PERT prior (internal use)}
 \usage{
 pert_dist(x, lb, ub, s1, s2)
 }
@@ -21,5 +21,5 @@ pert_dist(x, lb, ub, s1, s2)
 .
 }
 \description{
-Functions to get parameters for PERT prior
+Functions to get parameters for PERT prior (internal use)
 }

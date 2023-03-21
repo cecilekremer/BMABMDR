@@ -2,18 +2,17 @@
 #'
 #' These are the dose response models used internally in the BMA functions.
 #'
-#' @param par parameters in the order a, c (for continuous data only), d, b
-#' @param x unique ordered dose levels
+#' @param par parameters in the order min response, BMD, fold change (for continuous data only), d
+#' @param x unique rescaled ordered dose levels
 #' @param q specified BMR
 #' @param shift shift in the response in case of negative geometric means
 #'
-#' @return Vector containing the expected response at each dose level
+#' @return Vector containing the expected response at each (rescaled) dose level
 #'
 #' @examples
-#' data("immunotoxicityData.rda")  #load the immunotoxicity data
-#' DRM.E4_NI(par = c(1.06, 0.015, 0.2, 1), x = immunotoxicityData$Dose[1:5], q = 0.1)
+#' DRM.E4_NI(par = c(1.06, 0.3, 5.6, 1), x = immunotoxicityData$Dose[1:5]/max(immunotoxicityData$Dose[1:5]), q = 0.1)
 #'
-#' @description the mean/median dose-response model per dose-level.
+#' @description the mean/median response per dose-level
 #'
 #' @export
 #'

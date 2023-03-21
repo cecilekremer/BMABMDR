@@ -2,18 +2,34 @@
 % Please edit documentation in R/output.R
 \name{par_extract}
 \alias{par_extract}
-\title{function to extract the sampled values for the model parameters and the BMD (continuous data)}
+\alias{par_extractC}
+\alias{parq_extract}
+\title{Function to extract the sampled values for the model parameters and the BMD}
 \usage{
 par_extract(
   mod_obj,
   pars = c(letters[1:4], "k", paste0("par", 1:5, ""), "invsigma2", "mu_inf", "mu_0"),
   model_name
 )
+
+par_extractC(
+  mod_obj,
+  pars = c(letters[1:4], "k", paste0("par", 1:6, ""), "invsigma2", "mu_inf", "mu_0",
+    "rho_cluster"),
+  model_name
+)
+
+parq_extract(
+  mod_obj,
+  pars = c(letters[c(1, 2, 4)], "BMD", paste0("par", 1:3), "min_response"),
+  model_name,
+  rho = FALSE
+)
 }
 \arguments{
 \item{mod_obj}{model object either of class stanfit or stanfitOptim}
 
-\item{pars}{parameters to be extracted.}
+\item{pars}{names of parameters to be extracted.}
 
 \item{model_name}{name of the model to be extracted}
 }
@@ -21,5 +37,5 @@ par_extract(
 dataframe containing model estimates
 }
 \description{
-function to extract the sampled values for the model parameters and the BMD (continuous data)
+Function to extract the sampled values for the model parameters and the BMD
 }

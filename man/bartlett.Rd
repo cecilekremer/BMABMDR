@@ -12,8 +12,12 @@ bartlett(sd, n)
 \item{n}{number of observations per dose group}
 }
 \value{
-pvalue for the Bartlett's test
+test statistic and p-value for the Bartlett's test
 }
 \description{
 Bartlett function for testing constant variance and co-efficient of variation; H0 equal variances
+}
+\examples{
+bartlett(immunotoxicityData$SD[1:5], immunotoxicityData$n[1:5])
+
 }

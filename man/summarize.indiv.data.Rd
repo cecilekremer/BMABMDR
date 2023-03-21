@@ -26,3 +26,13 @@ dataframe of summary data
 \description{
 Function to summarize individual data
 }
+\examples{
+summarize.indiv.data(das5$data[,c(1,11)], type = 'continuous', cluster = FALSE, covar = FALSE)
+summarize.indiv.data(das5$data[,c(1,11,2)], type = 'continuous', cluster = FALSE, covar = TRUE)
+summarize.indiv.data(das5$data[,c(1,11,10)], type = 'continuous', cluster = TRUE, covar = FALSE)
+\dontrun{
+# This gives error because covariates not implemented for clustered data
+summarize.indiv.data(das5$data[,c(1,11,10,2)], type = 'continuous', cluster = TRUE, covar = TRUE)
+}
+
+}

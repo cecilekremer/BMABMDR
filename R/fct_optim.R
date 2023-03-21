@@ -1,19 +1,24 @@
 
-#' Function to perform Laplace approximation for a given dose-response model.
+#' Function to perform Laplace approximation for a given dose-response model (used internally).
 #'
 #' @param mod stan model
-#' @param data list containing data values to be passed to the stan model file
+#' @param data list containing the data to be passed to the stan model
 #' @param stv list of starting values
 #' @param ndraws number of draws to be made from the posterior distribution
 #' @param seed random seed for reproducibility
 #' @param pvec probability vector to compute credible interval for the BMD
 #'
-#' @return a stan results object
+#' @examples
+#' \dontrun{
+#' fun_optim(stanmodels$mE4, data, start, 30000, 123, c(0.05,0.5,0.95))
+#' }
+#'
+#' @return a stan results object, which is a list containing point estimates, value of the log-posterior, value of the return code from the optimizer, Hessian matrix, matrix of parameter draws
 #'
 #' @export fun_optim
 #'
 fun_optim = function(mod, data, stv,
-                     ndraws = ndraws,seed=seed,pvec){
+                     ndraws,seed,pvec){
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -91,11 +96,10 @@ fun_optim = function(mod, data, stv,
   return(opt)
 
 }
-
 #' @rdname fun_optim
 #' @export
 fun_optimC = function(mod, data, stv,
-                      ndraws = ndraws,seed=seed,pvec){
+                      ndraws,seed,pvec){
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -169,11 +173,10 @@ fun_optimC = function(mod, data, stv,
   return(opt)
 
 }
-
 #' @rdname fun_optim
 #' @export
 fun_optimQ = function(mod, data, stv,
-                      ndraws = ndraws, seed=seed, pvec=c(0.05, 0.5, 0.95)){
+                      ndraws, seed, pvec){
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -262,11 +265,10 @@ fun_optimQ = function(mod, data, stv,
   return(opt)
 
 }
-
 #' @rdname fun_optim
 #' @export
 fun_optimCov = function(mod, data, stv,
-                        ndraws = ndraws,seed=seed,pvec){
+                        ndraws,seed,pvec){
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -390,12 +392,10 @@ fun_optimCov = function(mod, data, stv,
   return(opt)
 
 }
-
-
 #' @rdname fun_optim
 #' @export
 fun_optimQCov = function(mod, data, stv,
-                         ndraws = ndraws,seed=seed,pvec){
+                         ndraws,seed,pvec){
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,

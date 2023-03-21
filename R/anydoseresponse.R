@@ -1,25 +1,38 @@
-#' Function to determine if there is a dose-response effect, for the normal distribution
+#' Function to determine if there is a dose-response effect
 #'
 #' @param dose.a ordered dose levels
-#' @param mean.a mean response
-#' @param sd.a standard deviation
-#' @param n.a number of observations per dose level
+#' @param mean.a arithmetic mean response per ordered dose level
+#' @param sd.a arithmetic standard deviation per ordered dose level
+#' @param y.a number of adverse events per ordered dose level
+#' @param n.a number of observations per ordered dose level
+#' @param data the individual data (ordered as dose, response, litter)
+#' @param use.mcmc logical indicating whether to use MCMC or Laplace approximation (defaults to FALSE)
+#' @param cluster logical for Quantal data indicating whether the data are clustered or not; if data are clustered, it is assumed that each line of data represents a specific litter
 #'
 #' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
+#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
+#'
+#' `anydoseresponseN` is used to test for dose-response effect for continuous data assuming the normal distribution.
+#'
+#' `anydoseresponseLN` is used to test for dose-response effect for continuous data assuming the lognormal distribution.
+#'
+#' `anydoseresponseC` is used to test for dose-response effect for clustered continuous data (i.e. with litter effect).
+#'
+#' `anydoseresponseQ` is used to test for dose-response effect for quantal data.
 #'
 #' @examples
 #'
-#' # We use the first 5 rows because those are observations from subjects belonging to the same group.
-#' data("immunotoxicityData.rda")  #load the immunotoxicity data
+#' # We use the first 5 rows because those are observations from subjects belonging to the same covariate level
 #' anydoseresponseN(dose.a = immunotoxicityData$Dose[1:5],
 #'                  mean.a = immunotoxicityData$Mean[1:5],
 #'                  sd.a = immunotoxicityData$SD[1:5],
 #'                  n.a = immunotoxicityData$n[1:5])
 #'
-#' @return list containing Bayes factor and decision.
+#' @return `bf` bayes factor
+#' @return `bf.message` decision on dose-response effect
 #'
-#' @export anydoseresponseN
+#' @export
+#'
 anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
   # for multiple observations per dose group
@@ -124,29 +137,8 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
   return(list(bf = bf, bf.message = mess))
 
 }
-
-#' Function to determine if there is a dose-response effect, for the log-normal distribution
-#'
-#' @param dose.a ordered dose levels
-#' @param mean.a mean response
-#' @param sd.a standard deviation
-#' @param n.a number of observations per dose level
-#'
-#' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
-#'
-#' @examples
-#'
-#' # We use the first 5 rows because those are observations from subjects belonging to the same group.
-#' data("immunotoxicityData.rda")  #load the immunotoxicity data
-#' anydoseresponseLN(dose.a = immunotoxicityData$Dose[1:5],
-#'                  mean.a = immunotoxicityData$Mean[1:5],
-#'                  sd.a = immunotoxicityData$SD[1:5],
-#'                  n.a = immunotoxicityData$n[1:5])
-#'
-#' @return list containing Bayes factor and decision.
-#'
-#' @export anydoseresponseLN
+#' @rdname anydoseresponseN
+#' @export
 anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
 
   if(length(dose.a) != length(unique(dose.a))){
@@ -279,19 +271,8 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   return(list(bf = bf, bf.message = mess))
 
 }
-
-#' Function to determine if there is a dose-response effect, for the normal distribution
-#'
-#' @param data Individual data with columns: dose, response, litter
-#' @param use.mcmc logical indicating wheter MCMC (TRUE) or Laplace (FALSE, default) should be used
-#'
-#' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge sampling.
-#'              Currently only based on the normal distribution.
-#'
-#' @return list containing Bayes factor and decision.
-#'
-#' @export anydoseresponseC
+#' @rdname anydoseresponseN
+#' @export
 anydoseresponseC=function(data, use.mcmc = FALSE){
 
   nrch=3;nriter=300;wu=100;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15;ndr = 30000
@@ -469,21 +450,8 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 
   return(list(bf = bf, bf.message = mess))
 }
-
-#' Function to determine if there is a dose-response effect, for quantal endpoints
-#'
-#' @param dose.a ordered dose levels
-#' @param y.a number of adverse events
-#' @param n.a number of observations per dose level
-#' @param cluster logical variable indicating whether the data are clustered or not; if data are clustered, it is assumed that each line of data represents a specific litter
-#'
-#' @description This function tests for any dose-response effect using Bayes factor.
-#'              It fits a null model and a saturated model and compares these two models using model posterior probabilities obtained via bridge rstan::sampling.
-#'
-#' @return list containing estimated Bayes factor and the decision.
-#'
-#' @export anydoseresponseQ
-#'
+#' @rdname anydoseresponseN
+#' @export
 anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){#}, use.mcmc = FALSE){
 
   # ndr=30000;nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15

@@ -18,7 +18,7 @@ convergence_deciC(
 \item{pars}{parameters}
 }
 \value{
-.
+a table with convergence diagnostics
 }
 \description{
 Function for internal use; decides if model has converged based on Rhat, bulk and tail ESS
