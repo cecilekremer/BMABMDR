@@ -253,13 +253,13 @@ weightsQ_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
   type <- match.arg(type)
   if(is.BMADRQ2(mod.obj)[3] == 2 & type == 'BS'){
 
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
-                      BS_Weights = mod.obj$weights_bridge_sampling))
+    return(data.frame(Model = names(mod.obj$weights_bridge_sampling)[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)],
+                      BS_Weights = mod.obj$weights_bridge_sampling[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)]))
 
   } else if(is.BMADRQ2(mod.obj)[3] == 2 & type == 'LP') {
 
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
-                      LP_Weights = mod.obj$weights_laplace))
+    return(data.frame(Model = names(mod.obj$weights_laplace)[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)],
+                      LP_Weights = mod.obj$weights_laplace[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)]))
 
   } else if(is.BMADRQ2(mod.obj)[3] == 2 & type == "both") {
 
@@ -269,8 +269,8 @@ weightsQ_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 
   } else if(is.BMADRQ2(mod.obj)[2] == 2){
 
-    return(data.frame(Model = names(mod.obj$weights),
-                      LP_Weights = mod.obj$weights))
+    return(data.frame(Model = names(mod.obj$weights)[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)],
+                      LP_Weights = mod.obj$weights[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)]))
 
   }else stop('please check mod.obj or provide type')
 
@@ -283,13 +283,13 @@ weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
   type <- match.arg(type)
   if(is.BMADR2(mod.obj)[3] == 2 & type == 'BS'){
 
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
-                      BS_Weights = mod.obj$weights_bridge_sampling))
+    return(data.frame(Model = names(mod.obj$weights_bridge_sampling)[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)],
+                      BS_Weights = mod.obj$weights_bridge_sampling[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)]))
 
   } else if(is.BMADR2(mod.obj)[3] == 2 & type == 'LP') {
 
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
-                      LP_Weights = mod.obj$weights_laplace))
+    return(data.frame(Model = names(mod.obj$weights_laplace)[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)],
+                      LP_Weights = mod.obj$weights_laplace[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)]))
 
   } else if(is.BMADR2(mod.obj)[3] == 2 & type == "both"){
 
@@ -299,8 +299,8 @@ weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 
   } else if(is.BMADR2(mod.obj)[2] == 2){
 
-    return(data.frame(Model = names(mod.obj$weights),
-                      LP_Weights = mod.obj$weights))
+    return(data.frame(Model = names(mod.obj$weights)[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)],
+                      LP_Weights = mod.obj$weights[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)]))
 
   }else stop('please check mod.obj or provide type')
 

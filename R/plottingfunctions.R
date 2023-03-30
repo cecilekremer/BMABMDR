@@ -113,6 +113,12 @@ plot.BMADR <- function(mod.obj,
   #   type = "increasing"
   # }else{type = "decreasing"}
 
+  if(weight_type == "BS"){
+    mod.obj$models_included = mod.obj$models_included_bridge
+  }else{
+    mod.obj$models_included = mod.obj$models_included_laplace
+  }
+
   refactor <- function(x, type){
 
     if(type == "quantal") {
@@ -628,7 +634,7 @@ plot.BMADR <- function(mod.obj,
     ymax = 10^max(mod.obj$dataN$lg10m + 2*mod.obj$dataN$lg10s, na.rm=T)
 
     # plot for Normal distribution
-    pplotN <- ggplot(data = preds2[preds2$Distribution=="N",],
+    pplotN <- ggplot(data = preds2[preds2$Distribution=="N" & paste0(preds2$Model,"_N") %in% mod.obj$models_included,],
                      aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                          color = Model)) +
       geom_line(alpha = 0.6,
@@ -705,7 +711,7 @@ plot.BMADR <- function(mod.obj,
     ymax = 10^max(mod.obj$dataLN$lg10m + 2*mod.obj$dataLN$lg10s, na.rm=T)
 
     # plot for LogNormal distribution
-    pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN",],
+    pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN" & paste0(preds2$Model,"_LN") %in% mod.obj$models_included,],
                       aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                           color = Model)) +
       geom_line(alpha = 0.6,
@@ -769,7 +775,7 @@ plot.BMADR <- function(mod.obj,
             title = element_text(size = 15, face = "bold"))
 
     ## Plot for both distributions
-    pplot <- ggplot(data = preds2,
+    pplot <- ggplot(data = preds2[which(paste(preds2$Model, preds2$Distribution, sep = '_') %in% mod.obj$models_included),],
                     aes(x = Dose*mod.obj$max.dose, y = predicted, group = interaction(Model, Distribution),
                         color = Model, linetype = Distribution)) +
       geom_line(alpha = 0.6,
@@ -831,7 +837,7 @@ plot.BMADR <- function(mod.obj,
   }else if(clustered == T){
 
     # plot for Normal distribution
-    pplotN <- ggplot(data = preds2[preds2$Distribution=="N",],
+    pplotN <- ggplot(data = preds2[preds2$Distribution=="N" & paste0(preds2$Model,"_N") %in% mod.obj$models_included,],
                      aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                          color = Model)) +
       geom_line(alpha = 0.6,
@@ -901,7 +907,7 @@ plot.BMADR <- function(mod.obj,
     }
 
     # plot for LogNormal distribution
-    pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN",],
+    pplotLN <- ggplot(data = preds2[preds2$Distribution=="LN" & paste0(preds2$Model,"_LN") %in% mod.obj$models_included,],
                       aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                           color = Model)) +
       geom_line(alpha = 0.6,
@@ -976,7 +982,7 @@ plot.BMADR <- function(mod.obj,
             title = element_text(size = 15, face = "bold"))
 
     ## Plot for both distributions
-    pplot <- ggplot(data = preds2,
+    pplot <- ggplot(data = preds2[which(paste(preds2$Model, preds2$Distribution, sep = '_') %in% mod.obj$models_included),],
                     aes(x = Dose*mod.obj$max.dose, y = predicted, group = interaction(Model, Distribution),
                         color = Model, linetype = Distribution)) +
       geom_line(alpha = 0.6,
@@ -1303,11 +1309,17 @@ plot.BMADR <- function(mod.obj,
 plot.BMADRQ <- function(mod.obj,
                         weight_type = c("BS", "LP"),
                         include_data = TRUE,
-                        all = TRUE, title
+                        all = FALSE, title
 ) {
   type <- 'quantal'
   weight_type <- match.arg(weight_type)
   q <- mod.obj$q
+
+  if(weight_type == 'BS'){
+    mod.obj$models_included = mod.obj$models_included_bridge
+  }else{
+    mod.obj$models_included = mod.obj$models_included_laplace
+  }
 
   refactor <- function(x, type){
 
@@ -1610,7 +1622,7 @@ plot.BMADRQ <- function(mod.obj,
     plot.labs = c(0, dose*mod.obj$max.dose)
   }
 
-  pplot <- ggplot(data = preds2,
+  pplot <- ggplot(data = preds2[paste0(preds2$Model,"_Q") %in% mod.obj$models_included,],
                   aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                       color = Model)) +
     geom_line(#alpha = 0.6,

@@ -64,7 +64,7 @@
 #' @return `BIC.bestfit` BIC value of best fitting model, used to test for GOF
 #' @return `means.SM` mean response per dose level estimated from the saturated model, used to test for GOF
 #' @return `gof_check` GOF message
-#' @return `models_included` vector containing the names of models included in the model averaging
+#' @return `models_included_laplace` vector containing the names of models included in the model averaging
 #' @return `q` BMR
 #' @return `max.dose` maximum dose level (original scale)
 #' @return `dataN` normal summary data used for analysis
@@ -360,7 +360,6 @@ full.laplace_MA=function(data.N, data.LN,
       names(LN4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
       LN4outNI <- outLP(parsLN4N, pvec, data$maxD)
-
 
       # Covariance between b-d and between BMD-d
       LN4covNI = c(cov(parsLN4N[,c("b","d")], use="complete.obs")["b","d"],
@@ -1563,6 +1562,13 @@ full.laplace_MA=function(data.N, data.LN,
 
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
+  if(maci[1] == 0){
+    maci[1] = 0.000000001
+  }
+  if(maci[2] == 0){
+    maci[2] = 0.000000001
+  }
+
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
@@ -1661,6 +1667,7 @@ full.laplace_MA=function(data.N, data.LN,
   nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
   bfTest <- modelTest(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
                       seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
+
   warning(bfTest$warn.bf)
 
 
@@ -1693,7 +1700,7 @@ full.laplace_MA=function(data.N, data.LN,
     max.dose = data.N$data$maxD,
     q = data.N$data$q,
     # increasing = T,
-    models_included = modelnames[prior.weights > 0],
+    models_included_laplace = modelnames[prior.weights > 0],
     bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
     means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
@@ -3266,7 +3273,7 @@ full.laplace_MAc=function(data.N, data.LN,
     max.dose = data.N$data$maxD,
     q = data.N$data$q,
     # increasing = T,
-    models_included = modelnames[prior.weights > 0],
+    models_included_laplace = modelnames[prior.weights > 0],
     bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
     # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
@@ -4304,6 +4311,9 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
   ))
   colnames(corrs) = c("b-d", "BMD-d")
 
+  modelnames2 = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
+
+
   ###
   # sd = sqrt(data$s2)
   # N = data$N
@@ -4330,11 +4340,10 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       y = data.Q$data$y,
       n = data.Q$data$n),
     max.dose = data.Q$data$maxD,
-    models_included = model[prior.weights > 0],
+    models_included_laplace = modelnames2[prior.weights > 0],
     q = data.Q$data$q,
     is_bin = data.Q$data$is_bin,
     is_betabin = data.Q$data$is_betabin,
-    model_included = modelnames[prior.weights>0],
     bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
     means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,

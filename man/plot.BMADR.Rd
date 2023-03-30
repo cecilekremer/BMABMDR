@@ -20,7 +20,7 @@ plot.BMADRQ(
   mod.obj,
   weight_type = c("BS", "LP"),
   include_data = TRUE,
-  all = TRUE,
+  all = FALSE,
   title
 )
 }
