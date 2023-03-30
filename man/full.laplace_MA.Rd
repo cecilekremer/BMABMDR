@@ -123,7 +123,7 @@ The function returns a BMDBMA model object, which is a list containing the follo
 
 \code{gof_check} GOF message
 
-\code{models_included} vector containing the names of models included in the model averaging
+\code{models_included_laplace} vector containing the names of models included in the model averaging
 
 \code{q} BMR
 

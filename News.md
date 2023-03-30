@@ -1,5 +1,15 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9059
+
+* warning message sampling specifying whether models are excluded for Bridge or Laplace
+
+* exclude models that are not included in MA (due to fitting problems) from plots
+
+* reversed BF in modelTest to correspond to Platform documentation
+
+* fixed error induced by modelTest (likelihood calculation)
+
 ## BMABMDR 0.0.0.9058
 
 * reversed BF in modelTest

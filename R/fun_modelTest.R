@@ -72,8 +72,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     }else if(type == 'Laplace'){
 
-      all.pars.bestfit = par_extract(stanBest, model_name = best.fit)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t")], 2, median)
+      # all.pars.bestfit = par_extract(stanBest, model_name = best.fit)
+      # pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t")], 2, median)
+      pars.bestfit = stanBest$par[c(1,2,9,4,5)]
 
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
@@ -99,11 +100,11 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
 
@@ -155,8 +156,9 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     }else if(type == 'Laplace'){
 
-      all.pars.bestfit = par_extract(stanBest, model_name = best.fit)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t")], 2, median, na.rm = T)
+      # all.pars.bestfit = par_extract(stanBest, model_name = best.fit)
+      # pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t")], 2, median, na.rm = T)
+      pars.bestfit = stanBest$par[c(1,2,9,4,5)]
 
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
@@ -184,11 +186,11 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
   }
@@ -264,8 +266,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     }else if(type == 'Laplace'){
 
-      all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median)
+      # all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
+      # pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median)
+      pars.bestfit = stanBest$par[c(1,2,10,4,5,6)]
 
       optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
@@ -302,11 +305,11 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
 
@@ -369,8 +372,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     }else if(type == 'Laplace'){
 
-      all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median, na.rm = T)
+      # all.pars.bestfit = par_extractC(stanBest, model_name = best.fit)
+      # pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:4), "is2t", "rho")], 2, median, na.rm = T)
+      pars.bestfit = stanBest$par[c(1,2,10,4,5,6)]
 
       optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
@@ -409,11 +413,11 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
   }
@@ -576,9 +580,10 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
     if(data.Q$data$is_bin == 1){
 
-      all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'), pars = c('a', 'b', 'd', 'BMD',
-                                                                                             paste0('par',1:3)))
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3))], 2, median)
+      # all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'), pars = c('a', 'b', 'd', 'BMD',
+                                                                                             # paste0('par',1:3)))
+      # pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3))], 2, median)
+      pars.bestfit = stanBest$par[1:3]
 
       optSM = optimizing(stanmodels$mSM_Q, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
@@ -595,10 +600,11 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
     } else if(data.Q$data$is_betabin == 1) {
 
-      all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'),
-                                      pars = c('a', 'b', 'd', 'rho[1]','BMD', paste0('par',1:3)),
-                                      rho = TRUE)
-      pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3),"rho")], 2, median, na.rm = T)
+      # all.pars.bestfit = parq_extract(stanBest, model_name = paste0(best.fit,'_Q'),
+                                      # pars = c('a', 'b', 'd', 'rho[1]','BMD', paste0('par',1:3)),
+                                      # rho = TRUE)
+      # pars.bestfit = apply(all.pars.bestfit[,c(paste0("p",1:3),"rho")], 2, median, na.rm = T)
+      pars.bestfit = stanBest$par[1:3]
 
       optSM = optimizing(stanmodels$mSM_Q, data = data.modstanSM,
                          seed=as.integer(seed), #draws = ndraws,
@@ -630,8 +636,11 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
     llfun = paste0('llf',best.fit,'2_Q')
     llBestfitf = get(llfun)
+    # llBestfit = llBestfitf(x = pars.bestfit[1:3], data.Q$data$n, data.Q$data$x,
+    #                        data.Q$data$y, data.Q$data$q, pars.bestfit[4])
     llBestfit = llBestfitf(x = pars.bestfit[1:3], data.Q$data$n, data.Q$data$x,
-                           data.Q$data$y, data.Q$data$q, pars.bestfit[4])
+                           data.Q$data$y, data.Q$data$q,rho = stanBest$par[stringr::str_detect(names(stanBest$par),'rho') &
+                                                                              !stringr::str_detect(names(stanBest$par),'eta')])
 
   }
 
@@ -663,11 +672,11 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
   if(bf < 1/10){
-    # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+    # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
   }else if(bf >= 1/10){
-    # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+    # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
   }
 
   return(list(bayesFactor = bf,

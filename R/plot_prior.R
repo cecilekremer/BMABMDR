@@ -20,13 +20,13 @@
 plot_prior <- function(mod.obj, data, model_name,
                        parms = TRUE, clustered = FALSE){ # pars = T for parameters, F for background & fold change
 
-  if(model_name %in% mod.obj$models_included){
+  names(mod.obj$parsN) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N")
+  names(mod.obj$parsLN) = c("E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+  pars = c(mod.obj$parsN, mod.obj$parsLN)
+  modPlot = which(get_models('continuous') == model_name)
 
-    names(mod.obj$parsN) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N")
-    names(mod.obj$parsLN) = c("E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
-
-    pars = c(mod.obj$parsN, mod.obj$parsLN)
-
+  # if(model_name %in% mod.obj$models_included){
+  if(!(NA %in% pars[[modPlot]])){
 
     if(clustered == T){
       df.mod <- (as.data.frame(pars[[model_name]]))[, c("ModelName","a","p3","d","BMD","min_response","max_response","rho")]

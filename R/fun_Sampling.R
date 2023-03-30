@@ -83,7 +83,8 @@
 #' @return `BIC.bestfit` BIC value of best fitting model, used to test for GOF
 #' @return `means.SM` mean response per dose level estimated from the saturated model, used to test for GOF
 #' @return `gof_check` GOF message
-#' @return `models_included` vector containing the names of models included in the model averaging
+#' @return `models_included_laplace` vector containing the names of models included in the model averaging using Laplace
+#' @return `models_included_bridge` vector containing the names of models included in the model averaging using Bridge sampling
 #' @return `q` BMR
 #' @return `max.dose` maximum dose level (original scale)
 #' @return `dataN` normal summary data used for analysis
@@ -120,6 +121,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   # if(data.N$increasing == TRUE){
 
+  prior.weights.orig = prior.weights
+
   ## Normal distribution
 
   data=data.N$data
@@ -145,7 +148,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanE4_N)){
       prior.weights[1] <- 0
-      warning('difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4N <- par_extract(fitstanE4_N, model_name = "E4_N")
@@ -218,7 +221,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanIE4_N)){
       prior.weights[2] <- 0
-      warning('difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4N <- par_extract(fitstanIE4_N, model_name = "IE4_N")
@@ -291,7 +294,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanH4_N)){
       prior.weights[3] <- 0
-      warning('difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4N <- par_extract(fitstanH4_N, model_name = "H4_N")
@@ -362,7 +365,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanLN4_N)){
       prior.weights[4] <- 0
-      warning('difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4N <- par_extract(fitstanLN4_N, model_name = "LN4_N")
@@ -434,7 +437,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanG4_N)){
       prior.weights[5] <- 0
-      warning('difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4N <- par_extract(fitstanG4_N, model_name = "G4_N")
@@ -506,7 +509,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanQE4_N)){
       prior.weights[6] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4N <- par_extract(fitstanQE4_N, model_name = "QE4_N")
@@ -578,7 +581,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanP4_N)){
       prior.weights[7] <- 0
-      warning('difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4N <- par_extract(fitstanP4_N, model_name = "P4_N")
@@ -652,7 +655,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanL4_N)){
       prior.weights[8] <- 0
-      warning('difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4N <- par_extract(fitstanL4_N, model_name = "L4_N")
@@ -735,7 +738,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanE4_LN)){
       prior.weights[9] <- 0
-      warning('difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4LN <- par_extract(fitstanE4_LN, model_name = "E4_LN")
@@ -808,7 +811,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanIE4_LN)){
       prior.weights[10] <- 0
-      warning('difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4LN <- par_extract(fitstanIE4_LN, model_name = "IE4_LN")
@@ -881,7 +884,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanH4_LN)){
       prior.weights[11] <- 0
-      warning('difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4LN <- par_extract(fitstanH4_LN, model_name = "H4_LN")
@@ -953,7 +956,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanLN4_LN)){
       prior.weights[12] <- 0
-      warning('difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4LN <- par_extract(fitstanLN4_LN, model_name = "LN4_LN")
@@ -1026,7 +1029,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanG4_LN)){
       prior.weights[13] <- 0
-      warning('difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4LN <- par_extract(fitstanG4_LN, model_name = "G4_LN")
@@ -1100,7 +1103,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanQE4_LN)){
       prior.weights[14] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4LN <- par_extract(fitstanQE4_LN, model_name = "QE4_LN")
@@ -1172,7 +1175,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanP4_LN)){
       prior.weights[15] <- 0
-      warning('difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4LN <- par_extract(fitstanP4_LN, model_name = "P4_LN")
@@ -1246,7 +1249,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanL4_LN)){
       prior.weights[16] <- 0
-      warning('difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4LN <- par_extract(fitstanL4_LN, model_name = "L4_LN")
@@ -1406,7 +1409,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
-  if(0 %in% converged){
+  if((0 %in% converged) && (1 %in% converged)){
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
@@ -1492,13 +1495,15 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                                        na.rm = T)
     }
 
-  }else{
+  }else{ ## If all converged or NONE converged
     w.bs.conv = NULL; macib.conv = NULL; mabmd.conv1 = NA; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
   }
 
 
   #----------------------------------
   ### weights based on laplace approximation
+
+  prior.weights = prior.weights.orig
 
   # normal
   data=data.N$data
@@ -1514,7 +1519,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
       prior.weights[1] <- 0
-      warning('difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1539,7 +1544,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
       prior.weights[2] <- 0
-      warning('difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1563,7 +1568,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
       prior.weights[3] <- 0
-      warning('difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1587,7 +1592,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
       prior.weights[4] <- 0
-      warning('difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1612,7 +1617,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
       prior.weights[5] <- 0
-      warning('difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1637,7 +1642,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
       prior.weights[6] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1662,7 +1667,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
       prior.weights[7] <- 0
-      warning('difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1686,7 +1691,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
       prior.weights[8] <- 0
-      warning('difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -1719,7 +1724,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
       prior.weights[9] <- 0
-      warning('difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1744,7 +1749,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
       prior.weights[10] <- 0
-      warning('difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1769,7 +1774,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
       prior.weights[11] <- 0
-      warning('difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1793,7 +1798,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
       prior.weights[12] <- 0
-      warning('difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1817,7 +1822,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
       prior.weights[13] <- 0
-      warning('difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1841,7 +1846,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
       prior.weights[14] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1865,7 +1870,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
       prior.weights[15] <- 0
-      warning('difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -1889,7 +1894,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
       prior.weights[16] <- 0
-      warning('difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -2151,7 +2156,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
-  if(0 %in% converged){
+  if((0 %in% converged) && (1 %in% converged)){
 
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
@@ -2341,7 +2346,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       max.dose = data.N$data$maxD,
                       q = data.N$data$q,
                       # increasing = T,
-                      models_included = modelnames[prior.weights > 0],
+                      models_included_bridge = modelnames[p.weights > 0],
+                      models_included_laplace = modelnames[lpwlp > 0],
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
@@ -2369,6 +2375,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
   # if(data.N$increasing == TRUE){
 
+  prior.weights.orig = prior.weights
+
   ## Normal distribution
 
   data=data.N$data
@@ -2394,7 +2402,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanE4_N)){
       prior.weights[1] <- 0
-      warning('difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4N <- par_extractC(fitstanE4_N, model_name = "E4_N")
@@ -2464,7 +2472,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanIE4_N)){
       prior.weights[2] <- 0
-      warning('difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4N <- par_extractC(fitstanIE4_N, model_name = "IE4_N")
@@ -2537,7 +2545,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanH4_N)){
       prior.weights[3] <- 0
-      warning('difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4N <- par_extractC(fitstanH4_N, model_name = "H4_N")
@@ -2608,7 +2616,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanLN4_N)){
       prior.weights[4] <- 0
-      warning('difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4N <- par_extractC(fitstanLN4_N, model_name = "LN4_N")
@@ -2679,7 +2687,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanG4_N)){
       prior.weights[5] <- 0
-      warning('difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4N <- par_extractC(fitstanG4_N, model_name = "G4_N")
@@ -2750,7 +2758,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanQE4_N)){
       prior.weights[6] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4N <- par_extractC(fitstanQE4_N, model_name = "QE4_N")
@@ -2821,7 +2829,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanP4_N)){
       prior.weights[7] <- 0
-      warning('difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4N <- par_extractC(fitstanP4_N, model_name = "P4_N")
@@ -2894,7 +2902,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanL4_N)){
       prior.weights[8] <- 0
-      warning('difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Normal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4N <- par_extractC(fitstanL4_N, model_name = "L4_N")
@@ -2976,7 +2984,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanE4_LN)){
       prior.weights[9] <- 0
-      warning('difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsE4LN <- par_extractC(fitstanE4_LN, model_name = "E4_LN")
@@ -3048,7 +3056,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanIE4_LN)){
       prior.weights[10] <- 0
-      warning('difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsIE4LN <- par_extractC(fitstanIE4_LN, model_name = "IE4_LN")
@@ -3120,7 +3128,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanH4_LN)){
       prior.weights[11] <- 0
-      warning('difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsH4LN <- par_extractC(fitstanH4_LN, model_name = "H4_LN")
@@ -3191,7 +3199,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanLN4_LN)){
       prior.weights[12] <- 0
-      warning('difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsLN4LN <- par_extractC(fitstanLN4_LN, model_name = "LN4_LN")
@@ -3263,7 +3271,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanG4_LN)){
       prior.weights[13] <- 0
-      warning('difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsG4LN <- par_extractC(fitstanG4_LN, model_name = "G4_LN")
@@ -3336,7 +3344,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanQE4_LN)){
       prior.weights[14] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsQE4LN <- par_extractC(fitstanQE4_LN, model_name = "QE4_LN")
@@ -3407,7 +3415,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanP4_LN)){
       prior.weights[15] <- 0
-      warning('difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsP4LN <- par_extractC(fitstanP4_LN, model_name = "P4_LN")
@@ -3480,7 +3488,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(is.null(fitstanL4_LN)){
       prior.weights[16] <- 0
-      warning('difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Lognormal) model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       parsL4LN <- par_extractC(fitstanL4_LN, model_name = "L4_LN")
@@ -3639,7 +3647,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
-  if(0 %in% converged){
+  if((0 %in% converged) && (1 %in% converged)){
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
@@ -3733,6 +3741,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   #----------------------------------
   ### weights based on laplace approximation
 
+  prior.weights = prior.weights.orig
+
   # normal
   data=data.N$data
   start=data.N$start
@@ -3747,7 +3757,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
       prior.weights[1] <- 0
-      warning('difficulties fitting the Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3777,7 +3787,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
       prior.weights[2] <- 0
-      warning('difficulties fitting the Inverse Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3806,7 +3816,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
       prior.weights[3] <- 0
-      warning('difficulties fitting the Hill (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3835,7 +3845,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
       prior.weights[4] <- 0
-      warning('difficulties fitting the Lognormal (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3865,7 +3875,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
       prior.weights[5] <- 0
-      warning('difficulties fitting the Gamma (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3895,7 +3905,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
       prior.weights[6] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3925,7 +3935,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
       prior.weights[7] <- 0
-      warning('difficulties fitting the Probit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3954,7 +3964,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
       prior.weights[8] <- 0
-      warning('difficulties fitting the Logit (Normal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 1){
@@ -3992,7 +4002,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
       prior.weights[9] <- 0
-      warning('difficulties fitting the Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4024,7 +4034,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
       prior.weights[10] <- 0
-      warning('difficulties fitting the Inverse Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4056,7 +4066,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
       prior.weights[11] <- 0
-      warning('difficulties fitting the Hill (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4087,7 +4097,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
       prior.weights[12] <- 0
-      warning('difficulties fitting the Lognormal (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4118,7 +4128,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
       prior.weights[13] <- 0
-      warning('difficulties fitting the Gamma (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4149,7 +4159,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
       prior.weights[14] <- 0
-      warning('difficulties fitting the Quadratic Exponential (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4180,7 +4190,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
       prior.weights[15] <- 0
-      warning('difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4211,7 +4221,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
       prior.weights[16] <- 0
-      warning('difficulties fitting the Logit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$data_type == 2){
@@ -4489,7 +4499,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
-  if(0 %in% converged){
+  if((0 %in% converged) && (1 %in% converged)){
 
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
@@ -4672,7 +4682,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                       max.dose = data.N$data$maxD,
                       q = data.N$data$q,
                       # increasing = T,
-                      models_included = modelnames[prior.weights > 0],
+                      models_included_bridge = modelnames[p.weights > 0],
+                      models_included_laplace = modelnames[lpwlp > 0],
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
@@ -4694,6 +4705,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       ndraws = 30000,nrchains=3,
                       nriterations=5000,warmup=1000,
                       delta=0.8,treedepth=10,seed=123,pvec=c(0.025,0.5,0.975)){
+
+  prior.weights.orig = prior.weights
 
   data=data.Q$data
   start=data.Q$start
@@ -4718,7 +4731,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanE4_Q)){
       prior.weights[1] <- 0
-      warning('difficulties fitting the Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -4811,7 +4824,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanIE4_Q)){
       prior.weights[2] <- 0
-      warning('difficulties fitting the Inverse Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -4900,7 +4913,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanH4_Q)){
       prior.weights[3] <- 0
-      warning('difficulties fitting the Hill model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -4991,7 +5004,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanLN4_Q)){
       prior.weights[4] <- 0
-      warning('difficulties fitting the Lognormal model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -5085,7 +5098,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                  delta,treedepth,seed,pvec)
     if(is.null(fitstanG4_Q)){
       prior.weights[5] <- 0
-      warning('difficulties fitting the Gamma model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -5175,7 +5188,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanQE4_Q)){
       prior.weights[6] <- 0
-      warning('difficulties fitting the Quadratic Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -5264,7 +5277,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanP4_Q)){
       prior.weights[7] <- 0
-      warning('difficulties fitting the Probit model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -5354,7 +5367,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(is.null(fitstanL4_Q)){
       prior.weights[8] <- 0
-      warning('difficulties fitting the Logit model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit model using sampling; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       if(data$is_bin == 1) {
@@ -5510,7 +5523,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   }
 
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
-  if(0 %in% converged){
+  if((0 %in% converged) && (1 %in% converged)){
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
@@ -5583,6 +5596,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   #----------------------------------
   ### weights based on laplace approximation
 
+  prior.weights = prior.weights.orig
+
   llQ = c() # likelihoods
 
   # getting the posterior modes and the hessian and the model specific posterior distributions
@@ -5592,7 +5607,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optE4_Q[[3]]),TRUE,(optE4_Q[[3]]!=0)) | length(optE4_Q)!=9)){
       prior.weights[1] <- 0
-      warning('difficulties fitting the Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Exponential model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llE4Q <- ifelse(data$is_bin == 1,
@@ -5619,7 +5634,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optIE4_Q[[3]]),TRUE,(optIE4_Q[[3]]!=0)) | length(optIE4_Q)!=9)){
       prior.weights[2] <- 0
-      warning('difficulties fitting the Inverse Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Inverse Exponential model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llIE4Q <- ifelse(data$is_bin == 1,
@@ -5646,7 +5661,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optH4_Q[[3]]),TRUE,(optH4_Q[[3]]!=0)) | length(optH4_Q)!=9)){
       prior.weights[3] <- 0
-      warning('difficulties fitting the Hill model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Hill model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llH4Q <- ifelse(data$is_bin == 1,
@@ -5673,7 +5688,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optLN4_Q[[3]]),TRUE,(optLN4_Q[[3]]!=0)) | length(optLN4_Q)!=9)){
       prior.weights[4] <- 0
-      warning('difficulties fitting the Lognormal model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Lognormal model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llLN4Q <- ifelse(data$is_bin == 1,
@@ -5701,7 +5716,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optG4_Q[[3]]),TRUE,(optG4_Q[[3]]!=0)) | length(optG4_Q)!=9)){
       prior.weights[5] <- 0
-      warning('difficulties fitting the Gamma model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Gamma model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llG4Q <- ifelse(data$is_bin == 1,
@@ -5728,7 +5743,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optQE4_Q[[3]]),TRUE,(optQE4_Q[[3]]!=0)) | length(optQE4_Q)!=9)){
       prior.weights[6] <- 0
-      warning('difficulties fitting the Quadratic Exponential model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Quadratic Exponential model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llQE4Q <- ifelse(data$is_bin == 1,
@@ -5755,7 +5770,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optP4_Q[[3]]),TRUE,(optP4_Q[[3]]!=0)) | length(optP4_Q)!=9)){
       prior.weights[7] <- 0
-      warning('difficulties fitting the Probit model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Probit model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llP4Q <- ifelse(data$is_bin == 1,
@@ -5782,7 +5797,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if((ifelse(is.na(optL4_Q[[3]]),TRUE,(optL4_Q[[3]]!=0)) | length(optL4_Q)!=9)){
       prior.weights[8] <- 0
-      warning('difficulties fitting the Logit model; prior weight was set to 0 and the model is not included in model averaging')
+      warning('difficulties fitting the Logit model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
 
       llL4Q <- ifelse(data$is_bin == 1,
@@ -6032,7 +6047,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
 
   ##### Weights & MA if one of the models is divergent --> this model gets weight 0
-  if(0 %in% converged){
+  if((0 %in% converged) && (1 %in% converged)){
 
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
@@ -6153,6 +6168,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   ))
   colnames(corrs) = c("b-d", "BMD-d")
 
+  modelnames2 <- c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
 
   ret_results <- list(E4_Q=E4outQ,IE4_Q=IE4outQ,H4_Q=H4outQ,LN4_Q=LN4outQ,
                       G4_Q=G4outQ,QE4_Q=QE4outQ,P4_Q=P4outQ,L4_Q=L4outQ,
@@ -6187,7 +6203,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                         n = data.Q$data$n),
                       max.dose = data.Q$data$maxD,
                       q = data.Q$data$q,
-                      models_included = model[prior.weights > 0],
+                      models_included_bridge = modelnames2[p.weights > 0],
+                      models_included_laplace = modelnames2[lpwlp > 0],
                       is_bin = data.Q$data$is_bin,
                       is_betabin = data.Q$data$is_betabin,
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
