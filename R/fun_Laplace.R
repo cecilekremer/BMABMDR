@@ -4432,79 +4432,83 @@ full.laplace_MA_Cov = function(data, # the summary data
   ##############################################
   ### DATA IN CORRECT FORMAT FOR EACH SUBMODEL
 
-  data_NCOV_all <- PREP_DATA_NCOV(
-    data = data,
-    sumstats = sumstats,
-    sd = sd,
-    q = q,
-    prior.d = prior.d,
-    extended = extended,
-    covariate = 'all'
-  )
+  if(1 %in% prior.weights[1:8]){
+    data_NCOV_all <- PREP_DATA_NCOV(
+      data = data,
+      sumstats = sumstats,
+      sd = sd,
+      q = q,
+      prior.d = prior.d,
+      extended = extended,
+      covariate = 'all'
+    )
 
-  data_NCOV_asigma2 <- PREP_DATA_NCOV(
-    data = data,
-    sumstats = sumstats,
-    sd = sd,
-    q = q,
-    prior.d = prior.d,
-    extended = extended,
-    covariate = 'a_sigma2'
-  )
+    data_NCOV_asigma2 <- PREP_DATA_NCOV(
+      data = data,
+      sumstats = sumstats,
+      sd = sd,
+      q = q,
+      prior.d = prior.d,
+      extended = extended,
+      covariate = 'a_sigma2'
+    )
 
-  data_NCOV_dBMD <- PREP_DATA_NCOV(
-    data = data,
-    sumstats = sumstats,
-    sd = sd,
-    q = q,
-    prior.d = prior.d,
-    extended = extended,
-    covariate = 'BMD_d'
-  )
+    data_NCOV_dBMD <- PREP_DATA_NCOV(
+      data = data,
+      sumstats = sumstats,
+      sd = sd,
+      q = q,
+      prior.d = prior.d,
+      extended = extended,
+      covariate = 'BMD_d'
+    )
 
-  data_N_noCOV <- PREP_DATA_N(data = data,
-                              sumstats = sumstats,
-                              sd = sd,
-                              q = q,
-                              prior.d = prior.d,
-                              extended = extended)
-
-  data_LNCOV_all <- PREP_DATA_LNCOV(
-    data = data,
-    sumstats = sumstats,
-    sd = sd,
-    q = q,
-    prior.d = prior.d,
-    extended = extended,
-    covariate = 'all'
-  )
-
-  data_LNCOV_asigma2 <- PREP_DATA_LNCOV(
-    data = data,
-    sumstats = sumstats,
-    sd = sd,
-    q = q,
-    prior.d = prior.d,
-    extended = extended,
-    covariate = 'a_sigma2'
-  )
-
-  data_LNCOV_dBMD <- PREP_DATA_LNCOV(
-    data = data,
-    sumstats = sumstats,
-    sd = sd,
-    q = q,
-    prior.d = prior.d,
-    extended = extended,
-    covariate = 'BMD_d'
-  )
-
-  data_LN_noCOV <- PREP_DATA_LN(data = data,
+    data_N_noCOV <- PREP_DATA_N(data = data,
                                 sumstats = sumstats,
                                 sd = sd,
                                 q = q,
                                 prior.d = prior.d,
                                 extended = extended)
+  }
+
+  if(1 %in% prior.weights[9:16]){
+    data_LNCOV_all <- PREP_DATA_LNCOV(
+      data = data,
+      sumstats = sumstats,
+      sd = sd,
+      q = q,
+      prior.d = prior.d,
+      extended = extended,
+      covariate = 'all'
+    )
+
+    data_LNCOV_asigma2 <- PREP_DATA_LNCOV(
+      data = data,
+      sumstats = sumstats,
+      sd = sd,
+      q = q,
+      prior.d = prior.d,
+      extended = extended,
+      covariate = 'a_sigma2'
+    )
+
+    data_LNCOV_dBMD <- PREP_DATA_LNCOV(
+      data = data,
+      sumstats = sumstats,
+      sd = sd,
+      q = q,
+      prior.d = prior.d,
+      extended = extended,
+      covariate = 'BMD_d'
+    )
+
+    data_LN_noCOV <- PREP_DATA_LN(data = data,
+                                  sumstats = sumstats,
+                                  sd = sd,
+                                  q = q,
+                                  prior.d = prior.d,
+                                  extended = extended)
+  }
 
   #########################################
   ### SELECT BEST SUBMODEL FOR EACH DRM
@@ -5915,7 +5919,7 @@ full.laplace_MA_Cov = function(data, # the summary data
               parQE4_LN = parQE4_LN,
               parP4_LN = parP4_LN,
               parL4_LN = parL4_LN,
-              shift = data_LNCOV_all$data$shift,
+              shift = ifelse((1 %in% prior.weights[9:16]), data_LNCOV_all$data$shift, 0),
               q = data_NCOV_all$data$q
   ))
 

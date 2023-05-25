@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9060
+
+* fixed likelihood L4_Q clustered
+
+* fix compatibility with ggplot2 v3.4.2
+
 ## BMABMDR 0.0.0.9059
 
 * warning message sampling specifying whether models are excluded for Bridge or Laplace
