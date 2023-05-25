@@ -458,7 +458,7 @@ plot.BMADR <- function(mod.obj,
   pBMDs <- ggplot(data = respBMDBMDW, aes(x = BMD, y = Model, group = Model)) +
     geom_errorbarh(aes(xmin = BMDL, xmax = BMDU, y = Model),
                    linetype = "solid", show.legend = FALSE,
-                   size = 3, height = 1.2, color = brewer.pal(8, "Set2")[8]) +
+                   linewidth = 3, height = 1.2, color = brewer.pal(8, "Set2")[8]) +
     geom_point(aes(x = BMD, y = Model, fill = Distribution),
                size = 7, color = 1, shape = 21) +
     theme_minimal() +
@@ -621,6 +621,13 @@ plot.BMADR <- function(mod.obj,
                       "LN4", "G4", "QE4",
                       "P4", "L4")
 
+  mod_names = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                "QuadExp", "Probit", "Logistic")
+  names(mod_names) = c("E4", "IE4", "H4",
+                       "LN4", "G4", "QE4",
+                       "P4", "L4")
+  dist_names = c("LogNormal","Normal")
+  names(dist_names) = c("LN","N")
 
   if(min(mod.obj$dataN$dose) == 0){
     plot.labs = dose*mod.obj$max.dose
@@ -688,8 +695,9 @@ plot.BMADR <- function(mod.obj,
       # scale_linetype_manual(values = lty,
       # labels = c('LogNormal', 'Normal')) +
       scale_color_manual(values = md_cls,
-                         labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                    "QuadExp", "Probit", "Logistic")) +
+                         # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                                    # "QuadExp", "Probit", "Logistic")
+                         labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
       theme_minimal() +
       theme(strip.text = element_text(size = 15, face = "bold"),
             axis.text = element_text(size = 10, face = "bold"),
@@ -761,8 +769,9 @@ plot.BMADR <- function(mod.obj,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
       scale_colour_manual(values = md_cls,
-                         labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                    "QuadExp", "Probit", "Logistic")) +
+                          # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                          # "QuadExp", "Probit", "Logistic")
+                          labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
       theme_minimal() +
       theme(strip.text = element_text(size = 15, face = "bold"),
             axis.text = element_text(size = 10, face = "bold"),
@@ -812,10 +821,12 @@ plot.BMADR <- function(mod.obj,
                  show.legend = FALSE,
                  inherit.aes = FALSE) +
       scale_linetype_manual(values = lty,
-                            labels = c('LogNormal', 'Normal')) +
+                            # labels = c('LogNormal', 'Normal')
+                            labels = dist_names[names(dist_names)%in%unique(preds2$Distribution)]) +
       scale_color_manual(values = md_cls,
-                         labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                    "QuadExp", "Probit", "Logistic")) +
+                         # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                         # "QuadExp", "Probit", "Logistic")
+                         labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
       theme_minimal() +
       coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                                2*mod.obj$max.dose) ) +
@@ -841,7 +852,7 @@ plot.BMADR <- function(mod.obj,
                      aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                          color = Model)) +
       geom_line(alpha = 0.6,
-                size = 1,
+                linewidth = 1,
                 show.legend = TRUE, linetype = 1) +
       labs(color = "Model", x = expression(dose),
            y = expression(response), title = "Normal distribution",
@@ -887,8 +898,9 @@ plot.BMADR <- function(mod.obj,
       coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                                2*mod.obj$max.dose) ) +
       scale_color_manual(values = md_cls,
-                         labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                    "QuadExp", "Probit", "Logistic")) +
+                         # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                                    # "QuadExp", "Probit", "Logistic")
+                         labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
       theme_minimal() +
       theme(strip.text = element_text(size = 15, face = "bold"),
             axis.text = element_text(size = 10, face = "bold"),
@@ -968,8 +980,9 @@ plot.BMADR <- function(mod.obj,
                          breaks = ddd*mod.obj$max.dose) +
       scale_y_continuous(trans = 'log10', labels = scales::comma) +
       scale_color_manual(values = md_cls,
-                         labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                    "QuadExp", "Probit", "Logistic")) +
+                         # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                                    # "QuadExp", "Probit", "Logistic")
+                         labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
       theme_minimal() +
       theme(strip.text = element_text(size = 15, face = "bold"),
             axis.text = element_text(size = 10, face = "bold"),
@@ -1019,10 +1032,12 @@ plot.BMADR <- function(mod.obj,
                  show.legend = FALSE,
                  inherit.aes = FALSE) +
       scale_linetype_manual(values = lty,
-                            labels = c('LogNormal', 'Normal')) +
+                            # labels = c('LogNormal', 'Normal')
+                            labels = dist_names[names(dist_names)%in%unique(preds2$Distribution)]) +
       scale_color_manual(values = md_cls,
-                         labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                    "QuadExp", "Probit", "Logistic")) +
+                         # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                                    # "QuadExp", "Probit", "Logistic")
+                         labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
       theme_minimal() +
       coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                                2*mod.obj$max.dose) ) +
@@ -1613,6 +1628,12 @@ plot.BMADRQ <- function(mod.obj,
                       "LN4", "G4", "QE4",
                       "P4", "L4")
 
+  mod_names = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                "QuadExp", "Probit", "Logistic")
+  names(mod_names) = c("E4", "IE4", "H4",
+                       "LN4", "G4", "QE4",
+                       "P4", "L4")
+
   #ymin = min(10^mod.obj$data$lg10m - 2*exp(orig.s), na.rm=T)
   #ymax = max(10^mod.obj$data$lg10m + 2*exp(orig.s), na.rm=T)
 
@@ -1654,8 +1675,9 @@ plot.BMADRQ <- function(mod.obj,
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose)) +
     scale_color_manual(values = md_cls,
-                       labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
-                                  "QuadExp", "Probit", "Logistic")) +
+                       # labels = c("Exp", "InvExp", "Hill", "LogNormal", "Gamma",
+                                  # "QuadExp", "Probit", "Logistic")
+                       labels = mod_names[names(mod_names)%in%unique(preds2$Model)]) +
      # scale_x_continuous(trans = 'log10', labels = scales::comma,
      #                   breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
     scale_x_continuous(trans = 'log10', labels = plot.labs,

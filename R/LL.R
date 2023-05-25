@@ -1518,7 +1518,7 @@ llfP42_Q=function(x,nvec,dvec,yvec,qval,rho){
 #' @rdname llfE42_Q
 #' @export
 llfL42_Q=function(x,nvec,dvec,yvec,qval,rho){
-  m = DRM.IE4_Q(x[1:3], dvec, qval)
+  m = DRM.L4_Q(x[1:3], dvec, qval)
   abet = m*((1/rho)-1)
   bbet = (1.0 - m)*((1/rho)-1)
 

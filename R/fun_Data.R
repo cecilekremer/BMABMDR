@@ -432,7 +432,6 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
                          extended = TRUE
 ){
 
-
   if(sumstats == TRUE & geom.stats == FALSE){
     data = data[order(data[, 1]), ]
     dose.a = data[, 1]
@@ -2687,10 +2686,13 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     indiv.data <- data %>%
       dplyr::group_by(dose, cov) %>%
       dplyr::arrange(by_group = dose) %>%
-      dplyr::summarise(mean = mean(log(resp), na.rm = T), sd = sd(log(resp), na.rm=T), n = n())
+      dplyr::summarise(mean = mean(log(resp+0.0000001)), sd = sd(log(resp+0.0000001)), n = n())
     dose.a = indiv.data$dose
     maxDose = max(dose.a)
-    gmean.a = indiv.data$mean
+    gmean.a2 = indiv.data$mean
+    shift = 0
+    if (min(gmean.a2)<0) {gmean.a = gmean.a2-20*min(gmean.a2); shift = 20*min(gmean.a2)}
+    if (min(gmean.a2)>=0) gmean.a = gmean.a2
     gsd.a = indiv.data$sd
     n.a = indiv.data$n
     N = length(dose.a)
@@ -2701,7 +2703,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                          y = data$resp)
     testNLN <- NLN_test(datind)
 
-    mean.a = exp(gmean.a); sd.a = exp(gsd.a)
+    mean.a = exp(gmean.a2); sd.a = exp(gsd.a)
     gmean.a2 = gmean.a
 
     # if(covariate == 'BMD_d' | covariate == 'none'){
