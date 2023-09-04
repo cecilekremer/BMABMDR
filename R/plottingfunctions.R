@@ -104,7 +104,7 @@ plot.BMADR <- function(mod.obj,
                        clustered = FALSE,
                        weight_type = c("BS", "LP"),
                        include_data = TRUE,
-                       all = FALSE, title, log = FALSE
+                       all = FALSE, title, log = FALSE, conv = FALSE
 ) {
   type <- match.arg(type)
   weight_type <- match.arg(weight_type)
@@ -151,7 +151,7 @@ plot.BMADR <- function(mod.obj,
   }
 
   BMDW <- BMDWeights(mod.obj)
-  BMDBMA <- BMDMA_extract(mod.obj, conv = FALSE)
+  BMDBMA <- BMDMA_extract(mod.obj, conv = conv)
 
   if(clustered == TRUE){
     mod.obj$dataN <- mod.obj$data
@@ -390,7 +390,7 @@ plot.BMADR <- function(mod.obj,
   #print(respBMD)
   #respBMD <- refactor(respBMD)
 
-  BMDMixture <- BMDmixture_extract(mod.obj, weight_type, conv=FALSE) # BMD values
+  BMDMixture <- BMDmixture_extract(mod.obj, weight_type, conv=conv) # BMD values
   BMDMixture$BMDMixture2 <- log10(BMDMixture$BMDMixture/mod.obj$max.dose)
 
   gghst2 <- hist(BMDMixture$BMDMixture, breaks = sqrt(nrow(BMDMixture)), plot = FALSE) #hist on original scale
@@ -453,6 +453,11 @@ plot.BMADR <- function(mod.obj,
     mod.obj$dataLN$response = mod.obj$dataLN$m
   }
 
+  ## only converged models?
+  if(weight_type == 'BS' && conv == TRUE){
+    respBMDBMDW <- respBMDBMDW[respBMDBMDW$Converged == 1, ]
+  }
+
 
   #BMD plots
   pBMDs <- ggplot(data = respBMDBMDW, aes(x = BMD, y = Model, group = Model)) +
@@ -499,6 +504,12 @@ plot.BMADR <- function(mod.obj,
                                     "LogNormal(LN)", "Gamma(LN)", "QuadExp(LN)",
                                     "Probit(LN)", "Logistic(LN)")))
   #Weights plot
+
+  # only converged models?
+  if(weight_type == 'BS' && conv == TRUE){
+    BMDW <- BMDW[BMDW$Converged == 1, ]
+  }
+
   needed_data <- tidyr::separate(BMDW,
                                  col = "Model", sep = "_",
                                  into = c("Model", "Distribution"))
@@ -635,6 +646,16 @@ plot.BMADR <- function(mod.obj,
     plot.labs = c(0, dose*mod.obj$max.dose)
   }
 
+
+  # only converged models?
+
+  if(weight_type == 'BS' && conv == TRUE){
+    names(mod.obj$convergence) <- unname(get_models('continuous'))
+    converged.mods <- names(mod.obj$convergence[mod.obj$convergence==1])
+    mod.obj$models_included <- mod.obj$models_included[which(mod.obj$models_included %in% converged.mods)]
+  }
+
+  ## plot
   if(clustered == F){
 
     ymin = 10^min(mod.obj$dataN$lg10m - 2*mod.obj$dataN$lg10s, na.rm=T)
@@ -649,7 +670,7 @@ plot.BMADR <- function(mod.obj,
                 show.legend = TRUE, linetype = 1) +
       labs(color = "Model", x = expression(dose),
            y = expression(response), title = "Normal distribution",
-           caption = "data and vertical bars based on arithmetic sample means and standard deviations") +
+           caption = "data and vertical bars based on arithmetic sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
 
       geom_segment(data = preds_min[preds_min$Distribution=="N",],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -727,7 +748,7 @@ plot.BMADR <- function(mod.obj,
                 show.legend = TRUE, linetype = 2) +
       labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
            y = expression(response),
-           caption = "data and vertical bars based on geometric sample means and standard deviations") +
+           caption = "data and vertical bars based on geometric sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
       geom_segment(data = preds_min[preds_min$Distribution=="LN",],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
                                  xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
@@ -791,7 +812,7 @@ plot.BMADR <- function(mod.obj,
                 size = 1,
                 show.legend = TRUE) +
       labs(color = "Model", linetype = "Distribution", x = expression(dose),
-           y = expression(response), title = "") +
+           y = expression(response), title = "", caption = "red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
 
       geom_segment(data = preds_min, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
                                                    xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
@@ -856,7 +877,7 @@ plot.BMADR <- function(mod.obj,
                 show.legend = TRUE, linetype = 1) +
       labs(color = "Model", x = expression(dose),
            y = expression(response), title = "Normal distribution",
-           caption = "diamonds represent the arithmetic sample mean") +
+           caption = "green dots show the individual data, black dots represent the litter means \n diamonds represent the arithmetic sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
       geom_segment(data = preds_min[preds_min$Distribution=="N",],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
                                  xend = max(Dose*mod.obj$max.dose),#max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
@@ -927,7 +948,7 @@ plot.BMADR <- function(mod.obj,
                 show.legend = TRUE, linetype = 2) +
       labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
            y = expression(response),
-           caption = "diamonds represent the geometric sample mean") +
+           caption = "green dots show the individual data, black dots represent the litter means \n diamonds represent the geometric sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
 
       geom_segment(data = preds_min[preds_min$Distribution=="LN",],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -1002,7 +1023,7 @@ plot.BMADR <- function(mod.obj,
                 size = 1,
                 show.legend = TRUE) +
       labs(color = "Model", linetype = "Distribution", x = expression(dose),
-           y = expression(response), title = "") +
+           y = expression(response), title = "", caption = "red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
 
       geom_segment(data = preds_min, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
                                                    xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
@@ -1221,7 +1242,8 @@ plot.BMADR <- function(mod.obj,
                    size = 2, color = 1, shape = 21,
                    fill = brewer.pal(9, "Set1")[2],
                    inherit.aes = FALSE) +
-        labs(caption = paste0("data and vertical bars based on ", w.data, " sample means and standard deviations"))
+        labs(caption = paste0("data and vertical bars based on ", w.data, " sample means +- standard deviation /n
+                              red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI"))
     }else if(clustered == T){
       dplot2 <- dplot +
         geom_jitter(data = orig_ptdata, mapping = aes(x = dose2*mod.obj$max.dose, y = y),
@@ -1237,7 +1259,8 @@ plot.BMADR <- function(mod.obj,
                    size = 3, color = 2, shape = 23,
                    fill = 2,
                    inherit.aes = FALSE) +
-        labs(caption = paste0("diamonds represent the ", w.data, " sample mean"))
+        labs(caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the ", w.data, " sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI"
+                              ))
     }
 
     if((TRUE %in% grepl('_LN', mod.obj$models_included)) && (TRUE %in% grepl('_N', mod.obj$models_included))){
@@ -1324,7 +1347,7 @@ plot.BMADR <- function(mod.obj,
 plot.BMADRQ <- function(mod.obj,
                         weight_type = c("BS", "LP"),
                         include_data = TRUE,
-                        all = FALSE, title
+                        all = FALSE, title, conv = FALSE
 ) {
   type <- 'quantal'
   weight_type <- match.arg(weight_type)
@@ -1351,7 +1374,7 @@ plot.BMADRQ <- function(mod.obj,
   }
 
   BMDW <- BMDWeights(mod.obj, type = type)
-  BMDBMA <- BMDMAQ_extract(mod.obj, conv = FALSE)
+  BMDBMA <- BMDMAQ_extract(mod.obj, conv = conv)
   mod.obj$data <- mod.obj$data[order(mod.obj$data$dose), ]
 
   dose <- sort(unique(mod.obj$data$dose)/max(mod.obj$data$dose))
@@ -1450,7 +1473,7 @@ plot.BMADRQ <- function(mod.obj,
   #print(respBMD)
   #respBMD <- refactor(respBMD)
 
-  BMDMixture <- BMDQmixture_extract(mod.obj, weight_type, conv=FALSE) # BMD values
+  BMDMixture <- BMDQmixture_extract(mod.obj, weight_type, conv=conv) # BMD values
   BMDMixture$BMDMixture2 <- log10(BMDMixture$BMDMixture/mod.obj$max.dose)
 
   gghst2 <- hist(BMDMixture$BMDMixture, breaks = sqrt(nrow(BMDMixture)), plot = FALSE) #hist on original scale
@@ -1502,6 +1525,12 @@ plot.BMADRQ <- function(mod.obj,
                                2*(respBMDBMDW$BMD - respBMDBMDW$BMDL),
                                respBMDBMDW$BMDU)
   }
+
+  # only converged models?
+  if(weight_type == 'BS' && conv == TRUE){
+    respBMDBMDW <- respBMDBMDW[respBMDBMDW$Converged == 1, ]
+  }
+
   #BMD plots
   pBMDs <- ggplot(data = respBMDBMDW, aes(x = BMD, y = Model, group = Model)) +
     geom_errorbarh(aes(xmin = BMDL, xmax = BMDU, y = Model),
@@ -1537,6 +1566,12 @@ plot.BMADRQ <- function(mod.obj,
                                     "LogNormal(Q)", "Gamma(Q)",  "QuadExp(Q)", "Probit(Q)",
                                     "Logistic(Q)")))
   #Weights plot
+
+  # only converged models?
+  if(weight_type == 'BS' && conv == TRUE){
+    BMDW <- BMDW[BMDW$Converged == 1, ]
+  }
+
   needed_data <- tidyr::separate(BMDW,
                                  col = "Model", sep = "_",
                                  into = c("Model", "Distribution"))
@@ -1643,6 +1678,14 @@ plot.BMADRQ <- function(mod.obj,
     plot.labs = c(0, dose*mod.obj$max.dose)
   }
 
+  # only converged models?
+
+  if(weight_type == 'BS' && conv == TRUE){
+    names(mod.obj$convergence) <- unname(get_models('quantal'))
+    converged.mods <- names(mod.obj$convergence[mod.obj$convergence==1])
+    mod.obj$models_included <- mod.obj$models_included[which(mod.obj$models_included %in% converged.mods)]
+  }
+
   pplot <- ggplot(data = preds2[paste0(preds2$Model,"_Q") %in% mod.obj$models_included,],
                   aes(x = Dose*mod.obj$max.dose, y = predicted, group = Model,
                       color = Model)) +
@@ -1650,7 +1693,7 @@ plot.BMADRQ <- function(mod.obj,
       size = 1,
       show.legend = TRUE) +
     labs(color = "Model",  x = expression(dose),
-         y = expression(p(y==1)), title = "") +
+         y = expression(p(y==1)), title = "", caption = "red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
 
     geom_segment(data = preds_min, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = a,
                                                  xend = max(Dose*mod.obj$max.dose),
@@ -1751,7 +1794,7 @@ plot.BMADRQ <- function(mod.obj,
                          name = "Rescaled Density",
                          labels = scales::comma)
     ) +
-    labs(x = expression(dose)) +
+    labs(x = expression(dose), caption = "red dot and horizontal green bar indicate the model-averaged BMD and its 95%CI") +
     theme_minimal() +
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose),

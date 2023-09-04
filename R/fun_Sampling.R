@@ -1495,8 +1495,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                                        na.rm = T)
     }
 
-  }else{ ## If all converged or NONE converged
-    w.bs.conv = NULL; macib.conv = NULL; mabmd.conv1 = NA; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
+  }else if(!(1 %in% converged)){ ## if none converged
+    w.bs.conv = NULL; macib.conv = NULL; mabmd.conv1 = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
+  }else if(!(0 %in% converged)){ ## If all converged
+    w.bs.conv = w.bs; macib.conv = macib; mabmd.conv1 = mabmd1; BMDq_bs_conv = BMDq_bs; dr.MA.bs.conv = dr.MA.bs
   }
 
 
@@ -2214,8 +2216,10 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     }
 
 
-  }else{
+  }else if(!(1 %in% converged)){
     lpwlp.conv = NULL; macilp.conv = NULL; BMDq_ls_conv = NULL; dr.MA.ls.conv = NULL; mabmd.conv = NA;
+  }else if(!(0 %in% converged)){
+    lpwlp.conv = lpwlp; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
   }
 
   ## Plot with weights bridge sampling
@@ -3733,8 +3737,10 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                                        na.rm = T)
     }
 
-  }else{
+  }else if(!(1 %in% converged)){
     w.bs.conv = NULL; macib.conv = NULL; mabmd.conv1 = NA; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL
+  }else if(!(0 %in% converged)){
+    w.bs.conv = w.bs; macib.conv = macib; mabmd.conv1 = mabmd1; BMDq_bs_conv = BMDq_bs; dr.MA.bs.conv = dr.MA.bs
   }
 
 
@@ -4557,8 +4563,10 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     }
 
 
-  }else{
+  }else if(!(1 %in% converged)){
     lpwlp.conv = NULL; macilp.conv = NULL; BMDq_ls_conv = NULL; dr.MA.ls.conv = NULL; mabmd.conv = NA;
+  }else if(!(0 %in% converged)){
+    lpwlp.conv = lpwb; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
   }
 
   ## Plot with weights bridge sampling
@@ -5589,8 +5597,10 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                        na.rm = T)
     }
 
-  }else{
+  }else if(!(1 %in% converged)){
     w.bs.conv = NULL; macib.conv = NULL; BMDq_bs_conv = NULL; dr.MA.bs.conv = NULL; mabmd.conv1 = NA
+  }else if(!(0 %in% converged)){
+    w.bs.conv = w.bs; macib.conv = macib; BMDq_bs_conv = BMDq_bs; dr.MA.bs.conv = dr.MA.bs; mabmd.conv1 = mabmd1
   }
 
   #----------------------------------
@@ -5603,7 +5613,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   # getting the posterior modes and the hessian and the model specific posterior distributions
   if(prior.weights[1]>0){
 
-      optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
+    optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
 
     if((ifelse(is.na(optE4_Q[[3]]),TRUE,(optE4_Q[[3]]!=0)) | length(optE4_Q)!=9)){
       prior.weights[1] <- 0
@@ -5874,133 +5884,133 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
 
-  if(prior.weights[1]>0){
-    DIHE4h=det(-solve(optE4_Q$hessian))
-    DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
-    ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHE4, llE4Q, minll, optE4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHE4, llE4Q, minll, optE4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+    if(prior.weights[1]>0){
+      DIHE4h=det(-solve(optE4_Q$hessian))
+      DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
+      ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHE4, llE4Q, minll, optE4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHE4, llE4Q, minll, optE4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[2]>0){
-    DIHIE4h=det(-solve(optIE4_Q$hessian))
-    DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
+    if(prior.weights[2]>0){
+      DIHIE4h=det(-solve(optIE4_Q$hessian))
+      DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHIE4, llIE4Q, minll, optIE4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHIE4, llIE4Q, minll, optIE4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHIE4, llIE4Q, minll, optIE4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHIE4, llIE4Q, minll, optIE4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[3]>0){
-    DIHH4h=det(-solve(optH4_Q$hessian))
-    DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
+    if(prior.weights[3]>0){
+      DIHH4h=det(-solve(optH4_Q$hessian))
+      DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHH4, llH4Q, minll, optH4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHH4, llH4Q, minll, optH4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHH4, llH4Q, minll, optH4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHH4, llH4Q, minll, optH4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[4]>0){
-    DIHLN4h=det(-solve(optLN4_Q$hessian))
-    DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
+    if(prior.weights[4]>0){
+      DIHLN4h=det(-solve(optLN4_Q$hessian))
+      DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHLN4, llLN4Q, minll, optLN4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHLN4, llLN4Q, minll, optLN4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHLN4, llLN4Q, minll, optLN4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHLN4, llLN4Q, minll, optLN4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[5]>0){
-    DIHG4h=det(-solve(optG4_Q$hessian))
-    DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
+    if(prior.weights[5]>0){
+      DIHG4h=det(-solve(optG4_Q$hessian))
+      DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHG4, llG4Q, minll, optG4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHG4, llG4Q, minll, optG4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHG4, llG4Q, minll, optG4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHG4, llG4Q, minll, optG4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[6]>0){
-    DIHQE4h=det(-solve(optQE4_Q$hessian))
-    DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
+    if(prior.weights[6]>0){
+      DIHQE4h=det(-solve(optQE4_Q$hessian))
+      DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHQE4, llQE4Q, minll, optQE4_Q, data$priormuQ, data$priorSigmaQ,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncdQ))
-    } else {
-      w = c(w, fun.w.betabin(DIHQE4, llQE4Q, minll, optQE4_Q, data$priormuQ, data$priorSigmaQ,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncdQ))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHQE4, llQE4Q, minll, optQE4_Q, data$priormuQ, data$priorSigmaQ,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncdQ))
+      } else {
+        w = c(w, fun.w.betabin(DIHQE4, llQE4Q, minll, optQE4_Q, data$priormuQ, data$priorSigmaQ,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncdQ))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[7]>0){
-    DIHP4h=det(-solve(optP4_Q$hessian))
-    DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
+    if(prior.weights[7]>0){
+      DIHP4h=det(-solve(optP4_Q$hessian))
+      DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHP4, llP4Q, minll, optP4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHP4, llP4Q, minll, optP4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHP4, llP4Q, minll, optP4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHP4, llP4Q, minll, optP4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
-  if(prior.weights[8]>0){
-    DIHL4h=det(-solve(optL4_Q$hessian))
-    DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
+    if(prior.weights[8]>0){
+      DIHL4h=det(-solve(optL4_Q$hessian))
+      DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
 
-    if(data$is_bin==1) {
-      w = c(w, fun.w.bin(DIHL4, llL4Q, minll, optL4_Q, data$priormu, data$priorSigma,
-                         data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                         data$truncd))
-    } else {
-      w = c(w, fun.w.betabin(DIHL4, llL4Q, minll, optL4_Q, data$priormu, data$priorSigma,
-                             data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
-                             data$truncd))
-    }
+      if(data$is_bin==1) {
+        w = c(w, fun.w.bin(DIHL4, llL4Q, minll, optL4_Q, data$priormu, data$priorSigma,
+                           data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                           data$truncd))
+      } else {
+        w = c(w, fun.w.betabin(DIHL4, llL4Q, minll, optL4_Q, data$priormu, data$priorSigma,
+                               data$priorlb, data$priorub, data$priorgama[1], data$priorgama[2],
+                               data$truncd))
+      }
 
-  }else{w=c(w,0)}
+    }else{w=c(w,0)}
 
     w <- ifelse(w == 'Inf' | is.na(w), 0, w)
     lpwlp=(prior.weights*w)/sum(prior.weights*w)
@@ -6095,8 +6105,10 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     }
 
 
-  }else{
+  }else if(!(1 %in% converged)){
     lpwlp.conv = NULL; macilp.conv = NULL; BMDq_ls_conv = NULL; dr.MA.ls.conv = NULL; mabmd.conv = NA;
+  }else if(!(0 %in% converged)){
+    lpwlp.conv = lpwb; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
   }
 
   ## Plot with weights bridge sampling

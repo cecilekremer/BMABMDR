@@ -1,5 +1,12 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9061
+
+* added option to plot function to indicate whether only converged models (conv = TRUE) should be plotted, defaults to FALSE
+
+* set MA_conv equal to MA if all models converged
+
+
 ## BMABMDR 0.0.0.9060
 
 * fixed likelihood L4_Q clustered
