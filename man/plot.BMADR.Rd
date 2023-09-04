@@ -13,7 +13,8 @@ plot.BMADR(
   include_data = TRUE,
   all = FALSE,
   title,
-  log = FALSE
+  log = FALSE,
+  conv = FALSE
 )
 
 plot.BMADRQ(
@@ -21,7 +22,8 @@ plot.BMADRQ(
   weight_type = c("BS", "LP"),
   include_data = TRUE,
   all = FALSE,
-  title
+  title,
+  conv = FALSE
 )
 }
 \arguments{
