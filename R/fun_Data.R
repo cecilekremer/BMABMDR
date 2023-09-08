@@ -11,8 +11,11 @@
 #' @param prior.BMD vector containing minimum, most likely (optional, can be NA), and maximum value for the BMD. Defaults to NULL (non-informative prior)
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
+#' @param d.mean mean of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.std sd of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.trunc truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 for a peaked informative prior
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior), N05 (for a N(0.5,0.5) prior), or 'custom'
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
@@ -55,6 +58,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
                         prior.BMD = NULL, # possible expert info on background and max response
                         shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
                         prior.d = 'N11',
+                        d.mean = NULL, d.std = NULL, d.trunc = NULL,
                         extended = TRUE
 ){
 
@@ -319,10 +323,15 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
   if(prior.d == 'N11'){
     prvar.d = 1; prmean.d = 1; truncd = 5
-  }else if(prior.d == 'EPA'){
+  }else if(prior.d == 'EPA'){ # prob of values below 1: plnorm(1, meanlog=0.4, sdlog=0.5)
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
   }else if(prior.d == 'N05'){
     prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+  }else if(prior.d == 'custom'){
+    if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+      stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+    }
+    prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
   prvar.s=1; prmean.s=-2*log(1.5*mean(sd.a))
@@ -337,8 +346,8 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
   priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s)
-  priorSigma1a=diag(c(1,1,1,prvar.d,prvar.s))
-  priorSigma1bQ=diag(c(1,1,1,prvar.dQE4,prvar.s))
+  priorSigma1a=diag(c(1,1,1,sqrt(prvar.d),sqrt(prvar.s)))
+  priorSigma1bQ=diag(c(1,1,1,sqrt(prvar.dQE4),sqrt(prvar.s)))
   priorlb1a = c(a.vec[1],BMD.vec[1],c.vec[1],0,0)
   priorub1a = c(a.vec[3],BMD.vec[3],c.vec[3],0,0)
 
@@ -428,7 +437,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
                          bkg = NULL, maxy = NULL, prior.BMD = NULL, # possible expert info on background and max response
                          shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
                          # prmean.d = 1, prmean.dQE4 = 0
-                         prior.d = 'N11',
+                         prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                          extended = TRUE
 ){
 
@@ -667,6 +676,11 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
   }else if(prior.d == 'N05'){
     prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+  }else if(prior.d == 'custom'){
+    if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+      stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+    }
+    prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
   prvar.s=1; prmean.s=-2*log(1.5*mean(gsd.a))
@@ -682,8 +696,8 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
   priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s)
-  priorSigma1a=diag(c(1,1,1,prvar.d,prvar.s))
-  priorSigma1bQ=diag(c(1,1,1,prvar.dQE4,prvar.s))
+  priorSigma1a=diag(c(1,1,1,sqrt(prvar.d),sqrt(prvar.s)))
+  priorSigma1bQ=diag(c(1,1,1,sqrt(prvar.dQE4),sqrt(prvar.s)))
 
   priorlb1a = c(a.vec[1],BMD.vec[1],c.vec[1],0,0)
   priorub1a = c(a.vec[3],BMD.vec[3],c.vec[3],0,0)
@@ -770,7 +784,10 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
+#' @param d.mean mean of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.std sd of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.trunc truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior), N05 (for a N(0.5,0.5) prior), or 'custom'
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
@@ -801,7 +818,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
                           maxy = NULL,
                           prior.BMD = NULL, # possible expert info on background and max response
                           shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
-                          prior.d = 'N11',
+                          prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                           extended = T
 ){
 
@@ -1024,6 +1041,11 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     # prvar.d = 1; prmean.d = 1; truncd = 10000
   }else if(prior.d == 'N05'){
     prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+  }else if(prior.d == 'custom'){
+    if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+      stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+    }
+    prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
   }
   # prvar.d=sqrt(0.5); prmean.d = prmean.d
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -1040,8 +1062,8 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s,0.5)
   priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s,0.5)
-  priorSigma1a=diag(c(1,1,1,prvar.d,prvar.s))
-  priorSigma1bQ=diag(c(1,1,1,prvar.dQE4,prvar.s))
+  priorSigma1a=diag(c(1,1,1,sqrt(prvar.d),sqrt(prvar.s)))
+  priorSigma1bQ=diag(c(1,1,1,sqrt(prvar.dQE4),sqrt(prvar.s)))
   priorlb1a = c(a.vec[1],BMD.vec[1],c.vec[1],0,0,0)
   priorub1a = c(a.vec[3],BMD.vec[3],c.vec[3],0,0,1)
 
@@ -1205,7 +1227,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
                            q, # the BMR
                            bkg = NULL, maxy = NULL, prior.BMD = NULL, # possible expert info on background and max response
                            shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
-                           prior.d = 'N11',
+                           prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                            extended = T
 ){
 
@@ -1442,6 +1464,11 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
   }else if(prior.d == 'N05'){
     prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+  }else if(prior.d == 'custom'){
+    if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+      stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+    }
+    prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
   prvar.s=1; prmean.s=-2*log(1.5*sd(yl2[yl2!=0]))
@@ -1458,8 +1485,8 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s,0.5)
   priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s,0.5)
-  priorSigma1a=diag(c(1,1,1,prvar.d,prvar.s))
-  priorSigma1bQ=diag(c(1,1,1,prvar.dQE4,prvar.s))
+  priorSigma1a=diag(c(1,1,1,sqrt(prvar.d),sqrt(prvar.s)))
+  priorSigma1bQ=diag(c(1,1,1,sqrt(prvar.dQE4),sqrt(prvar.s)))
   priorlb1a = c(a.vec[1],BMD.vec[1],c.vec[1],0,0,0)
   priorub1a = c(a.vec[3],BMD.vec[3],c.vec[3],0,0,1)
 
@@ -1628,9 +1655,12 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 #' @param bkg vector containing minimum, most likely (optional), and maximum value for the background response. Defaults to NULL (non-informative prior)
 #' @param prior.BMD vector containing minimum, most likely (optional), and maximum value for the BMD. Defaults to NULL (non-informative prior)
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
+#' @param d.mean mean of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.std sd of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.trunc truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered (i.e. litter effect). TRUE = clustered data. Defaults to FALSE
-#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
+#' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior), N05 (for a N(0.5,0.5) prior), or 'custom'
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #'
 #' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
@@ -1658,7 +1688,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
                          shape.a = 4, #scale parameter for Pert priors for a
                          shape.BMD = 0.0001, #scale parameter for the Pert priors for BMD
                          cluster = FALSE, # indicate if data is clustered
-                         prior.d = 'N11',
+                         prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                          extended = TRUE
 ){
 
@@ -1804,6 +1834,11 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     prvar.d = 0.5; prmean.d = 0.4; truncd = 10000
   }else if(prior.d == 'N05'){
     prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+  }else if(prior.d == 'custom'){
+    if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+      stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+    }
+    prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
   }
   prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
 
@@ -1811,8 +1846,8 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   # family 1a
   priormu1a <- c(a.vec[2], BMD.vec[2], prmean.d, ifelse(is_betabin==1, rhohat, 0))
   priormu1bQ <- c(a.vec[2], BMD.vec[2], prmean.dQE4, ifelse(is_betabin==1, rhohat, 0))
-  priorSigma1a <- diag(c(1, 1, prvar.d))
-  priorSigma1bQ <- diag(c(1, 1, prvar.dQE4))
+  priorSigma1a <- diag(c(1, 1, sqrt(prvar.d)))
+  priorSigma1bQ <- diag(c(1, 1, sqrt(prvar.dQE4)))
 
   priorlb1a <- c(a.vec[1], BMD.vec[1])
   priorub1a <- c(a.vec[3], BMD.vec[3])
@@ -1860,6 +1895,9 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 #' @param bkg vector containing minimum, most likely (optional, can be NA), and maximum value for the background response. Defaults to NULL (non-informative prior)
 #' @param maxy vector containing minimum, most likely (optional, can be NA), and maximum value for the response at dose infinity. Defaults to NULL (non-informative prior)
 #' @param prior.BMD vector containing minimum, most likely (optional, can be NA), and maximum value for the BMD. Defaults to NULL (non-informative prior)
+#' @param d.mean mean of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.std sd of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.trunc truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.c shape parameter for the modified PERT distribution on parameter c, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
@@ -1883,7 +1921,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
                            maxy = NULL,
                            prior.BMD = NULL, # possible expert info on background and max response
                            shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
-                           prior.d = 'N11',
+                           prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                            extended = TRUE,
                            covariate = 'all' # OPTIONS: 'a_sigma2', 'BMD_d', 'all'; for 'none', use original prep_data
 ){
@@ -2412,6 +2450,11 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       # prvar.d = 1; prmean.d = 1; truncd = 10000
     }else if(prior.d == 'N05'){
       prvar.d = rep(0.25, nlevels); prmean.d = rep(0.5, nlevels); truncd = 10000
+    }else if(prior.d == 'custom'){
+      if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+        stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+      }
+      prvar.d = rep(d.std**2, nlevels); prmean.d = rep(d.mean, nlevels); truncd = d.trunc
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = rep(0, nlevels); prvar.dQE4 = rep(1, nlevels); truncdQ = 10000
@@ -2427,6 +2470,11 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       # prvar.d = 1; prmean.d = 1; truncd = 10000
     }else if(prior.d == 'N05'){
       prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+    }else if(prior.d == 'custom'){
+      if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+        stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+      }
+      prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -2454,9 +2502,9 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
                       ifelse(rep(length(prvar.dQE4) > 1, nlevels), prvar.dQE4, rep(prvar.dQE4, nlevels))
   )
 
-  priorSigma1a=diag(c(1,1,1,unique(prvar.d),prvar.s))
+  priorSigma1a=diag(c(1,1,1,sqrt(unique(prvar.d)),sqrt(prvar.s)))
 
-  priorSigma1bQ=diag(c(1,1,1,unique(prvar.dQE4),prvar.s))
+  priorSigma1bQ=diag(c(1,1,1,sqrt(unique(prvar.dQE4)),sqrt(prvar.s)))
 
   priorlb1a = rbind(ifelse(rep(is.vector(a.vec), nlevels), rep(a.vec[1], nlevels),a.vec[,1]),
                     ifelse(rep(is.vector(BMD.vec), nlevels), rep(BMD.vec[1], nlevels),BMD.vec[,1]),
@@ -2593,7 +2641,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                             prior.BMD = NULL, # possible expert info on background and max response
                             shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
                             # prmean.d = 1, prmean.dQE4 = 0
-                            prior.d = 'N11',
+                            prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                             extended = TRUE,
                             # covariate = c('a', 'BMD', 'sigma2', 'd')
                             covariate = 'all' # OPTIONS: 'a_sigma2', 'BMD_d', 'all'; for 'none', use original prep_data
@@ -3177,6 +3225,11 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 1; prmean.d = 1; truncd = 10000
     }else if(prior.d == 'N05'){
       prvar.d = rep(0.25, nlevels); prmean.d = rep(0.5, nlevels); truncd = 10000
+    }else if(prior.d == 'custom'){
+      if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+        stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+      }
+      prvar.d = rep(d.std**2, nlevels); prmean.d = rep(d.mean, nlevels); truncd = d.trunc
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = rep(0, nlevels); prvar.dQE4 = rep(1, nlevels); truncdQ = 10000
@@ -3192,6 +3245,11 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 1; prmean.d = 1; truncd = 10000
     }else if(prior.d == 'N05'){
       prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+    }else if(prior.d == 'custom'){
+      if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+        stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+      }
+      prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -3219,9 +3277,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                       ifelse(rep(length(prvar.dQE4) > 1, nlevels), prvar.dQE4, rep(prvar.dQE4, nlevels))
   )
 
-  priorSigma1a=diag(c(1,1,1,unique(prvar.d),prvar.s))
+  priorSigma1a=diag(c(1,1,1,sqrt(unique(prvar.d)),sqrt(prvar.s)))
 
-  priorSigma1bQ=diag(c(1,1,1,unique(prvar.dQE4),prvar.s))
+  priorSigma1bQ=diag(c(1,1,1,sqrt(unique(prvar.dQE4)),sqrt(prvar.s)))
 
   priorlb1a = rbind(ifelse(rep(is.vector(a.vec), nlevels), rep(a.vec[1], nlevels),a.vec[,1]),
                     ifelse(rep(is.vector(BMD.vec), nlevels), rep(BMD.vec[1], nlevels),BMD.vec[,1]),
@@ -3356,6 +3414,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 #' @param shape.a shape parameter for the modified PERT distribution on parameter a, defaults to 4 (peaked at most likely value), a value of 0.0001 implies a uniform distribution
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param cluster logical variable to indicate if data is clustered. TRUE = clustered data. Defaults to FALSE
+#' @param d.mean mean of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.std sd of the Normal prior for log(d), only used when prior.d = 'custom'
+#' @param d.trunc truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'
 #' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
 #' @param covariate for which parameter a covariate effect should be included. Defaults to 'all', other options are 'background' or 'BMD_d'
@@ -3372,7 +3433,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
                             shape.a = 4, #scale parameter for Pert priors for a
                             shape.BMD = 0.0001, #scale parameter for the Pert priors for BMD
                             cluster = FALSE, # indicate if data is clustered
-                            prior.d = 'N11',
+                            prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                             extended = TRUE,
                             covariate = 'all' # options are 'all', 'BMD_d' or 'background'
 ){
@@ -3666,6 +3727,11 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 1; prmean.d = 1; truncd = 10000
     }else if(prior.d == 'N05'){
       prvar.d = rep(0.25, nlevels); prmean.d = rep(0.5, nlevels); truncd = 10000
+    }else if(prior.d == 'custom'){
+      if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+        stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+      }
+      prvar.d = rep(d.std**2, nlevels); prmean.d = rep(d.mean, nlevels); truncd = d.trunc
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = rep(0, nlevels); prvar.dQE4 = rep(1, nlevels); truncdQ = 10000
@@ -3684,6 +3750,11 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
       # prvar.d = 1; prmean.d = 1; truncd = 10000
     }else if(prior.d == 'N05'){
       prvar.d = 0.25; prmean.d = 0.5; truncd = 10000
+    }else if(prior.d == 'custom'){
+      if(is.null(d.std) | is.null(d.mean) | is.null(d.trunc)){
+        stop('For the custom prior on d please specify which mean (d.mean), standard deviation (d.std) and upper bound (d.trunc) should be used')
+      }
+      prvar.d = d.std**2; prmean.d = d.mean; truncd = d.trunc
     }
     # prvar.d=sqrt(0.5); prmean.d = prmean.d
     prmean.dQE4 = 0; prvar.dQE4 = 1; truncdQ = 10000
@@ -3703,8 +3774,8 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
                       ifelse(rep(length(prmean.dQE4)>1, nlevels), prmean.dQE4, rep(prmean.dQE4, nlevels)),
                       rep(0, nlevels))
 
-  priorSigma1a <- diag(c(1, 1, prvar.d[1]))
-  priorSigma1bQ <- diag(c(1, 1, prvar.dQE4[1]))
+  priorSigma1a <- diag(c(1, 1, sqrt(prvar.d[1])))
+  priorSigma1bQ <- diag(c(1, 1, sqrt(prvar.dQE4[1])))
 
   priorlb1a <- rbind(ifelse(rep(is.vector(a.vec), nlevels), rep(a.vec[1], nlevels), a.vec[ ,1]),
                      ifelse(rep(is.vector(BMD.vec), nlevels), rep(BMD.vec[1], nlevels), BMD.vec[ ,1]),

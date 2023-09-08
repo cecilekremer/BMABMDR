@@ -1,5 +1,5 @@
 Package: BMABMDR
-Version: 0.0.0.9061
+Version: 0.0.0.9062
 Title: Bayesian Model Averaging for Benchmark Dose Analysis
 Authors@R: c(
     person(given = "C\'ecile",
@@ -29,8 +29,7 @@ Authors@R: c(
 Description: The BMABMDR package provides functions for benchmark dose analysis using Bayesian model averaging. The user can
     specify whether a full Bayesian approach using bridge sampling is used, or a Laplace approximation which is considerably
     faster. Various functions for plotting are provided.
-License: `use_mit_license()`, `use_gpl3_license()` or friends to pick a
-    license
+License: Affero GPL-3
 Encoding: UTF-8
 NeedsCompilation: true
 LazyData: true

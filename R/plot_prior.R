@@ -81,10 +81,10 @@ plot_prior <- function(mod.obj, data, model_name,
 
     d.post <- df.mod$d[df.mod$ModelName == model_name]
 
-    d.prior <- rnorm(dim(df.mod)[1], mean = data$priormu[4], sd = sqrt(data$priorSigma[4,4]))
+    d.prior <- rtruncnorm(dim(df.mod)[1], mean = data$priormu[4], sd = data$priorSigma[4,4], b = data$truncd)
 
     if(grepl('QE4_', model_name)){
-      d.prior <- rnorm(dim(df.mod)[1], mean = data$priormuQ[4], sd = sqrt(data$priorSigma[4,4]))
+      d.prior <- rnorm(dim(df.mod)[1], mean = data$priormuQ[4], sd = data$priorSigma[4,4])
     }
 
     d.prior <- exp(d.prior)
@@ -246,7 +246,7 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
 
     a.post <- df.mod$a[df.mod$ModelName == model_name]
     d.post <- df.mod$d[df.mod$ModelName == model_name]
-    d.prior <- rnorm(dim(df.mod)[1], mean = data$priormu[3], sd = sqrt(data$priorSigma[3,3]))
+    d.prior <- rtruncnorm(dim(df.mod)[1], mean = data$priormu[3], sd = data$priorSigma[3,3], b = data$truncd)
     d.prior <- exp(d.prior)
 
     BMD.post <- df.mod$BMD[df.mod$ModelName == model_name]

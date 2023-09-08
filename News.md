@@ -1,11 +1,22 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9062
+
+* fixed code that occasionally triggers error in ModelTest
+
+* plot_prior: truncated prior for d
+
+* implemented user-defined prior for d (in PREP_DATA_*: option prior.d = 'custom')
+
+* added License file
+
 ## BMABMDR 0.0.0.9061
 
 * added option to plot function to indicate whether only converged models (conv = TRUE) should be plotted, defaults to FALSE
 
 * set MA_conv equal to MA if all models converged
 
+* updated plot legends
 
 ## BMABMDR 0.0.0.9060
 
