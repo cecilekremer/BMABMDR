@@ -79,8 +79,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median, na.rm = T)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
+      pars.SM = apply(as.data.frame(optSM$theta_tilde)[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'))], 2, median, na.rm = T)
+      means.SM = apply(as.data.frame(optSM$theta_tilde)[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -163,8 +163,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       optSM = optimizing(stanmodels$mSM, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'))], 2, median, na.rm = T)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
+      pars.SM = apply(as.data.frame(optSM$theta_tilde)[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'))], 2, median, na.rm = T)
+      means.SM = apply(as.data.frame(optSM$theta_tilde)[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -273,9 +273,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'),
+      pars.SM = apply(as.data.frame(optSM$theta_tilde)[, c(paste0('a[', 1:data.N$data$N, ']'), paste0('par[', data.N$data$N+1, ']'),
                                             paste0('par[', data.N$data$N+2, ']'))], 2, median, na.rm = T)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
+      means.SM = apply(as.data.frame(optSM$theta_tilde)[, paste0('mu[', 1:data.N$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -379,9 +379,9 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       optSM = optimizing(stanmodels$mSMc, data = data.modstanSM,
                          seed=as.integer(seed), draws = ndraws,
                          init = svSM, hessian=TRUE)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'),
+      pars.SM = apply(as.data.frame(optSM$theta_tilde)[, c(paste0('a[', 1:data.LN$data$N, ']'), paste0('par[', data.LN$data$N+1, ']'),
                                             paste0('par[', data.LN$data$N+2, ']'))], 2, median, na.rm = T)
-      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
+      means.SM = apply(as.data.frame(optSM$theta_tilde)[, paste0('mu[', 1:data.LN$data$N, ']')], 2, median, na.rm = T)
 
     }
 
@@ -591,12 +591,12 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       # pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
       #                                       paste0('par[', data.Q$data$N, ']'))], 2, median, na.rm = T)
       # means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:data.Q$data$N, ']')], 2, median, na.rm = T)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:N, ']')
+      pars.SM = apply(as.data.frame(optSM$theta_tilde)[, c(paste0('a[', 1:N, ']')
                                             # ,
                                             # paste0('par[', N, ']')
                                             )]
                       , 2, median, na.rm = T)
-      means.SM = apply(optSM$theta_tilde[, paste0('a[', 1:N, ']')], 2, median, na.rm = T)
+      means.SM = apply(as.data.frame(optSM$theta_tilde)[, paste0('a[', 1:N, ']')], 2, median, na.rm = T)
 
     } else if(data.Q$data$is_betabin == 1) {
 

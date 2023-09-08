@@ -18,6 +18,9 @@ PREP_DATA_NCOV(
   shape.c = 4,
   shape.BMD = 1e-04,
   prior.d = "N11",
+  d.mean = NULL,
+  d.std = NULL,
+  d.trunc = NULL,
   extended = TRUE,
   covariate = "all"
 )
@@ -35,6 +38,9 @@ PREP_DATA_LNCOV(
   shape.c = 4,
   shape.BMD = 1e-04,
   prior.d = "N11",
+  d.mean = NULL,
+  d.std = NULL,
+  d.trunc = NULL,
   extended = TRUE,
   covariate = "all"
 )
@@ -63,6 +69,12 @@ PREP_DATA_LNCOV(
 \item{shape.BMD}{shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior}
 
 \item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
+
+\item{d.mean}{mean of the Normal prior for log(d), only used when prior.d = 'custom'}
+
+\item{d.std}{sd of the Normal prior for log(d), only used when prior.d = 'custom'}
+
+\item{d.trunc}{truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
 
