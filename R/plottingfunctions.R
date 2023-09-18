@@ -393,18 +393,24 @@ plot.BMADR <- function(mod.obj,
   BMDMixture <- BMDmixture_extract(mod.obj, weight_type, conv=conv) # BMD values
   BMDMixture$BMDMixture2 <- log10(BMDMixture$BMDMixture/mod.obj$max.dose)
 
-  gghst2 <- hist(BMDMixture$BMDMixture, breaks = sqrt(nrow(BMDMixture)), plot = FALSE) #hist on original scale
+  # gghst2 <- hist(BMDMixture$BMDMixture, breaks = sqrt(nrow(BMDMixture)), plot = FALSE) #hist on original scale
+  # lais <- log10(gghst2$breaks) # log10 of the breakpoints
+  # dlais <- abs(diff(lais)) # width of the interval on log scale
+  # glais <- (gghst2$counts/dlais) # divide the original counts by the width on the log scale
+  # glais2 <- glais/sum(glais) * nrow(BMDMixture) # normalise the new frequencie
 
-  lais <- log10(gghst2$breaks) # log10 of the breakpoints
-  dlais <- abs(diff(lais)) # width of the interval on log scale
-  glais <- (gghst2$counts/dlais) # divide the original counts by the width on the log scale
-  glais2 <- glais/sum(glais) * nrow(BMDMixture) # normalise the new frequencie
+  breaks=c(min(BMDMixture$BMDMixture),as.numeric(quantile(BMDMixture$BMDMixture,probs=(1:sqrt(nrow(BMDMixture)))/sqrt(nrow(BMDMixture)))),max(BMDMixture$BMDMixture))
+  hdat = hist(BMDMixture$BMDMixture, breaks = breaks, plot = F)#,xlim=c(0,0.001))
+  lais = log10(hdat$mids)
 
   BMDMixture2 <- data.frame(Model = unique(BMDMixture$Model),#rep(unique(BMDMixture$Model), length(gghst2$counts)),
                             # Dose = gghst2$mids, #midpoints
-                            Dose = 10**lais[1:length(gghst2$counts)], #midpoints
-                            y = gghst2$counts, #frequencies
-                            y2 = glais2
+                            # Dose = 10**lais[1:length(gghst2$counts)], #midpoints
+                            # y = gghst2$counts, #frequencies
+                            # y2 = glais2
+                            Dose = 10**lais[1:length(hdat$density)],
+                            y = hdat$density*10^log10(hdat$mids)*log(10),
+                            y2 = hdat$density*10^log10(hdat$mids)*log(10)
   )
 
   #BMDMixtureD <- density(BMDMixture$BMDMixture2, # density of BMD mixture on log10 scale
@@ -1478,16 +1484,29 @@ plot.BMADRQ <- function(mod.obj,
 
   gghst2 <- hist(BMDMixture$BMDMixture, breaks = sqrt(nrow(BMDMixture)), plot = FALSE) #hist on original scale
 
-  lais <- log10(gghst2$breaks) # log10 of the breaks
-  dlais <- abs(diff(lais)) # width of the interval on log scale
-  glais <- (gghst2$counts/dlais) # divide the original counts by the width on the log scale
-  glais2 <- glais/sum(glais) * nrow(BMDMixture) # normalise the new frequencies
+  # lais <- log10(gghst2$breaks) # log10 of the breaks
+  # dlais <- abs(diff(lais)) # width of the interval on log scale
+  # glais <- (gghst2$counts/dlais) # divide the original counts by the width on the log scale
+  # glais2 <- glais/sum(glais) * nrow(BMDMixture) # normalise the new frequencies
+  #
+  # BMDMixture2 <- data.frame(Model = unique(BMDMixture$Model),#rep(unique(BMDMixture$Model), length(gghst2$counts)),
+  #                           # Dose = gghst2$mids, #midpoints
+  #                           Dose = 10**lais[1:length(gghst2$counts)], #midpoints
+  #                           y = gghst2$counts, #frequencies
+  #                           y2 = glais2
+  # )
+  breaks=c(min(BMDMixture$BMDMixture),as.numeric(quantile(BMDMixture$BMDMixture,probs=(1:sqrt(nrow(BMDMixture)))/sqrt(nrow(BMDMixture)))),max(BMDMixture$BMDMixture))
+  hdat = hist(BMDMixture$BMDMixture, breaks = breaks, plot = F)#,xlim=c(0,0.001))
+  lais = log10(hdat$mids)
 
   BMDMixture2 <- data.frame(Model = unique(BMDMixture$Model),#rep(unique(BMDMixture$Model), length(gghst2$counts)),
                             # Dose = gghst2$mids, #midpoints
-                            Dose = 10**lais[1:length(gghst2$counts)], #midpoints
-                            y = gghst2$counts, #frequencies
-                            y2 = glais2
+                            # Dose = 10**lais[1:length(gghst2$counts)], #midpoints
+                            # y = gghst2$counts, #frequencies
+                            # y2 = glais2
+                            Dose = 10**lais[1:length(hdat$density)],
+                            y = hdat$density*10^log10(hdat$mids)*log(10),
+                            y2 = hdat$density*10^log10(hdat$mids)*log(10)
   )
   # BMDMixtureD <- density(BMDMixture$BMDMixture2, # density of BMD mixture on log10 scale
   #                        from = min(BMDMixture$BMDMixture2),
