@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9063
+
+* fixed graphical presentation of BMD posterior
+
 ## BMABMDR 0.0.0.9062
 
 * fixed code that occasionally triggers error in ModelTest
