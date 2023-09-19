@@ -167,22 +167,34 @@ plot.BMADR <- function(mod.obj,
     lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
     bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
     bmdlo <- BMDW$BMDL/mod.obj$max.dose
+    # lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+    #                    log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+    #                    log10(min(dose[dose > 0])/4))
+    # ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+    #                  min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+    #                  min(dose[dose > 0])/4)
     lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
-                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(mod.obj$MA_post/mod.obj$max.dose)/2),
                        log10(min(dose[dose > 0])/4))
     ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
-                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(mod.obj$MA_post/mod.obj$max.dose)/2,
                      min(dose[dose > 0])/4)
   }else{
     ddd <- c(min(dose)/4, dose)
     lg10d <- c(log10(min(dose)/4), log10(dose))
     bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
     bmdlo <- BMDW$BMDL/mod.obj$max.dose
+    # lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+    #                    log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+    #                    log10(min(dose)/4))
+    # ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+    #                  min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+    #                  min(dose)/4)
     lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
-                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(mod.obj$MA_post/mod.obj$max.dose)/2),
                        log10(min(dose)/4))
     ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
-                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(mod.obj$MA_post/mod.obj$max.dose)/2,
                      min(dose)/4)
   }
 
@@ -493,7 +505,7 @@ plot.BMADR <- function(mod.obj,
     geom_errorbarh(data = BMDBMA[BMDBMA$Type == weight_type,],
                    aes(xmin = BMDL, xmax = BMDU, y = Model),
                    linetype = "solid", show.legend = FALSE,
-                   size = 3, height = 1.2, color = brewer.pal(9, "Set1")[3]) +
+                   linewidth = 3, height = 1.2, color = brewer.pal(9, "Set1")[3]) +
     geom_point(data = BMDBMA[BMDBMA$Type == weight_type,],
                aes(x = BMD, y = Model),
                size = 7, color = 1, shape = 21,
@@ -1091,12 +1103,13 @@ plot.BMADR <- function(mod.obj,
 
   ylim.prim <- c(cmin, cmax)
   # ylim.sec <- c(min(BMDMixture2$y2), max(BMDMixture2$y2))
-  ylim.sec <- c(min(BMDMixture2$y), max(BMDMixture2$y))
+  ylim.sec <- c(min(BMDMixture2$y,na.rm=T), max(BMDMixture2$y,na.rm=T))
   b <- diff(ylim.prim)/diff(ylim.sec)
   a <- ylim.prim[1] - b*ylim.sec[1]
 
   # BMDMixture2$yres = a + BMDMixture2$y2*b
   BMDMixture2$yres = a + BMDMixture2$y*b
+  BMDMixture2 = BMDMixture2[!is.na(BMDMixture2$yres), ]
 
   dplot <- ggplot(data = preds$model_averaged, aes(x = Dose*mod.obj$max.dose, y = model_averaged,
                                                    group = 1)) +
@@ -1155,7 +1168,11 @@ plot.BMADR <- function(mod.obj,
     theme_minimal() +
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose),
-                    ylim =  c(min(BMDMixture2$yres)*0.9, max(BMDMixture2$yres)*1.1)) +
+                    # ylim =  c(min(BMDMixture2$yres)*0.9, max(BMDMixture2$yres)*1.1)) +
+                    ylim = c(orig_ptdataN$m[1]-orig_ptdataN$s[1], max(BMDMixture2$yres)*1.1)) +
+    # coord_cartesian(xlim = c(min(mod.obj$MA_post),
+    #                          2*mod.obj$max.dose),
+    #                 ylim =  c(min(BMDMixture2$yres)*0.9, max(BMDMixture2$yres)*1.1)) +
     # scale_x_continuous(trans = 'log10', labels = scales::comma,
     #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
     scale_x_continuous(trans = 'log10', labels = plot.labs,
@@ -1389,23 +1406,34 @@ plot.BMADRQ <- function(mod.obj,
     lg10d <- c(log10(min(dose[dose > 0])/4), log10(dose[2:length(dose)]))
     bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
     bmdlo <- BMDW$BMDL/mod.obj$max.dose
-
+    # lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+    #                    log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+    #                    log10(min(dose[dose > 0])/4))
+    # ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+    #                  min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+    #                  min(dose[dose > 0])/4)
     lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
-                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(mod.obj$MA_post/mod.obj$max.dose)/2),
                        log10(min(dose[dose > 0])/4))
     ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
-                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(mod.obj$MA_post/mod.obj$max.dose)/2,
                      min(dose[dose > 0])/4)
   }else{
     ddd <- c(min(dose)/4, dose)
     lg10d <- c(log10(min(dose)/4), log10(dose))
     bmdl <- log10(BMDW$BMDL/mod.obj$max.dose)
     bmdlo <- BMDW$BMDL/mod.obj$max.dose
+    # lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
+    #                    log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+    #                    log10(min(dose)/4))
+    # ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
+    #                  min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+    #                  min(dose)/4)
     lg10d[1] <- ifelse((min(bmdl, na.rm=T) < lg10d[1] & min(bmdl, na.rm=T)!='-Inf' ),
-                       log10(min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T)),
+                       log10(min(mod.obj$MA_post/mod.obj$max.dose)/2),
                        log10(min(dose)/4))
     ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
-                     min(BMDW$BMDL/mod.obj$max.dose/2, na.rm=T),
+                     min(mod.obj$MA_post/mod.obj$max.dose)/2,
                      min(dose)/4)
   }
 
@@ -1817,7 +1845,8 @@ plot.BMADRQ <- function(mod.obj,
     theme_minimal() +
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose),
-                    ylim = c(min(BMDMixture2$yres), max(BMDMixture2$yres)) ) +
+                    # ylim = c(min(BMDMixture2$yres), max(BMDMixture2$yres)) ) +
+                    ylim = c(min(mod.obj$data$y/mod.obj$data$n), max(BMDMixture2$yres)) ) +
     # scale_x_continuous(trans = 'log10', labels = scales::comma,
     #                    breaks = orig_ptdata$dose2[2:length(orig_ptdata$dose2)]*mod.obj$max.dose) +
     # scale_x_continuous(trans = 'log10', labels = dose*mod.obj$max.dose,
