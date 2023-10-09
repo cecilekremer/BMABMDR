@@ -1373,6 +1373,46 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
   ))
 
+  mabkg1=(c( # normal
+    if("E4_N" %in% names(count)) sample(as.matrix(fitstanE4_N)[,"mu_0"],count[names(count)=="E4_N"],replace=T),
+    if("IE4_N" %in% names(count)) sample(as.matrix(fitstanIE4_N)[,"mu_0"],count[names(count)=="IE4_N"],replace=T),
+    if("H4_N" %in% names(count)) sample(as.matrix(fitstanH4_N)[,"mu_0"],count[names(count)=="H4_N"],replace=T),
+    if("LN4_N" %in% names(count)) sample(as.matrix(fitstanLN4_N)[,"mu_0"],count[names(count)=="LN4_N"],replace=T),
+    if("G4_N" %in% names(count)) sample(as.matrix(fitstanG4_N)[,"mu_0"],count[names(count)=="G4_N"],replace=T),
+    if("QE4_N" %in% names(count)) sample(as.matrix(fitstanQE4_N)[,"mu_0"],count[names(count)=="QE4_N"],replace=T),
+    if("P4_N" %in% names(count)) sample(as.matrix(fitstanP4_N)[,"mu_0"],count[names(count)=="P4_N"],replace=T),
+    if("L4_N" %in% names(count)) sample(as.matrix(fitstanL4_N)[,"mu_0"],count[names(count)=="L4_N"],replace=T),
+    # lognormal
+    if("E4_LN" %in% names(count)) sample(as.matrix(fitstanE4_LN)[,"mu_0"],count[names(count)=="E4_LN"],replace=T),
+    if("IE4_LN" %in% names(count)) sample(as.matrix(fitstanIE4_LN)[,"mu_0"],count[names(count)=="IE4_LN"],replace=T),
+    if("H4_LN" %in% names(count)) sample(as.matrix(fitstanH4_LN)[,"mu_0"],count[names(count)=="H4_LN"],replace=T),
+    if("LN4_LN" %in% names(count)) sample(as.matrix(fitstanLN4_LN)[,"mu_0"],count[names(count)=="LN4_LN"],replace=T),
+    if("G4_LN" %in% names(count)) sample(as.matrix(fitstanG4_LN)[,"mu_0"],count[names(count)=="G4_LN"],replace=T),
+    if("QE4_LN" %in% names(count)) sample(as.matrix(fitstanQE4_LN)[,"mu_0"],count[names(count)=="QE4_LN"],replace=T),
+    if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,"mu_0"],count[names(count)=="P4_LN"],replace=T),
+    if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,"mu_0"],count[names(count)=="L4_LN"],replace=T)
+  ))
+
+  mamaxy1=(c( # normal
+    if("E4_N" %in% names(count)) sample(as.matrix(fitstanE4_N)[,"mu_inf"],count[names(count)=="E4_N"],replace=T),
+    if("IE4_N" %in% names(count)) sample(as.matrix(fitstanIE4_N)[,"mu_inf"],count[names(count)=="IE4_N"],replace=T),
+    if("H4_N" %in% names(count)) sample(as.matrix(fitstanH4_N)[,"mu_inf"],count[names(count)=="H4_N"],replace=T),
+    if("LN4_N" %in% names(count)) sample(as.matrix(fitstanLN4_N)[,"mu_inf"],count[names(count)=="LN4_N"],replace=T),
+    if("G4_N" %in% names(count)) sample(as.matrix(fitstanG4_N)[,"mu_inf"],count[names(count)=="G4_N"],replace=T),
+    if("QE4_N" %in% names(count)) sample(as.matrix(fitstanQE4_N)[,"mu_inf"],count[names(count)=="QE4_N"],replace=T),
+    if("P4_N" %in% names(count)) sample(as.matrix(fitstanP4_N)[,"mu_inf"],count[names(count)=="P4_N"],replace=T),
+    if("L4_N" %in% names(count)) sample(as.matrix(fitstanL4_N)[,"mu_inf"],count[names(count)=="L4_N"],replace=T),
+    # lognormal
+    if("E4_LN" %in% names(count)) sample(as.matrix(fitstanE4_LN)[,"mu_inf"],count[names(count)=="E4_LN"],replace=T),
+    if("IE4_LN" %in% names(count)) sample(as.matrix(fitstanIE4_LN)[,"mu_inf"],count[names(count)=="IE4_LN"],replace=T),
+    if("H4_LN" %in% names(count)) sample(as.matrix(fitstanH4_LN)[,"mu_inf"],count[names(count)=="H4_LN"],replace=T),
+    if("LN4_LN" %in% names(count)) sample(as.matrix(fitstanLN4_LN)[,"mu_inf"],count[names(count)=="LN4_LN"],replace=T),
+    if("G4_LN" %in% names(count)) sample(as.matrix(fitstanG4_LN)[,"mu_inf"],count[names(count)=="G4_LN"],replace=T),
+    if("QE4_LN" %in% names(count)) sample(as.matrix(fitstanQE4_LN)[,"mu_inf"],count[names(count)=="QE4_LN"],replace=T),
+    if("P4_LN" %in% names(count)) sample(as.matrix(fitstanP4_LN)[,"mu_inf"],count[names(count)=="P4_LN"],replace=T),
+    if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,"mu_inf"],count[names(count)=="L4_LN"],replace=T)
+  ))
+
   macib=(quantile(mabmd1,pvec))*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
@@ -2324,6 +2364,9 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       MA_ls_conv=macilp.conv,
                       MA_post_bs = BMDq_bs,
                       MA_post_ls = BMDq_ls,
+                      MA_post_full_bs = mabmd1*data$maxD,
+                      bkg_post_bs = mabkg1,
+                      maxy_post_bs = mamaxy1,
                       MA_post_bs_conv = BMDq_bs_conv,
                       MA_post_ls_conv = BMDq_ls_conv,
                       MA_dr_bs = dr.MA.bs,
@@ -5499,6 +5542,17 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
   ))
 
+  mabkg1=(c( # normal
+    if("E4_Q" %in% names(count)) sample(as.matrix(fitstanE4_Q)[,"a"],count[names(count)=="E4_Q"],replace=T),
+    if("IE4_Q" %in% names(count)) sample(as.matrix(fitstanIE4_Q)[,"a"],count[names(count)=="IE4_Q"],replace=T),
+    if("H4_Q" %in% names(count)) sample(as.matrix(fitstanH4_Q)[,"a"],count[names(count)=="H4_Q"],replace=T),
+    if("LN4_Q" %in% names(count)) sample(as.matrix(fitstanLN4_Q)[,"a"],count[names(count)=="LN4_Q"],replace=T),
+    if("G4_Q" %in% names(count)) sample(as.matrix(fitstanG4_Q)[,"a"],count[names(count)=="G4_Q"],replace=T),
+    if("QE4_Q" %in% names(count)) sample(as.matrix(fitstanQE4_Q)[,"a"],count[names(count)=="QE4_Q"],replace=T),
+    if("P4_Q" %in% names(count)) sample(as.matrix(fitstanP4_Q)[,"a"],count[names(count)=="P4_Q"],replace=T),
+    if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,"a"],count[names(count)=="L4_Q"],replace=T)
+  ))
+
   macib=quantile(mabmd1,pvec)*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
@@ -6196,6 +6250,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       MA_ls_conv=macilp.conv,
                       MA_post_bs = BMDq_bs,
                       MA_post_ls = BMDq_ls,
+                      MA_post_full_bs = mabmd1*data$maxD,
+                      bkg_post_bs = mabkg1,
                       MA_post_bs_conv = BMDq_bs_conv,
                       MA_post_ls_conv = BMDq_ls_conv,
                       MA_dr_bs = dr.MA.bs,
