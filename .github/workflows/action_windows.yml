@@ -12,7 +12,7 @@ jobs:
           - {source: true, binary: true, r: '4.3'}
           - {source: false, binary: true, r: '4.2'}
           - {source: false, binary: true, r: '4.0'}
-    uses: ./.github/workflows/check_build_windows.yml@master
+    uses: ./.github/workflows/check_build_windows.yml
     with:
       rver: ${{ matrix.config.r}}
       build_source: ${{ matrix.config.source }}
