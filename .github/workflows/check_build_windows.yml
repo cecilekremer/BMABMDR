@@ -47,9 +47,15 @@ jobs:
         with:
           extra-packages: |
             any::pkgbuild
-      - name: build R-package (source)
+            any::rstantools
+      - name: build source R-package
         id: build-source
         run: |
+          ## update configure.win
+          rstantools::rstan_config()
+          ## update src files
+          Rcpp::compileAttributes()
+          ## build source pkg
           pkg <- pkgbuild::build()
           cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
           if(Sys.getenv("BUILD_SOURCE") == "true") {
@@ -63,19 +69,19 @@ jobs:
         run: |
           mkdir ${{ inputs.rver }}
         shell: cmd
-      - name: upload R-package (source)
+      - name: upload source R-package
         if: inputs.build_source
         uses: actions/upload-artifact@v3
         with:
           name: src
           path: pkg_source
           if-no-files-found: ignore
-      - name: build R-package (binary)
+      - name: build binary R-package
         id: build-binary
         if: inputs.build_binary
         run: pkgbuild::build(binary = TRUE, dest_path = Sys.getenv("R_VER"))
         shell: Rscript {0}
-      - name: upload check results + R-package (binary)
+      - name: upload binary R-package
         if: success() && inputs.build_binary
         uses: actions/upload-artifact@v3
         with:
