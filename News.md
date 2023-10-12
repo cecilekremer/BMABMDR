@@ -4,6 +4,8 @@
 
 * added model-averaged posterior of bkg and maxy (not relevant for R4EU platform)
 
+* fixed error in plot function
+
 ## BMABMDR 0.0.0.9063
 
 * fixed graphical presentation of BMD posterior
