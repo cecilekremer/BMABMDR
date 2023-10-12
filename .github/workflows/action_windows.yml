@@ -1,0 +1,21 @@
+name: check-build-windows
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-upload:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {source: true, binary: true, r: '4.3'}
+          - {source: false, binary: true, r: '4.2'}
+          - {source: false, binary: true, r: '4.0'}
+    uses: ./.github/workflows/check_build_windows.yml@master
+    with:
+      rver: ${{ matrix.config.r}}
+      build_source: ${{ matrix.config.source }}
+      build_binary: ${{ matrix.config.binary }}
+      check_args: '--no-vignettes'
+   
