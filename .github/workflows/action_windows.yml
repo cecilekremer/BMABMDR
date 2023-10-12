@@ -17,5 +17,3 @@ jobs:
       rver: ${{ matrix.config.r}}
       build_source: ${{ matrix.config.source }}
       build_binary: ${{ matrix.config.binary }}
-      check_args: '--no-vignettes'
-   

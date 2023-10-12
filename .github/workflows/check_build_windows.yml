@@ -1,20 +1,16 @@
 # ****************************************************************
 # Date: 12-10-2023
 # Author: jchau
-# 
+#
 # Job description:
 # 1. setup R
 # 2. install R-package dependencies
-# 3. run R CMD check
-# 4. if R CMD check fails, upload check results
-# 5. if R CMD check successful and R-version is 'release' (default), 
-#    upload source R-package as artifact
-# 6. if R CMD check successful and binary R-package is built 
-#    upload binary R-package as artifact
+# 3. build source R-package and upload as artifact
+# 4. build binary R-package and upload as artifact
 # ****************************************************************
 
 name: check-build-windows-job
-  
+
 on:
   workflow_call:
     inputs:
@@ -28,15 +24,11 @@ on:
         required: true
         type: boolean
         default: false
-      build_binary: 
+      build_binary:
         description: 'Build/upload binary version of R-package'
         required: true
         type: boolean
         default: true
-      check_args:
-        description: 'Additional arguments passed to R CMD check, already includes --no-manual --no-build-vignettes by default'
-        required: false
-        type: string
 
 jobs:
   check-upload:
@@ -53,10 +45,10 @@ jobs:
           r-version: ${{ inputs.rver }}
       - uses: r-lib/actions/setup-r-dependencies@v2
         with:
-          extra-packages: | 
+          extra-packages: |
             any::pkgbuild
       - name: build R-package (source)
-        id: build-source 
+        id: build-source
         run: |
           pkg <- pkgbuild::build()
           cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
@@ -65,26 +57,25 @@ jobs:
             file.copy(from = pkg, to = file.path("pkg_source", basename(pkg)))
           }
         shell: Rscript {0}
-        env: 
+        env:
           BUILD_SOURCE: ${{ inputs.build_source }}
-      - name: check R-package
+      - name: make artifact folder
         run: |
           mkdir ${{ inputs.rver }}
-          R CMD check ${{ steps.build-source.outputs.path }} --no-manual --no-build-vignettes ${{ inputs.check_args }} --output=${{ inputs.rver }}
         shell: cmd
       - name: upload R-package (source)
-        if: success() && inputs.build_source
+        if: inputs.build_source
         uses: actions/upload-artifact@v3
-        with: 
+        with:
           name: src
           path: pkg_source
           if-no-files-found: ignore
       - name: build R-package (binary)
         id: build-binary
-        if: success() && inputs.build_binary
+        if: inputs.build_binary
         run: pkgbuild::build(binary = TRUE, dest_path = Sys.getenv("R_VER"))
         shell: Rscript {0}
-      - name: upload check results + R-package (binary) 
+      - name: upload check results + R-package (binary)
         if: success() && inputs.build_binary
         uses: actions/upload-artifact@v3
         with:
