@@ -161,6 +161,14 @@ plot.BMADR <- function(mod.obj,
   mod.obj$dataN <- mod.obj$dataN[order(mod.obj$dataN$dose), ] #order the data by dose
   mod.obj$dataLN <- mod.obj$dataLN[order(mod.obj$dataLN$dose), ] #order the data by dose
 
+  if(weight_type == 'BS'){
+    if(conv == TRUE){
+      mod.obj$MA_post = mod.obj$MA_post_bs_conv
+    }else if(conv == FALSE){
+      mod.obj$MA_post = mod.obj$MA_post_bs
+    }
+  }
+
   dose <- sort(unique(mod.obj$dataN$dose)/max(mod.obj$dataN$dose))
   if(min(dose) == 0){
     ddd <- c(min(dose[dose > 0])/4, dose[2:length(dose)])
@@ -1399,6 +1407,14 @@ plot.BMADRQ <- function(mod.obj,
   BMDW <- BMDWeights(mod.obj, type = type)
   BMDBMA <- BMDMAQ_extract(mod.obj, conv = conv)
   mod.obj$data <- mod.obj$data[order(mod.obj$data$dose), ]
+
+  if(weight_type == 'BS'){
+    if(conv == TRUE){
+      mod.obj$MA_post = mod.obj$MA_post_bs_conv
+    }else if(conv == FALSE){
+      mod.obj$MA_post = mod.obj$MA_post_bs
+    }
+  }
 
   dose <- sort(unique(mod.obj$data$dose)/max(mod.obj$data$dose))
   if(min(dose) == 0){
