@@ -49,6 +49,7 @@ jobs:
             any::pkgbuild
             any::remotes
       - name: set compiler flags
+        if: ${{ inputs.rver != '4.0' }}
         run: |
           ## install old version rstantools (CXX14)
           remotes::install_version("rstantools", "2.2.0")
