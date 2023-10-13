@@ -61,7 +61,7 @@ jobs:
           MAKEVARS <- file.path(dotR, "Makevars.win")
           if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
           cat("\nCXX14=g++ -std=c++1y",
-            "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated",
+            "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
       - name: build source R-package
