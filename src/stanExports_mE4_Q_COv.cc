@@ -2,12 +2,12 @@
 
 #include <Rcpp.h>
 using namespace Rcpp ;
-#include "stanExports_mE4_Q_COV.h"
+#include "stanExports_mE4_Q_COv.h"
 
-RCPP_MODULE(stan_fit4mE4_Q_COV_mod) {
+RCPP_MODULE(stan_fit4mE4_Q_COv_mod) {
 
 
-    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_mE4_Q_COV")
+    class_<rstan::stan_fit<stan_model, boost::random::ecuyer1988> >("rstantools_model_mE4_Q_COv")
 
     .constructor<SEXP,SEXP,SEXP>()
 

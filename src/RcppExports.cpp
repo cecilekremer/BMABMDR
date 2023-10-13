@@ -15,7 +15,7 @@ Rcpp::Rostream<false>& Rcpp::Rcerr = Rcpp::Rcpp_cerr_get();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mE4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mE4COV_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mE4_Q_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4mE4_Q_COV_mod();
+RcppExport SEXP _rcpp_module_boot_stan_fit4mE4_Q_COv_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mE4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mG4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mG4COV_mod();
@@ -63,7 +63,7 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4mE4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mE4COV_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4COV_mod, 0},
     {"_rcpp_module_boot_stan_fit4mE4_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4_Q_mod, 0},
-    {"_rcpp_module_boot_stan_fit4mE4_Q_COV_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4_Q_COV_mod, 0},
+    {"_rcpp_module_boot_stan_fit4mE4_Q_COv_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4_Q_COv_mod, 0},
     {"_rcpp_module_boot_stan_fit4mE4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mE4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mG4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mG4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mG4COV_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mG4COV_mod, 0},

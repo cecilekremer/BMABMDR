@@ -3,3 +3,7 @@
 ^data-raw$
 ^cran-comments\.md$
 ^README\.Rmd$
+^.*\.log$
+^packrat/
+^\.Rprofile$
+^\.Renviron$

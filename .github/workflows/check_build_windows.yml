@@ -47,14 +47,25 @@ jobs:
         with:
           extra-packages: |
             any::pkgbuild
-            any::rstantools
+            any::remotes
+      - name: set compiler flags
+        run: |
+        ## install old version rstantools (CXX14)
+        remotes::install_version("rstantools", "2.2.0")
+        ## update src files
+        rstantools::rstan_config()
+        Rcpp::compileAttributes()
+        ## edit global Makevars.win
+        dotR <- file.path(Sys.getenv("HOME"), ".R")
+        if (!file.exists(dotR)) { dir.create(dotR) }
+        MAKEVARS <- file.path(dotR, "Makevars.win")
+        if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
+        cat("\nCXX14=g++ -std=c++1y",
+            "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated",
+            "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
+        shell: Rscript {0}
       - name: build source R-package
         id: build-source
-        run: |
-          ## update configure.win
-          rstantools::rstan_config()
-          ## update src files
-          Rcpp::compileAttributes()
           ## build source pkg
           pkg <- pkgbuild::build()
           cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
