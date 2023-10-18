@@ -51,7 +51,6 @@ jobs:
             cran::rstan@2.21.8
             cran::StanHeaders@2.21.0-7
             cran::brms@2.20.1
-        shell: Rscript {0}
       - name: set compiler flags
         if: ${{ inputs.rver != '4.0' }}
         run: |
