@@ -44,23 +44,30 @@ jobs:
         with:
           r-version: ${{ inputs.rver }}
           extra-repositories: 'https://mc-stan.org/r-packages/'
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: install specific versions rstan, StanHeaders, brms
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           packages: |
-            pkgbuild
-            remotes
-            rstan@2.21.8
-            StanHeaders@2.21.0-7
-            brms@2.20.1
+            any::StanHeaders@2.21.0-7
+            any::rstan@2.21.8
+            any::brms@2.20.1
           upgrade: 'FALSE'
-      - uses: r-lib/actions/setup-r-dependencies@v2
+      - name: install specific version rstantools
+        uses: r-lib/actions/setup-r-dependencies@v2
+        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
+        with:
+          packages: |
+            any::rstantools@2.2.0
+          upgrade: 'FALSE'
+      - name: install BMABMDR dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
         with:
           upgrade: 'FALSE'
+          extra-packages: |
+            any::pkgbuild
       - name: set compiler flags
-        if: ${{ inputs.rver != '4.0' }}
+        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         run: |
-          ## install old version rstantools (CXX14)
-          remotes::install_version("rstantools", "2.2.0")
           ## update src files
           rstantools::rstan_config()
           Rcpp::compileAttributes()
