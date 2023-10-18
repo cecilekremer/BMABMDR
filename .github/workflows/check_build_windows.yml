@@ -48,29 +48,23 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
-            pkgbuild
-      - name: re-install specific versions rstan, StanHeaders, brms, rstantools
-        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          packages: |
-            StanHeaders@2.21.0-7
-            rstan@2.21.8
-            brms@2.20.1
-            rstantools@2.2.0
-          upgrade: 'FALSE'
+            any::pkgbuild
+            any::remotes
       - name: re-install specific versions rstan, StanHeaders, brms
-        uses: r-lib/actions/setup-r-dependencies@v2
-        if: ${{ inputs.rver == '4.0' || inputs.rver == '4.1' }}
-        with:
-          packages: |
-            StanHeaders@2.21.0-7
-            rstan@2.21.8
-            brms@2.20.1
-          upgrade: 'FALSE'
+        run: |
+          invisible(
+            mapply(
+              remotes::install,
+              package = c("StanHeaders", "rstan", "brms"),
+              version = c("2.21.0-7", "2.21.8", "2.20.1")
+            )
+          )
+        shell: Rscript {0}
       - name: set compiler flags
         if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         run: |
+          ## install old version rstantools
+          remotes::install_version("rstantools", "2.2.0")
           ## update src files
           rstantools::rstan_config()
           Rcpp::compileAttributes()

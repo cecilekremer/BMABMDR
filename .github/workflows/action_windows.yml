@@ -9,9 +9,9 @@ jobs:
       fail-fast: false
       matrix:
         config:
-          - {source: false, binary: true, r: '4.3'}
-          #- {source: false, binary: false, r: '4.2'}
-          #- {source: false, binary: false, r: '4.0'}
+          - {source: true, binary: true, r: '4.3'}
+          - {source: false, binary: true, r: '4.2'}
+          - {source: false, binary: true, r: '4.0'}
     uses: ./.github/workflows/check_build_windows.yml
     with:
       rver: ${{ matrix.config.r}}
