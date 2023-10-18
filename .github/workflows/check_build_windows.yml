@@ -48,15 +48,16 @@ jobs:
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
           extra-packages: |
-            any::pkgbuild
-            any::remotes
+            pkgbuild
+            remotes
       - name: re-install specific versions rstan, StanHeaders, brms
         run: |
           invisible(
             mapply(
               remotes::install_version,
               package = c("StanHeaders", "rstan", "brms"),
-              version = c("2.21.0-7", "2.21.8", "2.20.1")
+              version = c("2.21.0-7", "2.21.8", "2.20.1"),
+              upgrade = FALSE
             )
           )
         shell: Rscript {0}
