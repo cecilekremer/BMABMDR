@@ -48,11 +48,9 @@ jobs:
           extra-packages: |
             any::pkgbuild
             any::remotes
-      - name: install specific versions rstan, StanHeaders, brms
-        run: |
-          remotes::install_version("rstan", "2.21.8")
-          remotes::install_version("StanHeaders", "2.21.0-7")
-          remotes::install_version("brms", "2.20.1")
+            cran::rstan@2.21.8
+            cran::StanHeaders@2.21.0-7
+            cran::brms@2.20.1
         shell: Rscript {0}
       - name: set compiler flags
         if: ${{ inputs.rver != '4.0' }}
