@@ -54,7 +54,7 @@ jobs:
         run: |
           invisible(
             mapply(
-              remotes::install,
+              remotes::install_version,
               package = c("StanHeaders", "rstan", "brms"),
               version = c("2.21.0-7", "2.21.8", "2.20.1")
             )
