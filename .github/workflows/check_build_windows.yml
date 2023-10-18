@@ -44,7 +44,12 @@ jobs:
         with:
           r-version: ${{ inputs.rver }}
           extra-repositories: 'https://mc-stan.org/r-packages/'
-      - name: install specific versions rstan, StanHeaders, brms, rstantools
+      - name: install BMABMDR dependencies
+        uses: r-lib/actions/setup-r-dependencies@v2
+        with:
+          extra-packages: |
+            pkgbuild
+      - name: re-install specific versions rstan, StanHeaders, brms, rstantools
         if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         uses: r-lib/actions/setup-r-dependencies@v2
         with:
@@ -54,7 +59,7 @@ jobs:
             brms@2.20.1
             rstantools@2.2.0
           upgrade: 'FALSE'
-      - name: install specific versions rstan, StanHeaders, brms
+      - name: re-install specific versions rstan, StanHeaders, brms
         uses: r-lib/actions/setup-r-dependencies@v2
         if: ${{ inputs.rver == '4.0' || inputs.rver == '4.1' }}
         with:
@@ -63,12 +68,6 @@ jobs:
             rstan@2.21.8
             brms@2.20.1
           upgrade: 'FALSE'
-      - name: install BMABMDR dependencies
-        uses: r-lib/actions/setup-r-dependencies@v2
-        with:
-          upgrade: 'FALSE'
-          extra-packages: |
-            pkgbuild
       - name: set compiler flags
         if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         run: |
