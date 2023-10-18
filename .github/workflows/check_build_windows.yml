@@ -48,9 +48,9 @@ jobs:
           extra-packages: |
             any::pkgbuild
             any::remotes
-            cran::rstan@2.21.8
-            cran::StanHeaders@2.21.0-7
-            cran::brms@2.20.1
+            any::rstan@2.21.8
+            any::StanHeaders@2.21.0-7
+            any::brms@2.20.1
       - name: set compiler flags
         if: ${{ inputs.rver != '4.0' }}
         run: |
