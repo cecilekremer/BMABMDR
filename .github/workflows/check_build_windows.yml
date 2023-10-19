@@ -50,22 +50,12 @@ jobs:
           extra-packages: |
             pkgbuild
             remotes
-      - name: re-install specific versions rstan, StanHeaders, brms
-        run: |
-          invisible(
-            mapply(
-              remotes::install_version,
-              package = c("StanHeaders", "rstan", "brms"),
-              version = c("2.21.0-7", "2.21.8", "2.20.1"),
-              upgrade = FALSE
-            )
-          )
-        shell: Rscript {0}
       - name: set compiler flags
-        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         run: |
           ## install old version rstantools
-          remotes::install_version("rstantools", "2.2.0")
+          if(!Sys.getenv("R_VER") %in% c("4.0", "4.1")) {
+            remotes::install_version("rstantools", "2.2.0")
+          }
           ## update src files
           rstantools::rstan_config()
           Rcpp::compileAttributes()
@@ -77,6 +67,18 @@ jobs:
           cat("\nCXX14=g++ -std=c++1y",
             "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
+        shell: Rscript {0}
+      - name: re-install specific versions rstan, StanHeaders, brms
+        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
+        run: |
+          invisible(
+            mapply(
+              remotes::install_version,
+              package = c("StanHeaders", "rstan", "brms"),
+              version = c("2.21.0-7", "2.21.8", "2.20.1"),
+              upgrade = FALSE
+            )
+          )
         shell: Rscript {0}
       - name: build source R-package
         id: build-source
