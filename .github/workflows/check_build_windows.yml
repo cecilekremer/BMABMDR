@@ -69,7 +69,7 @@ jobs:
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
       - name: re-install specific versions rstan, StanHeaders, brms
-        # if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
+        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         run: |
           invisible(
             mapply(
