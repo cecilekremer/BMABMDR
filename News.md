@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9065
+
+* added option for extended dose range upper value (default = 3)
+
+* fixed error Covariate analysis (BMD prior if maxDose/2 < 0.5)
+
 ## BMABMDR 0.0.0.9064
 
 * added model-averaged posterior of bkg and maxy (not relevant for R4EU platform)

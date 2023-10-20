@@ -12,6 +12,7 @@ full.laplace_MA_Cov(
   q = 0.05,
   prior.d = "N11",
   extended = TRUE,
+  extended.value = 3,
   prior.weights = rep(1, 16),
   ndraws = 30000,
   seed = 123,
@@ -24,6 +25,7 @@ full.laplace_MA_Q_Cov(
   q = 0.1,
   prior.d = "N11",
   extended = TRUE,
+  extended.value = 3,
   prior.weights = rep(1, 8),
   ndraws = 30000,
   seed = 123,
@@ -42,6 +44,8 @@ full.laplace_MA_Q_Cov(
 \item{prior.d}{prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
+
+\item{extended.value}{value for the upper range of BMD prior}
 
 \item{prior.weights}{a vector specifying which of the 16 (continuous) or 8 (quantal) models should be included (1 = include, 0 = exclude)}
 

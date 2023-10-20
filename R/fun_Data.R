@@ -17,6 +17,7 @@
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 for a peaked informative prior
 #' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior), N05 (for a N(0.5,0.5) prior), or 'custom'
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+#' @param extended.value value for the upper limit of BMD prior in extended range
 #'
 #' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
 #'              models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
@@ -59,7 +60,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
                         shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
                         prior.d = 'N11',
                         d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                        extended = TRUE
+                        extended = TRUE, extended.value = 3
 ){
 
   if(sumstats == TRUE & geom.stats == FALSE){
@@ -292,12 +293,14 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   if(extended == FALSE){
     BMD.max <- 1
   }else{
-    BMD.max <- maxDose
+    # BMD.max <- maxDose
+    BMD.max <- extended.value
     if(maxDose <= 1){
-      BMD.max <- maxDose*1000
+      BMD.max <- maxDose*extended.value
     }
   }
   BMD.mode <- 0.5
+  if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -438,7 +441,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
                          shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
                          # prmean.d = 1, prmean.dQE4 = 0
                          prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                         extended = TRUE
+                         extended = TRUE, extended.value = 3
 ){
 
   if(sumstats == TRUE & geom.stats == FALSE){
@@ -642,12 +645,14 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   if(extended == FALSE){
     BMD.max <- 1
   }else{
-    BMD.max <- maxDose
+    # BMD.max <- maxDose
+    BMD.max <- extended.value
     if(maxDose <= 1){
-      BMD.max <- maxDose*1000
+      BMD.max <- maxDose*extended.value
     }
   }
   BMD.mode <- 0.5
+  if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -789,6 +794,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
 #' @param d.trunc truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'
 #' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior), N05 (for a N(0.5,0.5) prior), or 'custom'
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+#' @param extended.value value for the upper limit of BMD prior in extended range
 #'
 #' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
 #'              models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
@@ -819,7 +825,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
                           prior.BMD = NULL, # possible expert info on background and max response
                           shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
                           prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                          extended = T
+                          extended = T, extended.value = 3
 ){
 
 
@@ -1005,12 +1011,14 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   if(extended == FALSE){
     BMD.max <- 1
   }else{
-    BMD.max <- maxDose
+    # BMD.max <- maxDose
+    BMD.max <- extended.value
     if(maxDose <= 1){
-      BMD.max <- maxDose*1000
+      BMD.max <- maxDose*extended.value
     }
   }
   BMD.mode <- 0.5
+  if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -1228,7 +1236,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
                            bkg = NULL, maxy = NULL, prior.BMD = NULL, # possible expert info on background and max response
                            shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution
                            prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                           extended = T
+                           extended = T, extended.value = 3
 ){
 
 
@@ -1429,12 +1437,14 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   if(extended == FALSE){
     BMD.max <- 1
   }else{
-    BMD.max <- maxDose
+    # BMD.max <- maxDose
+    BMD.max <- extended.value
     if(maxDose <= 1){
-      BMD.max <- maxDose*1000
+      BMD.max <- maxDose*extended.value
     }
   }
   BMD.mode <- 0.5
+  if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -1662,6 +1672,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 #' @param cluster logical variable to indicate if data is clustered (i.e. litter effect). TRUE = clustered data. Defaults to FALSE
 #' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior), N05 (for a N(0.5,0.5) prior), or 'custom'
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+#' @param extended.value value for the upper limit of BMD prior in extended range
 #'
 #' @description This function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
 #'              models to be fitted. Shape parameters for the prior distribution can be any value, with 0.0001 resulting in a uniform prior and 4 resulting in a peaked prior.
@@ -1689,7 +1700,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
                          shape.BMD = 0.0001, #scale parameter for the Pert priors for BMD
                          cluster = FALSE, # indicate if data is clustered
                          prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                         extended = TRUE
+                         extended = TRUE, extended.value = 3
 ){
 
   if(sumstats == TRUE){
@@ -1797,12 +1808,14 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   if(extended == FALSE){
     BMD.max <- 1
   }else{
-    BMD.max <- maxDose
+    # BMD.max <- maxDose
+    BMD.max <- extended.value
     if(maxDose <= 1){
-      BMD.max <- maxDose*1000
+      BMD.max <- maxDose*extended.value
     }
   }
   BMD.mode <- 0.5
+  if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -1903,6 +1916,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 #' @param shape.BMD shape parameter for the modified PERT distribution on parameter BMD, defaults to 0.0001 implying a uniform distribution. Can be set to 4 in case of informative prior
 #' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+#' @param extended.value value for the upper limit of BMD prior in extended range
 #' @param covariate on which parameters a covariate effect should be used. Defaults to 'all', other options are 'a_sigma2' and 'BMD_d'
 #'
 #' @description The function takes a dataset as input and generates the data list, starting values, and prior distributions needed by the stan
@@ -1922,7 +1936,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
                            prior.BMD = NULL, # possible expert info on background and max response
                            shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
                            prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                           extended = TRUE,
+                           extended = TRUE, extended.value = 3,
                            covariate = 'all' # OPTIONS: 'a_sigma2', 'BMD_d', 'all'; for 'none', use original prep_data
 ){
 
@@ -2342,13 +2356,16 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     if(extended == FALSE){
       BMD.max <- rep(1, nlevels)
     }else{
-      BMD.max <- rep(maxDose, nlevels)
+      # BMD.max <- rep(maxDose, nlevels)
+      BMD.max <- rep(extended.value, nlevels)
       if(maxDose <= 1){
-        BMD.max <- rep(maxDose*1000, nlevels)
+        BMD.max <- rep(maxDose*extended.value, nlevels)
       }
     }
 
     BMD.mode <- rep(0.5, nlevels)
+    if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
+
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
 
@@ -2402,13 +2419,16 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     if(extended == FALSE){
       BMD.max <- 1
     }else{
-      BMD.max <- maxDose
+      # BMD.max <- maxDose
+      BMD.max <- extended.value
       if(maxDose <= 1){
-        BMD.max <- maxDose*1000
+        BMD.max <- maxDose*extended.value
       }
     }
 
     BMD.mode <- 0.5
+    if(maxDose <= 1){BMD.mode <- maxDose/2}
+
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
 
@@ -2642,7 +2662,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                             shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
                             # prmean.d = 1, prmean.dQE4 = 0
                             prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                            extended = TRUE,
+                            extended = TRUE, extended.value = 3,
                             # covariate = c('a', 'BMD', 'sigma2', 'd')
                             covariate = 'all' # OPTIONS: 'a_sigma2', 'BMD_d', 'all'; for 'none', use original prep_data
 ){
@@ -3117,13 +3137,16 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     if(extended == FALSE){
       BMD.max <- rep(1, nlevels)
     }else{
-      BMD.max <- rep(maxDose, nlevels)
+      # BMD.max <- rep(maxDose, nlevels)
+      BMD.max <- rep(extended.value, nlevels)
       if(maxDose <= 1){
-        BMD.max <- rep(maxDose*1000, nlevels)
+        BMD.max <- rep(maxDose*extended.value, nlevels)
       }
     }
 
     BMD.mode <- rep(0.5, nlevels)
+    if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
+
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
 
@@ -3177,13 +3200,16 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     if(extended == FALSE){
       BMD.max <- 1
     }else{
-      BMD.max <- maxDose
+      # BMD.max <- maxDose
+      BMD.max <- extended.value
       if(maxDose <= 1){
-        BMD.max <- maxDose*1000
+        BMD.max <- maxDose*extended.value
       }
     }
 
     BMD.mode <- 0.5
+    if(maxDose <= 1){BMD.mode <- maxDose/2}
+
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
 
@@ -3434,7 +3460,7 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
                             shape.BMD = 0.0001, #scale parameter for the Pert priors for BMD
                             cluster = FALSE, # indicate if data is clustered
                             prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
-                            extended = TRUE,
+                            extended = TRUE, extended.value = 3,
                             covariate = 'all' # options are 'all', 'BMD_d' or 'background'
 ){
 
@@ -3622,12 +3648,15 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     if(extended == FALSE){
       BMD.max <- rep(1, nlevels)
     }else{
-      BMD.max <- rep(maxDose, nlevels)
+      # BMD.max <- rep(maxDose, nlevels)
+      BMD.max <- rep(extended.value, nlevels)
       if(maxDose <= 1){
-        BMD.max <- rep(maxDose*1000, nlevels)
+        BMD.max <- rep(maxDose*extended.value, nlevels)
       }
     }
     BMD.mode <- rep(0.5, nlevels)
+    if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
+
 
     ## If info on BMD is given (STILL HAS TO BE ADAPTED TO COVARIATE EFFECT)
     if(!is.null(prior.BMD)){
@@ -3678,12 +3707,14 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     if(extended == FALSE){
       BMD.max <- 1
     }else{
-      BMD.max <- maxDose
+      # BMD.max <- maxDose
+      BMD.max <- extended.value
       if(maxDose <= 1){
-        BMD.max <- maxDose*1000
+        BMD.max <- maxDose*extended.value
       }
     }
     BMD.mode <- 0.5
+    if(maxDose <= 1){BMD.mode <- maxDose/2}
 
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
