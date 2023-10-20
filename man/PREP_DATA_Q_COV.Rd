@@ -18,6 +18,7 @@ PREP_DATA_Q_COV(
   d.std = NULL,
   d.trunc = NULL,
   extended = TRUE,
+  extended.value = 3,
   covariate = "all"
 )
 }

@@ -1177,7 +1177,7 @@ plot.BMADR <- function(mod.obj,
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose),
                     # ylim =  c(min(BMDMixture2$yres)*0.9, max(BMDMixture2$yres)*1.1)) +
-                    ylim = c(orig_ptdataN$m[1]-orig_ptdataN$s[1], max(BMDMixture2$yres)*1.1)) +
+                    ylim = c(min(BMDMixture2$yres), max(BMDMixture2$yres)*1.1)) +
     # coord_cartesian(xlim = c(min(mod.obj$MA_post),
     #                          2*mod.obj$max.dose),
     #                 ylim =  c(min(BMDMixture2$yres)*0.9, max(BMDMixture2$yres)*1.1)) +

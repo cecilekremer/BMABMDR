@@ -17,7 +17,8 @@ PREP_DATA_QA(
   d.mean = NULL,
   d.std = NULL,
   d.trunc = NULL,
-  extended = TRUE
+  extended = TRUE,
+  extended.value = 3
 )
 }
 \arguments{
@@ -46,6 +47,8 @@ PREP_DATA_QA(
 \item{d.trunc}{truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
+
+\item{extended.value}{value for the upper limit of BMD prior in extended range}
 }
 \value{
 \code{data} list containing data and prior distributions
