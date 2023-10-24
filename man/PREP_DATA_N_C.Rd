@@ -18,7 +18,8 @@ PREP_DATA_N_C(
   d.mean = NULL,
   d.std = NULL,
   d.trunc = NULL,
-  extended = T
+  extended = T,
+  extended.value = 3
 )
 
 PREP_DATA_LN_C(
@@ -34,7 +35,8 @@ PREP_DATA_LN_C(
   d.mean = NULL,
   d.std = NULL,
   d.trunc = NULL,
-  extended = T
+  extended = T,
+  extended.value = 3
 )
 }
 \arguments{
@@ -63,6 +65,8 @@ PREP_DATA_LN_C(
 \item{d.trunc}{truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
+
+\item{extended.value}{value for the upper limit of BMD prior in extended range}
 }
 \value{
 \code{data} list containing the data and prior distributions

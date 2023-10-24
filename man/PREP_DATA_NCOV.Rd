@@ -22,6 +22,7 @@ PREP_DATA_NCOV(
   d.std = NULL,
   d.trunc = NULL,
   extended = TRUE,
+  extended.value = 3,
   covariate = "all"
 )
 
@@ -42,6 +43,7 @@ PREP_DATA_LNCOV(
   d.std = NULL,
   d.trunc = NULL,
   extended = TRUE,
+  extended.value = 3,
   covariate = "all"
 )
 }
@@ -77,6 +79,8 @@ PREP_DATA_LNCOV(
 \item{d.trunc}{truncation (upper) of the Normal prior for log(d), only used when prior.d = 'custom'}
 
 \item{extended}{logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)}
+
+\item{extended.value}{value for the upper limit of BMD prior in extended range}
 
 \item{covariate}{on which parameters a covariate effect should be used. Defaults to 'all', other options are 'a_sigma2' and 'BMD_d'}
 }

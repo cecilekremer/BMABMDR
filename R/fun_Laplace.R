@@ -4364,6 +4364,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 #' @param q specified BMR
 #' @param prior.d prior distribution for parameter d (on log scale), should be either N11 (default N(1, 1) prior truncated at 5), EPA (N(0.4, sqrt(0.5)) prior) or N05 (for a N(0.5,0.5) prior)
 #' @param extended logical indicating whether the dose range should be extended to maxDose^2 (default is TRUE)
+#' @param extended.value value for the upper range of BMD prior
 #' @param prior.weights a vector specifying which of the 16 (continuous) or 8 (quantal) models should be included (1 = include, 0 = exclude)
 #' @param ndraws the number of draws, default 30000
 #' @param seed default 123
@@ -4422,7 +4423,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                sd = TRUE,
                                q = 0.05,
                                prior.d = 'N11',
-                               extended = TRUE,
+                               extended = TRUE, extended.value = 3,
                                prior.weights = rep(1,16),
                                ndraws=30000,seed=123,
                                pvec=c(0.05,0.5,0.95)
@@ -4440,6 +4441,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       prior.d = prior.d,
       extended = extended,
+      extended.value = extended.value,
       covariate = 'all'
     )
 
@@ -4450,6 +4452,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       prior.d = prior.d,
       extended = extended,
+      extended.value = extended.value,
       covariate = 'a_sigma2'
     )
 
@@ -4460,6 +4463,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       prior.d = prior.d,
       extended = extended,
+      extended.value = extended.value,
       covariate = 'BMD_d'
     )
 
@@ -4479,6 +4483,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       prior.d = prior.d,
       extended = extended,
+      extended.value = extended.value,
       covariate = 'all'
     )
 
@@ -4489,6 +4494,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       prior.d = prior.d,
       extended = extended,
+      extended.value = extended.value,
       covariate = 'a_sigma2'
     )
 
@@ -4499,6 +4505,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       prior.d = prior.d,
       extended = extended,
+      extended.value = extended.value,
       covariate = 'BMD_d'
     )
 
@@ -4507,7 +4514,8 @@ full.laplace_MA_Cov = function(data, # the summary data
                                   sd = sd,
                                   q = q,
                                   prior.d = prior.d,
-                                  extended = extended)
+                                  extended = extended,
+                                  extended.value = extended.value)
   }
 
   #########################################
@@ -5932,7 +5940,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                  sumstats = TRUE,
                                  q = 0.1,
                                  prior.d = 'N11',
-                                 extended = TRUE,
+                                 extended = TRUE, extended.value = 3,
                                  prior.weights = rep(1,8),
                                  ndraws=30000,seed=123,
                                  pvec=c(0.05,0.5,0.95)
@@ -5943,6 +5951,8 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     sumstats = sumstats,
     q = q,
     prior.d = prior.d,
+    extended = extended,
+    extended.value = extended.value,
     covariate = 'all'
   )
 
@@ -5951,6 +5961,8 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     sumstats = sumstats,
     q = q,
     prior.d = prior.d,
+    extended = extended,
+    extended.value = extended.value,
     covariate = 'background'
   )
 
@@ -5959,6 +5971,8 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     sumstats = sumstats,
     q = q,
     prior.d = prior.d,
+    extended = extended,
+    extended.value = extended.value,
     covariate = 'BMD_d'
   )
 
@@ -5966,6 +5980,8 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     data = data,
     sumstats = sumstats,
     q = q,
+    extended = extended,
+    extended.value = extended.value,
     prior.d = prior.d
   )
 

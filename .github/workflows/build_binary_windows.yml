@@ -9,7 +9,7 @@
 # 4. build binary R-package and upload as artifact
 # ****************************************************************
 
-name: check-build-windows-job
+name: build-binary-windows-workflow
 
 on:
   workflow_call:
