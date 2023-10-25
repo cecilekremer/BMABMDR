@@ -5797,7 +5797,10 @@ full.laplace_MA_Cov = function(data, # the summary data
     )
     maci=quantile(mabmd,pvec)*data_N_noCOV$data$maxD ## original scale
     # names(maci)=c("BMDL","BMD","BMDU")
-    names(maci)=c("BMDL","BMD","BMDU")
+    # names(maci)=c("BMDL","BMD","BMDU")
+    maci=t(as.matrix(maci))
+    colnames(maci)=c("BMDL","BMD","BMDU")
+    rownames(maci)=""
 
     BMDq = quantile(mabmd, seq(0,1,0.005))*data_N_noCOV$data$maxD ## original scale
 
@@ -5859,7 +5862,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     BMDU <- c()
 
     for(m in model[1:16]){
-      if(!is.na(get(paste0('BMD_', m)))){
+      if(!is.na(get(paste0('BMD_', m))[1])){
         BMDL <- c(BMDL, get(paste0('BMD_',m))[1]*data_N_noCOV$data$maxD)
         BMD <- c(BMD, get(paste0('BMD_',m))[2]*data_N_noCOV$data$maxD)
         BMDU <- c(BMDU, get(paste0('BMD_',m))[3]*data_N_noCOV$data$maxD)
@@ -6651,7 +6654,10 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
 
     )
     maci=quantile(mabmd,pvec)*data_all$data$maxD ## original scale
-    names(maci)=c("BMDL","BMD","BMDU")
+    # names(maci)=c("BMDL","BMD","BMDU")
+    maci=t(as.matrix(maci))
+    colnames(maci)=c("BMDL","BMD","BMDU")
+    rownames(maci)=""
 
     BMDq = quantile(mabmd, seq(0,1,0.005))*data_all$data$maxD ## original scale
 
@@ -6713,7 +6719,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     BMDU <- c()
 
     for(m in model[1:8]){
-      if(!is.na(get(paste0('BMD_', m)))){
+      if(!is.na(get(paste0('BMD_', m))[1])){
         BMDL <- c(BMDL, get(paste0('BMD_',m))[1]*data_all$data$maxD)
         BMD <- c(BMD, get(paste0('BMD_',m))[2]*data_all$data$maxD)
         BMDU <- c(BMDU, get(paste0('BMD_',m))[3]*data_all$data$maxD)
