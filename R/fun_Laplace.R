@@ -5875,6 +5875,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                Weight = round(lpw[1:16],4),
                                Submodel = best.sub.which,
                                Submodel.weight = best.sub.weight,
+                               Covariate = "None",
                                BMDL = BMDL, BMD = BMD, BMDU = BMDU
                                # LogLik = best.sub.loglik,
     )
@@ -6728,6 +6729,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                Weight = round(lpw[1:8],4),
                                Submodel = best.sub.which,
                                Submodel.weight = best.sub.weight,
+                               Covariate = 'None',
                                BMDL = BMDL, BMD = BMD, BMDU = BMDU
                                # LogLik = best.sub.loglik,
     )
