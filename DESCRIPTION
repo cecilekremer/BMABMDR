@@ -1,5 +1,5 @@
 Package: BMABMDR
-Version: 0.0.0.9067
+Version: 0.0.0.9068
 Title: Bayesian Model Averaging for Benchmark Dose Analysis
 Authors@R: c(
     person(given = "C\'ecile",
@@ -34,7 +34,7 @@ Encoding: UTF-8
 NeedsCompilation: true
 LazyData: true
 Roxygen: list(markdown = TRUE)
-RoxygenNote: 7.2.1
+RoxygenNote: 7.2.3
 Depends: 
     R (>= 3.5.0)
 Imports: 

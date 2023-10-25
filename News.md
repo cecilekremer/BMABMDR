@@ -1,9 +1,13 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9068
+
+* fixed warnings that trigger an error in R-4.3
+
+
 ## BMABMDR 0.0.0.9067
 
 * added 'Covariate' column to output of full.laplace_MA_Cov in summary table
-
 
 ## BMABMDR 0.0.0.9065
 
