@@ -1,6 +1,8 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
-## BMABMDR 0.0.0.9066
+## BMABMDR 0.0.0.9067
+
+* added 'Covariate' column to output of full.laplace_MA_Cov in summary table
 
 
 ## BMABMDR 0.0.0.9065
