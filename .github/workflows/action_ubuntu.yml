@@ -1,0 +1,23 @@
+name: build-binary-ubuntu
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-upload:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-22.04, source: false, binary: true, r: '4.3'}
+#          - {os: ubuntu-22.04, source: false, binary: true, r: '4.2'}
+#          - {os: ubuntu-22.04, source: false, binary: true, r: '4.1'}
+          - {os: ubuntu-20.04, source: false, binary: true, r: '4.3'}
+#          - {os: ubuntu-20.04, source: false, binary: true, r: '4.2'}
+#          - {os: ubuntu-20.04, source: false, binary: true, r: '4.1'}
+    uses: ./.github/workflows/build_binary_ubuntu.yml
+    with:
+      os: ${{ matrix.config.os }}
+      rver: ${{ matrix.config.r}}
+      build_source: ${{ matrix.config.source }}
+      build_binary: ${{ matrix.config.binary }}
