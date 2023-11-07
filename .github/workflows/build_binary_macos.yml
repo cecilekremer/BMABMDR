@@ -69,6 +69,8 @@ jobs:
             "CXXFLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
+      - name: make 'configure' script executable
+        run: chmod +x configure  
       - name: build source R-package
         id: build-source
         run: |
