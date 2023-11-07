@@ -95,7 +95,6 @@ jobs:
           BUILD_SOURCE: ${{ inputs.build_source }}
       - name: make artifact folder
         run: mkdir ${{ inputs.rver }}
-        shell: cmd
       - name: upload source R-package
         if: inputs.build_source
         uses: actions/upload-artifact@v3
