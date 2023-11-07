@@ -1,0 +1,19 @@
+name: build-binary-macos
+
+on:
+  workflow_dispatch:
+
+jobs:
+  check-upload:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {source: true, binary: true, r: '4.3'}
+          - {source: false, binary: true, r: '4.2'}
+          - {source: false, binary: true, r: '4.1'}
+    uses: ./.github/workflows/macos.yml
+    with:
+      rver: ${{ matrix.config.r}}
+      build_source: ${{ matrix.config.source }}
+      build_binary: ${{ matrix.config.binary }}
