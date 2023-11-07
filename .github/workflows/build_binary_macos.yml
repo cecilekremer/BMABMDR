@@ -43,6 +43,7 @@ jobs:
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ inputs.rver }}
+          use-public-rspm: true
           extra-repositories: 'https://mc-stan.org/r-packages/'
       - name: install BMABMDR dependencies
         uses: r-lib/actions/setup-r-dependencies@v2
@@ -64,21 +65,9 @@ jobs:
           if (!file.exists(dotR)) { dir.create(dotR) }
           MAKEVARS <- file.path(dotR, "Makevars.win")
           if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
-          cat("\nCXX14=g++ -std=c++1y",
-            "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
+          cat("\nCXX=g++ -std=c++1y",
+            "CXXFLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
-        shell: Rscript {0}
-      - name: re-install specific versions rstan, StanHeaders, brms
-        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
-        run: |
-          invisible(
-            mapply(
-              remotes::install_version,
-              package = c("StanHeaders", "rstan", "brms"),
-              version = c("2.21.0-7", "2.21.8", "2.20.1"),
-              upgrade = FALSE
-            )
-          )
         shell: Rscript {0}
       - name: build source R-package
         id: build-source
