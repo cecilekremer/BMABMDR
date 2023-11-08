@@ -40,6 +40,26 @@ jobs:
     steps:
       - uses: actions/checkout@v2
       # - uses: r-lib/actions/setup-pandoc@v2
+      - name: Check Runner Architecture
+        id: check-architecture
+        run: |
+           if [ "$(uname -m)" == "arm64" ]; then
+            echo "::set-output name=architecture::arm64"
+          else
+            echo "::set-output name=architecture::x86_64"
+          fi
+        shell: bash
+      - name: Set up R
+        run: |
+          if [ "${{ steps.check-architecture.outputs.architecture }}" == "arm64" ]; then
+            # Set up R for arm64
+            R_ARCH="arm64"
+          else
+            # Set up R for x86_64
+            R_ARCH="x86_64"
+          fi
+          curl -o "R-$R_ARCH.pkg" "https://cran.r-project.org/bin/macosx/base/R-$R_ARCH.pkg"
+          sudo installer -pkg "R-$R_ARCH.pkg" -target /
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ inputs.rver }}
