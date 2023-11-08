@@ -43,7 +43,7 @@ jobs:
       - name: Check Runner Architecture
         id: check-architecture
         run: |
-           if [ "$(uname -m)" == "arm64" ]; then
+          if [ "$(uname -m)" == "arm64" ]; then
             echo "::set-output name=architecture::arm64"
           else
             echo "::set-output name=architecture::x86_64"
