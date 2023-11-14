@@ -1387,19 +1387,19 @@ full.laplace_MA=function(data.N, data.LN,
     minll <- min(lls[which((max.ll-lls < 709) & prior.weights>0)], na.rm = T)
 
     if(prior.weights[1]>0){
-      DIHE4h=det(-solve(optE4_NI$hessian))
+      DIHE4h=det(-pracma::pinv(optE4_NI$hessian))
       DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
                      data$truncd))
-      # DIHE4h=det(-solve(hessian(func = llE4fN,x=optE4_NI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
+      # DIHE4h=det(-pracma::pinv(hessian(func = llE4fN,x=optE4_NI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
       # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
 
     }else{w=c(w,0)}
 
     if(prior.weights[2]>0){
-      DIHIE4h=det(-solve(optIE4_NI$hessian))
+      DIHIE4h=det(-pracma::pinv(optIE4_NI$hessian))
       DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
       w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1407,7 +1407,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[3]>0){
-      DIHH4h=det(-solve(optH4_NI$hessian))
+      DIHH4h=det(-pracma::pinv(optH4_NI$hessian))
       DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
       w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1415,7 +1415,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[4]>0){
-      DIHLN4h=det(-solve(optLN4_NI$hessian))
+      DIHLN4h=det(-pracma::pinv(optLN4_NI$hessian))
       DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
       w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1423,7 +1423,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[5]>0){
-      DIHG4h=det(-solve(optG4_NI$hessian))
+      DIHG4h=det(-pracma::pinv(optG4_NI$hessian))
       DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
       w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1431,7 +1431,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[6]>0){
-      DIHQE4h=det(-solve(optQE4_NI$hessian))
+      DIHQE4h=det(-pracma::pinv(optQE4_NI$hessian))
       DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
       # w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormu, data$priorSigma,
       #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
@@ -1441,7 +1441,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[7]>0){
-      DIHP4h=det(-solve(optP4_NI$hessian))
+      DIHP4h=det(-pracma::pinv(optP4_NI$hessian))
       DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
       w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1449,7 +1449,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[8]>0){
-      DIHL4h=det(-solve(optL4_NI$hessian))
+      DIHL4h=det(-pracma::pinv(optL4_NI$hessian))
       DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
       w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1464,18 +1464,18 @@ full.laplace_MA=function(data.N, data.LN,
     startQ=data.LN$startQ
 
     if(prior.weights[9]>0){
-      DIHE4h=det(-solve(optE4_LNI$hessian))
+      DIHE4h=det(-pracma::pinv(optE4_LNI$hessian))
       DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
                      data$truncd))
-      # DIHE4h=det(-solve(hessian(func = llE4fLN,x=optE4_LNI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
+      # DIHE4h=det(-pracma::pinv(hessian(func = llE4fLN,x=optE4_LNI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
       # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
 
     }else{w=c(w,0)}
 
     if(prior.weights[10]>0){
-      DIHIE4h=det(-solve(optIE4_LNI$hessian))
+      DIHIE4h=det(-pracma::pinv(optIE4_LNI$hessian))
       DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
       w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1483,7 +1483,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[11]>0){
-      DIHH4h=det(-solve(optH4_LNI$hessian))
+      DIHH4h=det(-pracma::pinv(optH4_LNI$hessian))
       DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
       w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1491,7 +1491,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[12]>0){
-      DIHLN4h=det(-solve(optLN4_LNI$hessian))
+      DIHLN4h=det(-pracma::pinv(optLN4_LNI$hessian))
       DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
       w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1499,7 +1499,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[13]>0){
-      DIHG4h=det(-solve(optG4_LNI$hessian))
+      DIHG4h=det(-pracma::pinv(optG4_LNI$hessian))
       DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
       w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1507,7 +1507,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[14]>0){
-      DIHQE4h=det(-solve(optQE4_LNI$hessian))
+      DIHQE4h=det(-pracma::pinv(optQE4_LNI$hessian))
       DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
       # w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormu, data$priorSigma,
       #                data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c))
@@ -1517,7 +1517,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[15]>0){
-      DIHP4h=det(-solve(optP4_LNI$hessian))
+      DIHP4h=det(-pracma::pinv(optP4_LNI$hessian))
       DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
       w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -1525,7 +1525,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[16]>0){
-      DIHL4h=det(-solve(optL4_LNI$hessian))
+      DIHL4h=det(-pracma::pinv(optL4_LNI$hessian))
       DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
       w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -2978,19 +2978,19 @@ full.laplace_MAc=function(data.N, data.LN,
     minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
 
     if(prior.weights[1]>0){
-      DIHE4h=det(-solve(optE4_NI$hessian))
+      DIHE4h=det(-pracma::pinv(optE4_NI$hessian))
       DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       w = c(w, fun.w(DIHE4, llE4N, minll, optE4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
                      data$truncd))
-      # DIHE4h=det(-solve(hessian(func = llE4fN,x=optE4_NI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
+      # DIHE4h=det(-pracma::pinv(hessian(func = llE4fN,x=optE4_NI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
       # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
 
     }else{w=c(w,0)}
 
     if(prior.weights[2]>0){
-      DIHIE4h=det(-solve(optIE4_NI$hessian))
+      DIHIE4h=det(-pracma::pinv(optIE4_NI$hessian))
       DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
       w = c(w, fun.w(DIHIE4, llIE4N, minll, optIE4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -2998,7 +2998,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[3]>0){
-      DIHH4h=det(-solve(optH4_NI$hessian))
+      DIHH4h=det(-pracma::pinv(optH4_NI$hessian))
       DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
       w = c(w, fun.w(DIHH4, llH4N, minll, optH4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3006,7 +3006,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[4]>0){
-      DIHLN4h=det(-solve(optLN4_NI$hessian))
+      DIHLN4h=det(-pracma::pinv(optLN4_NI$hessian))
       DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
       w = c(w, fun.w(DIHLN4, llLN4N, minll, optLN4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3014,7 +3014,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[5]>0){
-      DIHG4h=det(-solve(optG4_NI$hessian))
+      DIHG4h=det(-pracma::pinv(optG4_NI$hessian))
       DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
       w = c(w, fun.w(DIHG4, llG4N, minll, optG4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3022,7 +3022,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[6]>0){
-      DIHQE4h=det(-solve(optQE4_NI$hessian))
+      DIHQE4h=det(-pracma::pinv(optQE4_NI$hessian))
       DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
       w = c(w, fun.w(DIHQE4, llQE4N, minll, optQE4_NI, data$priormuQ, data$priorSigmaQ,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3030,7 +3030,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[7]>0){
-      DIHP4h=det(-solve(optP4_NI$hessian))
+      DIHP4h=det(-pracma::pinv(optP4_NI$hessian))
       DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
       w = c(w, fun.w(DIHP4, llP4N, minll, optP4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3038,7 +3038,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[8]>0){
-      DIHL4h=det(-solve(optL4_NI$hessian))
+      DIHL4h=det(-pracma::pinv(optL4_NI$hessian))
       DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
       w = c(w, fun.w(DIHL4, llL4N, minll, optL4_NI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3053,18 +3053,18 @@ full.laplace_MAc=function(data.N, data.LN,
     startQ=data.LN$startQ
 
     if(prior.weights[9]>0){
-      DIHE4h=det(-solve(optE4_LNI$hessian))
+      DIHE4h=det(-pracma::pinv(optE4_LNI$hessian))
       DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       w = c(w, fun.w(DIHE4, llE4LN, minll, optE4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
                      data$truncd))
-      # DIHE4h=det(-solve(hessian(func = llE4fLN,x=optE4_LNI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
+      # DIHE4h=det(-pracma::pinv(hessian(func = llE4fLN,x=optE4_LNI$par[c(1,2,9,3,4)],method.args=list(eps=1e-4, d=0.1, zero.tol=sqrt(.Machine$double.eps/7e-7), r=8, v=2, show.details=FALSE))))
       # DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
 
     }else{w=c(w,0)}
 
     if(prior.weights[10]>0){
-      DIHIE4h=det(-solve(optIE4_LNI$hessian))
+      DIHIE4h=det(-pracma::pinv(optIE4_LNI$hessian))
       DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
       w = c(w, fun.w(DIHIE4, llIE4LN, minll, optIE4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3072,7 +3072,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[11]>0){
-      DIHH4h=det(-solve(optH4_LNI$hessian))
+      DIHH4h=det(-pracma::pinv(optH4_LNI$hessian))
       DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
       w = c(w, fun.w(DIHH4, llH4LN, minll, optH4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3080,7 +3080,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[12]>0){
-      DIHLN4h=det(-solve(optLN4_LNI$hessian))
+      DIHLN4h=det(-pracma::pinv(optLN4_LNI$hessian))
       DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
       w = c(w, fun.w(DIHLN4, llLN4LN, minll, optLN4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3088,7 +3088,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[13]>0){
-      DIHG4h=det(-solve(optG4_LNI$hessian))
+      DIHG4h=det(-pracma::pinv(optG4_LNI$hessian))
       DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
       w = c(w, fun.w(DIHG4, llG4LN, minll, optG4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3096,7 +3096,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[14]>0){
-      DIHQE4h=det(-solve(optQE4_LNI$hessian))
+      DIHQE4h=det(-pracma::pinv(optQE4_LNI$hessian))
       DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
       w = c(w, fun.w(DIHQE4, llQE4LN, minll, optQE4_LNI, data$priormuQ, data$priorSigmaQ,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3104,7 +3104,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[15]>0){
-      DIHP4h=det(-solve(optP4_LNI$hessian))
+      DIHP4h=det(-pracma::pinv(optP4_LNI$hessian))
       DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
       w = c(w, fun.w(DIHP4, llP4LN, minll, optP4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -3112,7 +3112,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     if(prior.weights[16]>0){
-      DIHL4h=det(-solve(optL4_LNI$hessian))
+      DIHL4h=det(-pracma::pinv(optL4_LNI$hessian))
       DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
       w = c(w, fun.w(DIHL4, llL4LN, minll, optL4_LNI, data$priormu, data$priorSigma,
                      data$priorlb, data$priorub, data$shape.a, data$shape.BMD, data$shape.c,
@@ -4083,7 +4083,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     minll <- min(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)], na.rm = T)
 
     if(prior.weights[1]>0){
-      DIHE4h=det(-solve(optE4_Q$hessian))
+      DIHE4h=det(-pracma::pinv(optE4_Q$hessian))
       DIHE4=ifelse(DIHE4h<0,0,DIHE4h)
       ## Aproximation of marginal (i.e. integrated) likelihood (= 'model evidence')
       if(data$is_bin==1) {
@@ -4100,7 +4100,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[2]>0){
-      DIHIE4h=det(-solve(optIE4_Q$hessian))
+      DIHIE4h=det(-pracma::pinv(optIE4_Q$hessian))
       DIHIE4=ifelse(DIHIE4h<0,0,DIHIE4h)
 
       if(data$is_bin==1) {
@@ -4116,7 +4116,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[3]>0){
-      DIHH4h=det(-solve(optH4_Q$hessian))
+      DIHH4h=det(-pracma::pinv(optH4_Q$hessian))
       DIHH4=ifelse(DIHH4h<0,0,DIHH4h)
 
       if(data$is_bin==1) {
@@ -4132,7 +4132,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[4]>0){
-      DIHLN4h=det(-solve(optLN4_Q$hessian))
+      DIHLN4h=det(-pracma::pinv(optLN4_Q$hessian))
       DIHLN4=ifelse(DIHLN4h<0,0,DIHLN4h)
 
       if(data$is_bin==1) {
@@ -4149,7 +4149,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[5]>0){
-      DIHG4h=det(-solve(optG4_Q$hessian))
+      DIHG4h=det(-pracma::pinv(optG4_Q$hessian))
       DIHG4=ifelse(DIHG4h<0,0,DIHG4h)
 
       if(data$is_bin==1) {
@@ -4165,7 +4165,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[6]>0){
-      DIHQE4h=det(-solve(optQE4_Q$hessian))
+      DIHQE4h=det(-pracma::pinv(optQE4_Q$hessian))
       DIHQE4=ifelse(DIHQE4h<0,0,DIHQE4h)
 
       if(data$is_bin==1) {
@@ -4181,7 +4181,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[7]>0){
-      DIHP4h=det(-solve(optP4_Q$hessian))
+      DIHP4h=det(-pracma::pinv(optP4_Q$hessian))
       DIHP4=ifelse(DIHP4h<0,0,DIHP4h)
 
       if(data$is_bin==1) {
@@ -4197,7 +4197,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     if(prior.weights[8]>0){
-      DIHL4h=det(-solve(optL4_Q$hessian))
+      DIHL4h=det(-pracma::pinv(optL4_Q$hessian))
       DIHL4=ifelse(DIHL4h<0,0,DIHL4h)
 
       if(data$is_bin==1) {

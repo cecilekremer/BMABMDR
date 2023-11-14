@@ -1,9 +1,12 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9069
+
+* change in weights calculation to prevent error in solve(), now using Moore-Penrose pseudoinverse of hessian
+
 ## BMABMDR 0.0.0.9068
 
 * fixed warnings that trigger an error in R-4.3
-
 
 ## BMABMDR 0.0.0.9067
 

@@ -6,5 +6,5 @@
 #'
 #' @docType package
 #'
-#' @import ggplot2 shiny brms dplyr plyr mvtnorm truncnorm bayesplot ggpubr mc2d ggpubr RColorBrewer posterior bridgesampling rstan gamlss rstantools
+#' @import ggplot2 shiny brms dplyr plyr mvtnorm truncnorm bayesplot ggpubr mc2d ggpubr RColorBrewer posterior bridgesampling rstan gamlss pracma rstantools
 NULL

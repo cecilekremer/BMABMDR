@@ -97,6 +97,7 @@ model{
     row_vector[lt] m;
     matrix[lt, lt] P;
     matrix[lt, lt] Sigma;
+    // cov_matrix[lt] Sigma;
 
     resp = y[cnt, 1:lt];
 
@@ -134,7 +135,7 @@ model{
     for(i in 1:N){ // for each dose group
 
     int nl;
-    real mx;
+    // real mx;
 
     // mx = a;
 
@@ -148,6 +149,7 @@ model{
     row_vector[lt] m;
     matrix[lt, lt] P;
     matrix[lt, lt] Sigma;
+    // cov_matrix[lt] Sigma;
 
     resp = y[cnt, 1:lt];
 
