@@ -48,7 +48,7 @@ fun.w <- function(optMod, lld, min.ll, nlevels,
     s2 <- pars[nmpar == "par5"]
   }
 
-  DIH <- det(-solve(optMod$hessian))
+  DIH <- det(-pracma::pinv(optMod$hessian))
   DIH <- ifelse(DIH<0, 0, DIH)
 
   npar <- sum(c(length(a), length(bmd), length(c), length(d), length(s2)))
@@ -163,7 +163,7 @@ fun.w.QE4 <- function(optMod, lld, min.ll, nlevels,
     s2 <- pars[nmpar == "par5"]
   }
 
-  DIH <- det(-solve(optMod$hessian))
+  DIH <- det(-pracma::pinv(optMod$hessian))
   DIH <- ifelse(DIH<0, 0, DIH)
 
   npar <- sum(c(length(a), length(bmd), length(c), length(d), length(s2)))
@@ -477,7 +477,7 @@ fun.wQ <- function(optMod, lld, min.ll, nlevels,
     d <- pars[nmpar == "par3"]
   }
 
-  DIH <- det(-solve(optMod$hessian))
+  DIH <- det(-pracma::pinv(optMod$hessian))
   DIH <- ifelse(DIH<0, 0, DIH)
 
   npar <- sum(c(length(a), length(bmd), length(d)))
@@ -562,7 +562,7 @@ fun.wQ.QE4 <- function(optMod, lld, min.ll, nlevels,
     d <- pars[nmpar == "par3"]
   }
 
-  DIH <- det(-solve(optMod$hessian))
+  DIH <- det(-pracma::pinv(optMod$hessian))
   DIH <- ifelse(DIH<0, 0, DIH)
 
   npar <- sum(c(length(a), length(bmd), length(d)))
