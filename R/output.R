@@ -768,6 +768,7 @@ predict.BMADR <- function(mod.obj, dose,
 predict.BMADRQ <- function(mod.obj, dose,
                            what = c("predicted", "resp_at_BMD"),
                            model_averaged = FALSE,
+                           conv = FALSE,
                            weight_type = c("BS", "LP")) {
 
   type <- 'quantal'

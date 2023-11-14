@@ -10,6 +10,8 @@ jobs:
       matrix:
         config:
           - {source: true, binary: true, r: '4.3'}
+          - {source: false, binary: true, r: '4.2'}
+          - {source: false, binary: true, r: '4.1'}
     uses: ./.github/workflows/build_binary_macos.yml
     with:
       rver: ${{ matrix.config.r}}
