@@ -1,6 +1,6 @@
 # ****************************************************************
-# Date: 12-10-2023
-# Author: jchau
+# Date: 07-11-2023
+# Author: cecilekremer
 #
 # Job description:
 # 1. setup R
@@ -32,14 +32,18 @@ on:
 
 jobs:
   check-upload:
-    runs-on: macos-latest
-    name: macos-latest (R-${{ inputs.rver }})
+    runs-on: ARM64
+    name: ARM64 (R-${{ inputs.rver }})
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       R_VER: ${{ inputs.rver }}
     steps:
       - uses: actions/checkout@v2
       # - uses: r-lib/actions/setup-pandoc@v2
+      - name: Set up R
+        run: |
+          curl -o "R-arm64.pkg" "https://cran.r-project.org/bin/macosx/big-sur-arm64/base/R-4.3.2-arm64.pkg"
+          sudo installer -pkg "R-arm64.pkg" -target /
       - uses: r-lib/actions/setup-r@v2
         with:
           r-version: ${{ inputs.rver }}
@@ -69,6 +73,8 @@ jobs:
             "CXXFLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
+      - name: make 'configure' script executable
+        run: chmod +x configure  
       - name: build source R-package
         id: build-source
         run: |
