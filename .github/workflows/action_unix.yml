@@ -1,6 +1,14 @@
 name: build-binary-unix
 
 on:
+  push:
+    branches:
+      - 'main'
+      - 'fix**'
+  pull_request:
+    branches:
+      - 'main'
+      - 'fix**'
   workflow_dispatch:
 
 jobs:
