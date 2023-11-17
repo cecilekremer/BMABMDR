@@ -90,7 +90,12 @@ fun_sampling = function(mod, data, stv,
     n.attempts <- n.attempts + 1
 
   }
-  sv = opt$par
+
+  if(class(opt) != 'try-error'){
+    sv = opt$par
+  }else{
+    sv = unlist(stv)
+  }
 
   initf2 <- function(chain_id = 1) {
     par = sv[1:5]
@@ -241,7 +246,12 @@ fun_samplingC = function(mod, data, stv,
     opt=try(rstan::optimizing(mod,data = data,
                               seed=as.integer(seed),init=svh),silent=T)
   }
-  sv = opt$par
+
+  if(class(opt) != 'try-error'){
+    sv = opt$par
+  }else{
+    sv = unlist(stv)
+  }
 
   initf2 <- function(chain_id = 1) {
     par = sv[1:6]
