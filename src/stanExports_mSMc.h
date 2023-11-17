@@ -98,43 +98,42 @@ static const std::vector<string> locations_array__ = {" (found before start of p
                                                       " (in 'mSMc', line 60, column 2 to line 62, column 3)",
                                                       " (in 'mSMc', line 63, column 2 to column 58)",
                                                       " (in 'mSMc', line 64, column 2 to column 42)",
-                                                      " (in 'mSMc', line 97, column 4 to column 12)",
                                                       " (in 'mSMc', line 98, column 4 to column 12)",
-                                                      " (in 'mSMc', line 100, column 4 to column 11)",
-                                                      " (in 'mSMc', line 101, column 4 to column 12)",
-                                                      " (in 'mSMc', line 103, column 4 to column 14)",
-                                                      " (in 'mSMc', line 105, column 4 to column 23)",
-                                                      " (in 'mSMc', line 106, column 15 to column 17)",
-                                                      " (in 'mSMc', line 106, column 4 to column 24)",
+                                                      " (in 'mSMc', line 99, column 4 to column 12)",
+                                                      " (in 'mSMc', line 101, column 4 to column 11)",
+                                                      " (in 'mSMc', line 104, column 4 to column 14)",
+                                                      " (in 'mSMc', line 106, column 4 to column 23)",
                                                       " (in 'mSMc', line 107, column 15 to column 17)",
-                                                      " (in 'mSMc', line 107, column 4 to column 21)",
-                                                      " (in 'mSMc', line 108, column 11 to column 13)",
+                                                      " (in 'mSMc', line 107, column 4 to column 24)",
                                                       " (in 'mSMc', line 108, column 15 to column 17)",
                                                       " (in 'mSMc', line 108, column 4 to column 21)",
                                                       " (in 'mSMc', line 109, column 11 to column 13)",
                                                       " (in 'mSMc', line 109, column 15 to column 17)",
-                                                      " (in 'mSMc', line 109, column 4 to column 25)",
-                                                      " (in 'mSMc', line 110, column 4 to column 24)",
-                                                      " (in 'mSMc', line 111, column 4 to column 33)",
-                                                      " (in 'mSMc', line 117, column 10 to column 36)",
-                                                      " (in 'mSMc', line 116, column 13 to line 118, column 9)",
-                                                      " (in 'mSMc', line 115, column 10 to column 26)",
-                                                      " (in 'mSMc', line 114, column 22 to line 116, column 9)",
-                                                      " (in 'mSMc', line 114, column 8 to line 118, column 9)",
-                                                      " (in 'mSMc', line 113, column 22 to line 119, column 7)",
-                                                      " (in 'mSMc', line 113, column 6 to line 119, column 7)",
-                                                      " (in 'mSMc', line 112, column 20 to line 120, column 5)",
-                                                      " (in 'mSMc', line 112, column 4 to line 120, column 5)",
-                                                      " (in 'mSMc', line 121, column 4 to column 28)",
-                                                      " (in 'mSMc', line 122, column 4 to column 49)",
-                                                      " (in 'mSMc', line 123, column 4 to column 27)",
-                                                      " (in 'mSMc', line 124, column 4 to column 18)",
-                                                      " (in 'mSMc', line 104, column 18 to line 125, column 5)",
-                                                      " (in 'mSMc', line 104, column 4 to line 125, column 5)",
-                                                      " (in 'mSMc', line 99, column 17 to line 126, column 5)",
-                                                      " (in 'mSMc', line 99, column 4 to line 126, column 5)",
-                                                      " (in 'mSMc', line 96, column 44 to line 127, column 3)",
-                                                      " (in 'mSMc', line 96, column 8 to line 127, column 3)",
+                                                      " (in 'mSMc', line 109, column 4 to column 21)",
+                                                      " (in 'mSMc', line 110, column 11 to column 13)",
+                                                      " (in 'mSMc', line 110, column 15 to column 17)",
+                                                      " (in 'mSMc', line 110, column 4 to column 25)",
+                                                      " (in 'mSMc', line 112, column 4 to column 24)",
+                                                      " (in 'mSMc', line 113, column 4 to column 33)",
+                                                      " (in 'mSMc', line 119, column 10 to column 36)",
+                                                      " (in 'mSMc', line 118, column 13 to line 120, column 9)",
+                                                      " (in 'mSMc', line 117, column 10 to column 26)",
+                                                      " (in 'mSMc', line 116, column 22 to line 118, column 9)",
+                                                      " (in 'mSMc', line 116, column 8 to line 120, column 9)",
+                                                      " (in 'mSMc', line 115, column 22 to line 121, column 7)",
+                                                      " (in 'mSMc', line 115, column 6 to line 121, column 7)",
+                                                      " (in 'mSMc', line 114, column 20 to line 122, column 5)",
+                                                      " (in 'mSMc', line 114, column 4 to line 122, column 5)",
+                                                      " (in 'mSMc', line 123, column 4 to column 28)",
+                                                      " (in 'mSMc', line 124, column 4 to column 49)",
+                                                      " (in 'mSMc', line 125, column 4 to column 27)",
+                                                      " (in 'mSMc', line 126, column 4 to column 18)",
+                                                      " (in 'mSMc', line 105, column 18 to line 127, column 5)",
+                                                      " (in 'mSMc', line 105, column 4 to line 127, column 5)",
+                                                      " (in 'mSMc', line 100, column 17 to line 128, column 5)",
+                                                      " (in 'mSMc', line 100, column 4 to line 128, column 5)",
+                                                      " (in 'mSMc', line 97, column 44 to line 129, column 3)",
+                                                      " (in 'mSMc', line 97, column 8 to line 129, column 3)",
                                                       " (in 'mSMc', line 66, column 4 to column 12)",
                                                       " (in 'mSMc', line 67, column 4 to column 12)",
                                                       " (in 'mSMc', line 69, column 4 to column 11)",
@@ -150,26 +149,26 @@ static const std::vector<string> locations_array__ = {" (found before start of p
                                                       " (in 'mSMc', line 78, column 11 to column 13)",
                                                       " (in 'mSMc', line 78, column 15 to column 17)",
                                                       " (in 'mSMc', line 78, column 4 to column 25)",
-                                                      " (in 'mSMc', line 79, column 4 to column 24)",
-                                                      " (in 'mSMc', line 81, column 4 to column 33)",
-                                                      " (in 'mSMc', line 87, column 10 to column 36)",
-                                                      " (in 'mSMc', line 86, column 13 to line 88, column 9)",
-                                                      " (in 'mSMc', line 85, column 10 to column 26)",
-                                                      " (in 'mSMc', line 84, column 22 to line 86, column 9)",
-                                                      " (in 'mSMc', line 84, column 8 to line 88, column 9)",
-                                                      " (in 'mSMc', line 83, column 22 to line 89, column 7)",
-                                                      " (in 'mSMc', line 83, column 6 to line 89, column 7)",
-                                                      " (in 'mSMc', line 82, column 20 to line 90, column 5)",
-                                                      " (in 'mSMc', line 82, column 4 to line 90, column 5)",
-                                                      " (in 'mSMc', line 91, column 4 to column 28)",
-                                                      " (in 'mSMc', line 92, column 4 to column 49)",
-                                                      " (in 'mSMc', line 93, column 4 to column 18)",
-                                                      " (in 'mSMc', line 73, column 18 to line 94, column 5)",
-                                                      " (in 'mSMc', line 73, column 4 to line 94, column 5)",
-                                                      " (in 'mSMc', line 68, column 17 to line 95, column 5)",
-                                                      " (in 'mSMc', line 68, column 4 to line 95, column 5)",
-                                                      " (in 'mSMc', line 65, column 38 to line 96, column 3)",
-                                                      " (in 'mSMc', line 65, column 2 to line 127, column 3)",
+                                                      " (in 'mSMc', line 80, column 4 to column 24)",
+                                                      " (in 'mSMc', line 82, column 4 to column 33)",
+                                                      " (in 'mSMc', line 88, column 10 to column 36)",
+                                                      " (in 'mSMc', line 87, column 13 to line 89, column 9)",
+                                                      " (in 'mSMc', line 86, column 10 to column 26)",
+                                                      " (in 'mSMc', line 85, column 22 to line 87, column 9)",
+                                                      " (in 'mSMc', line 85, column 8 to line 89, column 9)",
+                                                      " (in 'mSMc', line 84, column 22 to line 90, column 7)",
+                                                      " (in 'mSMc', line 84, column 6 to line 90, column 7)",
+                                                      " (in 'mSMc', line 83, column 20 to line 91, column 5)",
+                                                      " (in 'mSMc', line 83, column 4 to line 91, column 5)",
+                                                      " (in 'mSMc', line 92, column 4 to column 28)",
+                                                      " (in 'mSMc', line 93, column 4 to column 49)",
+                                                      " (in 'mSMc', line 94, column 4 to column 18)",
+                                                      " (in 'mSMc', line 73, column 18 to line 95, column 5)",
+                                                      " (in 'mSMc', line 73, column 4 to line 95, column 5)",
+                                                      " (in 'mSMc', line 68, column 17 to line 96, column 5)",
+                                                      " (in 'mSMc', line 68, column 4 to line 96, column 5)",
+                                                      " (in 'mSMc', line 65, column 38 to line 97, column 3)",
+                                                      " (in 'mSMc', line 65, column 2 to line 129, column 3)",
                                                       " (in 'mSMc', line 19, column 2 to column 8)",
                                                       " (in 'mSMc', line 20, column 8 to column 9)",
                                                       " (in 'mSMc', line 20, column 2 to column 11)",
@@ -242,19 +241,19 @@ pert_dist_lpdf(const T0__& theta, const T1__& lb, const T2__& md,
     local_scalar_t__ beta;
     beta = DUMMY_VAR__;
     
-    current_statement__ = 127;
+    current_statement__ = 126;
     alpha = (1 + ((gama * (md - lb)) / (ub - lb)));
-    current_statement__ = 128;
+    current_statement__ = 127;
     beta = (1 + ((gama * (ub - md)) / (ub - lb)));
-    current_statement__ = 129;
+    current_statement__ = 128;
     x1 = ((alpha - 1) * stan::math::log((theta - lb)));
-    current_statement__ = 130;
+    current_statement__ = 129;
     x2 = ((beta - 1) * stan::math::log((ub - theta)));
-    current_statement__ = 131;
+    current_statement__ = 130;
     x3 = (((alpha + beta) - 1) * stan::math::log((ub - lb)));
-    current_statement__ = 132;
+    current_statement__ = 131;
     x4 = lbeta(alpha, beta);
-    current_statement__ = 133;
+    current_statement__ = 132;
     return (((x1 + x2) - x3) - x4);
   } catch (const std::exception& e) {
     stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -320,77 +319,77 @@ public:
       pos__ = std::numeric_limits<int>::min();
       
       pos__ = 1;
-      current_statement__ = 96;
+      current_statement__ = 95;
       context__.validate_dims("data initialization","N","int",
           context__.to_vec());
       N = std::numeric_limits<int>::min();
       
-      current_statement__ = 96;
+      current_statement__ = 95;
       N = context__.vals_i("N")[(1 - 1)];
-      current_statement__ = 97;
+      current_statement__ = 96;
       validate_non_negative_index("n", "N", N);
-      current_statement__ = 98;
+      current_statement__ = 97;
       context__.validate_dims("data initialization","n","int",
           context__.to_vec(N));
       n = std::vector<int>(N, std::numeric_limits<int>::min());
       
-      current_statement__ = 98;
+      current_statement__ = 97;
       assign(n, nil_index_list(), context__.vals_i("n"),
         "assigning variable n");
-      current_statement__ = 99;
+      current_statement__ = 98;
       context__.validate_dims("data initialization","nc","int",
           context__.to_vec());
       nc = std::numeric_limits<int>::min();
       
-      current_statement__ = 99;
+      current_statement__ = 98;
       nc = context__.vals_i("nc")[(1 - 1)];
-      current_statement__ = 100;
+      current_statement__ = 99;
       context__.validate_dims("data initialization","maxN","int",
           context__.to_vec());
       maxN = std::numeric_limits<int>::min();
       
-      current_statement__ = 100;
+      current_statement__ = 99;
       maxN = context__.vals_i("maxN")[(1 - 1)];
-      current_statement__ = 101;
+      current_statement__ = 100;
       context__.validate_dims("data initialization","maxNc","int",
           context__.to_vec());
       maxNc = std::numeric_limits<int>::min();
       
-      current_statement__ = 101;
+      current_statement__ = 100;
       maxNc = context__.vals_i("maxNc")[(1 - 1)];
-      current_statement__ = 102;
+      current_statement__ = 101;
       validate_non_negative_index("nij", "N", N);
-      current_statement__ = 103;
+      current_statement__ = 102;
       validate_non_negative_index("nij", "maxNc", maxNc);
-      current_statement__ = 104;
+      current_statement__ = 103;
       context__.validate_dims("data initialization","nij","int",
           context__.to_vec(N, maxNc));
       nij = std::vector<std::vector<int>>(N, std::vector<int>(maxNc, std::numeric_limits<int>::min()));
       
       {
         std::vector<int> nij_flat__;
-        current_statement__ = 104;
+        current_statement__ = 103;
         assign(nij_flat__, nil_index_list(), context__.vals_i("nij"),
           "assigning variable nij_flat__");
-        current_statement__ = 104;
+        current_statement__ = 103;
         pos__ = 1;
-        current_statement__ = 104;
+        current_statement__ = 103;
         for (int sym1__ = 1; sym1__ <= maxNc; ++sym1__) {
-          current_statement__ = 104;
+          current_statement__ = 103;
           for (int sym2__ = 1; sym2__ <= N; ++sym2__) {
-            current_statement__ = 104;
+            current_statement__ = 103;
             assign(nij,
               cons_list(index_uni(sym2__),
                 cons_list(index_uni(sym1__), nil_index_list())),
               nij_flat__[(pos__ - 1)], "assigning variable nij");
-            current_statement__ = 104;
+            current_statement__ = 103;
             pos__ = (pos__ + 1);}}
       }
-      current_statement__ = 105;
+      current_statement__ = 104;
       validate_non_negative_index("y", "nc", nc);
-      current_statement__ = 106;
+      current_statement__ = 105;
       validate_non_negative_index("y", "maxN", maxN);
-      current_statement__ = 107;
+      current_statement__ = 106;
       context__.validate_dims("data initialization","y","double",
           context__.to_vec(nc, maxN));
       y = Eigen::Matrix<double, -1, -1>(nc, maxN);
@@ -398,40 +397,40 @@ public:
       
       {
         std::vector<local_scalar_t__> y_flat__;
-        current_statement__ = 107;
+        current_statement__ = 106;
         assign(y_flat__, nil_index_list(), context__.vals_r("y"),
           "assigning variable y_flat__");
-        current_statement__ = 107;
+        current_statement__ = 106;
         pos__ = 1;
-        current_statement__ = 107;
+        current_statement__ = 106;
         for (int sym1__ = 1; sym1__ <= maxN; ++sym1__) {
-          current_statement__ = 107;
+          current_statement__ = 106;
           for (int sym2__ = 1; sym2__ <= nc; ++sym2__) {
-            current_statement__ = 107;
+            current_statement__ = 106;
             assign(y,
               cons_list(index_uni(sym2__),
                 cons_list(index_uni(sym1__), nil_index_list())),
               y_flat__[(pos__ - 1)], "assigning variable y");
-            current_statement__ = 107;
+            current_statement__ = 106;
             pos__ = (pos__ + 1);}}
       }
-      current_statement__ = 108;
+      current_statement__ = 107;
       context__.validate_dims("data initialization","q","double",
           context__.to_vec());
       q = std::numeric_limits<double>::quiet_NaN();
       
-      current_statement__ = 108;
+      current_statement__ = 107;
       q = context__.vals_r("q")[(1 - 1)];
-      current_statement__ = 109;
+      current_statement__ = 108;
       context__.validate_dims("data initialization","shift","double",
           context__.to_vec());
       shift = std::numeric_limits<double>::quiet_NaN();
       
-      current_statement__ = 109;
+      current_statement__ = 108;
       shift = context__.vals_r("shift")[(1 - 1)];
-      current_statement__ = 110;
+      current_statement__ = 109;
       validate_non_negative_index("priormu", "N + 2", (N + 2));
-      current_statement__ = 111;
+      current_statement__ = 110;
       context__.validate_dims("data initialization","priormu","double",
           context__.to_vec((N + 2)));
       priormu = Eigen::Matrix<double, -1, 1>((N + 2));
@@ -439,24 +438,24 @@ public:
       
       {
         std::vector<local_scalar_t__> priormu_flat__;
-        current_statement__ = 111;
+        current_statement__ = 110;
         assign(priormu_flat__, nil_index_list(), context__.vals_r("priormu"),
           "assigning variable priormu_flat__");
-        current_statement__ = 111;
+        current_statement__ = 110;
         pos__ = 1;
-        current_statement__ = 111;
+        current_statement__ = 110;
         for (int sym1__ = 1; sym1__ <= (N + 2); ++sym1__) {
-          current_statement__ = 111;
+          current_statement__ = 110;
           assign(priormu, cons_list(index_uni(sym1__), nil_index_list()),
             priormu_flat__[(pos__ - 1)], "assigning variable priormu");
-          current_statement__ = 111;
+          current_statement__ = 110;
           pos__ = (pos__ + 1);}
       }
-      current_statement__ = 112;
+      current_statement__ = 111;
+      validate_non_negative_index("priorSigma", "N + 1", (N + 1));
+      current_statement__ = 111;
       validate_non_negative_index("priorSigma", "N + 1", (N + 1));
       current_statement__ = 112;
-      validate_non_negative_index("priorSigma", "N + 1", (N + 1));
-      current_statement__ = 113;
       context__.validate_dims("data initialization","priorSigma","double",
           context__.to_vec((N + 1), (N + 1)));
       priorSigma = Eigen::Matrix<double, -1, -1>((N + 1), (N + 1));
@@ -464,35 +463,35 @@ public:
       
       {
         std::vector<local_scalar_t__> priorSigma_flat__;
-        current_statement__ = 113;
+        current_statement__ = 112;
         assign(priorSigma_flat__, nil_index_list(),
           context__.vals_r("priorSigma"),
           "assigning variable priorSigma_flat__");
-        current_statement__ = 113;
+        current_statement__ = 112;
         pos__ = 1;
-        current_statement__ = 113;
+        current_statement__ = 112;
         for (int sym1__ = 1; sym1__ <= (N + 1); ++sym1__) {
-          current_statement__ = 113;
+          current_statement__ = 112;
           for (int sym2__ = 1; sym2__ <= (N + 1); ++sym2__) {
-            current_statement__ = 113;
+            current_statement__ = 112;
             assign(priorSigma,
               cons_list(index_uni(sym2__),
                 cons_list(index_uni(sym1__), nil_index_list())),
               priorSigma_flat__[(pos__ - 1)], "assigning variable priorSigma");
-            current_statement__ = 113;
+            current_statement__ = 112;
             pos__ = (pos__ + 1);}}
       }
-      current_statement__ = 113;
-      current_statement__ = 113;
+      current_statement__ = 112;
+      current_statement__ = 112;
       check_cov_matrix(function__, "priorSigma", priorSigma);
-      current_statement__ = 114;
+      current_statement__ = 113;
       context__.validate_dims("data initialization","priorlb","double",
           context__.to_vec());
       priorlb = std::numeric_limits<double>::quiet_NaN();
       
-      current_statement__ = 114;
+      current_statement__ = 113;
       priorlb = context__.vals_r("priorlb")[(1 - 1)];
-      current_statement__ = 115;
+      current_statement__ = 114;
       context__.validate_dims("data initialization","priorub","double",
           context__.to_vec(2));
       priorub = Eigen::Matrix<double, -1, 1>(2);
@@ -500,43 +499,43 @@ public:
       
       {
         std::vector<local_scalar_t__> priorub_flat__;
-        current_statement__ = 115;
+        current_statement__ = 114;
         assign(priorub_flat__, nil_index_list(), context__.vals_r("priorub"),
           "assigning variable priorub_flat__");
-        current_statement__ = 115;
+        current_statement__ = 114;
         pos__ = 1;
-        current_statement__ = 115;
+        current_statement__ = 114;
         for (int sym1__ = 1; sym1__ <= 2; ++sym1__) {
-          current_statement__ = 115;
+          current_statement__ = 114;
           assign(priorub, cons_list(index_uni(sym1__), nil_index_list()),
             priorub_flat__[(pos__ - 1)], "assigning variable priorub");
-          current_statement__ = 115;
+          current_statement__ = 114;
           pos__ = (pos__ + 1);}
       }
-      current_statement__ = 116;
+      current_statement__ = 115;
       context__.validate_dims("data initialization","priorg","double",
           context__.to_vec());
       priorg = std::numeric_limits<double>::quiet_NaN();
       
-      current_statement__ = 116;
+      current_statement__ = 115;
       priorg = context__.vals_r("priorg")[(1 - 1)];
-      current_statement__ = 117;
+      current_statement__ = 116;
       context__.validate_dims("data initialization","data_type","int",
           context__.to_vec());
       data_type = std::numeric_limits<int>::min();
       
-      current_statement__ = 117;
+      current_statement__ = 116;
       data_type = context__.vals_i("data_type")[(1 - 1)];
-      current_statement__ = 118;
+      current_statement__ = 117;
       par_1dim__ = std::numeric_limits<int>::min();
       
-      current_statement__ = 118;
+      current_statement__ = 117;
       par_1dim__ = (N + 2);
-      current_statement__ = 118;
+      current_statement__ = 117;
       validate_non_negative_index("par", "N + 2", par_1dim__);
-      current_statement__ = 119;
+      current_statement__ = 118;
       validate_non_negative_index("a", "N", N);
-      current_statement__ = 120;
+      current_statement__ = 119;
       validate_non_negative_index("mu", "N", N);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
@@ -636,92 +635,92 @@ public:
         lp_accum__.add(
           pert_dist_lpdf<propto__>(par[((N + 2) - 1)], 0, 0.5, 1,
             0.0001, pstream__));
-        current_statement__ = 95;
+        current_statement__ = 94;
         if ((primitive_value(logical_eq(data_type, 1)) || primitive_value(
             logical_eq(data_type, 3)))) {
           int cnt;
           cnt = std::numeric_limits<int>::min();
           
-          current_statement__ = 62;
+          current_statement__ = 61;
           cnt = 1;
-          current_statement__ = 93;
+          current_statement__ = 92;
           for (int i = 1; i <= N; ++i) {
             int nl;
             nl = std::numeric_limits<int>::min();
             
-            current_statement__ = 64;
+            current_statement__ = 63;
             nl = n[(i - 1)];
-            current_statement__ = 91;
+            current_statement__ = 90;
             for (int j = 1; j <= nl; ++j) {
               int lt;
               lt = std::numeric_limits<int>::min();
               
-              current_statement__ = 65;
+              current_statement__ = 64;
               lt = nij[(i - 1)][(j - 1)];
-              current_statement__ = 66;
+              current_statement__ = 65;
               validate_non_negative_index("resp", "lt", lt);
               Eigen::Matrix<local_scalar_t__, 1, -1> resp;
               resp = Eigen::Matrix<local_scalar_t__, 1, -1>(lt);
               stan::math::fill(resp, DUMMY_VAR__);
               
-              current_statement__ = 68;
+              current_statement__ = 67;
               validate_non_negative_index("m", "lt", lt);
               Eigen::Matrix<local_scalar_t__, 1, -1> m;
               m = Eigen::Matrix<local_scalar_t__, 1, -1>(lt);
               stan::math::fill(m, DUMMY_VAR__);
               
-              current_statement__ = 70;
+              current_statement__ = 69;
               validate_non_negative_index("P", "lt", lt);
-              current_statement__ = 71;
+              current_statement__ = 70;
               validate_non_negative_index("P", "lt", lt);
               Eigen::Matrix<local_scalar_t__, -1, -1> P;
               P = Eigen::Matrix<local_scalar_t__, -1, -1>(lt, lt);
               stan::math::fill(P, DUMMY_VAR__);
               
-              current_statement__ = 73;
+              current_statement__ = 72;
               validate_non_negative_index("Sigma", "lt", lt);
-              current_statement__ = 74;
+              current_statement__ = 73;
               validate_non_negative_index("Sigma", "lt", lt);
               Eigen::Matrix<local_scalar_t__, -1, -1> Sigma;
               Sigma = Eigen::Matrix<local_scalar_t__, -1, -1>(lt, lt);
               stan::math::fill(Sigma, DUMMY_VAR__);
               
-              current_statement__ = 76;
+              current_statement__ = 75;
               assign(resp, nil_index_list(),
                 rvalue(y,
                   cons_list(index_uni(cnt),
                     cons_list(index_min_max(1, lt), nil_index_list())), "y"),
                 "assigning variable resp");
-              current_statement__ = 77;
+              current_statement__ = 76;
               assign(m, nil_index_list(), rep_row_vector(a[(i - 1)], lt),
                 "assigning variable m");
-              current_statement__ = 86;
+              current_statement__ = 85;
               for (int id1 = 1; id1 <= lt; ++id1) {
-                current_statement__ = 84;
+                current_statement__ = 83;
                 for (int id2 = 1; id2 <= lt; ++id2) {
-                  current_statement__ = 82;
+                  current_statement__ = 81;
                   if (logical_eq(id1, id2)) {
-                    current_statement__ = 80;
+                    current_statement__ = 79;
                     assign(P,
                       cons_list(index_uni(id1),
                         cons_list(index_uni(id2), nil_index_list())), 1,
                       "assigning variable P");
                   } else {
-                    current_statement__ = 78;
+                    current_statement__ = 77;
                     assign(P,
                       cons_list(index_uni(id1),
                         cons_list(index_uni(id2), nil_index_list())),
                       rho_cluster, "assigning variable P");
                   }}}
-              current_statement__ = 87;
+              current_statement__ = 86;
               assign(Sigma, nil_index_list(), multiply((1 / invsigma2), P),
                 "assigning variable Sigma");
-              current_statement__ = 88;
+              current_statement__ = 87;
               lp_accum__.add(multi_normal_lpdf<false>(resp, m, Sigma));
-              current_statement__ = 89;
+              current_statement__ = 88;
               cnt = (cnt + 1);}}
         } else {
-          current_statement__ = 60;
+          current_statement__ = 59;
           if ((primitive_value(logical_eq(data_type, 2)) || primitive_value(
               logical_eq(data_type, 4)))) {
             int cnt;
@@ -729,86 +728,83 @@ public:
             
             current_statement__ = 25;
             cnt = 1;
-            current_statement__ = 58;
+            current_statement__ = 57;
             for (int i = 1; i <= N; ++i) {
               int nl;
               nl = std::numeric_limits<int>::min();
               
-              local_scalar_t__ mx;
-              mx = DUMMY_VAR__;
-              
-              current_statement__ = 28;
+              current_statement__ = 27;
               nl = n[(i - 1)];
-              current_statement__ = 56;
+              current_statement__ = 55;
               for (int j = 1; j <= nl; ++j) {
                 int lt;
                 lt = std::numeric_limits<int>::min();
                 
-                current_statement__ = 29;
+                current_statement__ = 28;
                 lt = nij[(i - 1)][(j - 1)];
-                current_statement__ = 30;
+                current_statement__ = 29;
                 validate_non_negative_index("resp", "lt", lt);
                 Eigen::Matrix<local_scalar_t__, 1, -1> resp;
                 resp = Eigen::Matrix<local_scalar_t__, 1, -1>(lt);
                 stan::math::fill(resp, DUMMY_VAR__);
                 
-                current_statement__ = 32;
+                current_statement__ = 31;
                 validate_non_negative_index("m", "lt", lt);
                 Eigen::Matrix<local_scalar_t__, 1, -1> m;
                 m = Eigen::Matrix<local_scalar_t__, 1, -1>(lt);
                 stan::math::fill(m, DUMMY_VAR__);
                 
-                current_statement__ = 34;
+                current_statement__ = 33;
                 validate_non_negative_index("P", "lt", lt);
-                current_statement__ = 35;
+                current_statement__ = 34;
                 validate_non_negative_index("P", "lt", lt);
                 Eigen::Matrix<local_scalar_t__, -1, -1> P;
                 P = Eigen::Matrix<local_scalar_t__, -1, -1>(lt, lt);
                 stan::math::fill(P, DUMMY_VAR__);
                 
-                current_statement__ = 37;
+                current_statement__ = 36;
                 validate_non_negative_index("Sigma", "lt", lt);
-                current_statement__ = 38;
+                current_statement__ = 37;
                 validate_non_negative_index("Sigma", "lt", lt);
                 Eigen::Matrix<local_scalar_t__, -1, -1> Sigma;
                 Sigma = Eigen::Matrix<local_scalar_t__, -1, -1>(lt, lt);
                 stan::math::fill(Sigma, DUMMY_VAR__);
                 
-                current_statement__ = 40;
+                current_statement__ = 39;
                 assign(resp, nil_index_list(),
                   rvalue(y,
                     cons_list(index_uni(cnt),
                       cons_list(index_min_max(1, lt), nil_index_list())),
                     "y"), "assigning variable resp");
-                current_statement__ = 41;
+                current_statement__ = 40;
                 assign(m, nil_index_list(), rep_row_vector(a[(i - 1)], lt),
                   "assigning variable m");
-                current_statement__ = 50;
+                current_statement__ = 49;
                 for (int id1 = 1; id1 <= lt; ++id1) {
-                  current_statement__ = 48;
+                  current_statement__ = 47;
                   for (int id2 = 1; id2 <= lt; ++id2) {
-                    current_statement__ = 46;
+                    current_statement__ = 45;
                     if (logical_eq(id1, id2)) {
-                      current_statement__ = 44;
+                      current_statement__ = 43;
                       assign(P,
                         cons_list(index_uni(id1),
                           cons_list(index_uni(id2), nil_index_list())), 1,
                         "assigning variable P");
                     } else {
-                      current_statement__ = 42;
+                      current_statement__ = 41;
                       assign(P,
                         cons_list(index_uni(id1),
                           cons_list(index_uni(id2), nil_index_list())),
                         rho_cluster, "assigning variable P");
                     }}}
-                current_statement__ = 51;
+                current_statement__ = 50;
                 assign(Sigma, nil_index_list(), multiply((1 / invsigma2), P),
                   "assigning variable Sigma");
-                current_statement__ = 52;
+                current_statement__ = 51;
                 lp_accum__.add(multi_normal_lpdf<false>(resp, m, Sigma));
-                current_statement__ = 53;
+                current_statement__ = 52;
                 lp_accum__.add(-sum(resp));
-                current_statement__ = 54;
+                current_statement__ = 53;
                 cnt = (cnt + 1);}}
           } 
         }

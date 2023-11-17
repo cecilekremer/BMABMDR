@@ -9,16 +9,11 @@
 # 4. build binary R-package and upload as artifact
 # ****************************************************************
 
-name: build-binary-ubuntu-workflow
+name: build-binary-macos-workflow
 
 on:
   workflow_call:
     inputs:
-      os:
-        description: 'Linux distribution used to execute job'
-        required: true
-        type: string
-        default: 'ubuntu-latest'
       rver:
         description: 'R-version used to execute job'
         required: true
@@ -37,8 +32,8 @@ on:
 
 jobs:
   check-upload:
-    runs-on: ${{ inputs.os }}
-    name: ${{ inputs.os }} (R-${{ inputs.rver }})
+    runs-on: macos-latest
+    name: macos-latest (R-${{ inputs.rver }})
     env:
       R_REMOTES_NO_ERRORS_FROM_WARNINGS: true
       R_VER: ${{ inputs.rver }}
@@ -58,18 +53,24 @@ jobs:
             remotes
       - name: set compiler flags
         run: |
+          ## install old version rstantools
+          if(!Sys.getenv("R_VER") %in% c("4.0", "4.1")) {
+            remotes::install_version("rstantools", "2.2.0")
+          }
           ## update src files
           rstantools::rstan_config()
           Rcpp::compileAttributes()
-          ## edit global Makevars
+          ## edit global Makevars.win
           dotR <- file.path(Sys.getenv("HOME"), ".R")
           if (!file.exists(dotR)) { dir.create(dotR) }
-          MAKEVARS <- file.path(dotR, "Makevars")
+          MAKEVARS <- file.path(dotR, "Makevars.win")
           if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
           cat("\nCXX=g++ -std=c++1y",
             "CXXFLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
+      - name: make 'configure' script executable
+        run: chmod +x configure
       - name: build source R-package
         id: build-source
         run: |
@@ -101,6 +102,6 @@ jobs:
         if: success() && inputs.build_binary
         uses: actions/upload-artifact@v3
         with:
-          name: ${{ inputs.os }}_R-${{ inputs.rver }}
+          name: ${{ inputs.rver }}
           path: ${{ inputs.rver }}
           if-no-files-found: error

@@ -622,6 +622,7 @@ BMDLU <- function(mod.obj, pvec = c(0.05, 0.5, 0.95), type = c('continuous', 'qu
 #' @param what prediction of interest, can be either "predicted" or "response_at_BMD"
 #' @param model_averaged option to compute model averaged prediction. Defaults to FALSE
 #' @param clustered logical indicating wheter data are clustered (T) or not (F, default)
+#' @param conv whether only converged models should be included
 #' @param weight_type type of weight to be used. It can either be "BS" for bridge sampling or
 #'              "LP" for Laplace approximation
 #'
@@ -635,6 +636,7 @@ predict.BMADR <- function(mod.obj, dose,
                           what = c("predicted", "resp_at_BMD"),
                           model_averaged = FALSE,
                           clustered = FALSE,
+                          conv = FALSE,
                           weight_type = c("BS", "LP")){
 
   if(clustered == F){
@@ -721,7 +723,7 @@ predict.BMADR <- function(mod.obj, dose,
 
     preds <- do.call(rbind.data.frame,preds)
 
-    BMDMA <- BMDMA_extract(mod.obj, conv = FALSE)
+    BMDMA <- BMDMA_extract(mod.obj, conv = conv)
 
     if(model_averaged == TRUE & is.BMADR2(mod.obj)[3] == 2 & weight_type == "BS") {
 
@@ -766,6 +768,7 @@ predict.BMADR <- function(mod.obj, dose,
 predict.BMADRQ <- function(mod.obj, dose,
                            what = c("predicted", "resp_at_BMD"),
                            model_averaged = FALSE,
+                           conv = FALSE,
                            weight_type = c("BS", "LP")) {
 
   type <- 'quantal'
@@ -847,7 +850,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
     preds <- do.call(rbind.data.frame,preds)
 
-    BMDMA <- BMDMAQ_extract(mod.obj, conv = FALSE)
+    BMDMA <- BMDMAQ_extract(mod.obj, conv = conv)
 
     if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[3] == 2 & weight_type == "BS") {
 
@@ -969,13 +972,15 @@ summary.BMADR <- function(mod.obj, type = c('continuous','quantal'), conv = FALS
     BMDWeights(mod.obj, 'continuous')
     if(clustered == F){
       par_med(mod.obj, 'continuous')
+      meds <- par_med(mod.obj, 'continuous')
     }else if(clustered == T){
       par_med(mod.obj, 'continuous', clustered = T)
+      meds <- par_med(mod.obj, 'continuous', clustered = T)
     }
-    BMDMA_extract(mod.obj, conv = FALSE)
+    BMDMA_extract(mod.obj, conv = conv)
     return(list(BMDWeights = BMDWeights(mod.obj, 'continuous'),
-                ModelAverage = BMDMA_extract(mod.obj, conv = FALSE),
-                ModelParameter = ifelse(clustered == F, par_med(mod.obj, 'continuous'), par_med(mod.obj, 'continuous', clustered= T))
+                ModelAverage = BMDMA_extract(mod.obj, conv = conv),
+                ModelParameter = meds
 
     ))
   }else if(type == 'quantal'){
@@ -983,7 +988,7 @@ summary.BMADR <- function(mod.obj, type = c('continuous','quantal'), conv = FALS
     par_med(mod.obj, type = 'quantal')
 
     return(list(BMDWeights = BMDWeights(mod.obj, type = 'quantal'),
-                ModelAverage = BMDMAQ_extract(mod.obj, conv = FALSE),
+                ModelAverage = BMDMAQ_extract(mod.obj, conv = conv),
                 ModelParameters = par_med(mod.obj, type = 'quantal')
 
     ))

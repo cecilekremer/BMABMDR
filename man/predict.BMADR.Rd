@@ -12,6 +12,7 @@
   what = c("predicted", "resp_at_BMD"),
   model_averaged = FALSE,
   clustered = FALSE,
+  conv = FALSE,
   weight_type = c("BS", "LP")
 )
 
@@ -35,6 +36,8 @@
 \item{model_averaged}{option to compute model averaged prediction. Defaults to FALSE}
 
 \item{clustered}{logical indicating wheter data are clustered (T) or not (F, default)}
+
+\item{conv}{whether only converged models should be included}
 
 \item{weight_type}{type of weight to be used. It can either be "BS" for bridge sampling or
 "LP" for Laplace approximation}
