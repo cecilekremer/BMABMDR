@@ -9,13 +9,13 @@
 # 4. build binary R-package and upload as artifact
 # ****************************************************************
 
-name: build-binary-ubuntu-workflow
+name: build-binary-unix-workflow
 
 on:
   workflow_call:
     inputs:
       os:
-        description: 'Linux distribution used to execute job'
+        description: 'Distro used to execute job'
         required: true
         type: string
         default: 'ubuntu-latest'
@@ -67,9 +67,11 @@ jobs:
           MAKEVARS <- file.path(dotR, "Makevars")
           if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
           cat("\nCXX=g++ -std=c++1y",
-            "CXXFLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
+            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
+      - name: make 'configure' script executable
+        run: chmod +x configure
       - name: build source R-package
         id: build-source
         run: |
