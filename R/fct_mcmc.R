@@ -383,7 +383,13 @@ fun_samplingQ = function(mod, data, stv,
   # if(!ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
   if(data$is_bin == 1) {
 
-    sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3')]
+
+    if(class(opt) != 'try-error'){
+      # sv = opt$par
+      sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3')]
+    }else{
+      sv = unlist(stv)
+    }
     initf2 <- function(chain_id = 1) {
       par = sv[1:3]
       if(data$is_informative_a == 1){
@@ -404,7 +410,13 @@ fun_samplingQ = function(mod, data, stv,
 
   } else if(data$is_betabin == 1) {
 
-    sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3', 'rho[1]')]
+    if(class(opt) != 'try-error'){
+      # sv = opt$par
+      sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3', 'rho[1]')]
+    }else{
+      sv = unlist(stv)
+    }
+
     initf2 <- function(chain_id = 1) {
       par = sv[1:4]
       if(data$is_informative_a == 1){

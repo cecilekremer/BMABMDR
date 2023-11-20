@@ -3,3 +3,5 @@
 #! /bin/sh
 "${R_HOME}/bin${R_ARCH_BIN}/Rscript.exe" -e "rstantools::rstan_config()"
 echo "PKG_CXXFLAGS += -Wa,-mbig-obj" >> ./src/Makevars.win
+echo "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic" >> ./src/Makevars.win
+echo "CXX17FLAGS += -O3 -mmmx -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -g0" >> ./src/Makevars.win
