@@ -9,13 +9,13 @@
 # 4. build binary R-package and upload as artifact
 # ****************************************************************
 
-name: build-binary-ubuntu-workflow
+name: build-binary-unix-workflow
 
 on:
   workflow_call:
     inputs:
       os:
-        description: 'Linux distribution used to execute job'
+        description: 'Distro used to execute job'
         required: true
         type: string
         default: 'ubuntu-latest'
@@ -58,22 +58,20 @@ jobs:
             remotes
       - name: set compiler flags
         run: |
-          ## install old version rstantools
-          if(!Sys.getenv("R_VER") %in% c("4.0", "4.1")) {
-            remotes::install_version("rstantools", "2.2.0")
-          }
           ## update src files
           rstantools::rstan_config()
           Rcpp::compileAttributes()
-          ## edit global Makevars.win
+          ## edit global Makevars
           dotR <- file.path(Sys.getenv("HOME"), ".R")
           if (!file.exists(dotR)) { dir.create(dotR) }
-          MAKEVARS <- file.path(dotR, "Makevars.win")
+          MAKEVARS <- file.path(dotR, "Makevars")
           if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
           cat("\nCXX=g++ -std=c++1y",
-            "CXXFLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
+            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
+      - name: make 'configure' script executable
+        run: chmod +x configure
       - name: build source R-package
         id: build-source
         run: |
@@ -108,3 +106,4 @@ jobs:
           name: ${{ inputs.os }}_R-${{ inputs.rver }}
           path: ${{ inputs.rver }}
           if-no-files-found: error
+          

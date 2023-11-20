@@ -9,6 +9,5 @@ PKG_LIBS = $(shell "$(R_HOME)/bin$(R_ARCH_BIN)/Rscript" -e "RcppParallel::RcppPa
 
 CXX_STD = CXX17
 PKG_CXXFLAGS += -Wa,-mbig-obj
-CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic
-
-CXX14FLAGS += -O3 -mmmx -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -g0
+CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic
+CXX17FLAGS += -O3 -mmmx -msse -msse2 -msse3 -mssse3 -msse4.1 -msse4.2 -g0
