@@ -1212,7 +1212,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                     cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
 
       BMDL=c(BMDL, P4resLNI[1]); BMD=c(BMD, P4resLNI[2]); BMDU=c(BMDU, P4resLNI[3])
-      bridgeP4LN = bridge_sampler(fitstanP4_LN, silent = T)
+      bridgeP4LN = bridgesampling::bridge_sampler(fitstanP4_LN, silent = T)
     }
   }
   if(prior.weights[15] == 0){P4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeP4LN=NA;
@@ -1545,7 +1545,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   #----------------------------------
   ### weights based on laplace approximation
 
-  prior.weights = prior.weights.orig
+  # prior.weights = prior.weights.orig
 
   # normal
   data=data.N$data
@@ -3499,7 +3499,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                     cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
 
       BMDL=c(BMDL, P4resLNI[1]); BMD=c(BMD, P4resLNI[2]); BMDU=c(BMDU, P4resLNI[3])
-      bridgeP4LN = bridge_sampler(fitstanP4_LN, silent = T)
+      bridgeP4LN = bridgesampling::bridge_sampler(fitstanP4_LN, silent = T)
     }}
   if(prior.weights[15] == 0){P4resLNI=NULL; BMDL = c(BMDL,NA); BMD = c(BMD,NA); BMDU=c(BMDU,NA); bridgeP4LN=NA;
   converged=c(converged, NA); P4covLNI=rep(NA,2); P4corrLNI=rep(NA,2); DRM_P4_LN=rep(NA,length(data$x))
@@ -3790,7 +3790,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   #----------------------------------
   ### weights based on laplace approximation
 
-  prior.weights = prior.weights.orig
+  # prior.weights = prior.weights.orig
 
   # normal
   data=data.N$data
@@ -5000,7 +5000,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
                   cor(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
 
-      bridgeH4Q = bridge_sampler(fitstanH4_Q, silent = T)
+      bridgeH4Q = bridgesampling::bridge_sampler(fitstanH4_Q, silent = T)
       BMDL = c(BMDL, H4resQ[1]); BMD=c(BMD, H4resQ[2]); BMDU=c(BMDU, H4resQ[3])
 
       #diagnostics here
@@ -5660,7 +5660,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   #----------------------------------
   ### weights based on laplace approximation
 
-  prior.weights = prior.weights.orig
+  # prior.weights = prior.weights.orig
 
   llQ = c() # likelihoods
 
