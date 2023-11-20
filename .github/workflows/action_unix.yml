@@ -1,0 +1,27 @@
+name: build-binary-unix
+
+on:
+  push:
+    branches:
+      - 'main'
+  pull_request:
+    branches:
+      - 'main'
+  workflow_dispatch:
+
+jobs:
+  check-upload:
+    strategy:
+      fail-fast: false
+      matrix:
+        config:
+          - {os: ubuntu-22.04, source: false, binary: true, r: 'release'}
+          - {os: ubuntu-20.04, source: false, binary: true, r: 'release'}
+          - {os: macos-latest, source: false, binary: true, r: 'release'}
+    uses: ./.github/workflows/build_binary_unix.yml
+    with:
+      os: ${{ matrix.config.os }}
+      rver: ${{ matrix.config.r}}
+      build_source: ${{ matrix.config.source }}
+      build_binary: ${{ matrix.config.binary }}
+      
