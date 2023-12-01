@@ -1,7 +1,12 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9072
+
+* fixed error in plot for heavily left-skewed distribution
+
 ## BMABMDR 0.0.0.9071
 
+* fixed error in sampling
 
 ## BMABMDR 0.0.0.9070
 

@@ -1659,7 +1659,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
 
 #' Function to set data in the correct format, for quantal data
 #'
-#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events, n (or dose, adverse event yes/no in case of individual data)
+#' @param data a dataframe with input data, order of columns should be: dose, number of adverse events (increasing), n (or dose, adverse event yes/no in case of individual data)
 #' @param sumstats logical indicating whether summary (T, default) or individual-level (F) data is provided. If individual-level data are provided, a litter indicator should be included instead of n (column 3)
 #' @param q specified BMR
 #' @param bkg vector containing minimum, most likely (optional), and maximum value for the background response. Defaults to NULL (non-informative prior)
