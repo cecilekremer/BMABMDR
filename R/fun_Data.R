@@ -158,7 +158,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   b.test.N <- bartlett(sd.a, n.a)
   if(b.test.N[2]>=0.05){
     test.var = gettextf('distributional assumption of constant variance is met, Bartlett test p-value is %1$5.4f',
-                      round(b.test.N[2], 4))
+                        round(b.test.N[2], 4))
     message(test.var)
   }else if(b.test.N[2]<0.05){
     test.var = gettextf('distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is %1$5.4f', round(b.test.N[2], 4))
@@ -840,6 +840,14 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   indiv.data <- indiv.data %>%
     dplyr::mutate(cluster = dplyr::cur_group_id(),
                   count = n())
+
+  ## Check if each litter contains >1 observation
+  if(0 %in% as.vector(unname(table(indiv.data$litter))) || 1 %in% as.vector(unname(table(indiv.data$litter)))){
+    stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
+  }
+
+
+
   dose.a = indiv.data$dose
   maxDose = max(dose.a)
   doses = unique(dose.a)
@@ -1173,11 +1181,11 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   # b.test.N <- bartlett(sd.a, n.a)
   if(norm.test.N$p.value>=0.05){
     test.varN = gettextf('distributional assumption of normality of residuals for the normal distribution is met, Shapiro test p-value is %1$5.4f',
-                       round(norm.test.N$p.value, 4))
+                         round(norm.test.N$p.value, 4))
     message(test.varN)
   }else if(norm.test.N$p.value<0.05){
     test.varN = gettextf('distributional assumption of normality of residuals for the normal distribution is not met, Shapiro test p-value is %1$5.4f',
-                       round(norm.test.N$p.value, 4))
+                         round(norm.test.N$p.value, 4))
     warning(test.varN)
   }
 
@@ -1250,6 +1258,12 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   indiv.data <- indiv.data %>%
     dplyr::mutate(cluster = dplyr::cur_group_id(),
                   count = dplyr::n())
+
+  ## Check if each litter contains >1 observation
+  if(0 %in% as.vector(unname(table(indiv.data$litter))) || 1 %in% as.vector(unname(table(indiv.data$litter)))){
+    stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
+  }
+
   dose.a = indiv.data$dose
   maxDose = max(dose.a)
   doses = unique(dose.a)
@@ -1598,11 +1612,11 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   # b.test.N <- bartlett(sd.a, n.a)
   if(norm.test.N$p.value>=0.05){
     test.varN = gettextf('distributional assumption of normality of residuals for the lognormal distribution is met, Shapiro test p-value is %1$5.4f',
-                       round(norm.test.N$p.value, 4))
+                         round(norm.test.N$p.value, 4))
     message(test.varN)
   }else if(norm.test.N$p.value<0.05){
     test.varN = gettextf('distributional assumption of normality of residuals for the lognormal distribution is not met, Shapiro test p-value is %1$5.4f',
-                       round(norm.test.N$p.value, 4))
+                         round(norm.test.N$p.value, 4))
     warning(test.varN)
   }
 
@@ -1731,6 +1745,13 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     }
     N = length(dose.a)
     dose.a = dose.a/maxDose
+  }
+
+  ## Check if each litter contains >1 observation
+  if(cluster == TRUE){
+    if(0 %in% n.a || 1 %in% n.a){
+      stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
+    }
   }
 
 
@@ -2035,7 +2056,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
         message(test.var[i])
       }else if(b.test.N[2]<0.05){
         test.var[i] = gettextf('distributional assumption of constant variance for the normal distribution is not met for group %1$s, Bartlett test p-value is %2$5.4f',
-                             covar_lvls[i], round(b.test.N[2], 4))
+                               covar_lvls[i], round(b.test.N[2], 4))
         warning(test.var[i])
       }
       prmean.s[i] =-2*log(1.5*mean(sd.a[covar == covar_lvls[i]]))
@@ -2050,7 +2071,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
     if(b.test.N[2]>=0.05){
       test.var = gettextf('distributional assumption of constant variance is met, Bartlett test p-value is %1$5.4f',
-                        round(b.test.N[2], 4))
+                          round(b.test.N[2], 4))
       message(test.var)
     }else if(b.test.N[2]<0.05){
       test.var = gettextf('distributional assumption of constant variance for the normal distribution is not met, Bartlett test p-value is  %1$5.4f', round(b.test.N[2], 4))
@@ -2814,11 +2835,11 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       b.test.LN <- bartlett(gsd.a[covar == covar_lvls[i]], n.a[covar == covar_lvls[i]])
       if(b.test.LN[2]>=0.05){
         test.var[i] = gettextf('distributional assumption of constant coefficient of variation is met for group %1$s, Bartlett test p-value is %2$5.4f ', covar_lvls[i],
-                                                          round(b.test.LN[2], 4))
+                               round(b.test.LN[2], 4))
         message(test.var[i])
       }else if(b.test.LN[2]<0.05){
         test.var[i] = gettextf('distributional assumption of constant coefficient of variation for the lognormal distribution is not met for group %1$s, Bartlett test p-value is %2$5.4f',
-                             covar_lvls[i], round(b.test.LN[2], 4))
+                               covar_lvls[i], round(b.test.LN[2], 4))
         warning(test.var[i])
       }
       prmean.s[i] =-2*log(1.5*mean(gsd.a[covar == covar_lvls[i]]))
@@ -2831,7 +2852,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
     if(b.test.LN[2]>=0.05){
       test.var = gettext('distributional assumption of constant coefficient of variation is met, Bartlett test p-value is %1$5.4f',
-                        round(b.test.LN[2], 4))
+                         round(b.test.LN[2], 4))
       message(test.var)
     }else if(b.test.LN[2]<0.05){
       test.var = gettextf('distributional assumption of constant coefficient variation for the lognormal distribution is not met, Bartlett test p-value is %1$5.4f',
