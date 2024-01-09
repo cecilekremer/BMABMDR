@@ -146,10 +146,11 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
                                   chains = nrchains, warmup = warmup, seed = seed,
                                   control = list(adapt_delta = delta, max_treedepth =treedepth),
                                   show_messages = F, refresh = 0))
-      n.at <- 1
-      while(class(fitstanSM) == 'try-error' && n.at < 11){
-        priorgam <- data.LN$data$shape.a + runif(1, -0.01, 0.01)
-        if(priorgam < 0) priorgam <- 0.0001
+      # n.at <- 1
+      if(class(fitstanSM) == 'try-error'){# && n.at < 11){
+        # priorgam <- data.LN$data$shape.a + runif(1, -0.01, 0.01)
+        # if(priorgam < 0) priorgam <- 0.0001
+        priorgam <- 4
         data.modstanSM=list(N=data.LN$data$N, n=data.LN$data$n, m=data.LN$data$m, s2=data.LN$data$s2, shift=data.LN$data$shift,
                             priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
                             priorlb=priorSM$priorlb, priorub=priorSM$priorub,
