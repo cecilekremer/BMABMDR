@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9074
+
+* updated modelTest function
+
 ## BMABMDR 0.0.0.9073
 
 * provide error message if clustered = TRUE but some litters contain only one observation

@@ -124,7 +124,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       priorSigma = diag(c(1, rep(1, data.LN$data$N-1), 1)),
       priorlb = data.LN$data$priorlb[1],
       priorub = c(data.LN$data$priorub[1],
-                  max(abs(diff(exp(data.LN$data$m.org))))*10
+                  max(abs(diff(exp(data.LN$data$m.org))))*3
       )
     )
 
@@ -142,10 +142,31 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
         list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.01*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
       }
       init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
-      fitstanSM = rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
+      fitstanSM = try(rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
                                   chains = nrchains, warmup = warmup, seed = seed,
                                   control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                  show_messages = F, refresh = 0)
+                                  show_messages = F, refresh = 0))
+      n.at <- 1
+      while(class(fitstanSM) == 'try-error' && n.at < 11){
+        priorgam <- data.LN$data$shape.a + runif(1, -0.01, 0.01)
+        if(priorgam < 0) priorgam <- 0.0001
+        data.modstanSM=list(N=data.LN$data$N, n=data.LN$data$n, m=data.LN$data$m, s2=data.LN$data$s2, shift=data.LN$data$shift,
+                            priormu=priorSM$priormu, priorSigma=priorSM$priorSigma,
+                            priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                            data_type=data.LN$data$data_type, priorg = priorgam
+        )
+        sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
+
+        initf2 <- function(chain_id = 1) {
+          list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.01*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
+        }
+        init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+        fitstanSM = try(rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
+                                        chains = nrchains, warmup = warmup, seed = seed,
+                                        control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                        show_messages = F, refresh = 0))
+        n.at <- n.at + 1
+      }
 
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5")]
 
