@@ -157,7 +157,6 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
                             data_type=data.LN$data$data_type, priorg = priorgam
         )
         sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
-
         initf2 <- function(chain_id = 1) {
           list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.01*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
         }
@@ -166,7 +165,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
                                         chains = nrchains, warmup = warmup, seed = seed,
                                         control = list(adapt_delta = delta, max_treedepth =treedepth),
                                         show_messages = F, refresh = 0))
-        n.at <- n.at + 1
+        # n.at <- n.at + 1
       }
 
       pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5")]

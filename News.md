@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9075
+
+* added output in Laplace function (for use in simulations)
+
 ## BMABMDR 0.0.0.9074
 
 * updated modelTest function
