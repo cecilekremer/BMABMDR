@@ -4,6 +4,8 @@
 
 * added output in Laplace function (for use in simulations)
 
+* fixed error in solving Hessian
+
 ## BMABMDR 0.0.0.9074
 
 * updated modelTest function
