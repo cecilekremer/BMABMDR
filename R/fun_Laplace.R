@@ -1560,6 +1560,47 @@ full.laplace_MA=function(data.N, data.LN,
     if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
   ))
 
+  mabkg=(c(# normal
+    if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,"mu_0"],count[1],replace=T),
+    if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,"mu_0"],count[2],replace=T),
+    if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,"mu_0"],count[3],replace=T),
+    if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,"mu_0"],count[4],replace=T),
+    if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,"mu_0"],count[5],replace=T),
+    if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,"mu_0"],count[6],replace=T),
+    if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,"mu_0"],count[7],replace=T),
+    if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,"mu_0"],count[8],replace=T),
+    # lognormal
+    if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,"mu_0"],count[9],replace=T),
+    if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,"mu_0"],count[10],replace=T),
+    if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,"mu_0"],count[11],replace=T),
+    if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,"mu_0"],count[12],replace=T),
+    if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,"mu_0"],count[13],replace=T),
+    if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,"mu_0"],count[14],replace=T),
+    if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,"mu_0"],count[15],replace=T),
+    if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,"mu_0"],count[16],replace=T)
+  ))
+
+  mamaxy=(c(# normal
+    if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,"mu_inf"],count[1],replace=T),
+    if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,"mu_inf"],count[2],replace=T),
+    if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,"mu_inf"],count[3],replace=T),
+    if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,"mu_inf"],count[4],replace=T),
+    if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,"mu_inf"],count[5],replace=T),
+    if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,"mu_inf"],count[6],replace=T),
+    if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,"mu_inf"],count[7],replace=T),
+    if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,"mu_inf"],count[8],replace=T),
+    # lognormal
+    if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,"mu_inf"],count[9],replace=T),
+    if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,"mu_inf"],count[10],replace=T),
+    if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,"mu_inf"],count[11],replace=T),
+    if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,"mu_inf"],count[12],replace=T),
+    if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,"mu_inf"],count[13],replace=T),
+    if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,"mu_inf"],count[14],replace=T),
+    if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,"mu_inf"],count[15],replace=T),
+    if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,"mu_inf"],count[16],replace=T)
+  ))
+
+
   maci=quantile(mabmd,pvec)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
   if(maci[1] == 0){
@@ -1682,6 +1723,8 @@ full.laplace_MA=function(data.N, data.LN,
     weights=lpw,
     MA=maci,
     llN=llN, llLN=llLN, MA_post = BMDq,
+    bkg_post = mabkg,
+    maxy_post = mamaxy,
     # dose-response
     MA_dr = dr.MA,
     parsN = list(parsE4N, parsIE4N, parsH4N, parsLN4N, parsG4N,
