@@ -123,7 +123,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsE4N <- par_extract(optE4_NI, model_name = "E4_N")
-      E4resNI <- quantile(parsE4N$BMD*data$maxD, pvec)
+      E4resNI <- quantile(parsE4N$BMD*data$maxD, pvec, na.rm = T)
       E4resNI <- c(E4resNI,apply(parsE4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(E4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -207,7 +207,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsIE4N <- par_extract(optIE4_NI, model_name = "IE4_N")
-      IE4resNI <- quantile(parsIE4N$BMD*data$maxD, pvec)
+      IE4resNI <- quantile(parsIE4N$BMD*data$maxD, pvec, na.rm = T)
       IE4resNI <- c(IE4resNI,apply(parsIE4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(IE4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -281,7 +281,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsH4N <- par_extract(optH4_NI, model_name = "H4_N")
-      H4resNI <- quantile(parsH4N$BMD*data$maxD, pvec)  #exp(quantile(optE4_NI$theta_tilde[,"par[2]"],pvec))
+      H4resNI <- quantile(parsH4N$BMD*data$maxD, pvec, na.rm = T)  #exp(quantile(optE4_NI$theta_tilde[,"par[2]"],pvec))
       H4resNI <- c(H4resNI,apply(parsH4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(H4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -355,7 +355,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsLN4N <- par_extract(optLN4_NI, model_name = "LN4_N")
-      LN4resNI <- quantile(parsLN4N$BMD*data$maxD, pvec)
+      LN4resNI <- quantile(parsLN4N$BMD*data$maxD, pvec, na.rm = T)
       LN4resNI <- c(LN4resNI,apply(parsLN4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(LN4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -435,7 +435,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsG4N <- par_extract(optG4_NI, model_name = "G4_N")
-      G4resNI <- quantile(parsG4N$BMD*data$maxD, pvec)
+      G4resNI <- quantile(parsG4N$BMD*data$maxD, pvec, na.rm = T)
       G4resNI <- c(G4resNI,apply(parsG4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(G4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -507,7 +507,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsQE4N <- par_extract(optQE4_NI, model_name = "QE4_N")
-      QE4resNI <- quantile(parsQE4N$BMD*data$maxD, pvec)
+      QE4resNI <- quantile(parsQE4N$BMD*data$maxD, pvec, na.rm = T)
       QE4resNI <- c(QE4resNI,apply(parsQE4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(QE4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -579,7 +579,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsP4N <- par_extract(optP4_NI, model_name = "P4_N")
-      P4resNI <- quantile(parsP4N$BMD*data$maxD, pvec)
+      P4resNI <- quantile(parsP4N$BMD*data$maxD, pvec, na.rm = T)
       P4resNI <- c(P4resNI,apply(parsP4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(P4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -651,7 +651,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsL4N <- par_extract(optL4_NI, model_name = "L4_N")
-      L4resNI <- quantile(parsL4N$BMD*data$maxD, pvec)
+      L4resNI <- quantile(parsL4N$BMD*data$maxD, pvec, na.rm = T)
       L4resNI <- c(L4resNI,apply(parsL4N[,c(paste0("p",1:4), "is2t")], 2, median))
       names(L4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -733,7 +733,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsE4LN <- par_extract(optE4_LNI, model_name = "E4_LN")
-      E4resLNI <- quantile(parsE4LN$BMD*data$maxD, pvec)
+      E4resLNI <- quantile(parsE4LN$BMD*data$maxD, pvec, na.rm = T)
       E4resLNI <- c(E4resLNI, apply(parsE4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(E4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -818,7 +818,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsIE4LN <- par_extract(optIE4_LNI, model_name = "IE4_LN")
-      IE4resLNI <- quantile(parsIE4LN$BMD*data$maxD, pvec)
+      IE4resLNI <- quantile(parsIE4LN$BMD*data$maxD, pvec, na.rm = T)
       IE4resLNI <- c(IE4resLNI, apply(parsIE4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(IE4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -892,7 +892,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsH4LN <- par_extract(optH4_LNI, model_name = "H4_LN")
-      H4resLNI <- quantile(parsH4LN$BMD*data$maxD, pvec)
+      H4resLNI <- quantile(parsH4LN$BMD*data$maxD, pvec, na.rm = T)
       H4resLNI <- c(H4resLNI, apply(parsH4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(H4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -966,7 +966,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsLN4LN <- par_extract(optLN4_LNI, model_name = "LN4_LN")
-      LN4resLNI <- quantile(parsLN4LN$BMD*data$maxD, pvec)
+      LN4resLNI <- quantile(parsLN4LN$BMD*data$maxD, pvec, na.rm = T)
       LN4resLNI <- c(LN4resLNI, apply(parsLN4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(LN4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1049,7 +1049,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsG4LN <- par_extract(optG4_LNI, model_name = "G4_LN")
-      G4resLNI <- quantile(parsG4LN$BMD*data$maxD, pvec)
+      G4resLNI <- quantile(parsG4LN$BMD*data$maxD, pvec, na.rm = T)
       G4resLNI <- c(G4resLNI, apply(parsG4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(G4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1123,7 +1123,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsQE4LN <- par_extract(optQE4_LNI, model_name = "QE4_LN")
-      QE4resLNI <- quantile(parsQE4LN$BMD*data$maxD, pvec)
+      QE4resLNI <- quantile(parsQE4LN$BMD*data$maxD, pvec, na.rm = T)
       QE4resLNI <- c(QE4resLNI, apply(parsQE4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(QE4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1197,7 +1197,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsP4LN <- par_extract(optP4_LNI, model_name = "P4_LN")
-      P4resLNI <- quantile(parsP4LN$BMD*data$maxD, pvec, data$maxD)
+      P4resLNI <- quantile(parsP4LN$BMD*data$maxD, pvec, na.rm = T)
       P4resLNI <- c(P4resLNI, apply(parsP4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(P4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1272,7 +1272,7 @@ full.laplace_MA=function(data.N, data.LN,
     }else{
 
       parsL4LN <- par_extract(optL4_LNI, model_name = "L4_LN")
-      L4resLNI <- quantile(parsL4LN$BMD*data$maxD, pvec, data$maxD)
+      L4resLNI <- quantile(parsL4LN$BMD*data$maxD, pvec, na.rm = T)
       L4resLNI <- c(L4resLNI, apply(parsL4LN[,c(paste0("p",1:4), "is2t")], 2, median))
       names(L4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1601,7 +1601,7 @@ full.laplace_MA=function(data.N, data.LN,
   ))
 
 
-  maci=quantile(mabmd,pvec)*data$maxD ## original scale
+  maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
   if(maci[1] == 0){
     maci[1] = 0.000000001
@@ -1619,7 +1619,7 @@ full.laplace_MA=function(data.N, data.LN,
     p.msg = ''
   }
 
-  BMDq = quantile(mabmd, seq(0,1,0.005))*data$maxD ## original scale
+  BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
 
   BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
 
@@ -1797,7 +1797,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsE4N <- par_extractC(optE4_NI, model_name = "E4_N")
-      E4resNI <- quantile(parsE4N$BMD*data$maxD, pvec)
+      E4resNI <- quantile(parsE4N$BMD*data$maxD, pvec, na.rm = T)
       E4resNI <- c(E4resNI,apply(parsE4N[,c(paste0("p",1:4), "is2t", "rho")], 2, median))
       names(E4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -1870,7 +1870,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsIE4N <- par_extractC(optIE4_NI, model_name = "IE4_N")
-      IE4resNI <- quantile(parsIE4N$BMD*data$maxD, pvec)
+      IE4resNI <- quantile(parsIE4N$BMD*data$maxD, pvec, na.rm = T)
       IE4resNI <- c(IE4resNI,apply(parsIE4N[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(IE4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -1943,7 +1943,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsH4N <- par_extractC(optH4_NI, model_name = "H4_N")
-      H4resNI <- quantile(parsH4N$BMD*data$maxD, pvec)  #exp(quantile(optE4_NI$theta_tilde[,"par[2]"],pvec))
+      H4resNI <- quantile(parsH4N$BMD*data$maxD, pvec, na.rm = T)  #exp(quantile(optE4_NI$theta_tilde[,"par[2]"],pvec))
       H4resNI <- c(H4resNI,apply(parsH4N[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(H4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2016,7 +2016,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsLN4N <- par_extractC(optLN4_NI, model_name = "LN4_N")
-      LN4resNI <- quantile(parsLN4N$BMD*data$maxD, pvec)
+      LN4resNI <- quantile(parsLN4N$BMD*data$maxD, pvec, na.rm = T)
       LN4resNI <- c(LN4resNI,apply(parsLN4N[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(LN4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2088,7 +2088,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsG4N <- par_extractC(optG4_NI, model_name = "G4_N")
-      G4resNI <- quantile(parsG4N$BMD*data$maxD, pvec)
+      G4resNI <- quantile(parsG4N$BMD*data$maxD, pvec, na.rm = T)
       G4resNI <- c(G4resNI,apply(parsG4N[,c(paste0("p",1:4), "is2t", "rho")], 2, median))
       names(G4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2160,7 +2160,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsQE4N <- par_extractC(optQE4_NI, model_name = "QE4_N")
-      QE4resNI <- quantile(parsQE4N$BMD*data$maxD, pvec)
+      QE4resNI <- quantile(parsQE4N$BMD*data$maxD, pvec, na.rm = T)
       QE4resNI <- c(QE4resNI,apply(parsQE4N[,c(paste0("p",1:4), "is2t", "rho")], 2, median))
       names(QE4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2232,7 +2232,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsP4N <- par_extractC(optP4_NI, model_name = "P4_N")
-      P4resNI <- quantile(parsP4N$BMD*data$maxD, pvec)
+      P4resNI <- quantile(parsP4N$BMD*data$maxD, pvec, na.rm = T)
       P4resNI <- c(P4resNI,apply(parsP4N[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(P4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2303,7 +2303,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsL4N <- par_extractC(optL4_NI, model_name = "L4_N")
-      L4resNI <- quantile(parsL4N$BMD*data$maxD, pvec)
+      L4resNI <- quantile(parsL4N$BMD*data$maxD, pvec, na.rm = T)
       L4resNI <- c(L4resNI,apply(parsL4N[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(L4resNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2384,7 +2384,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsE4LN <- par_extractC(optE4_LNI, model_name = "E4_LN")
-      E4resLNI <- quantile(parsE4LN$BMD*data$maxD, pvec)
+      E4resLNI <- quantile(parsE4LN$BMD*data$maxD, pvec, na.rm = T)
       E4resLNI <- c(E4resLNI, apply(parsE4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(E4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2459,7 +2459,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsIE4LN <- par_extractC(optIE4_LNI, model_name = "IE4_LN")
-      IE4resLNI <- quantile(parsIE4LN$BMD*data$maxD, pvec)
+      IE4resLNI <- quantile(parsIE4LN$BMD*data$maxD, pvec, na.rm = T)
       IE4resLNI <- c(IE4resLNI, apply(parsIE4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(IE4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2533,7 +2533,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsH4LN <- par_extractC(optH4_LNI, model_name = "H4_LN")
-      H4resLNI <- quantile(parsH4LN$BMD*data$maxD, pvec)
+      H4resLNI <- quantile(parsH4LN$BMD*data$maxD, pvec, na.rm = T)
       H4resLNI <- c(H4resLNI, apply(parsH4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(H4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2607,7 +2607,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsLN4LN <- par_extractC(optLN4_LNI, model_name = "LN4_LN")
-      LN4resLNI <- quantile(parsLN4LN$BMD*data$maxD, pvec)
+      LN4resLNI <- quantile(parsLN4LN$BMD*data$maxD, pvec, na.rm = T)
       LN4resLNI <- c(LN4resLNI, apply(parsLN4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(LN4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2682,7 +2682,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsG4LN <- par_extractC(optG4_LNI, model_name = "G4_LN")
-      G4resLNI <- quantile(parsG4LN$BMD*data$maxD, pvec)
+      G4resLNI <- quantile(parsG4LN$BMD*data$maxD, pvec, na.rm = T)
       G4resLNI <- c(G4resLNI, apply(parsG4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(G4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2756,7 +2756,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsQE4LN <- par_extractC(optQE4_LNI, model_name = "QE4_LN")
-      QE4resLNI <- quantile(parsQE4LN$BMD*data$maxD, pvec)
+      QE4resLNI <- quantile(parsQE4LN$BMD*data$maxD, pvec, na.rm = T)
       QE4resLNI <- c(QE4resLNI, apply(parsQE4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(QE4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2830,7 +2830,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsP4LN <- par_extractC(optP4_LNI, model_name = "P4_LN")
-      P4resLNI <- quantile(parsP4LN$BMD*data$maxD, pvec, data$maxD)
+      P4resLNI <- quantile(parsP4LN$BMD*data$maxD, pvec, na.rm = T)
       P4resLNI <- c(P4resLNI, apply(parsP4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(P4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2905,7 +2905,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{
 
       parsL4LN <- par_extractC(optL4_LNI, model_name = "L4_LN")
-      L4resLNI <- quantile(parsL4LN$BMD*data$maxD, pvec, data$maxD)
+      L4resLNI <- quantile(parsL4LN$BMD*data$maxD, pvec, na.rm = T)
       L4resLNI <- c(L4resLNI, apply(parsL4LN[,c(paste0("p",1:4), "is2t","rho")], 2, median))
       names(L4resLNI) <- c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3189,7 +3189,7 @@ full.laplace_MAc=function(data.N, data.LN,
     if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
     if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
   ))
-  maci=quantile(mabmd,pvec)*data$maxD ## original scale
+  maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
   if(TRUE %in% (mabmd > data$maxD)  && data$maxD > 1){
@@ -3200,7 +3200,7 @@ full.laplace_MAc=function(data.N, data.LN,
     p.msg = ''
   }
 
-  BMDq = quantile(mabmd, seq(0,1,0.005))*data$maxD ## original scale
+  BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
 
   BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
 
@@ -3376,7 +3376,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                 rho = TRUE)
       }
 
-      E4resQ <- quantile(parsE4Q$BMD, pvec)*data$maxD
+      E4resQ <- quantile(parsE4Q$BMD, pvec, na.rm = T)*data$maxD
       if(data$is_bin == 1){
         E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd')], 2, median))
       } else {
@@ -3466,7 +3466,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                                                           paste0('par',1:3)),
                                  rho = TRUE)
       }
-      IE4resQ <- quantile(parsIE4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
+      IE4resQ <- quantile(parsIE4Q$BMD, pvec, na.rm = T)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
 
       if(data$is_bin == 1){
         IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd')], 2, median))
@@ -3558,7 +3558,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                 rho = TRUE)
       }
 
-      H4resQ <- quantile(parsH4Q$BMD, pvec)*data$maxD
+      H4resQ <- quantile(parsH4Q$BMD, pvec, na.rm = T)*data$maxD
       if(data$is_bin == 1){
         H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd')], 2, median))
       } else {
@@ -3647,7 +3647,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                                                           paste0('par',1:3)),
                                  rho = TRUE)
       }
-      LN4resQ <- quantile(parsLN4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
+      LN4resQ <- quantile(parsLN4Q$BMD, pvec, na.rm = T)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
 
       if(data$is_bin == 1){
         LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd')], 2, median))
@@ -3739,7 +3739,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                 rho = TRUE)
       }
 
-      G4resQ <- quantile(parsG4Q$BMD, pvec)*data$maxD
+      G4resQ <- quantile(parsG4Q$BMD, pvec, na.rm = T)*data$maxD
       if(data$is_bin == 1){
         G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd')], 2, median))
       } else {
@@ -3826,7 +3826,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                                                           paste0('par',1:3)),
                                  rho = TRUE)
       }
-      QE4resQ <- quantile(parsQE4Q$BMD, pvec)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
+      QE4resQ <- quantile(parsQE4Q$BMD, pvec, na.rm = T)*data$maxD  #exp(quantile(optE4_Q$theta_tilde[,"par[2]"],pvec))
 
       if(data$is_bin == 1){
         QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd')], 2, median))
@@ -3915,7 +3915,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                 rho = TRUE)
       }
 
-      P4resQ <- quantile(parsP4Q$BMD, pvec)*data$maxD
+      P4resQ <- quantile(parsP4Q$BMD, pvec, na.rm = T)*data$maxD
       if(data$is_bin == 1){
         P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd')], 2, median))
       } else {
@@ -4003,7 +4003,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
                                 rho = TRUE)
       }
 
-      L4resQ <- quantile(parsL4Q$BMD, pvec)*data$maxD
+      L4resQ <- quantile(parsL4Q$BMD, pvec, na.rm = T)*data$maxD
       if(data$is_bin == 1){
         L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd')], 2, median))
       } else {
@@ -4274,7 +4274,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     if(prior.weights[8]>0) sample(optL4_Q$theta_tilde[,2],count[8],replace=T)
   ))
 
-  maci=quantile(mabmd,pvec)*data$maxD ## original scale
+  maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
   names(maci)=c("BMDL","BMD","BMDU")
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
@@ -4285,7 +4285,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     p.msg = ''
   }
 
-  BMDq = quantile(mabmd, seq(0,1,0.005))*data$maxD ## original scale
+  BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
 
   BMDL = c(BMDL, maci[1]/data$maxD); BMD = c(BMD, maci[2]/data$maxD);
   BMDU = c(BMDU, maci[3]/data$maxD)
@@ -5700,7 +5700,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 
     maci <- matrix(NA, max.levels, 3)
     for(i in 1:max.levels){
-      maci[i, ] <- quantile(mabmd[[i]], pvec)*data_NCOV_all$data$maxD
+      maci[i, ] <- quantile(mabmd[[i]], pvec, na.rm = T)*data_NCOV_all$data$maxD
     }
 
     colnames(maci)=c("BMDL","BMD","BMDU")
@@ -5708,7 +5708,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 
     BMDq <- list()
     for(i in 1:max.levels){
-      BMDq[[i]] = quantile(mabmd[[i]], seq(0,1,0.005))*data_N_noCOV$data$maxD ## original scale
+      BMDq[[i]] = quantile(mabmd[[i]], seq(0,1,0.005), na.rm = T)*data_N_noCOV$data$maxD ## original scale
     }
 
     model = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
@@ -5845,7 +5845,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     colnames(maci)=c("BMDL","BMD","BMDU")
     rownames(maci)=""
 
-    BMDq = quantile(mabmd, seq(0,1,0.005))*data_N_noCOV$data$maxD ## original scale
+    BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data_N_noCOV$data$maxD ## original scale
 
     # BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
 
@@ -6616,14 +6616,14 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
 
     maci <- matrix(NA, max.levels, 3)
     for(i in 1:max.levels){
-      maci[i, ] <- quantile(mabmd[[i]], pvec)*data_all$data$maxD
+      maci[i, ] <- quantile(mabmd[[i]], pvec, na.rm = T)*data_all$data$maxD
     }
     colnames(maci)=c("BMDL","BMD","BMDU")
     rownames(maci)=data_all$data$covariate
 
     BMDq <- list()
     for(i in 1:max.levels){
-      BMDq[[i]] = quantile(mabmd[[i]], seq(0,1,0.005))*data_all$data$maxD ## original scale
+      BMDq[[i]] = quantile(mabmd[[i]], seq(0,1,0.005), na.rm = T)*data_all$data$maxD ## original scale
     }
 
     model = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q","MA")
@@ -6696,13 +6696,13 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
       }
 
     )
-    maci=quantile(mabmd,pvec)*data_all$data$maxD ## original scale
+    maci=quantile(mabmd,pvec, na.rm = T)*data_all$data$maxD ## original scale
     # names(maci)=c("BMDL","BMD","BMDU")
     maci=t(as.matrix(maci))
     colnames(maci)=c("BMDL","BMD","BMDU")
     rownames(maci)=""
 
-    BMDq = quantile(mabmd, seq(0,1,0.005))*data_all$data$maxD ## original scale
+    BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data_all$data$maxD ## original scale
 
     # BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
 
