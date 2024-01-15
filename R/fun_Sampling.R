@@ -166,7 +166,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_E4_N <- sum(sapply(rstan::get_sampler_params(fitstanE4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      E4resNI=quantile(as.matrix(fitstanE4_N)[,"par2"]*data$maxD,pvec)
+      E4resNI=quantile(as.matrix(fitstanE4_N)[,"par2"]*data$maxD,pvec, na.rm = T)
       E4resNI=c(E4resNI,apply(as.matrix(fitstanE4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(E4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -238,7 +238,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_IE4_N <- sum(sapply(rstan::get_sampler_params(fitstanIE4_N, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      IE4resNI=(quantile(as.matrix(fitstanIE4_N)[,"par2"],pvec))*data$maxD
+      IE4resNI=(quantile(as.matrix(fitstanIE4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       IE4resNI=c(IE4resNI,apply(as.matrix(fitstanIE4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(IE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -311,7 +311,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_H4_N <- sum(sapply(rstan::get_sampler_params(fitstanH4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      H4resNI=(quantile(as.matrix(fitstanH4_N)[,"par2"],pvec))*data$maxD
+      H4resNI=(quantile(as.matrix(fitstanH4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       H4resNI=c(H4resNI,apply(as.matrix(fitstanH4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(H4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -382,7 +382,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_LN4_N <- sum(sapply(rstan::get_sampler_params(fitstanLN4_N, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      LN4resNI=(quantile(as.matrix(fitstanLN4_N)[,"par2"],pvec))*data$maxD
+      LN4resNI=(quantile(as.matrix(fitstanLN4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       LN4resNI=c(LN4resNI,apply(as.matrix(fitstanLN4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(LN4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -454,7 +454,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_G4_N <- sum(sapply(rstan::get_sampler_params(fitstanG4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      G4resNI=(quantile(as.matrix(fitstanG4_N)[,"par2"],pvec))*data$maxD
+      G4resNI=(quantile(as.matrix(fitstanG4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       G4resNI=c(G4resNI,apply(as.matrix(fitstanG4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(G4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -526,7 +526,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_QE4_N <- sum(sapply(rstan::get_sampler_params(fitstanQE4_N, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      QE4resNI=(quantile(as.matrix(fitstanQE4_N)[,"par2"],pvec))*data$maxD
+      QE4resNI=(quantile(as.matrix(fitstanQE4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       QE4resNI=c(QE4resNI,apply(as.matrix(fitstanQE4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(QE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -598,7 +598,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_P4_N <- sum(sapply(rstan::get_sampler_params(fitstanP4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      P4resNI=(quantile(as.matrix(fitstanP4_N)[,"par2"],pvec))*data$maxD
+      P4resNI=(quantile(as.matrix(fitstanP4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       P4resNI=c(P4resNI,apply(as.matrix(fitstanP4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(P4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -674,7 +674,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_L4_N <- sum(sapply(rstan::get_sampler_params(fitstanL4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      L4resNI=(quantile(as.matrix(fitstanL4_N)[,"par2"],pvec))*data$maxD
+      L4resNI=(quantile(as.matrix(fitstanL4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       L4resNI=c(L4resNI,apply(as.matrix(fitstanL4_N),2,median)[c("par1","par2","par3","par4","par5")])
       names(L4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -755,7 +755,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_E4_LN <- sum(sapply(rstan::get_sampler_params(fitstanE4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      E4resLNI=(quantile(as.matrix(fitstanE4_LN)[,"par2"],pvec))*data$maxD
+      E4resLNI=(quantile(as.matrix(fitstanE4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       E4resLNI=c(E4resLNI,apply(as.matrix(fitstanE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(E4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -828,7 +828,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_IE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanIE4_LN, inc_warmup = F),
                                function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      IE4resLNI=(quantile(as.matrix(fitstanIE4_LN)[,"par2"],pvec))*data$maxD
+      IE4resLNI=(quantile(as.matrix(fitstanIE4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       IE4resLNI=c(IE4resLNI,apply(as.matrix(fitstanIE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(IE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -901,7 +901,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_H4_LN <- sum(sapply(rstan::get_sampler_params(fitstanH4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      H4resLNI=(quantile(as.matrix(fitstanH4_LN)[,"par2"],pvec))*data$maxD
+      H4resLNI=(quantile(as.matrix(fitstanH4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       H4resLNI=c(H4resLNI,apply(as.matrix(fitstanH4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(H4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -973,7 +973,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_LN4_LN <- sum(sapply(rstan::get_sampler_params(fitstanLN4_LN, inc_warmup = F),
                                function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      LN4resLNI=(quantile(as.matrix(fitstanLN4_LN)[,"par2"],pvec))*data$maxD
+      LN4resLNI=(quantile(as.matrix(fitstanLN4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       LN4resLNI=c(LN4resLNI,apply(as.matrix(fitstanLN4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(LN4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1047,7 +1047,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_G4_LN <- sum(sapply(rstan::get_sampler_params(fitstanG4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      G4resLNI=(quantile(as.matrix(fitstanG4_LN)[,"par2"],pvec))*data$maxD
+      G4resLNI=(quantile(as.matrix(fitstanG4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       G4resLNI=c(G4resLNI,apply(as.matrix(fitstanG4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(G4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1120,7 +1120,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_QE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanQE4_LN, inc_warmup = F),
                                function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      QE4resLNI=(quantile(as.matrix(fitstanQE4_LN)[,"par2"],pvec))*data$maxD
+      QE4resLNI=(quantile(as.matrix(fitstanQE4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       QE4resLNI=c(QE4resLNI,apply(as.matrix(fitstanQE4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(QE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1192,7 +1192,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_P4_LN <- sum(sapply(rstan::get_sampler_params(fitstanP4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      P4resLNI=(quantile(as.matrix(fitstanP4_LN)[,"par2"],pvec))*data$maxD
+      P4resLNI=(quantile(as.matrix(fitstanP4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       P4resLNI=c(P4resLNI,apply(as.matrix(fitstanP4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(P4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1267,7 +1267,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       div_L4_LN <- sum(sapply(rstan::get_sampler_params(fitstanL4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      L4resLNI=(quantile(as.matrix(fitstanL4_LN)[,"par2"],pvec))*data$maxD
+      L4resLNI=(quantile(as.matrix(fitstanL4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       L4resLNI=c(L4resLNI,apply(as.matrix(fitstanL4_LN),2,median)[c("par1","par2","par3","par4","par5")])
       names(L4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t")
 
@@ -1413,7 +1413,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,"mu_inf"],count[names(count)=="L4_LN"],replace=T)
   ))
 
-  macib=(quantile(mabmd1,pvec))*data$maxD
+  macib=(quantile(mabmd1,pvec, na.rm = T))*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
   if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
@@ -1424,7 +1424,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     p.msg = ''
   }
 
-  BMDq_bs = (quantile(mabmd1, seq(0,1,0.005)))*data$maxD
+  BMDq_bs = (quantile(mabmd1, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
   mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -1502,7 +1502,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
     ))
 
-    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
+    macib.conv=(quantile(mabmd.conv1,pvec, na.rm = T))*data$maxD
     names(macib.conv)=c("BMDL","BMD","BMDU")
 
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
@@ -1513,7 +1513,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       p.msg = ''
     }
 
-    BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005)))*data$maxD
+    BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
     mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -2171,7 +2171,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     if(prior.weights[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
   ))
 
-  macilp=(quantile(mabmd,pvec))*data$maxD
+  macilp=(quantile(mabmd,pvec, na.rm = T))*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
@@ -2182,7 +2182,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     p.msg = ''
   }
 
-  BMDq_ls = (quantile(mabmd, seq(0,1,0.005)))*data$maxD
+  BMDq_ls = (quantile(mabmd, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
   ### Model-averaged response per dose level
@@ -2230,7 +2230,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       if(p.weights.new[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
     ))
 
-    macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
+    macilp.conv=(quantile(mabmd.conv,pvec, na.rm = T))*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
 
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
@@ -2241,7 +2241,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       p.msg = ''
     }
 
-    BMDq_ls_conv = (quantile(mabmd.conv, seq(0,1,0.005)))*data$maxD
+    BMDq_ls_conv = (quantile(mabmd.conv, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
     ### Model-averaged response per dose level
@@ -2464,7 +2464,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_E4_N <- sum(sapply(rstan::get_sampler_params(fitstanE4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      E4resNI=quantile(as.matrix(fitstanE4_N)[,"par2"]*data$maxD,pvec)
+      E4resNI=quantile(as.matrix(fitstanE4_N)[,"par2"]*data$maxD,pvec, na.rm = T)
       E4resNI=c(E4resNI,apply(as.matrix(fitstanE4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(E4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2536,7 +2536,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_IE4_N <- sum(sapply(rstan::get_sampler_params(fitstanIE4_N, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      IE4resNI=(quantile(as.matrix(fitstanIE4_N)[,"par2"],pvec))*data$maxD
+      IE4resNI=(quantile(as.matrix(fitstanIE4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       IE4resNI=c(IE4resNI,apply(as.matrix(fitstanIE4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(IE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2609,7 +2609,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_H4_N <- sum(sapply(rstan::get_sampler_params(fitstanH4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      H4resNI=(quantile(as.matrix(fitstanH4_N)[,"par2"],pvec))*data$maxD
+      H4resNI=(quantile(as.matrix(fitstanH4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       H4resNI=c(H4resNI,apply(as.matrix(fitstanH4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(H4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2680,7 +2680,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_LN4_N <- sum(sapply(rstan::get_sampler_params(fitstanLN4_N, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      LN4resNI=(quantile(as.matrix(fitstanLN4_N)[,"par2"],pvec))*data$maxD
+      LN4resNI=(quantile(as.matrix(fitstanLN4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       LN4resNI=c(LN4resNI,apply(as.matrix(fitstanLN4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(LN4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2751,7 +2751,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_G4_N <- sum(sapply(rstan::get_sampler_params(fitstanG4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      G4resNI=(quantile(as.matrix(fitstanG4_N)[,"par2"],pvec))*data$maxD
+      G4resNI=(quantile(as.matrix(fitstanG4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       G4resNI=c(G4resNI,apply(as.matrix(fitstanG4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(G4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2822,7 +2822,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_QE4_N <- sum(sapply(rstan::get_sampler_params(fitstanQE4_N, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      QE4resNI=(quantile(as.matrix(fitstanQE4_N)[,"par2"],pvec))*data$maxD
+      QE4resNI=(quantile(as.matrix(fitstanQE4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       QE4resNI=c(QE4resNI,apply(as.matrix(fitstanQE4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(QE4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2893,7 +2893,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_P4_N <- sum(sapply(rstan::get_sampler_params(fitstanP4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      P4resNI=(quantile(as.matrix(fitstanP4_N)[,"par2"],pvec))*data$maxD
+      P4resNI=(quantile(as.matrix(fitstanP4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       P4resNI=c(P4resNI,apply(as.matrix(fitstanP4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(P4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -2968,7 +2968,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_L4_N <- sum(sapply(rstan::get_sampler_params(fitstanL4_N, inc_warmup = F),
                              function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      L4resNI=(quantile(as.matrix(fitstanL4_N)[,"par2"],pvec))*data$maxD
+      L4resNI=(quantile(as.matrix(fitstanL4_N)[,"par2"],pvec, na.rm = T))*data$maxD
       L4resNI=c(L4resNI,apply(as.matrix(fitstanL4_N),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(L4resNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3048,7 +3048,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_E4_LN <- sum(sapply(rstan::get_sampler_params(fitstanE4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      E4resLNI=(quantile(as.matrix(fitstanE4_LN)[,"par2"],pvec))*data$maxD
+      E4resLNI=(quantile(as.matrix(fitstanE4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       E4resLNI=c(E4resLNI,apply(as.matrix(fitstanE4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(E4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3120,7 +3120,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_IE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanIE4_LN, inc_warmup = F),
                                function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      IE4resLNI=(quantile(as.matrix(fitstanIE4_LN)[,"par2"],pvec))*data$maxD
+      IE4resLNI=(quantile(as.matrix(fitstanIE4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       IE4resLNI=c(IE4resLNI,apply(as.matrix(fitstanIE4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(IE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3192,7 +3192,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_H4_LN <- sum(sapply(rstan::get_sampler_params(fitstanH4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      H4resLNI=(quantile(as.matrix(fitstanH4_LN)[,"par2"],pvec))*data$maxD
+      H4resLNI=(quantile(as.matrix(fitstanH4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       H4resLNI=c(H4resLNI,apply(as.matrix(fitstanH4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(H4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3263,7 +3263,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_LN4_LN <- sum(sapply(rstan::get_sampler_params(fitstanLN4_LN, inc_warmup = F),
                                function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      LN4resLNI=(quantile(as.matrix(fitstanLN4_LN)[,"par2"],pvec))*data$maxD
+      LN4resLNI=(quantile(as.matrix(fitstanLN4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       LN4resLNI=c(LN4resLNI,apply(as.matrix(fitstanLN4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(LN4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3336,7 +3336,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_G4_LN <- sum(sapply(rstan::get_sampler_params(fitstanG4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      G4resLNI=(quantile(as.matrix(fitstanG4_LN)[,"par2"],pvec))*data$maxD
+      G4resLNI=(quantile(as.matrix(fitstanG4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       G4resLNI=c(G4resLNI,apply(as.matrix(fitstanG4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(G4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3408,7 +3408,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_QE4_LN <- sum(sapply(rstan::get_sampler_params(fitstanQE4_LN, inc_warmup = F),
                                function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      QE4resLNI=(quantile(as.matrix(fitstanQE4_LN)[,"par2"],pvec))*data$maxD
+      QE4resLNI=(quantile(as.matrix(fitstanQE4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       QE4resLNI=c(QE4resLNI,apply(as.matrix(fitstanQE4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(QE4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3479,7 +3479,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_P4_LN <- sum(sapply(rstan::get_sampler_params(fitstanP4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      P4resLNI=(quantile(as.matrix(fitstanP4_LN)[,"par2"],pvec))*data$maxD
+      P4resLNI=(quantile(as.matrix(fitstanP4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       P4resLNI=c(P4resLNI,apply(as.matrix(fitstanP4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(P4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3553,7 +3553,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       div_L4_LN <- sum(sapply(rstan::get_sampler_params(fitstanL4_LN, inc_warmup = F),
                               function(x) sum(x[, "divergent__"])))/(nrchains*(nriterations-warmup))
 
-      L4resLNI=(quantile(as.matrix(fitstanL4_LN)[,"par2"],pvec))*data$maxD
+      L4resLNI=(quantile(as.matrix(fitstanL4_LN)[,"par2"],pvec, na.rm = T))*data$maxD
       L4resLNI=c(L4resLNI,apply(as.matrix(fitstanL4_LN),2,median)[c("par1","par2","par3","par4","par5","par6")])
       names(L4resLNI)=c("BMDL","BMD","BMDU","min_resp","bmd","fold_change","dt","is2t","rho")
 
@@ -3658,7 +3658,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
   ))
 
-  macib=(quantile(mabmd1,pvec))*data$maxD
+  macib=(quantile(mabmd1,pvec, na.rm = T))*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
   if(TRUE %in% (mabmd1 > data$maxD)  && data$maxD > 1){
@@ -3669,7 +3669,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     p.msg = ''
   }
 
-  BMDq_bs = (quantile(mabmd1, seq(0,1,0.005)))*data$maxD
+  BMDq_bs = (quantile(mabmd1, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
   mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -3747,7 +3747,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       if("L4_LN" %in% names(count)) sample(as.matrix(fitstanL4_LN)[,2],count[names(count)=="L4_LN"],replace=T)
     ))
 
-    macib.conv=(quantile(mabmd.conv1,pvec))*data$maxD
+    macib.conv=(quantile(mabmd.conv1,pvec, na.rm = T))*data$maxD
     names(macib.conv)=c("BMDL","BMD","BMDU")
 
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
@@ -3758,7 +3758,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       p.msg = ''
     }
 
-    BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005)))*data$maxD
+    BMDq_bs_conv = (quantile(mabmd.conv1, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
     mods = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N",
@@ -4521,7 +4521,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     if(prior.weights[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
   ))
 
-  macilp=(quantile(mabmd,pvec))*data$maxD
+  macilp=(quantile(mabmd,pvec, na.rm = T))*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
@@ -4532,7 +4532,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     p.msg = ''
   }
 
-  BMDq_ls = (quantile(mabmd, seq(0,1,0.005)))*data$maxD
+  BMDq_ls = (quantile(mabmd, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
   ### Model-averaged response per dose level
@@ -4580,7 +4580,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       if(p.weights.new[16]>0) sample(as.matrix(fitstanL4_LN)[,2],count[16],replace=T)
     ))
 
-    macilp.conv=(quantile(mabmd.conv,pvec))*data$maxD
+    macilp.conv=(quantile(mabmd.conv,pvec, na.rm = T))*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
 
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
@@ -4591,7 +4591,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       p.msg = ''
     }
 
-    BMDq_ls_conv = (quantile(mabmd.conv, seq(0,1,0.005)))*data$maxD
+    BMDq_ls_conv = (quantile(mabmd.conv, seq(0,1,0.005), na.rm = T))*data$maxD
 
 
     ### Model-averaged response per dose level
@@ -4793,7 +4793,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                 rho = TRUE)
       }
-      E4resQ <-  quantile(parsE4Q$BMD, pvec)*data$maxD
+      E4resQ <-  quantile(parsE4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         E4resQ <- c(E4resQ, apply(parsE4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -4886,7 +4886,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                  pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                  rho = TRUE)
       }
-      IE4resQ <-  quantile(parsIE4Q$BMD, pvec)*data$maxD
+      IE4resQ <-  quantile(parsIE4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         IE4resQ <- c(IE4resQ, apply(parsIE4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -4975,7 +4975,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                 rho = TRUE)
       }
-      H4resQ <-  quantile(parsH4Q$BMD, pvec)*data$maxD
+      H4resQ <-  quantile(parsH4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         H4resQ <- c(H4resQ, apply(parsH4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -5066,7 +5066,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                  pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                  rho = TRUE)
       }
-      LN4resQ <-  quantile(parsLN4Q$BMD, pvec)*data$maxD
+      LN4resQ <-  quantile(parsLN4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         LN4resQ <- c(LN4resQ, apply(parsLN4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -5160,7 +5160,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                 rho = TRUE)
       }
-      G4resQ <-  quantile(parsG4Q$BMD, pvec)*data$maxD
+      G4resQ <-  quantile(parsG4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         G4resQ <- c(G4resQ, apply(parsG4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -5249,7 +5249,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
         parsQE4Q <- parq_extract(fitstanQE4_Q, model_name = "QE4_Q",
                                  pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'))
       }
-      QE4resQ <-  quantile(parsQE4Q$BMD, pvec)*data$maxD
+      QE4resQ <-  quantile(parsQE4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         QE4resQ <- c(QE4resQ, apply(parsQE4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -5339,7 +5339,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                 rho = TRUE)
       }
-      P4resQ <-  quantile(parsP4Q$BMD, pvec)*data$maxD
+      P4resQ <-  quantile(parsP4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         P4resQ <- c(P4resQ, apply(parsP4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -5429,7 +5429,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
                                 rho = TRUE)
       }
-      L4resQ <-  quantile(parsL4Q$BMD, pvec)*data$maxD
+      L4resQ <-  quantile(parsL4Q$BMD, pvec, na.rm = T)*data$maxD
 
       if(data$is_bin == 1){
         L4resQ <- c(L4resQ, apply(parsL4Q[,c('a', 'b', 'd', 'p1', 'p2', 'p3')], 2, median))
@@ -5553,7 +5553,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,"a"],count[names(count)=="L4_Q"],replace=T)
   ))
 
-  macib=quantile(mabmd1,pvec)*data$maxD
+  macib=quantile(mabmd1,pvec, na.rm = T)*data$maxD
   names(macib)=c("BMDL","BMD","BMDU") # original scale
 
   if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
@@ -5564,7 +5564,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     p.msg = ''
   }
 
-  BMDq_bs = quantile(mabmd1, seq(0,1,0.005))*data$maxD
+  BMDq_bs = quantile(mabmd1, seq(0,1,0.005), na.rm = T)*data$maxD
 
   mods = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
   w.bs = rep(0, length(mods))
@@ -5620,7 +5620,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       if("L4_Q" %in% names(count)) sample(as.matrix(fitstanL4_Q)[,2],count[names(count)=="L4_Q"],replace=T)
     ))
 
-    macib.conv <- quantile(mabmd.conv1,pvec)*data$maxD
+    macib.conv <- quantile(mabmd.conv1,pvec, na.rm = T)*data$maxD
     names(macib.conv) <- c("BMDL","BMD","BMDU")
 
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
@@ -5631,7 +5631,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       p.msg = ''
     }
 
-    BMDq_bs_conv <- quantile(mabmd.conv1, seq(0,1,0.005))*data$maxD
+    BMDq_bs_conv <- quantile(mabmd.conv1, seq(0,1,0.005), na.rm = T)*data$maxD
 
 
     mods = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
@@ -6085,7 +6085,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
   ))
 
-  macilp=quantile(mabmd,pvec)*data$maxD
+  macilp=quantile(mabmd,pvec, na.rm = T)*data$maxD
   names(macilp)=c("BMDL","BMD","BMDU") # on original scale
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
@@ -6096,7 +6096,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     p.msg = ''
   }
 
-  BMDq_ls = quantile(mabmd, seq(0,1,0.005))*data$maxD
+  BMDq_ls = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD
 
 
   ### Model-averaged response per dose level
@@ -6134,7 +6134,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       if(p.weights.new[8]>0) sample(as.matrix(fitstanL4_Q)[,2],count[8],replace=T)
     ))
 
-    macilp.conv = quantile(mabmd.conv,pvec)*data$maxD
+    macilp.conv = quantile(mabmd.conv,pvec, na.rm = T)*data$maxD
     names(macilp.conv)=c("BMDL","BMD","BMDU")
 
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
@@ -6145,7 +6145,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       p.msg = ''
     }
 
-    BMDq_ls_conv = quantile(mabmd.conv, seq(0,1,0.005))*data$maxD
+    BMDq_ls_conv = quantile(mabmd.conv, seq(0,1,0.005), na.rm = T)*data$maxD
 
 
     ### Model-averaged response per dose level
