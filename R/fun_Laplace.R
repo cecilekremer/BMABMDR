@@ -1372,7 +1372,11 @@ full.laplace_MA=function(data.N, data.LN,
   w.msg <- ''
 
   max.ll = max(lls, na.rm = T)
-  if(is.na(lls[which((max.ll-lls < 709) & prior.weights>0)][1])){
+  if(!(1 %in% prior.weights)){
+    w.msg <- 'Laplace approximation could not be performed, problem fitting all models'
+    warning('Laplace approximation could not be performed, problem fitting all models')
+    out.stop <- 'not.fit'
+  }else if(is.na(lls[which((max.ll-lls < 709) & prior.weights>0)][1])){
     lpw <- rep(0, 16)
     lpw[which(lls == max.ll)] <- 1
     w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
@@ -1539,219 +1543,230 @@ full.laplace_MA=function(data.N, data.LN,
   }
 
   # the model average posterior as a mixture
-  count=round(lpw*ndraws)
-  mabmd=(c(# normal
-    if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,2],count[1],replace=T),
-    if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,2],count[2],replace=T),
-    if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,2],count[3],replace=T),
-    if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,2],count[4],replace=T),
-    if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,2],count[5],replace=T),
-    if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,2],count[6],replace=T),
-    if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,2],count[7],replace=T),
-    if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,2],count[8],replace=T),
-    # lognormal
-    if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,2],count[9],replace=T),
-    if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,2],count[10],replace=T),
-    if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,2],count[11],replace=T),
-    if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,2],count[12],replace=T),
-    if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,2],count[13],replace=T),
-    if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,2],count[14],replace=T),
-    if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
-    if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
-  ))
+  if(out.stop != 'not.fit'){
+    count=round(lpw*ndraws)
+    mabmd=(c(# normal
+      if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,2],count[1],replace=T),
+      if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,2],count[2],replace=T),
+      if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,2],count[3],replace=T),
+      if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,2],count[4],replace=T),
+      if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,2],count[5],replace=T),
+      if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,2],count[6],replace=T),
+      if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,2],count[7],replace=T),
+      if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,2],count[8],replace=T),
+      # lognormal
+      if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,2],count[9],replace=T),
+      if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,2],count[10],replace=T),
+      if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,2],count[11],replace=T),
+      if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,2],count[12],replace=T),
+      if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,2],count[13],replace=T),
+      if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,2],count[14],replace=T),
+      if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
+      if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
+    ))
 
-  mabkg=(c(# normal
-    if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,"mu_0"],count[1],replace=T),
-    if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,"mu_0"],count[2],replace=T),
-    if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,"mu_0"],count[3],replace=T),
-    if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,"mu_0"],count[4],replace=T),
-    if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,"mu_0"],count[5],replace=T),
-    if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,"mu_0"],count[6],replace=T),
-    if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,"mu_0"],count[7],replace=T),
-    if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,"mu_0"],count[8],replace=T),
-    # lognormal
-    if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,"mu_0"],count[9],replace=T),
-    if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,"mu_0"],count[10],replace=T),
-    if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,"mu_0"],count[11],replace=T),
-    if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,"mu_0"],count[12],replace=T),
-    if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,"mu_0"],count[13],replace=T),
-    if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,"mu_0"],count[14],replace=T),
-    if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,"mu_0"],count[15],replace=T),
-    if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,"mu_0"],count[16],replace=T)
-  ))
+    mabkg=(c(# normal
+      if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,"mu_0"],count[1],replace=T),
+      if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,"mu_0"],count[2],replace=T),
+      if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,"mu_0"],count[3],replace=T),
+      if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,"mu_0"],count[4],replace=T),
+      if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,"mu_0"],count[5],replace=T),
+      if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,"mu_0"],count[6],replace=T),
+      if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,"mu_0"],count[7],replace=T),
+      if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,"mu_0"],count[8],replace=T),
+      # lognormal
+      if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,"mu_0"],count[9],replace=T),
+      if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,"mu_0"],count[10],replace=T),
+      if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,"mu_0"],count[11],replace=T),
+      if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,"mu_0"],count[12],replace=T),
+      if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,"mu_0"],count[13],replace=T),
+      if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,"mu_0"],count[14],replace=T),
+      if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,"mu_0"],count[15],replace=T),
+      if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,"mu_0"],count[16],replace=T)
+    ))
 
-  mamaxy=(c(# normal
-    if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,"mu_inf"],count[1],replace=T),
-    if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,"mu_inf"],count[2],replace=T),
-    if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,"mu_inf"],count[3],replace=T),
-    if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,"mu_inf"],count[4],replace=T),
-    if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,"mu_inf"],count[5],replace=T),
-    if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,"mu_inf"],count[6],replace=T),
-    if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,"mu_inf"],count[7],replace=T),
-    if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,"mu_inf"],count[8],replace=T),
-    # lognormal
-    if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,"mu_inf"],count[9],replace=T),
-    if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,"mu_inf"],count[10],replace=T),
-    if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,"mu_inf"],count[11],replace=T),
-    if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,"mu_inf"],count[12],replace=T),
-    if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,"mu_inf"],count[13],replace=T),
-    if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,"mu_inf"],count[14],replace=T),
-    if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,"mu_inf"],count[15],replace=T),
-    if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,"mu_inf"],count[16],replace=T)
-  ))
+    mamaxy=(c(# normal
+      if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,"mu_inf"],count[1],replace=T),
+      if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,"mu_inf"],count[2],replace=T),
+      if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,"mu_inf"],count[3],replace=T),
+      if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,"mu_inf"],count[4],replace=T),
+      if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,"mu_inf"],count[5],replace=T),
+      if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,"mu_inf"],count[6],replace=T),
+      if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,"mu_inf"],count[7],replace=T),
+      if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,"mu_inf"],count[8],replace=T),
+      # lognormal
+      if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,"mu_inf"],count[9],replace=T),
+      if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,"mu_inf"],count[10],replace=T),
+      if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,"mu_inf"],count[11],replace=T),
+      if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,"mu_inf"],count[12],replace=T),
+      if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,"mu_inf"],count[13],replace=T),
+      if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,"mu_inf"],count[14],replace=T),
+      if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,"mu_inf"],count[15],replace=T),
+      if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,"mu_inf"],count[16],replace=T)
+    ))
 
 
-  maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
-  names(maci)=c("BMDL","BMD","BMDU")
-  if(maci[1] == 0){
-    maci[1] = 0.000000001
+    maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
+    names(maci)=c("BMDL","BMD","BMDU")
+    if(maci[1] == 0){
+      maci[1] = 0.000000001
+    }
+    if(maci[2] == 0){
+      maci[2] = 0.000000001
+    }
+
+
+    if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
+      mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
+
+    BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
+
+    BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
+
+    names(BMDL) <- c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
+                     "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
+    model = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
+              "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
+    model = as.factor(model)
+    weight = c(lpw[1], lpw[2], lpw[3], lpw[4], lpw[5], lpw[6], lpw[7], lpw[8],
+               lpw[9], lpw[10], lpw[11], lpw[12], lpw[13], lpw[14], lpw[15], lpw[16], 1)
+
+
+    names(lpw) = model[1:16]
+
+    ### Model-averaged response per dose level
+    dr.MA <- c()
+    for(i in 1:length(data$x)){
+      dr.MA[i] = weighted.mean(x = c(DRM_E4_N[i],DRM_IE4_N[i],DRM_H4_N[i],DRM_LN4_N[i],DRM_G4_N[i],DRM_QE4_N[i],
+                                     DRM_P4_N[i], DRM_L4_N[i] ,
+                                     DRM_E4_LN[i], DRM_IE4_LN[i], DRM_H4_LN[i], DRM_LN4_LN[i], DRM_G4_LN[i],
+                                     DRM_QE4_LN[i], DRM_P4_LN[i],DRM_L4_LN[i]),
+                               w = lpw,
+                               na.rm = T)
+    }
+
+
+    ## Covariances
+    covs = t(data.frame(
+      E4_N = E4covNI,
+      IE4_N = IE4covNI,
+      H4_N = H4covNI,
+      LN4_N = LN4covNI,
+      G4_N = G4covNI,
+      QE4_N = QE4covNI,
+      P4_N = P4covNI,
+      L4_N = L4covNI,
+      E4_LN = E4covLNI,
+      IE4_LN = IE4covLNI,
+      H4_LN = H4covLNI,
+      LN4_LN = LN4covLNI,
+      G4_LN = G4covLNI,
+      QE4_LN = QE4covLNI,
+      P4_LN = P4covLNI,
+      L4_LN = L4covLNI
+    ))
+    colnames(covs) = c("b-d", "BMD-d")
+
+    corrs = t(data.frame(
+      E4_N = E4corrNI,
+      IE4_N = IE4corrNI,
+      H4_N = H4corrNI,
+      LN4_N = LN4corrNI,
+      G4_N = G4corrNI,
+      QE4_N = QE4corrNI,
+      P4_N = P4corrNI,
+      L4_N = L4corrNI,
+      E4_LN = E4corrLNI,
+      IE4_LN = IE4corrLNI,
+      H4_LN = H4corrLNI,
+      LN4_LN = LN4corrLNI,
+      G4_LN = G4corrLNI,
+      QE4_LN = QE4corrLNI,
+      P4_LN = P4corrLNI,
+      L4_LN = L4corrLNI
+    ))
+    colnames(corrs) = c("b-d", "BMD-d")
+
+    modelnames = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+
+    ### Some additional checks
+
+    # print(maci)
+
+    if(maci[2]/maci[1] > 20){
+      warning('BMD/BMDL is larger than 20')
+    }
+    if(maci[3]/maci[1] > 50){
+      warning('BMDU/BMDL is larger than 50')
+    }
+    if(maci[2] < (data.N$data$x[2]*data.N$data$maxD/10)){
+      warning('BMD is 10 times lower than the lowest non-zero dose')
+    }
+
+    ### best fitting model vs saturated ANOVA model
+    best.fit = modelnames[which(weight[1:16] == max(weight[1:16]))][1]
+    nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
+    bfTest <- modelTest(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
+                        seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
+
+    warning(bfTest$warn.bf)
+
   }
-  if(maci[2] == 0){
-    maci[2] = 0.000000001
-  }
 
-
-  if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
-    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  if(out.stop == 'not.fit'){
+    ret_results <- list(MA = c(NA,NA,NA),
+                        MA_post = NA,
+                        bkg_post = NA,
+                        maxy_post = NA)
   }else{
-    p.msg = ''
+
+    ret_results <- list(
+      # model parameters
+      E4_N=E4outNI,IE4_N=IE4outNI,H4_N=H4outNI,LN4_N=LN4outNI,G4_N=G4outNI,QE4_N=QE4outNI,P4_N=P4outNI,L4_N=L4outNI,
+      E4_LN=E4outLNI,IE4_LN=IE4outLNI,H4_LN=H4outLNI,LN4_LN=LN4outLNI,G4_LN=G4outLNI,QE4_LN=QE4outLNI,
+      P4_LN=P4outLNI,L4_LN=L4outLNI,
+      # covariances
+      covs = covs, corrs = corrs,
+      # weights and MA
+      weights=lpw,
+      MA=maci,
+      llN=llN, llLN=llLN, MA_post = BMDq,
+      bkg_post = mabkg,
+      maxy_post = mamaxy,
+      # dose-response
+      MA_dr = dr.MA,
+      parsN = list(parsE4N, parsIE4N, parsH4N, parsLN4N, parsG4N,
+                   parsQE4N, parsP4N, parsL4N),
+      parsLN = list(parsE4LN, parsIE4LN, parsH4LN, parsLN4LN, parsG4LN,
+                    parsQE4LN, parsP4LN, parsL4LN),
+      BMDMixture = (mabmd)*data$maxD,
+      dataN = data.frame(
+        dose = c(data.N$data$x),
+        sd = sqrt(data.N$data$s2),
+        m = data.N$data$m),
+      dataLN = data.frame(
+        dose = c(data.LN$data$x),
+        sd = sqrt(data.LN$data$s2),
+        m = data.LN$data$m.org),
+      max.dose = data.N$data$maxD,
+      q = data.N$data$q,
+      # increasing = T,
+      models_included_laplace = modelnames[prior.weights > 0],
+      bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
+      means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+      shift = data.LN$data$shift,
+      w.msg = w.msg, p.msg = p.msg
+    )
+
+    attr(ret_results, "class") <- c("BMADR", "LP")
+
   }
-
-  BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
-
-  BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
-
-  names(BMDL) <- c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
-                   "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
-  model = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
-            "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
-  model = as.factor(model)
-  weight = c(lpw[1], lpw[2], lpw[3], lpw[4], lpw[5], lpw[6], lpw[7], lpw[8],
-             lpw[9], lpw[10], lpw[11], lpw[12], lpw[13], lpw[14], lpw[15], lpw[16], 1)
-
-
-  names(lpw) = model[1:16]
-
-  ### Model-averaged response per dose level
-  dr.MA <- c()
-  for(i in 1:length(data$x)){
-    dr.MA[i] = weighted.mean(x = c(DRM_E4_N[i],DRM_IE4_N[i],DRM_H4_N[i],DRM_LN4_N[i],DRM_G4_N[i],DRM_QE4_N[i],
-                                   DRM_P4_N[i], DRM_L4_N[i] ,
-                                   DRM_E4_LN[i], DRM_IE4_LN[i], DRM_H4_LN[i], DRM_LN4_LN[i], DRM_G4_LN[i],
-                                   DRM_QE4_LN[i], DRM_P4_LN[i],DRM_L4_LN[i]),
-                             w = lpw,
-                             na.rm = T)
-  }
-
-
-  ## Covariances
-  covs = t(data.frame(
-    E4_N = E4covNI,
-    IE4_N = IE4covNI,
-    H4_N = H4covNI,
-    LN4_N = LN4covNI,
-    G4_N = G4covNI,
-    QE4_N = QE4covNI,
-    P4_N = P4covNI,
-    L4_N = L4covNI,
-    E4_LN = E4covLNI,
-    IE4_LN = IE4covLNI,
-    H4_LN = H4covLNI,
-    LN4_LN = LN4covLNI,
-    G4_LN = G4covLNI,
-    QE4_LN = QE4covLNI,
-    P4_LN = P4covLNI,
-    L4_LN = L4covLNI
-  ))
-  colnames(covs) = c("b-d", "BMD-d")
-
-  corrs = t(data.frame(
-    E4_N = E4corrNI,
-    IE4_N = IE4corrNI,
-    H4_N = H4corrNI,
-    LN4_N = LN4corrNI,
-    G4_N = G4corrNI,
-    QE4_N = QE4corrNI,
-    P4_N = P4corrNI,
-    L4_N = L4corrNI,
-    E4_LN = E4corrLNI,
-    IE4_LN = IE4corrLNI,
-    H4_LN = H4corrLNI,
-    LN4_LN = LN4corrLNI,
-    G4_LN = G4corrLNI,
-    QE4_LN = QE4corrLNI,
-    P4_LN = P4corrLNI,
-    L4_LN = L4corrLNI
-  ))
-  colnames(corrs) = c("b-d", "BMD-d")
-
-  modelnames = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
-
-  ### Some additional checks
-
-  # print(maci)
-
-  if(maci[2]/maci[1] > 20){
-    warning('BMD/BMDL is larger than 20')
-  }
-  if(maci[3]/maci[1] > 50){
-    warning('BMDU/BMDL is larger than 50')
-  }
-  if(maci[2] < (data.N$data$x[2]*data.N$data$maxD/10)){
-    warning('BMD is 10 times lower than the lowest non-zero dose')
-  }
-
-  ### best fitting model vs saturated ANOVA model
-  best.fit = modelnames[which(weight[1:16] == max(weight[1:16]))][1]
-  nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
-  bfTest <- modelTest(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
-                      seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
-
-  warning(bfTest$warn.bf)
-
-
-  ret_results <- list(
-    # model parameters
-    E4_N=E4outNI,IE4_N=IE4outNI,H4_N=H4outNI,LN4_N=LN4outNI,G4_N=G4outNI,QE4_N=QE4outNI,P4_N=P4outNI,L4_N=L4outNI,
-    E4_LN=E4outLNI,IE4_LN=IE4outLNI,H4_LN=H4outLNI,LN4_LN=LN4outLNI,G4_LN=G4outLNI,QE4_LN=QE4outLNI,
-    P4_LN=P4outLNI,L4_LN=L4outLNI,
-    # covariances
-    covs = covs, corrs = corrs,
-    # weights and MA
-    weights=lpw,
-    MA=maci,
-    llN=llN, llLN=llLN, MA_post = BMDq,
-    bkg_post = mabkg,
-    maxy_post = mamaxy,
-    # dose-response
-    MA_dr = dr.MA,
-    parsN = list(parsE4N, parsIE4N, parsH4N, parsLN4N, parsG4N,
-                 parsQE4N, parsP4N, parsL4N),
-    parsLN = list(parsE4LN, parsIE4LN, parsH4LN, parsLN4LN, parsG4LN,
-                  parsQE4LN, parsP4LN, parsL4LN),
-    BMDMixture = (mabmd)*data$maxD,
-    dataN = data.frame(
-      dose = c(data.N$data$x),
-      sd = sqrt(data.N$data$s2),
-      m = data.N$data$m),
-    dataLN = data.frame(
-      dose = c(data.LN$data$x),
-      sd = sqrt(data.LN$data$s2),
-      m = data.LN$data$m.org),
-    max.dose = data.N$data$maxD,
-    q = data.N$data$q,
-    # increasing = T,
-    models_included_laplace = modelnames[prior.weights > 0],
-    bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
-    means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-    BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-    shift = data.LN$data$shift,
-    w.msg = w.msg, p.msg = p.msg
-  )
-
-  attr(ret_results, "class") <- c("BMADR", "LP")
 
   return(ret_results)
 
@@ -3006,7 +3021,11 @@ full.laplace_MAc=function(data.N, data.LN,
   w.msg <- ''
 
   max.ll = max(lls, na.rm = T)
-  if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)][1])){
+  if(!(1 %in% prior.weights)){
+    w.msg <- 'Laplace approximation could not be performed, problem fitting all models'
+    warning('Laplace approximation could not be performed, problem fitting all models')
+    out.stop <- 'not.fit'
+  }else if(is.na(lls[which((max.ll-lls[!is.na(lls)]) < 709 & prior.weights>0)][1])){
     lpw <- rep(0, 16)
     lpw[which(lls == max.ll)] <- 1
     w.msg <- 'Laplace weights could not be computed and one model gets all the weight; using another prior for parameter d might help'
@@ -3168,163 +3187,174 @@ full.laplace_MAc=function(data.N, data.LN,
 
   }
 
-  # the model average posterior as a mixture
-  count=round(lpw*ndraws)
-  mabmd=(c(# normal
-    if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,2],count[1],replace=T),
-    if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,2],count[2],replace=T),
-    if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,2],count[3],replace=T),
-    if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,2],count[4],replace=T),
-    if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,2],count[5],replace=T),
-    if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,2],count[6],replace=T),
-    if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,2],count[7],replace=T),
-    if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,2],count[8],replace=T),
-    # lognormal
-    if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,2],count[9],replace=T),
-    if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,2],count[10],replace=T),
-    if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,2],count[11],replace=T),
-    if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,2],count[12],replace=T),
-    if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,2],count[13],replace=T),
-    if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,2],count[14],replace=T),
-    if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
-    if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
-  ))
-  maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
-  names(maci)=c("BMDL","BMD","BMDU")
 
-  if(TRUE %in% (mabmd > data$maxD)  && data$maxD > 1){
-    mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+  if(out.stop != 'not.fit'){
+    # the model average posterior as a mixture
+    count=round(lpw*ndraws)
+    mabmd=(c(# normal
+      if(prior.weights[1]>0) sample(optE4_NI$theta_tilde[,2],count[1],replace=T),
+      if(prior.weights[2]>0) sample(optIE4_NI$theta_tilde[,2],count[2],replace=T),
+      if(prior.weights[3]>0) sample(optH4_NI$theta_tilde[,2],count[3],replace=T),
+      if(prior.weights[4]>0) sample(optLN4_NI$theta_tilde[,2],count[4],replace=T),
+      if(prior.weights[5]>0) sample(optG4_NI$theta_tilde[,2],count[5],replace=T),
+      if(prior.weights[6]>0) sample(optQE4_NI$theta_tilde[,2],count[6],replace=T),
+      if(prior.weights[7]>0) sample(optP4_NI$theta_tilde[,2],count[7],replace=T),
+      if(prior.weights[8]>0) sample(optL4_NI$theta_tilde[,2],count[8],replace=T),
+      # lognormal
+      if(prior.weights[9]>0) sample(optE4_LNI$theta_tilde[,2],count[9],replace=T),
+      if(prior.weights[10]>0) sample(optIE4_LNI$theta_tilde[,2],count[10],replace=T),
+      if(prior.weights[11]>0) sample(optH4_LNI$theta_tilde[,2],count[11],replace=T),
+      if(prior.weights[12]>0) sample(optLN4_LNI$theta_tilde[,2],count[12],replace=T),
+      if(prior.weights[13]>0) sample(optG4_LNI$theta_tilde[,2],count[13],replace=T),
+      if(prior.weights[14]>0) sample(optQE4_LNI$theta_tilde[,2],count[14],replace=T),
+      if(prior.weights[15]>0) sample(optP4_LNI$theta_tilde[,2],count[15],replace=T),
+      if(prior.weights[16]>0) sample(optL4_LNI$theta_tilde[,2],count[16],replace=T)
+    ))
+    maci=quantile(mabmd,pvec, na.rm = T)*data$maxD ## original scale
+    names(maci)=c("BMDL","BMD","BMDU")
+
+    if(TRUE %in% (mabmd > data$maxD)  && data$maxD > 1){
+      mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    }else{
+      p.msg = ''
+    }
+
+    BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
+
+    BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
+
+    names(BMDL) <- c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
+                     "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
+    model = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
+              "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
+    model = as.factor(model)
+    weight = c(lpw[1], lpw[2], lpw[3], lpw[4], lpw[5], lpw[6], lpw[7], lpw[8],
+               lpw[9], lpw[10], lpw[11], lpw[12], lpw[13], lpw[14], lpw[15], lpw[16], 1)
+
+
+    names(lpw) = model[1:16]
+
+    ### Model-averaged response per dose level
+    dr.MA <- c()
+    for(i in 1:length(data$x)){
+      dr.MA[i] = weighted.mean(x = c(DRM_E4_N[i],DRM_IE4_N[i],DRM_H4_N[i],DRM_LN4_N[i],DRM_G4_N[i],DRM_QE4_N[i],
+                                     DRM_P4_N[i], DRM_L4_N[i] ,
+                                     DRM_E4_LN[i], DRM_IE4_LN[i], DRM_H4_LN[i], DRM_LN4_LN[i], DRM_G4_LN[i],
+                                     DRM_QE4_LN[i], DRM_P4_LN[i],DRM_L4_LN[i]),
+                               w = lpw,
+                               na.rm = T)
+    }
+
+
+    ## Covariances
+    covs = t(data.frame(
+      E4_N = E4covNI,
+      IE4_N = IE4covNI,
+      H4_N = H4covNI,
+      LN4_N = LN4covNI,
+      G4_N = G4covNI,
+      QE4_N = QE4covNI,
+      P4_N = P4covNI,
+      L4_N = L4covNI,
+      E4_LN = E4covLNI,
+      IE4_LN = IE4covLNI,
+      H4_LN = H4covLNI,
+      LN4_LN = LN4covLNI,
+      G4_LN = G4covLNI,
+      QE4_LN = QE4covLNI,
+      P4_LN = P4covLNI,
+      L4_LN = L4covLNI
+    ))
+    colnames(covs) = c("b-d", "BMD-d")
+
+    corrs = t(data.frame(
+      E4_N = E4corrNI,
+      IE4_N = IE4corrNI,
+      H4_N = H4corrNI,
+      LN4_N = LN4corrNI,
+      G4_N = G4corrNI,
+      QE4_N = QE4corrNI,
+      P4_N = P4corrNI,
+      L4_N = L4corrNI,
+      E4_LN = E4corrLNI,
+      IE4_LN = IE4corrLNI,
+      H4_LN = H4corrLNI,
+      LN4_LN = LN4corrLNI,
+      G4_LN = G4corrLNI,
+      QE4_LN = QE4corrLNI,
+      P4_LN = P4corrLNI,
+      L4_LN = L4corrLNI
+    ))
+    colnames(corrs) = c("b-d", "BMD-d")
+
+    modelnames = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+
+    ### Some additional checks
+
+    if(maci[2]/maci[1] > 20){
+      warning('BMD/BMDL is larger than 20')
+    }
+    if(maci[3]/maci[1] > 50){
+      warning('BMDU/BMDL is larger than 50')
+    }
+    if(maci[2] < (data.N$data$x[2]*data.N$data$maxD/10)){
+      warning('BMD is 10 times lower than the lowest non-zero dose')
+    }
+
+    ### best fitting model vs saturated ANOVA model
+    best.fit = modelnames[which(weight[1:16] == max(weight[1:16]))][1]
+    nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
+    bfTest <- modelTestC(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
+                         seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
+    print(warning(bfTest$warn.bf))
+  }
+
+  if(out.stop == 'not.fit'){
+    ret_results <- list(MA = c(NA,NA,NA),
+                        MA_post = NA,
+                        bkg_post = NA,
+                        maxy_post = NA)
   }else{
-    p.msg = ''
+
+    ret_results <- list(
+      # model parameters
+      E4_N=E4outNI,IE4_N=IE4outNI,H4_N=H4outNI,LN4_N=LN4outNI,G4_N=G4outNI,QE4_N=QE4outNI,P4_N=P4outNI,L4_N=L4outNI,
+      E4_LN=E4outLNI,IE4_LN=IE4outLNI,H4_LN=H4outLNI,LN4_LN=LN4outLNI,G4_LN=G4outLNI,QE4_LN=QE4outLNI,
+      P4_LN=P4outLNI,L4_LN=L4outLNI,
+      # covariances
+      covs = covs, corrs = corrs,
+      # weights and MA
+      weights=lpw,
+      MA=maci,
+      llN=llN, llLN=llLN, MA_post = BMDq,
+      # dose-response
+      MA_dr = dr.MA,
+      parsN = list(parsE4N, parsIE4N, parsH4N, parsLN4N, parsG4N,
+                   parsQE4N, parsP4N, parsL4N),
+      parsLN = list(parsE4LN, parsIE4LN, parsH4LN, parsLN4LN, parsG4LN,
+                    parsQE4LN, parsP4LN, parsL4LN),
+      BMDMixture = (mabmd)*data$maxD,
+      # data = data.frame(
+      #   dose = c(data.N$data$x),
+      #   sd = sqrt(data.N$data$s2),
+      #   m = data.N$data$m),
+      data = data.N$data$data,
+      max.dose = data.N$data$maxD,
+      q = data.N$data$q,
+      # increasing = T,
+      models_included_laplace = modelnames[prior.weights > 0],
+      bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
+      # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+      # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+      shift = data.LN$data$shift,
+      w.msg = w.msg, p.msg = p.msg
+    )
+
+    attr(ret_results, "class") <- c("BMADR", "LP")
   }
 
-  BMDq = quantile(mabmd, seq(0,1,0.005), na.rm = T)*data$maxD ## original scale
-
-  BMDL = c(BMDL, maci[1]); BMD = c(BMD, maci[2]); BMDU = c(BMDU, maci[3])
-
-  names(BMDL) <- c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
-                   "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
-  model = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN",
-            "LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
-  model = as.factor(model)
-  weight = c(lpw[1], lpw[2], lpw[3], lpw[4], lpw[5], lpw[6], lpw[7], lpw[8],
-             lpw[9], lpw[10], lpw[11], lpw[12], lpw[13], lpw[14], lpw[15], lpw[16], 1)
-
-
-  names(lpw) = model[1:16]
-
-  ### Model-averaged response per dose level
-  dr.MA <- c()
-  for(i in 1:length(data$x)){
-    dr.MA[i] = weighted.mean(x = c(DRM_E4_N[i],DRM_IE4_N[i],DRM_H4_N[i],DRM_LN4_N[i],DRM_G4_N[i],DRM_QE4_N[i],
-                                   DRM_P4_N[i], DRM_L4_N[i] ,
-                                   DRM_E4_LN[i], DRM_IE4_LN[i], DRM_H4_LN[i], DRM_LN4_LN[i], DRM_G4_LN[i],
-                                   DRM_QE4_LN[i], DRM_P4_LN[i],DRM_L4_LN[i]),
-                             w = lpw,
-                             na.rm = T)
-  }
-
-
-  ## Covariances
-  covs = t(data.frame(
-    E4_N = E4covNI,
-    IE4_N = IE4covNI,
-    H4_N = H4covNI,
-    LN4_N = LN4covNI,
-    G4_N = G4covNI,
-    QE4_N = QE4covNI,
-    P4_N = P4covNI,
-    L4_N = L4covNI,
-    E4_LN = E4covLNI,
-    IE4_LN = IE4covLNI,
-    H4_LN = H4covLNI,
-    LN4_LN = LN4covLNI,
-    G4_LN = G4covLNI,
-    QE4_LN = QE4covLNI,
-    P4_LN = P4covLNI,
-    L4_LN = L4covLNI
-  ))
-  colnames(covs) = c("b-d", "BMD-d")
-
-  corrs = t(data.frame(
-    E4_N = E4corrNI,
-    IE4_N = IE4corrNI,
-    H4_N = H4corrNI,
-    LN4_N = LN4corrNI,
-    G4_N = G4corrNI,
-    QE4_N = QE4corrNI,
-    P4_N = P4corrNI,
-    L4_N = L4corrNI,
-    E4_LN = E4corrLNI,
-    IE4_LN = IE4corrLNI,
-    H4_LN = H4corrLNI,
-    LN4_LN = LN4corrLNI,
-    G4_LN = G4corrLNI,
-    QE4_LN = QE4corrLNI,
-    P4_LN = P4corrLNI,
-    L4_LN = L4corrLNI
-  ))
-  colnames(corrs) = c("b-d", "BMD-d")
-
-  modelnames = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
-
-  ### Some additional checks
-
-  if(maci[2]/maci[1] > 20){
-    warning('BMD/BMDL is larger than 20')
-  }
-  if(maci[3]/maci[1] > 50){
-    warning('BMDU/BMDL is larger than 50')
-  }
-  if(maci[2] < (data.N$data$x[2]*data.N$data$maxD/10)){
-    warning('BMD is 10 times lower than the lowest non-zero dose')
-  }
-
-  ### best fitting model vs saturated ANOVA model
-  best.fit = modelnames[which(weight[1:16] == max(weight[1:16]))][1]
-  nrchains = 3; nriterations = 3000; warmup = 1000; delta = 0.8; treedepth = 10
-  bfTest <- modelTestC(best.fit, data.N, data.LN, get(paste0('opt', best.fit, 'I')), type = 'Laplace',
-                       seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
-  print(warning(bfTest$warn.bf))
-
-
-  ret_results <- list(
-    # model parameters
-    E4_N=E4outNI,IE4_N=IE4outNI,H4_N=H4outNI,LN4_N=LN4outNI,G4_N=G4outNI,QE4_N=QE4outNI,P4_N=P4outNI,L4_N=L4outNI,
-    E4_LN=E4outLNI,IE4_LN=IE4outLNI,H4_LN=H4outLNI,LN4_LN=LN4outLNI,G4_LN=G4outLNI,QE4_LN=QE4outLNI,
-    P4_LN=P4outLNI,L4_LN=L4outLNI,
-    # covariances
-    covs = covs, corrs = corrs,
-    # weights and MA
-    weights=lpw,
-    MA=maci,
-    llN=llN, llLN=llLN, MA_post = BMDq,
-    # dose-response
-    MA_dr = dr.MA,
-    parsN = list(parsE4N, parsIE4N, parsH4N, parsLN4N, parsG4N,
-                 parsQE4N, parsP4N, parsL4N),
-    parsLN = list(parsE4LN, parsIE4LN, parsH4LN, parsLN4LN, parsG4LN,
-                  parsQE4LN, parsP4LN, parsL4LN),
-    BMDMixture = (mabmd)*data$maxD,
-    # data = data.frame(
-    #   dose = c(data.N$data$x),
-    #   sd = sqrt(data.N$data$s2),
-    #   m = data.N$data$m),
-    data = data.N$data$data,
-    max.dose = data.N$data$maxD,
-    q = data.N$data$q,
-    # increasing = T,
-    models_included_laplace = modelnames[prior.weights > 0],
-    bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
-    # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-    # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-    shift = data.LN$data$shift,
-    w.msg = w.msg, p.msg = p.msg
-  )
-
-  attr(ret_results, "class") <- c("BMADR", "LP")
 
   return(ret_results)
 
