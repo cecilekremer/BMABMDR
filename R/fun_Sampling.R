@@ -180,11 +180,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
       # Covariance between b-d and between BMD-d
-      E4covNI = c(cov(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4covNI = c(cov(as.matrix(fitstanE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      E4corrNI = c(cor(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4corrNI = c(cor(as.matrix(fitstanE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, E4resNI[1]); BMD=c(BMD, E4resNI[2]); BMDU=c(BMDU, E4resNI[3])
       bridgeE4N = bridgesampling::bridge_sampler(fitstanE4_N, silent = T) # compute log marginal likelihood
@@ -251,11 +251,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      IE4covNI = c(cov(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4covNI = c(cov(as.matrix(fitstanIE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanIE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      IE4corrNI = c(cor(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4corrNI = c(cor(as.matrix(fitstanIE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanIE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, IE4resNI[1]); BMD=c(BMD, IE4resNI[2]); BMDU=c(BMDU, IE4resNI[3])
       bridgeIE4N = bridgesampling::bridge_sampler(fitstanIE4_N, silent = T)
@@ -323,11 +323,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_H4_N = DRM.H4_ND(H4resNI[4:7], data$x, data$q)
       }
       # Covariance between b-d and between BMD-d
-      H4covNI = c(cov(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4covNI = c(cov(as.matrix(fitstanH4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanH4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      H4corrNI = c(cor(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4corrNI = c(cor(as.matrix(fitstanH4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanH4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, H4resNI[1]); BMD=c(BMD, H4resNI[2]); BMDU=c(BMDU, H4resNI[3])
       bridgeH4N = bridgesampling::bridge_sampler(fitstanH4_N, silent = T)
@@ -395,11 +395,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      LN4covNI = c(cov(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4covNI = c(cov(as.matrix(fitstanLN4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanLN4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      LN4corrNI = c(cor(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4corrNI = c(cor(as.matrix(fitstanLN4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanLN4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, LN4resNI[1]); BMD=c(BMD, LN4resNI[2]); BMDU=c(BMDU, LN4resNI[3])
       bridgeLN4N = bridgesampling::bridge_sampler(fitstanLN4_N, silent = T)
@@ -467,11 +467,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      G4covNI = c(cov(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4covNI = c(cov(as.matrix(fitstanG4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanG4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      G4corrNI = c(cor(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4corrNI = c(cor(as.matrix(fitstanG4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanG4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, G4resNI[1]); BMD=c(BMD, G4resNI[2]); BMDU=c(BMDU, G4resNI[3])
       bridgeG4N = bridgesampling::bridge_sampler(fitstanG4_N, silent = T)
@@ -539,11 +539,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      QE4covNI = c(cov(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4covNI = c(cov(as.matrix(fitstanQE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanQE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      QE4corrNI = c(cor(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4corrNI = c(cor(as.matrix(fitstanQE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanQE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, QE4resNI[1]); BMD=c(BMD, QE4resNI[2]); BMDU=c(BMDU, QE4resNI[3])
       bridgeQE4N = bridgesampling::bridge_sampler(fitstanQE4_N, silent = T)
@@ -611,11 +611,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      P4covNI = c(cov(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4covNI = c(cov(as.matrix(fitstanP4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanP4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      P4corrNI = c(cor(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4corrNI = c(cor(as.matrix(fitstanP4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanP4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, P4resNI[1]); BMD=c(BMD, P4resNI[2]); BMDU=c(BMDU, P4resNI[3])
       bridgeP4N = bridgesampling::bridge_sampler(fitstanP4_N, silent = T)
@@ -688,11 +688,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      L4covNI = c(cov(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4covNI = c(cov(as.matrix(fitstanL4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanL4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      L4corrNI = c(cor(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4corrNI = c(cor(as.matrix(fitstanL4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanL4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, L4resNI[1]); BMD=c(BMD, L4resNI[2]); BMDU=c(BMDU, L4resNI[3])
       bridgeL4N = bridgesampling::bridge_sampler(fitstanL4_N, silent = T)
@@ -768,11 +768,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      E4covLNI = c(cov(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4covLNI = c(cov(as.matrix(fitstanE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      E4corrLNI = c(cor(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4corrLNI = c(cor(as.matrix(fitstanE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, E4resLNI[1]); BMD=c(BMD, E4resLNI[2]); BMDU=c(BMDU, E4resLNI[3])
       bridgeE4LN = bridgesampling::bridge_sampler(fitstanE4_LN, silent = T)
@@ -841,11 +841,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_IE4_LN = exp(DRM.IE4_LND(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      IE4corrLNI = c(cor(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4corrLNI = c(cor(as.matrix(fitstanIE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, IE4resLNI[1]); BMD=c(BMD, IE4resLNI[2]); BMDU=c(BMDU, IE4resLNI[3])
       bridgeIE4LN = bridgesampling::bridge_sampler(fitstanIE4_LN, silent = T)
@@ -913,11 +913,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_H4_LN = exp(DRM.H4_LND(H4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanH4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      H4corrLNI = c(cor(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4corrLNI = c(cor(as.matrix(fitstanH4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanH4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, H4resLNI[1]); BMD=c(BMD, H4resLNI[2]); BMDU=c(BMDU, H4resLNI[3])
       bridgeH4LN = bridgesampling::bridge_sampler(fitstanH4_LN, silent = T)
@@ -986,11 +986,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_LN4_LN = exp(DRM.LN4_LND(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      LN4corrLNI = c(cor(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4corrLNI = c(cor(as.matrix(fitstanLN4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, LN4resLNI[1]); BMD=c(BMD, LN4resLNI[2]); BMDU=c(BMDU, LN4resLNI[3])
       bridgeLN4LN = bridgesampling::bridge_sampler(fitstanLN4_LN, silent = T)
@@ -1060,11 +1060,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_G4_LN = exp(DRM.G4_LND(G4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanG4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      G4corrLNI = c(cor(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4corrLNI = c(cor(as.matrix(fitstanG4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanG4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, G4resLNI[1]); BMD=c(BMD, G4resLNI[2]); BMDU=c(BMDU, G4resLNI[3])
       bridgeG4LN = bridgesampling::bridge_sampler(fitstanG4_LN, silent = T)
@@ -1132,11 +1132,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_QE4_LN = exp(DRM.QE4_LND(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      QE4corrLNI = c(cor(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4corrLNI = c(cor(as.matrix(fitstanQE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, QE4resLNI[1]); BMD=c(BMD, QE4resLNI[2]); BMDU=c(BMDU, QE4resLNI[3])
       bridgeQE4LN = bridgesampling::bridge_sampler(fitstanQE4_LN, silent = T)
@@ -1205,11 +1205,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_P4_LN = exp(DRM.P4_LND(P4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanP4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      P4corrLNI = c(cor(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4corrLNI = c(cor(as.matrix(fitstanP4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, P4resLNI[1]); BMD=c(BMD, P4resLNI[2]); BMDU=c(BMDU, P4resLNI[3])
       bridgeP4LN = bridgesampling::bridge_sampler(fitstanP4_LN, silent = T)
@@ -1280,11 +1280,11 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_L4_LN = exp(DRM.L4_LND(L4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanL4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      L4corrLNI = c(cor(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4corrLNI = c(cor(as.matrix(fitstanL4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanL4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, L4resLNI[1]); BMD=c(BMD, L4resLNI[2]); BMDU=c(BMDU, L4resLNI[3])
       bridgeL4LN = bridgesampling::bridge_sampler(fitstanL4_LN, silent = T)
@@ -2478,11 +2478,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
 
       # Covariance between b-d and between BMD-d
-      E4covNI = c(cov(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4covNI = c(cov(as.matrix(fitstanE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      E4corrNI = c(cor(as.matrix(fitstanE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4corrNI = c(cor(as.matrix(fitstanE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, E4resNI[1]); BMD=c(BMD, E4resNI[2]); BMDU=c(BMDU, E4resNI[3])
       bridgeE4N = bridgesampling::bridge_sampler(fitstanE4_N, silent = T) # compute log marginal likelihood
@@ -2549,11 +2549,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      IE4covNI = c(cov(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4covNI = c(cov(as.matrix(fitstanIE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanIE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      IE4corrNI = c(cor(as.matrix(fitstanIE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanIE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4corrNI = c(cor(as.matrix(fitstanIE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanIE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, IE4resNI[1]); BMD=c(BMD, IE4resNI[2]); BMDU=c(BMDU, IE4resNI[3])
       bridgeIE4N = bridgesampling::bridge_sampler(fitstanIE4_N, silent = T)
@@ -2621,11 +2621,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_H4_N = DRM.H4_ND(H4resNI[4:7], data$x, data$q)
       }
       # Covariance between b-d and between BMD-d
-      H4covNI = c(cov(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4covNI = c(cov(as.matrix(fitstanH4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanH4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      H4corrNI = c(cor(as.matrix(fitstanH4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanH4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4corrNI = c(cor(as.matrix(fitstanH4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanH4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, H4resNI[1]); BMD=c(BMD, H4resNI[2]); BMDU=c(BMDU, H4resNI[3])
       bridgeH4N = bridgesampling::bridge_sampler(fitstanH4_N, silent = T)
@@ -2693,11 +2693,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      LN4covNI = c(cov(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4covNI = c(cov(as.matrix(fitstanLN4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanLN4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      LN4corrNI = c(cor(as.matrix(fitstanLN4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanLN4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4corrNI = c(cor(as.matrix(fitstanLN4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanLN4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, LN4resNI[1]); BMD=c(BMD, LN4resNI[2]); BMDU=c(BMDU, LN4resNI[3])
       bridgeLN4N = bridgesampling::bridge_sampler(fitstanLN4_N, silent = T)
@@ -2764,11 +2764,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      G4covNI = c(cov(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4covNI = c(cov(as.matrix(fitstanG4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanG4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      G4corrNI = c(cor(as.matrix(fitstanG4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanG4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4corrNI = c(cor(as.matrix(fitstanG4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanG4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, G4resNI[1]); BMD=c(BMD, G4resNI[2]); BMDU=c(BMDU, G4resNI[3])
       bridgeG4N = bridgesampling::bridge_sampler(fitstanG4_N, silent = T)
@@ -2835,11 +2835,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      QE4covNI = c(cov(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4covNI = c(cov(as.matrix(fitstanQE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanQE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      QE4corrNI = c(cor(as.matrix(fitstanQE4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanQE4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4corrNI = c(cor(as.matrix(fitstanQE4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanQE4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, QE4resNI[1]); BMD=c(BMD, QE4resNI[2]); BMDU=c(BMDU, QE4resNI[3])
       bridgeQE4N = bridgesampling::bridge_sampler(fitstanQE4_N, silent = T)
@@ -2906,11 +2906,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      P4covNI = c(cov(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4covNI = c(cov(as.matrix(fitstanP4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanP4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      P4corrNI = c(cor(as.matrix(fitstanP4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanP4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4corrNI = c(cor(as.matrix(fitstanP4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanP4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, P4resNI[1]); BMD=c(BMD, P4resNI[2]); BMDU=c(BMDU, P4resNI[3])
       bridgeP4N = bridgesampling::bridge_sampler(fitstanP4_N, silent = T)
@@ -2982,11 +2982,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      L4covNI = c(cov(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4covNI = c(cov(as.matrix(fitstanL4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(as.matrix(fitstanL4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      L4corrNI = c(cor(as.matrix(fitstanL4_N)[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(as.matrix(fitstanL4_N)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4corrNI = c(cor(as.matrix(fitstanL4_N)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(as.matrix(fitstanL4_N)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, L4resNI[1]); BMD=c(BMD, L4resNI[2]); BMDU=c(BMDU, L4resNI[3])
       bridgeL4N = bridgesampling::bridge_sampler(fitstanL4_N, silent = T)
@@ -3061,11 +3061,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
       }
 
       # Covariance between b-d and between BMD-d
-      E4covLNI = c(cov(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4covLNI = c(cov(as.matrix(fitstanE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      E4corrLNI = c(cor(as.matrix(fitstanE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      E4corrLNI = c(cor(as.matrix(fitstanE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, E4resLNI[1]); BMD=c(BMD, E4resLNI[2]); BMDU=c(BMDU, E4resLNI[3])
       bridgeE4LN = bridgesampling::bridge_sampler(fitstanE4_LN, silent = T)
@@ -3133,11 +3133,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_IE4_LN = exp(DRM.IE4_LND(IE4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4covLNI = c(cov(as.matrix(fitstanIE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      IE4corrLNI = c(cor(as.matrix(fitstanIE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      IE4corrLNI = c(cor(as.matrix(fitstanIE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(as.matrix(fitstanIE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, IE4resLNI[1]); BMD=c(BMD, IE4resLNI[2]); BMDU=c(BMDU, IE4resLNI[3])
       bridgeIE4LN = bridgesampling::bridge_sampler(fitstanIE4_LN, silent = T)
@@ -3204,11 +3204,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_H4_LN = exp(DRM.H4_LND(H4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4covLNI = c(cov(as.matrix(fitstanH4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanH4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      H4corrLNI = c(cor(as.matrix(fitstanH4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanH4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      H4corrLNI = c(cor(as.matrix(fitstanH4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanH4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, H4resLNI[1]); BMD=c(BMD, H4resLNI[2]); BMDU=c(BMDU, H4resLNI[3])
       bridgeH4LN = bridgesampling::bridge_sampler(fitstanH4_LN, silent = T)
@@ -3276,11 +3276,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_LN4_LN = exp(DRM.LN4_LND(LN4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4covLNI = c(cov(as.matrix(fitstanLN4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      LN4corrLNI = c(cor(as.matrix(fitstanLN4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      LN4corrLNI = c(cor(as.matrix(fitstanLN4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(as.matrix(fitstanLN4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, LN4resLNI[1]); BMD=c(BMD, LN4resLNI[2]); BMDU=c(BMDU, LN4resLNI[3])
       bridgeLN4LN = bridgesampling::bridge_sampler(fitstanLN4_LN, silent = T)
@@ -3349,11 +3349,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_G4_LN = exp(DRM.G4_LND(G4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4covLNI = c(cov(as.matrix(fitstanG4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanG4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      G4corrLNI = c(cor(as.matrix(fitstanG4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanG4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      G4corrLNI = c(cor(as.matrix(fitstanG4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanG4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, G4resLNI[1]); BMD=c(BMD, G4resLNI[2]); BMDU=c(BMDU, G4resLNI[3])
       bridgeG4LN = bridgesampling::bridge_sampler(fitstanG4_LN, silent = T)
@@ -3420,11 +3420,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_QE4_LN = exp(DRM.QE4_LND(QE4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4covLNI = c(cov(as.matrix(fitstanQE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      QE4corrLNI = c(cor(as.matrix(fitstanQE4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      QE4corrLNI = c(cor(as.matrix(fitstanQE4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(as.matrix(fitstanQE4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, QE4resLNI[1]); BMD=c(BMD, QE4resLNI[2]); BMDU=c(BMDU, QE4resLNI[3])
       bridgeQE4LN = bridgesampling::bridge_sampler(fitstanQE4_LN, silent = T)
@@ -3492,11 +3492,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_P4_LN = exp(DRM.P4_LND(P4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4covLNI = c(cov(as.matrix(fitstanP4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanP4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      P4corrLNI = c(cor(as.matrix(fitstanP4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      P4corrLNI = c(cor(as.matrix(fitstanP4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanP4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, P4resLNI[1]); BMD=c(BMD, P4resLNI[2]); BMDU=c(BMDU, P4resLNI[3])
       bridgeP4LN = bridgesampling::bridge_sampler(fitstanP4_LN, silent = T)
@@ -3566,11 +3566,11 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
         DRM_L4_LN = exp(DRM.L4_LND(L4resLNI[4:7], data$x, data$q, shift=data$shift))
       }
 
-      L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4covLNI = c(cov(as.matrix(fitstanL4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(as.matrix(fitstanL4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
-      L4corrLNI = c(cor(as.matrix(fitstanL4_LN)[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(as.matrix(fitstanL4_LN)[,c("par2","d")], use="complete.obs")["par2","d"])
+      L4corrLNI = c(cor(as.matrix(fitstanL4_LN)[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(as.matrix(fitstanL4_LN)[,c("par2","d")], use="na.or.complete")["par2","d"])
 
       BMDL=c(BMDL, L4resLNI[1]); BMD=c(BMD, L4resLNI[2]); BMDU=c(BMDU, L4resLNI[3])
       bridgeL4LN = bridgesampling::bridge_sampler(fitstanL4_LN, silent = T)
@@ -4810,11 +4810,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
       DRM_E4_Q = DRM.E4_Q(E4resQ[names(E4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
 
-      E4covQ = c(cov(as.matrix(fitstanE4_Q)[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(as.matrix(fitstanE4_Q)[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4covQ = c(cov(as.matrix(fitstanE4_Q)[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(as.matrix(fitstanE4_Q)[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      E4corrQ = c(cor(as.matrix(fitstanE4_Q)[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(as.matrix(fitstanE4_Q)[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4corrQ = c(cor(as.matrix(fitstanE4_Q)[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(as.matrix(fitstanE4_Q)[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       BMDL=c(BMDL, E4resQ[1]); BMD=c(BMD, E4resQ[2]); BMDU=c(BMDU, E4resQ[3])
       bridgeE4Q = bridgesampling::bridge_sampler(fitstanE4_Q, silent = T)
@@ -4905,11 +4905,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                              data$x, data$q)
 
       # Covariance between b-d and between BMD-d
-      IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsIE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsIE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
       BMDL=c(BMDL, IE4resQ[1]); BMD=c(BMD, IE4resQ[2]); BMDU=c(BMDU, IE4resQ[3])
       bridgeIE4Q = bridgesampling::bridge_sampler(fitstanIE4_Q, silent = T)
 
@@ -4994,11 +4994,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                           data$x, data$q)
 
       # Covariance between b-d and between BMD-d
-      H4covQ = c(cov(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4covQ = c(cov(parsH4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsH4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4corrQ = c(cor(parsH4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsH4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       bridgeH4Q = bridgesampling::bridge_sampler(fitstanH4_Q, silent = T)
       BMDL = c(BMDL, H4resQ[1]); BMD=c(BMD, H4resQ[2]); BMDU=c(BMDU, H4resQ[3])
@@ -5088,11 +5088,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
 
       # Covariance between b-d and between BMD-d
-      LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsLN4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsLN4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       #diagnostics here
       # posterior_diag(model_stan = fitstanLN4_N)
@@ -5178,11 +5178,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       DRM_G4_Q = DRM.G4_Q(G4resQ[names(G4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
 
       # Covariance between b-d and between BMD-d
-      G4covQ = c(cov(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4covQ = c(cov(parsG4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsG4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      G4corrQ = c(cor(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4corrQ = c(cor(parsG4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsG4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       BMDL=c(BMDL, G4resQ[1]); BMD=c(BMD, G4resQ[2]); BMDU=c(BMDU, G4resQ[3])
       bridgeG4Q <- bridgesampling::bridge_sampler(fitstanG4_Q, silent = TRUE)
@@ -5268,11 +5268,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                             data$x, data$q)
 
       # Covariance between b-d and between BMD-d
-      QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsQE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsQE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       BMDL=c(BMDL, QE4resQ[1]); BMD=c(BMD, QE4resQ[2]); BMDU=c(BMDU, QE4resQ[3])
       bridgeQE4Q = bridgesampling::bridge_sampler(fitstanQE4_Q, silent = T)
@@ -5357,11 +5357,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
       DRM_P4_Q <- DRM.P4_Q(E4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
 
       # Covariance between b-d and between BMD-d
-      P4covQ = c(cov(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4covQ = c(cov(parsP4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsP4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      P4corrQ = c(cor(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4corrQ = c(cor(parsP4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsP4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       BMDL=c(BMDL, P4resQ[1]); BMD=c(BMD, P4resQ[2]); BMDU=c(BMDU, P4resQ[3])
       bridgeP4Q = bridgesampling::bridge_sampler(fitstanP4_Q, silent = T)
@@ -5448,11 +5448,11 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                            data$x, data$q)
 
       # Covariance between b-d and between BMD-d
-      L4covQ = c(cov(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4covQ = c(cov(parsL4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsL4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      L4corrQ = c(cor(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4corrQ = c(cor(parsL4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsL4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       BMDL=c(BMDL, L4resQ[1]); BMD=c(BMD, L4resQ[2]); BMDU=c(BMDU, L4resQ[3])
       bridgeL4Q = bridgesampling::bridge_sampler(fitstanL4_Q, silent = T)

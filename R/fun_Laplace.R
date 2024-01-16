@@ -130,11 +130,11 @@ full.laplace_MA=function(data.N, data.LN,
       E4outNI <- outLP(parsE4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      E4covNI <- c(cov(parsE4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4covNI <- c(cov(parsE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      E4corrNI <- c(cor(parsE4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4corrNI <- c(cor(parsE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_E4_N <- DRM.E4_NI(E4resNI[4:7], data$x, data$q)
@@ -214,11 +214,11 @@ full.laplace_MA=function(data.N, data.LN,
       IE4outNI <- outLP(parsIE4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      IE4covNI <- c(cov(parsIE4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsIE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4covNI <- c(cov(parsIE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsIE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      IE4corrNI <- c(cor(parsIE4N[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsIE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4corrNI <- c(cor(parsIE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsIE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_IE4_N <- DRM.IE4_NI(IE4resNI[4:7], data$x, data$q)
@@ -288,11 +288,11 @@ full.laplace_MA=function(data.N, data.LN,
       H4outNI <- outLP(parsH4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      H4covNI = c(cov(parsH4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsH4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4covNI = c(cov(parsH4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsH4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      H4corrNI = c(cor(parsH4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsH4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4corrNI = c(cor(parsH4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsH4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_H4_N <- DRM.H4_NI(H4resNI[4:7], data$x, data$q)
@@ -362,11 +362,11 @@ full.laplace_MA=function(data.N, data.LN,
       LN4outNI <- outLP(parsLN4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      LN4covNI = c(cov(parsLN4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsLN4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4covNI = c(cov(parsLN4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsLN4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      LN4corrNI = c(cor(parsLN4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsLN4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4corrNI = c(cor(parsLN4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsLN4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_LN4_N <- DRM.LN4_NI(LN4resNI[4:7], data$x, data$q)
@@ -442,11 +442,11 @@ full.laplace_MA=function(data.N, data.LN,
       G4outNI <- outLP(parsG4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      G4covNI = c(cov(parsG4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsG4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4covNI = c(cov(parsG4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsG4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      G4corrNI = c(cor(parsG4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsG4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4corrNI = c(cor(parsG4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsG4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_G4_N <- DRM.G4_NI(G4resNI[4:7], data$x, data$q)
@@ -514,11 +514,11 @@ full.laplace_MA=function(data.N, data.LN,
       QE4outNI <- outLP(parsQE4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      QE4covNI = c(cov(parsQE4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsQE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4covNI = c(cov(parsQE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsQE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      QE4corrNI = c(cor(parsQE4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsQE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4corrNI = c(cor(parsQE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsQE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_QE4_N <- DRM.QE4_NI(QE4resNI[4:7], data$x, data$q)
@@ -586,11 +586,11 @@ full.laplace_MA=function(data.N, data.LN,
       P4outNI <- outLP(parsP4N, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      P4covNI = c(cov(parsP4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsP4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4covNI = c(cov(parsP4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsP4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      P4corrNI = c(cor(parsP4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsP4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4corrNI = c(cor(parsP4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsP4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_P4_N <- DRM.P4_NI(P4resNI[4:7], data$x, data$q)
@@ -659,11 +659,11 @@ full.laplace_MA=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      L4covNI = c(cov(parsL4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsL4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4covNI = c(cov(parsL4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsL4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      L4corrNI = c(cor(parsL4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsL4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4corrNI = c(cor(parsL4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsL4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_L4_N <- DRM.L4_NI(L4resNI[4:7], data$x, data$q)
@@ -741,11 +741,11 @@ full.laplace_MA=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      E4covLNI = c(cov(parsE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4covLNI = c(cov(parsE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      E4corrLNI = c(cor(parsE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4corrLNI = c(cor(parsE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_E4_LN <- exp(DRM.E4_LNI(E4resLNI[4:7], data$x, data$q, data$shift))
@@ -825,11 +825,11 @@ full.laplace_MA=function(data.N, data.LN,
       IE4outLNI <- outLP(parsIE4LN, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      IE4covLNI = c(cov(parsIE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsIE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4covLNI = c(cov(parsIE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsIE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      IE4corrLNI = c(cor(parsIE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsIE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4corrLNI = c(cor(parsIE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsIE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_IE4_LN <- exp(DRM.IE4_LNI(IE4resLNI[4:7], data$x, data$q, data$shift))
@@ -899,11 +899,11 @@ full.laplace_MA=function(data.N, data.LN,
       H4outLNI <- outLP(parsH4LN, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      H4covLNI = c(cov(parsH4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsH4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4covLNI = c(cov(parsH4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsH4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      H4corrLNI = c(cor(parsH4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsH4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4corrLNI = c(cor(parsH4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsH4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_H4_LN <- exp(DRM.H4_LNI(H4resLNI[4:7], data$x, data$q, data$shift))
@@ -973,11 +973,11 @@ full.laplace_MA=function(data.N, data.LN,
       LN4outLNI <- outLP(parsLN4LN, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      LN4covLNI = c(cov(parsLN4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsLN4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4covLNI = c(cov(parsLN4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsLN4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      LN4corrLNI = c(cor(parsLN4LN[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsLN4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4corrLNI = c(cor(parsLN4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsLN4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_LN4_LN <- exp(DRM.LN4_LNI(LN4resLNI[4:7], data$x, data$q, data$shift))
@@ -1056,11 +1056,11 @@ full.laplace_MA=function(data.N, data.LN,
       G4outLNI <- outLP(parsG4LN, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      G4covLNI = c(cov(parsG4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsG4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4covLNI = c(cov(parsG4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsG4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      G4corrLNI = c(cor(parsG4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsG4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4corrLNI = c(cor(parsG4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsG4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_G4_LN <- DRM.G4_LNI(G4resLNI[4:7], data$x, data$q, data$shift)
@@ -1130,11 +1130,11 @@ full.laplace_MA=function(data.N, data.LN,
       QE4outLNI <- outLP(parsQE4LN, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      QE4covLNI = c(cov(parsQE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsQE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4covLNI = c(cov(parsQE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsQE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      QE4corrLNI = c(cor(parsQE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsQE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4corrLNI = c(cor(parsQE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsQE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_QE4_LN <- exp(DRM.QE4_LNI(QE4resLNI[4:7], data$x, data$q, data$shift))
@@ -1205,11 +1205,11 @@ full.laplace_MA=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      P4covLNI = c(cov(parsP4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsP4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4covLNI = c(cov(parsP4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsP4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      P4corrLNI = c(cor(parsP4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsP4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4corrLNI = c(cor(parsP4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsP4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_P4_LN <- exp(DRM.P4_LNI(P4resLNI[4:7], data$x, data$q, data$shift))
@@ -1279,11 +1279,11 @@ full.laplace_MA=function(data.N, data.LN,
       L4outLNI <- outLP(parsL4LN, pvec, data$maxD)
 
       # Covariance between b-d and between BMD-d
-      L4covLNI = c(cov(parsL4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsL4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4covLNI = c(cov(parsL4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsL4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      L4corrLNI = c(cor(parsL4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsL4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4corrLNI = c(cor(parsL4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsL4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_L4_LN <- exp(DRM.L4_LNI(L4resLNI[4:7], data$x, data$q, data$shift))
@@ -1804,11 +1804,11 @@ full.laplace_MAc=function(data.N, data.LN,
       E4outNI <- outLP(parsE4N, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      E4covNI <- c(cov(parsE4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4covNI <- c(cov(parsE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      E4corrNI <- c(cor(parsE4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4corrNI <- c(cor(parsE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_E4_N <- DRM.E4_NI(E4resNI[4:7], data$x, data$q)
@@ -1877,11 +1877,11 @@ full.laplace_MAc=function(data.N, data.LN,
       IE4outNI <- outLP(parsIE4N, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      IE4covNI <- c(cov(parsIE4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsIE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4covNI <- c(cov(parsIE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsIE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      IE4corrNI <- c(cor(parsIE4N[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsIE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4corrNI <- c(cor(parsIE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsIE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_IE4_N <- DRM.IE4_NI(IE4resNI[4:7], data$x, data$q)
@@ -1950,11 +1950,11 @@ full.laplace_MAc=function(data.N, data.LN,
       H4outNI <- outLP(parsH4N, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      H4covNI = c(cov(parsH4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsH4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4covNI = c(cov(parsH4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsH4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      H4corrNI = c(cor(parsH4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsH4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4corrNI = c(cor(parsH4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsH4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_H4_N <- DRM.H4_NI(H4resNI[4:7], data$x, data$q)
@@ -2024,11 +2024,11 @@ full.laplace_MAc=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      LN4covNI = c(cov(parsLN4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsLN4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4covNI = c(cov(parsLN4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsLN4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      LN4corrNI = c(cor(parsLN4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsLN4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4corrNI = c(cor(parsLN4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsLN4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_LN4_N <- DRM.LN4_NI(LN4resNI[4:7], data$x, data$q)
@@ -2095,11 +2095,11 @@ full.laplace_MAc=function(data.N, data.LN,
       G4outNI <- outLP(parsG4N, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      G4covNI = c(cov(parsG4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsG4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4covNI = c(cov(parsG4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsG4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      G4corrNI = c(cor(parsG4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsG4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4corrNI = c(cor(parsG4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsG4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_G4_N <- DRM.G4_NI(G4resNI[4:7], data$x, data$q)
@@ -2167,11 +2167,11 @@ full.laplace_MAc=function(data.N, data.LN,
       QE4outNI <- outLP(parsQE4N, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      QE4covNI = c(cov(parsQE4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsQE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4covNI = c(cov(parsQE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsQE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      QE4corrNI = c(cor(parsQE4N[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsQE4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4corrNI = c(cor(parsQE4N[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsQE4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_QE4_N <- DRM.QE4_NI(QE4resNI[4:7], data$x, data$q)
@@ -2239,11 +2239,11 @@ full.laplace_MAc=function(data.N, data.LN,
       P4outNI <- outLP(parsP4N, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      P4covNI = c(cov(parsP4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsP4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4covNI = c(cov(parsP4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsP4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      P4corrNI = c(cor(parsP4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsP4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4corrNI = c(cor(parsP4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsP4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_P4_N <- DRM.P4_NI(P4resNI[4:7], data$x, data$q)
@@ -2311,11 +2311,11 @@ full.laplace_MAc=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      L4covNI = c(cov(parsL4N[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsL4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4covNI = c(cov(parsL4N[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsL4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      L4corrNI = c(cor(parsL4N[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsL4N[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4corrNI = c(cor(parsL4N[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsL4N[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 1){
         DRM_L4_N <- DRM.L4_NI(L4resNI[4:7], data$x, data$q)
@@ -2392,11 +2392,11 @@ full.laplace_MAc=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      E4covLNI = c(cov(parsE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4covLNI = c(cov(parsE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      E4corrLNI = c(cor(parsE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4corrLNI = c(cor(parsE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_E4_LN <- exp(DRM.E4_LNI(E4resLNI[4:7], data$x, data$q, data$shift))
@@ -2466,11 +2466,11 @@ full.laplace_MAc=function(data.N, data.LN,
       IE4outLNI <- outLP(parsIE4LN, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      IE4covLNI = c(cov(parsIE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsIE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4covLNI = c(cov(parsIE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsIE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      IE4corrLNI = c(cor(parsIE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsIE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4corrLNI = c(cor(parsIE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsIE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_IE4_LN <- exp(DRM.IE4_LNI(IE4resLNI[4:7], data$x, data$q, data$shift))
@@ -2540,11 +2540,11 @@ full.laplace_MAc=function(data.N, data.LN,
       H4outLNI <- outLP(parsH4LN, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      H4covLNI = c(cov(parsH4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsH4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4covLNI = c(cov(parsH4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsH4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      H4corrLNI = c(cor(parsH4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsH4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4corrLNI = c(cor(parsH4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsH4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_H4_LN <- exp(DRM.H4_LNI(H4resLNI[4:7], data$x, data$q, data$shift))
@@ -2614,11 +2614,11 @@ full.laplace_MAc=function(data.N, data.LN,
       LN4outLNI <- outLP(parsLN4LN, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      LN4covLNI = c(cov(parsLN4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsLN4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4covLNI = c(cov(parsLN4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsLN4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      LN4corrLNI = c(cor(parsLN4LN[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsLN4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4corrLNI = c(cor(parsLN4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsLN4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_LN4_LN <- exp(DRM.LN4_LNI(LN4resLNI[4:7], data$x, data$q, data$shift))
@@ -2689,11 +2689,11 @@ full.laplace_MAc=function(data.N, data.LN,
       G4outLNI <- outLP(parsG4LN, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      G4covLNI = c(cov(parsG4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsG4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4covLNI = c(cov(parsG4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsG4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      G4corrLNI = c(cor(parsG4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsG4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4corrLNI = c(cor(parsG4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsG4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_G4_LN <- DRM.G4_LNI(G4resLNI[4:7], data$x, data$q, data$shift)
@@ -2763,11 +2763,11 @@ full.laplace_MAc=function(data.N, data.LN,
       QE4outLNI <- outLP(parsQE4LN, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      QE4covLNI = c(cov(parsQE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cov(parsQE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4covLNI = c(cov(parsQE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cov(parsQE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      QE4corrLNI = c(cor(parsQE4LN[,c("b","d")], use="complete.obs")["b","d"],
-                     cor(parsQE4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4corrLNI = c(cor(parsQE4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                     cor(parsQE4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_QE4_LN <- exp(DRM.QE4_LNI(QE4resLNI[4:7], data$x, data$q, data$shift))
@@ -2838,11 +2838,11 @@ full.laplace_MAc=function(data.N, data.LN,
 
 
       # Covariance between b-d and between BMD-d
-      P4covLNI = c(cov(parsP4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsP4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4covLNI = c(cov(parsP4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsP4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      P4corrLNI = c(cor(parsP4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsP4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4corrLNI = c(cor(parsP4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsP4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_P4_LN <- exp(DRM.P4_LNI(P4resLNI[4:7], data$x, data$q, data$shift))
@@ -2912,11 +2912,11 @@ full.laplace_MAc=function(data.N, data.LN,
       L4outLNI <- outLP(parsL4LN, pvec, data$maxD, clustered = T)
 
       # Covariance between b-d and between BMD-d
-      L4covLNI = c(cov(parsL4LN[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsL4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4covLNI = c(cov(parsL4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsL4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      L4corrLNI = c(cor(parsL4LN[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsL4LN[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4corrLNI = c(cor(parsL4LN[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsL4LN[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       if(data$data_type == 2){
         DRM_L4_LN <- exp(DRM.L4_LNI(L4resLNI[4:7], data$x, data$q, data$shift))
@@ -3395,11 +3395,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       }
 
       # Covariance between b-d and between BMD-d
-      E4covQ <- c(cov(parsE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4covQ <- c(cov(parsE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      E4corrQ <- c(cor(parsE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      E4corrQ <- c(cor(parsE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_E4_Q <- DRM.E4_Q(optE4_Q$par[1:3], data$x, data$q)
 
@@ -3486,11 +3486,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       }
 
       # Covariance between b-d and between BMD-d
-      IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cov(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4covQ <- c(cov(parsIE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cov(parsIE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                    cor(parsIE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      IE4corrQ <- c(cor(parsIE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                    cor(parsIE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_IE4_Q <- DRM.IE4_Q(optIE4_Q$par[1:3], data$x, data$q)
 
@@ -3578,11 +3578,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
 
       # Covariance between b-d and between BMD-d
-      H4covQ = c(cov(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4covQ = c(cov(parsH4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsH4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      H4corrQ = c(cor(parsH4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsH4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      H4corrQ = c(cor(parsH4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsH4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_H4_Q <- DRM.H4_Q(optH4_Q$par[1:3], data$x, data$q)
 
@@ -3667,11 +3667,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       }
 
       # Covariance between b-d and between BMD-d
-      LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4covQ = c(cov(parsLN4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsLN4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsLN4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      LN4corrQ = c(cor(parsLN4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsLN4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_LN4_Q = DRM.LN4_Q(optLN4_Q$par[1:3], data$x, data$q)
 
@@ -3758,11 +3758,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       }
 
       # Covariance between b-d and between BMD-d
-      G4covQ = c(cov(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4covQ = c(cov(parsG4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsG4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      G4corrQ = c(cor(parsG4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsG4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      G4corrQ = c(cor(parsG4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsG4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_G4_Q = DRM.G4_Q(optG4_Q$par[1:3], data$x, data$q)
 
@@ -3846,11 +3846,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       }
 
       # Covariance between b-d and between BMD-d
-      QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cov(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4covQ = c(cov(parsQE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cov(parsQE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="complete.obs")["b","d"],
-                   cor(parsQE4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      QE4corrQ = c(cor(parsQE4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                   cor(parsQE4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_QE4_Q = DRM.QE4_Q(optQE4_Q$par[1:3], data$x, data$q)
 
@@ -3935,11 +3935,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
 
       # Covariance between b-d and between BMD-d
-      P4covQ = c(cov(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4covQ = c(cov(parsP4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsP4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      P4corrQ = c(cor(parsP4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsP4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      P4corrQ = c(cor(parsP4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsP4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_P4_Q = DRM.P4_Q(optP4_Q$par[1:3], data$x, data$q)
 
@@ -4022,11 +4022,11 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
       }
 
       # Covariance between b-d and between BMD-d
-      L4covQ = c(cov(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
-                 cov(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4covQ = c(cov(parsL4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                 cov(parsL4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
-      L4corrQ = c(cor(parsL4Q[,c("b","d")], use="complete.obs")["b","d"],
-                  cor(parsL4Q[,c("BMD","d")], use="complete.obs")["BMD","d"])
+      L4corrQ = c(cor(parsL4Q[,c("b","d")], use="na.or.complete")["b","d"],
+                  cor(parsL4Q[,c("BMD","d")], use="na.or.complete")["BMD","d"])
 
       DRM_L4_Q = DRM.L4_Q(optL4_Q$par[1:3], data$x, data$q)
 
