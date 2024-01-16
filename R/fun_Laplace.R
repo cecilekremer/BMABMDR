@@ -92,6 +92,7 @@ full.laplace_MA=function(data.N, data.LN,
 
   # prior.weights = prior.weights/sum(prior.weights==1) #this is now done below when calculating weights
 
+  out.stop = 'ok'
 
   data = data.N$data
   start = data.N$start
@@ -1782,6 +1783,8 @@ full.laplace_MAc=function(data.N, data.LN,
 
   # prior.weights = prior.weights/sum(prior.weights==1) #this is now done below when calculating weights
 
+  out.stop = 'ok'
+
   data = data.N$data
   start = data.N$start
   startQ = data.N$startQ
@@ -3368,6 +3371,8 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 
   # prior.weights = prior.weights/sum(prior.weights==1) #this is now done below when calculating weights
 
+  out.stop = 'ok'
+
   ## Data to use for Normal distribution
   data = data.Q$data
   start = data.Q$start
@@ -4505,6 +4510,8 @@ full.laplace_MA_Cov = function(data, # the summary data
 
   ##############################################
   ### DATA IN CORRECT FORMAT FOR EACH SUBMODEL
+
+  out.stop = 'ok'
 
   if(1 %in% prior.weights[1:8]){
     data_NCOV_all <- PREP_DATA_NCOV(
@@ -6022,6 +6029,8 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                  ndraws=30000,seed=123,
                                  pvec=c(0.05,0.5,0.95)
 ){
+
+  out.stop = 'ok'
 
   data_all <- PREP_DATA_Q_COV(
     data = data,
