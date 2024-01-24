@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9078
+
+* fix error in modelTest()
+
 ## BMABMDR 0.0.0.9077
 
 * fix error in Laplace function

@@ -29,13 +29,13 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
   if(grepl('_N', best.fit)){
 
-    svSM=list(par = c(data.N$data$m[1], # background
+    svSM=list(par = c(data.N$data$priormu[1], # background
                       diff(data.N$data$m), # increments
                       log(1/mean(data.N$data$s2))) # invsigma2
     )
 
     priorSM = list(
-      priormu = c(data.N$data$m[1],
+      priormu = c(data.N$data$priormu[1],
                   diff(data.N$data$m), # increments
                   -2*log(1.5*mean(sqrt(data.N$data$s2)))),
       priorSigma = diag(c(1, rep(1, data.N$data$N-1), 1)),
@@ -112,15 +112,19 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
   }else if(grepl('_LN', best.fit)){
 
-    svSM=list(par = c(exp(data.LN$data$m.org[1]), # background
+    svSM=list(par = c(data.LN$data$priormu[1], # background
+                      # exp(data.LN$data$m.org[1]),
                       diff(exp(data.LN$data$m.org)),
                       log(1/mean(data.LN$data$s2))) # invsigma2
     )
 
     priorSM = list(
-      priormu = c(exp(data.LN$data$m.org[1]),
+      priormu = c(data.LN$data$priormu[1],
                   diff(exp(data.LN$data$m.org)),
                   -2*log(1.5*mean(sqrt(data.LN$data$s2)))),
+      # priormu = c(exp(data.LN$data$m.org[1]),
+      #             diff(exp(data.LN$data$m.org)),
+      #             -2*log(1.5*mean(sqrt(data.LN$data$s2)))),
       priorSigma = diag(c(1, rep(1, data.LN$data$N-1), 1)),
       priorlb = data.LN$data$priorlb[1],
       priorub = c(data.LN$data$priorub[1],
