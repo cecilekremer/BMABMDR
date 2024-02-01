@@ -182,7 +182,7 @@
 
 * LL.R updated to include likelihood of null model for quantal and clustered continuous data
 
-* anydoseresponse.R updated to include option to use Laplace (use.mcmc = TRUE) for clustered quantal and clustered continuous data
+* anydoseresponse.R updated to include option to use Laplace (use.mcmc = FALSE) for clustered quantal and clustered continuous data
 
 ## Updates 22/09/2022
 
