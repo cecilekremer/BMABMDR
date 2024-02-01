@@ -664,8 +664,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     # llBestfit = llBestfitf(x = pars.bestfit[1:3], data.Q$data$n, data.Q$data$x,
     #                        data.Q$data$y, data.Q$data$q, pars.bestfit[4])
     llBestfit = llBestfitf(x = pars.bestfit[1:3], data.Q$data$n, data.Q$data$x,
-                           data.Q$data$y, data.Q$data$q,rho = stanBest$par[stringr::str_detect(names(stanBest$par),'rho') &
-                                                                              !stringr::str_detect(names(stanBest$par),'eta')])
+                           data.Q$data$y, data.Q$data$q,rho = pars.bestfit[stringr::str_detect(names(pars.bestfit),'rho') &
+                                                                              !stringr::str_detect(names(pars.bestfit),'eta')])
 
   }
 
