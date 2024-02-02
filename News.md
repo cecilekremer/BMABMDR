@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9079
+
+* implemented anydoseresponseQ without using 'brms' package
+
 ## BMABMDR 0.0.0.9078
 
 * fix error in modelTest()
