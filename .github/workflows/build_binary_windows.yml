@@ -68,14 +68,14 @@ jobs:
             "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
         shell: Rscript {0}
-      - name: re-install specific versions rstan, StanHeaders, brms
+      - name: re-install specific versions rstan, StanHeaders
         if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
         run: |
           invisible(
             mapply(
               remotes::install_version,
-              package = c("StanHeaders", "rstan", "brms"),
-              version = c("2.21.0-7", "2.21.8", "2.20.1"),
+              package = c("StanHeaders", "rstan",
+              version = c("2.21.0-7", "2.21.8"),
               upgrade = FALSE
             )
           )
