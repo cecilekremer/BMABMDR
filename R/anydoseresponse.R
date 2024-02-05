@@ -458,12 +458,12 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 }
 #' @rdname anydoseresponseN
 #' @export
-anydoseresponseQ <- function(dose.a,y.a,n.a, cluster=FALSE){#}, use.mcmc = FALSE){
+anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE){#}, use.mcmc = FALSE){
 
   # ndr=30000;nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15
 
 
-  if(cluster==TRUE){
+  if(cluster == TRUE){
 
     data = data.frame(x = dose.a, y = y.a, n = n.a, litter = 1:length(dose.a))
 
