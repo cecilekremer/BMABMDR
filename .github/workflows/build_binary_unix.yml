@@ -72,6 +72,18 @@ jobs:
         shell: Rscript {0}
       - name: make 'configure' script executable
         run: chmod +x configure
+      - name: re-install specific versions rstan, StanHeaders, brms
+        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
+        run: |
+          invisible(
+            mapply(
+              remotes::install_version,
+              package = c("StanHeaders", "rstan", "brms"),
+              version = c("2.26.28", "2.32.3", "2.20.4"),
+              upgrade = FALSE
+            )
+          )
+        shell: Rscript {0}
       - name: build source R-package
         id: build-source
         run: |
