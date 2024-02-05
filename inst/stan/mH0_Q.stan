@@ -2,8 +2,10 @@ functions {
 }
 data {
   int<lower=1> N;  // total number of observations
-  array[N] int Y;  // response variable
-  array[N] int trials;  // number of trials
+  // array[N] int Y;  // response variable
+  // array[N] int trials;  // number of trials
+  int Y[N];
+  int trials[N];
 }
 transformed data {
 }
