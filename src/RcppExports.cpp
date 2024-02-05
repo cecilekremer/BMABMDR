@@ -24,7 +24,6 @@ RcppExport SEXP _rcpp_module_boot_stan_fit4mG4_Q_COV_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mG4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH0_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH0_Q_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4mH0_Qc_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH0c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH4_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mH4COV_mod();
@@ -58,7 +57,6 @@ RcppExport SEXP _rcpp_module_boot_stan_fit4mQE4_Q_COV_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mQE4c_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mSM_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mSM_Q_mod();
-RcppExport SEXP _rcpp_module_boot_stan_fit4mSM_Qc_mod();
 RcppExport SEXP _rcpp_module_boot_stan_fit4mSMc_mod();
 
 static const R_CallMethodDef CallEntries[] = {
@@ -74,7 +72,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4mG4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mG4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH0_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH0_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0_Q_mod, 0},
-    {"_rcpp_module_boot_stan_fit4mH0_Qc_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0_Qc_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH0c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH0c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH4_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH4_mod, 0},
     {"_rcpp_module_boot_stan_fit4mH4COV_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mH4COV_mod, 0},
@@ -108,7 +105,6 @@ static const R_CallMethodDef CallEntries[] = {
     {"_rcpp_module_boot_stan_fit4mQE4c_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mQE4c_mod, 0},
     {"_rcpp_module_boot_stan_fit4mSM_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSM_mod, 0},
     {"_rcpp_module_boot_stan_fit4mSM_Q_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSM_Q_mod, 0},
-    {"_rcpp_module_boot_stan_fit4mSM_Qc_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSM_Qc_mod, 0},
     {"_rcpp_module_boot_stan_fit4mSMc_mod", (DL_FUNC) &_rcpp_module_boot_stan_fit4mSMc_mod, 0},
     {NULL, NULL, 0}
 };

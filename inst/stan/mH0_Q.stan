@@ -5,8 +5,6 @@ data {
   int Y[N];
   int trials[N];
 }
-transformed data {
-}
 parameters {
   real Intercept;  // temporary intercept for centered predictors
 }
