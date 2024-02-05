@@ -1,10 +1,10 @@
 data {
-  int<lower=1> N;  // total number of observations
-  array[N] int Y;  // response variable
-  array[N] int trials;  // number of trials
-  int<lower=1> K;  // number of population-level effects
+  int N;  // total number of observations
+  int Y[N];  // response variable
+  int trials[N];  // number of trials
+  int K;  // number of population-level effects
   matrix[N, K] X;  // population-level design matrix
-  int<lower=1> Kc;  // number of population-level effects after centering
+  int Kc;  // number of population-level effects after centering
 }
 transformed data {
   matrix[N, Kc] Xc;  // centered version of X without an intercept

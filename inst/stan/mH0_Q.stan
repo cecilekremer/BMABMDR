@@ -1,9 +1,9 @@
 data {
-  int<lower=1> N;  // total number of observations
-  // array[N] int Y;  // response variable
-  // array[N] int trials;  // number of trials
-  int Y[N];
-  int trials[N];
+  int N;  // total number of observations
+  int Y[N];  // response variable
+  int trials[N];  // number of trials
+  // int Y[N];
+  // int trials[N];
 }
 parameters {
   real Intercept;  // temporary intercept for centered predictors
