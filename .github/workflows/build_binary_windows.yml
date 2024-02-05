@@ -74,7 +74,7 @@ jobs:
           invisible(
             mapply(
               remotes::install_version,
-              package = c("StanHeaders", "rstan",
+              package = c("StanHeaders", "rstan"),
               version = c("2.21.0-7", "2.21.8"),
               upgrade = FALSE
             )
