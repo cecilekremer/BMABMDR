@@ -550,7 +550,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   #max(abs(diff(data.Q$data$y/data.Q$data$n))),
 
 
-  # if(type == 'MCMC'){
+  if(type == 'MCMC'){
 
   # svH1 <- rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
   #
@@ -706,6 +706,11 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor in favor of saturated model is ', round(bf, 4), ').')
   }else{
     warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor in favor of saturated model is ', round(bf, 4), ').')
+  }
+
+  } else if(type == 'Laplace'){
+    bf <- NA
+    warn.bf = 'Cannot perform model test at this time'
   }
 
   # if(bf < 1/10){
