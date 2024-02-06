@@ -2396,8 +2396,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       models_included_bridge = modelnames[p.weights > 0],
                       models_included_laplace = modelnames[lpwlp > 0],
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
-                      means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-                      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+                      # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+                      # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       shift = data.LN$data$shift,
                       w.msg = w.msg, p.msg = p.msg
   )
@@ -6276,8 +6276,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       is_bin = data.Q$data$is_bin,
                       is_betabin = data.Q$data$is_betabin,
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
-                      means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-                      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+                      # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+                      # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       w.msg = w.msg, p.msg = p.msg
   )
 
