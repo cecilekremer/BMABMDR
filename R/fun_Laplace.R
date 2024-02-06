@@ -1759,8 +1759,8 @@ full.laplace_MA=function(data.N, data.LN,
       # increasing = T,
       models_included_laplace = modelnames[prior.weights > 0],
       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
-      means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-      BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+      # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+      # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
       shift = data.LN$data$shift,
       w.msg = w.msg, p.msg = p.msg
     )
@@ -4423,8 +4423,8 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     is_bin = data.Q$data$is_bin,
     is_betabin = data.Q$data$is_betabin,
     bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
-    means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
-    BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
+    # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
+    # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
     w.msg = w.msg, p.msg = p.msg
   )
 
