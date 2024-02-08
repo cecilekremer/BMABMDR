@@ -534,7 +534,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, hessian = T, draws = ndraws)
       llSM <- llfSM_Q(b = optSM$par[1], Intercept = optSM$par[4], # non-centered intercept
                       Y = data.modstanSM$Y, trials = data.modstanSM$trials, Xc = as.matrix(data.Q$data$x))
-      llfun = paste0('llf',bestfit,'_Q')
+      llfun = paste0('llf',best.fit,'_Q')
       llBestfitf = get(llfun)
       llBestfit <- llBestfitf(x = stanBest$par[1:3], nvec = data.Q$data$n, dvec = data.Q$data$x,
                               yvec = data.Q$data$y, qval = data.Q$data$q)
