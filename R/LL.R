@@ -1394,9 +1394,14 @@ llfL4_Q=function(x,nvec,dvec,yvec,qval){
 }
 #' @rdname llfE4_Q
 #' @export
-llfSM_Q=function(x,nvec,dvec,yvec,qval){
-  sum(lchoose(nvec, yvec) + yvec*log(x[1:length(dvec)] + 1.0E-05) +
-        (nvec - yvec)*log(1 - x[1:length(dvec)] + 1.0E-05))
+# llfSM_Q=function(x,nvec,dvec,yvec,qval){
+#   sum(lchoose(nvec, yvec) + yvec*log(x[1:length(dvec)] + 1.0E-05) +
+#         (nvec - yvec)*log(1 - x[1:length(dvec)] + 1.0E-05))
+# }
+llfSM_Q = function(b, Intercept, Y, trials, Xc){
+  mu <- Intercept + Xc %*% b
+  log_likelihood <- sum(dbinom(Y, size = trials, prob = plogis(mu), log = TRUE))
+  return(log_likelihood)
 }
 #' @rdname llfE4_Q
 #' @export
@@ -1532,15 +1537,27 @@ llfL42_Q=function(x,nvec,dvec,yvec,qval,rho){
 
 #' @rdname llfE42_Q
 #' @export
-llfSM2_Q=function(x,nvec,dvec,yvec,qval,rho){
-  m = yvec/nvec #x[1:length(dvec)]
-  abet = m*((1/rho)-1)
-  bbet = (1.0 - m)*((1/rho)-1)
-
-  sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
-        lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
-        lgamma(bbet+1.0E-05) +
-        lgamma(abet+bbet+1.0E-05))
+# llfSM2_Q=function(x,nvec,dvec,yvec,qval,rho){
+#   m = yvec/nvec #x[1:length(dvec)]
+#   abet = m*((1/rho)-1)
+#   bbet = (1.0 - m)*((1/rho)-1)
+#
+#   sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
+#         lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
+#         lgamma(bbet+1.0E-05) +
+#         lgamma(abet+bbet+1.0E-05))
+# }
+llfSM2_Qc = function(b, Intercept, r_1_1, Y, trials, Xc, J_1, Z_1_1, N){
+  # Compute linear predictor for population-level effects
+  mu <- Intercept + Xc %*% b
+  # Compute linear predictor for group-level effects
+  # r_1_1 <- sd_1[1] * z_1[, 1]
+  for (n in 1:N) {
+    mu[n] <- mu[n] + r_1_1[J_1[n]] * Z_1_1[n]
+  }
+  # Compute log likelihood contribution from binomial logistic regression
+  log_likelihood <- sum(dbinom(Y, size = trials, prob = plogis(mu), log = TRUE))
+  return(log_likelihood)
 }
 #' @rdname llfE42_Q
 #' @export
