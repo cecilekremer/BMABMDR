@@ -546,7 +546,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     }else if(data.Q$data$is_betabin == 1){
 
       optSM <- rstan::optimizing(stanmodels$mSM_Qc, data = data.modstanSM, hessian = T, draws = ndraws)
-      llSM <- llfSM2_Qc(b = optSM$par[1], Intercept = optSM$par[length(optSM$par)],
+      llSM <- llfSM2_Q(b = optSM$par[1], Intercept = optSM$par[length(optSM$par)],
                         r_1_1 = optSM$par[(data.Q$data$N + 4):(2*data.Q$data$N + 3)],
                         Y = data.Q$data$y,
                         trials = data.Q$data$n, Xc = as.matrix(data.Q$data$x),
