@@ -1547,7 +1547,7 @@ llfL42_Q=function(x,nvec,dvec,yvec,qval,rho){
 #         lgamma(bbet+1.0E-05) +
 #         lgamma(abet+bbet+1.0E-05))
 # }
-llfSM2_Qc = function(b, Intercept, r_1_1, Y, trials, Xc, J_1, Z_1_1, N){
+llfSM2_Q = function(b, Intercept, r_1_1, Y, trials, Xc, J_1, Z_1_1, N){
   # Compute linear predictor for population-level effects
   mu <- Intercept + Xc %*% b
   # Compute linear predictor for group-level effects
