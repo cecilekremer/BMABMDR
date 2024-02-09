@@ -568,9 +568,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   }
 
   if(bf > 10){
-    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor in favor of saturated model is ', round(bf, 4), ').')
+    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
   }else{
-    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor in favor of saturated model is ', round(bf, 4), ').')
+    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
   }
 
   return(list(bayesFactor = bf,
