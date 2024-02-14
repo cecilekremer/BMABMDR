@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9081
+
+* fixed anydoseresponseQ()
+
 ## BMABMDR 0.0.0.9080
 
 * fixed error in modelTestQ()
