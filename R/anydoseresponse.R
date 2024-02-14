@@ -467,7 +467,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE){#}, use.mcmc = F
 
     data = data.frame(x = dose.a, y = y.a, n = n.a, litter = 1:length(dose.a))
 
-    data.modstanH0 = list(N = length((data$x)), Y = data$y, trials = data$n, N_1 = length(data$litter), M_1 = 1, J_1 = data$litter, Z_1_1 = data$x)
+    data.modstanH0 = list(N = length((data$x)), Y = data$y, trials = data$n, N_1 = length(data$litter), M_1 = 1, J_1 = data$litter, Z_1_1 = rep(1, length(data$x)))
     fitstanH0 = rstan::sampling(stanmodels$mH0_Qc, data = data.modstanH0, refresh = 0)
     fitstanH0
 
