@@ -295,12 +295,12 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   }else{
     # BMD.max <- maxDose
     BMD.max <- extended.value
-    if(maxDose <= 1){
-      BMD.max <- maxDose*extended.value
-    }
+    # if(maxDose <= 1){
+    #   BMD.max <- maxDose*extended.value
+    # }
   }
   BMD.mode <- 0.5
-  if(maxDose <= 1){BMD.mode <- maxDose/2}
+  # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -647,12 +647,12 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   }else{
     # BMD.max <- maxDose
     BMD.max <- extended.value
-    if(maxDose <= 1){
-      BMD.max <- maxDose*extended.value
-    }
+    # if(maxDose <= 1){
+    #   BMD.max <- maxDose*extended.value
+    # }
   }
   BMD.mode <- 0.5
-  if(maxDose <= 1){BMD.mode <- maxDose/2}
+  # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -1021,12 +1021,12 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   }else{
     # BMD.max <- maxDose
     BMD.max <- extended.value
-    if(maxDose <= 1){
-      BMD.max <- maxDose*extended.value
-    }
+    # if(maxDose <= 1){
+    #   BMD.max <- maxDose*extended.value
+    # }
   }
   BMD.mode <- 0.5
-  if(maxDose <= 1){BMD.mode <- maxDose/2}
+  # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -1453,12 +1453,12 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   }else{
     # BMD.max <- maxDose
     BMD.max <- extended.value
-    if(maxDose <= 1){
-      BMD.max <- maxDose*extended.value
-    }
+    # if(maxDose <= 1){
+    #   BMD.max <- maxDose*extended.value
+    # }
   }
   BMD.mode <- 0.5
-  if(maxDose <= 1){BMD.mode <- maxDose/2}
+  # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -1831,12 +1831,12 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   }else{
     # BMD.max <- maxDose
     BMD.max <- extended.value
-    if(maxDose <= 1){
-      BMD.max <- maxDose*extended.value
-    }
+    # if(maxDose <= 1){
+    #   BMD.max <- maxDose*extended.value
+    # }
   }
   BMD.mode <- 0.5
-  if(maxDose <= 1){BMD.mode <- maxDose/2}
+  # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
   ## If info on BMD is given
   if(!is.null(prior.BMD)){
@@ -2379,13 +2379,13 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     }else{
       # BMD.max <- rep(maxDose, nlevels)
       BMD.max <- rep(extended.value, nlevels)
-      if(maxDose <= 1){
-        BMD.max <- rep(maxDose*extended.value, nlevels)
-      }
+      # if(maxDose <= 1){
+      #   BMD.max <- rep(maxDose*extended.value, nlevels)
+      # }
     }
 
     BMD.mode <- rep(0.5, nlevels)
-    if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
+    # if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
 
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
@@ -2442,13 +2442,13 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     }else{
       # BMD.max <- maxDose
       BMD.max <- extended.value
-      if(maxDose <= 1){
-        BMD.max <- maxDose*extended.value
-      }
+      # if(maxDose <= 1){
+      #   BMD.max <- maxDose*extended.value
+      # }
     }
 
     BMD.mode <- 0.5
-    if(maxDose <= 1){BMD.mode <- maxDose/2}
+    # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
@@ -3160,13 +3160,13 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     }else{
       # BMD.max <- rep(maxDose, nlevels)
       BMD.max <- rep(extended.value, nlevels)
-      if(maxDose <= 1){
-        BMD.max <- rep(maxDose*extended.value, nlevels)
-      }
+      # if(maxDose <= 1){
+      #   BMD.max <- rep(maxDose*extended.value, nlevels)
+      # }
     }
 
     BMD.mode <- rep(0.5, nlevels)
-    if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
+    # if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
 
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
@@ -3223,13 +3223,13 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     }else{
       # BMD.max <- maxDose
       BMD.max <- extended.value
-      if(maxDose <= 1){
-        BMD.max <- maxDose*extended.value
-      }
+      # if(maxDose <= 1){
+      #   BMD.max <- maxDose*extended.value
+      # }
     }
 
     BMD.mode <- 0.5
-    if(maxDose <= 1){BMD.mode <- maxDose/2}
+    # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
@@ -3671,12 +3671,12 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     }else{
       # BMD.max <- rep(maxDose, nlevels)
       BMD.max <- rep(extended.value, nlevels)
-      if(maxDose <= 1){
-        BMD.max <- rep(maxDose*extended.value, nlevels)
-      }
+      # if(maxDose <= 1){
+      #   BMD.max <- rep(maxDose*extended.value, nlevels)
+      # }
     }
     BMD.mode <- rep(0.5, nlevels)
-    if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
+    # if(maxDose <= 1){BMD.mode <- rep(maxDose/2, nlevels)}
 
 
     ## If info on BMD is given (STILL HAS TO BE ADAPTED TO COVARIATE EFFECT)
@@ -3730,12 +3730,12 @@ PREP_DATA_Q_COV <- function(data, # a dataframe with input data, order of column
     }else{
       # BMD.max <- maxDose
       BMD.max <- extended.value
-      if(maxDose <= 1){
-        BMD.max <- maxDose*extended.value
-      }
+      # if(maxDose <= 1){
+      #   BMD.max <- maxDose*extended.value
+      # }
     }
     BMD.mode <- 0.5
-    if(maxDose <= 1){BMD.mode <- maxDose/2}
+    # if(maxDose <= 1){BMD.mode <- maxDose/2}
 
     ## If info on BMD is given
     if(!is.null(prior.BMD)){
