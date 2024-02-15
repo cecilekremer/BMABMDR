@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9082
+
+* fixed dataprep for maxDose<1
+
 ## BMABMDR 0.0.0.9081
 
 * fixed anydoseresponseQ()
