@@ -1747,12 +1747,12 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     dose.a = dose.a/maxDose
   }
 
-  ## Check if each litter contains >1 observation
-  if(cluster == TRUE){
-    if(0 %in% n.a || 1 %in% n.a){
-      stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
-    }
-  }
+  # ## Check if each litter contains >1 observation
+  # if(cluster == TRUE){
+  #   if(0 %in% n.a || 1 %in% n.a){
+  #     stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
+  #   }
+  # }
 
 
   datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)

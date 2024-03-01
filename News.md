@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9083
+
+* allow litters of size 1 for clustered quantal data
+
 ## BMABMDR 0.0.0.9082
 
 * fixed dataprep for maxDose<1
