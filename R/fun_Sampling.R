@@ -2393,7 +2393,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.LN$data$n)))
           BIC.SM = - 2 * llSM + ((data.LN$data$N + 1) * log(sum(data.LN$data$n)))
 
-          bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in factor of SM if bf < 1/10
+          bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in favor of SM if bf < 1/10
 
 
         }
@@ -2402,7 +2402,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
       }else{
 
-        bf.mods <- c(bf.mods, 1/bf.fit)
+        bf.mods <- c(bf.mods, NA)
 
       }
     }
