@@ -208,7 +208,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
     # print(means.SM);  print(pars.SM); print(pars.bestfit); print(llSM); print(llBestfit); print(best.fit)
 
-    bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in factor of SM if bf < 1/10
+    bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in favor of SM if bf < 1/10
 
     if(bf < 1/10){
       warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
