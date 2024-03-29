@@ -16,6 +16,7 @@
 #' @param treedepth default 10
 #' @param seed random seed, default 123
 #' @param pvec vector specifying the three BMD quantiles of interest (default 90% CrI)
+#' @param testallmodels logical specifying whether all model fits should be compared to a saturated model (default FALSE)
 #'
 #' @description Using MCMC, we compute the parameters of each model, perform model averaging using bridge sampling.
 #'              We also implemented a Hybrid Laplace method within this function where the model parameters are estimated
@@ -116,7 +117,8 @@
 sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                      ndraws = 30000,nrchains=3,
                      nriterations=3000,warmup=1000,
-                     delta=0.8,treedepth=10,seed=123,pvec=c(0.05,0.5,0.95)){
+                     delta=0.8,treedepth=10,seed=123,pvec=c(0.05,0.5,0.95),
+                     testallmodels = FALSE){
 
 
   # if(data.N$increasing == TRUE){
@@ -2348,6 +2350,65 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
   warning(bfTest$warn.bf)
 
+  bf.mods <- c()
+  if(testallmodels == TRUE){
+
+    for(i in 1:16){
+
+      if(weight[i] > 0){
+
+        best.fit <- modelnames[i]
+        stanBest <- get(paste0('fitstan', best.fit))
+        pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5")]
+        # normal models
+        if(i < 9){
+          if(data.N$data$is_increasing == 1){
+            llfun = paste0('llf',best.fit,'I')
+          }else if(data.N$data$is_decreasing == 1){
+            llfun = paste0('llf',best.fit,'D')
+          }
+          llBestfitf = get(llfun)
+          llBestfit = llBestfitf(x = pars.bestfit, data.N$data$n, data.N$data$x, data.N$data$m, data.N$data$s2, data.N$data$q)
+
+          llSM = llfSM_N(bfTest$pars.SM, data.N$data$n, data.N$data$x, data.N$data$m, data.N$data$s2)
+
+          BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.N$data$n)))
+          BIC.SM = - 2 * llSM + ((data.N$data$N + 1) * log(sum(data.N$data$n)))
+
+          bf.fit = exp(-0.5 * (BIC.bestfit - BIC.SM))
+
+          # lognormal models
+        }else{
+
+          if(data.LN$data$is_increasing == 1){
+            llfun = paste0('llf',best.fit,'I')
+          }else if(data.LN$data$is_decreasing == 1){
+            llfun = paste0('llf',best.fit,'D')
+          }
+          llBestfitf = get(llfun)
+          llBestfit = llBestfitf(x = pars.bestfit, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$q, data.LN$data$shift)
+
+          llSM = llfSM_LN(x = bfTest$pars.SM, data.LN$data$n, data.LN$data$x, data.LN$data$m, data.LN$data$s2, data.LN$data$shift)
+
+          BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.LN$data$n)))
+          BIC.SM = - 2 * llSM + ((data.LN$data$N + 1) * log(sum(data.LN$data$n)))
+
+          bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in factor of SM if bf < 1/10
+
+
+        }
+
+        bf.mods <- c(bf.mods, 1/bf.fit)
+
+      }else{
+
+        bf.mods <- c(bf.mods, 1/bf.fit)
+
+      }
+    }
+
+  }
+
   ret_results <- list(E4_N=E4outNI,IE4_N=IE4outNI,H4_N=H4outNI,LN4_N=LN4outNI,
                       G4_N=G4outNI,QE4_N=QE4outNI,P4_N=P4outNI,L4_N=L4outNI,
                       E4_LN=E4outLNI,IE4_LN=IE4outLNI,H4_LN=H4outLNI,LN4_LN=LN4outLNI,
@@ -2396,6 +2457,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       models_included_bridge = modelnames[p.weights > 0],
                       models_included_laplace = modelnames[lpwlp > 0],
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
+                      bf.mods = bf.mods,
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       shift = data.LN$data$shift,
