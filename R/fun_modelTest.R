@@ -454,7 +454,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
               # par.best = pars.bestfit,
               # BIC.bestfit = BIC.bestfit,
               # BIC.SM = BIC.SM,
-              llSM = llSM,
+              pars.SM = pars.SM,
+              # llSM = llSM,
               warn.bf = warn.bf)
   )
 

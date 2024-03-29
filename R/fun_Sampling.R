@@ -2479,7 +2479,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                       ndraws = 30000,nrchains=3,
                       nriterations=3000,warmup=1000,
-                      delta=0.8,treedepth=10,seed=123,pvec=c(0.05,0.5,0.95)){
+                      delta=0.8,treedepth=10,seed=123,pvec=c(0.05,0.5,0.95),
+                      testallmodels = FALSE){
 
 
   # if(data.N$increasing == TRUE){
@@ -4759,6 +4760,88 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   bfTest <- modelTestC(best.fit, data.N, data.LN, get(paste0('fitstan', best.fit)), type = 'MCMC',
                        seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
   warning(bfTest$warn.bf)
+
+  bf.mods <- c()
+  if(testallmodels == TRUE){
+
+    for(i in 1:16){
+
+      if(weight[i] > 0){
+
+        best.fit <- modelnames[i]
+        stanBest <- get(paste0('fitstan', best.fit))
+        pars.bestfit = apply(as.matrix(stanBest),2,median)[c("par1","par2","par3","par4","par5","par6")]
+        # normal models
+        if(i < 9){
+
+          if(data.N$data$is_increasing == 1){
+            llfun = paste0('llf',best.fit,'Ic')
+          }else if(data.N$data$is_decreasing == 1){
+            llfun = paste0('llf',best.fit,'Dc')
+          }
+          llBestfitf = get(llfun)
+          llBestfit = llBestfitf(x = pars.bestfit,
+                                 d=data.N$data$x,
+                                 n=data.N$data$n,
+                                 nij=data.N$data$nij,
+                                 y=data.N$data$y,
+                                 qval=data.N$data$q)
+
+          llSM = llfSM_Nc(pars.SM,
+                          d=data.N$data$x,
+                          n=data.N$data$n,
+                          nij=data.N$data$nij,
+                          y=data.N$data$y,
+                          qval=data.N$data$q)
+
+          BIC.bestfit = - 2 * llBestfit + (6 * log(sum(data.N$data$y!=0)))
+          BIC.SM = - 2 * llSM + ((data.N$data$N + 2) * log(sum(data.N$data$y!=0)))
+
+          bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
+
+          # lognormal models
+        }else{
+
+          if(data.LN$data$is_increasing == 1){
+            llfun = paste0('llf',best.fit,'Ic')
+          }else if(data.LN$data$is_decreasing == 1){
+            llfun = paste0('llf',best.fit,'Dc')
+          }
+          llBestfitf = get(llfun)
+          llBestfit = llBestfitf(x = pars.bestfit,
+                                 d=data.LN$data$x,
+                                 n=data.LN$data$n,
+                                 nij=data.LN$data$nij,
+                                 y=data.LN$data$y,
+                                 qval=data.LN$data$q,
+                                 shift=data.LN$data$shift)
+
+          llSM = llfSM_LNc(pars.SM,
+                           d=data.LN$data$x,
+                           n=data.LN$data$n,
+                           nij=data.LN$data$nij,
+                           y=data.LN$data$y,
+                           qval=data.LN$data$q,
+                           shift=data.LN$data$shift)
+
+          BIC.bestfit = - 2 * llBestfit + (6 * log(sum(data.LN$data$y!=0)))
+          BIC.SM = - 2 * llSM + ((data.LN$data$N + 2) * log(sum(data.LN$data$y!=0)))
+
+          bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
+
+
+        }
+
+        bf.mods <- c(bf.mods, 1/bf.fit)
+
+      }else{
+
+        bf.mods <- c(bf.mods, NA)
+
+      }
+    }
+
+  }
 
   ret_results <- list(E4_N=E4outNI,IE4_N=IE4outNI,H4_N=H4outNI,LN4_N=LN4outNI,
                       G4_N=G4outNI,QE4_N=QE4outNI,P4_N=P4outNI,L4_N=L4outNI,
