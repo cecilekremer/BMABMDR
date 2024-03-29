@@ -2,6 +2,10 @@
 
 ## BMABMDR 0.0.0.9083
 
+* implemented modelTest w/ possibility to test each model against saturated model
+
+## BMABMDR 0.0.0.9083
+
 * allow litters of size 1 for clustered quantal data
 
 ## BMABMDR 0.0.0.9082

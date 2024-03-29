@@ -220,11 +220,13 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
   }
 
-  return(list(bayesFactor = bf,
-              means.SM = means.SM,
-              par.best = pars.bestfit,
-              BIC.bestfit = BIC.bestfit,
-              BIC.SM = BIC.SM,
+  return(list(bayesFactor = 1/bf,
+              # means.SM = means.SM,
+              # par.best = pars.bestfit,
+              # BIC.bestfit = BIC.bestfit,
+              # BIC.SM = BIC.SM,
+              pars.SM = pars.SM,
+              # llSM = llSM,
               warn.bf = warn.bf)
   )
 
@@ -447,11 +449,12 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
   }
 
-  return(list(bayesFactor = bf,
-              means.SM = means.SM,
-              par.best = pars.bestfit,
-              BIC.bestfit = BIC.bestfit,
-              BIC.SM = BIC.SM,
+  return(list(bayesFactor = 1/bf,
+              # means.SM = means.SM,
+              # par.best = pars.bestfit,
+              # BIC.bestfit = BIC.bestfit,
+              # BIC.SM = BIC.SM,
+              llSM = llSM,
               warn.bf = warn.bf)
   )
 
@@ -578,6 +581,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
               # par.best = pars.bestfit,
               # BIC.bestfit = BIC.bestfit,
               # BIC.SM = BIC.SM,
+              llSM = llSM,
               warn.bf = warn.bf)
   )
 
