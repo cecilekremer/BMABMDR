@@ -1,5 +1,13 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.0.0.9085
+
+* fixed error in covariate analysis when using only lognormal distribution
+
+## BMABMDR 0.0.0.9084
+
+* updated modelTest w/ possibility to test each model against saturated model
+
 ## BMABMDR 0.0.0.9083
 
 * implemented modelTest w/ possibility to test each model against saturated model
