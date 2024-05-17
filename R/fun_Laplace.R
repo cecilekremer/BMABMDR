@@ -4513,17 +4513,18 @@ full.laplace_MA_Cov = function(data, # the summary data
 
   out.stop = 'ok'
 
+  data_NCOV_all <- PREP_DATA_NCOV(
+    data = data,
+    sumstats = sumstats,
+    sd = sd,
+    q = q,
+    prior.d = prior.d,
+    extended = extended,
+    extended.value = extended.value,
+    covariate = 'all'
+  )
+
   if(1 %in% prior.weights[1:8]){
-    data_NCOV_all <- PREP_DATA_NCOV(
-      data = data,
-      sumstats = sumstats,
-      sd = sd,
-      q = q,
-      prior.d = prior.d,
-      extended = extended,
-      extended.value = extended.value,
-      covariate = 'all'
-    )
 
     data_NCOV_asigma2 <- PREP_DATA_NCOV(
       data = data,
