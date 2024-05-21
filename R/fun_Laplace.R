@@ -4524,6 +4524,13 @@ full.laplace_MA_Cov = function(data, # the summary data
     covariate = 'all'
   )
 
+  data_N_noCOV <- PREP_DATA_N(data = data,
+                              sumstats = sumstats,
+                              sd = sd,
+                              q = q,
+                              prior.d = prior.d,
+                              extended = extended)
+
   if(1 %in% prior.weights[1:8]){
 
     data_NCOV_asigma2 <- PREP_DATA_NCOV(
@@ -4548,12 +4555,6 @@ full.laplace_MA_Cov = function(data, # the summary data
       covariate = 'BMD_d'
     )
 
-    data_N_noCOV <- PREP_DATA_N(data = data,
-                                sumstats = sumstats,
-                                sd = sd,
-                                q = q,
-                                prior.d = prior.d,
-                                extended = extended)
   }
 
   if(1 %in% prior.weights[9:16]){
