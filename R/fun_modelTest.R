@@ -530,6 +530,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   # BF_brms_bridge = bridgesampling::bf(bridge_H0,bridge_SM)
   BF_brms_bridge = bridgesampling::bf(bridge_SM, bridge_best) # BF in favor of SM
   bf = BF_brms_bridge$bf
+  llSM = NA
 
   } else if(type == 'Laplace'){
 
