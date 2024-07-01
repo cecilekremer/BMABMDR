@@ -19,6 +19,7 @@
 basic.plot <- function(x, model_name, increasing){
 
   covar <- as.factor(unique(x$data[,5]))
+  x$data$cov <- as.factor(x$data$cov)
   temp <- temp1 <- temp2 <- temp3 <- NULL
   x$data$geom.y <- NtoLN(x$data$y, x$data$s)[1:dim(x$data)[1]]
   x$data$geom.s <- NtoLN(x$data$y, x$data$s)[(dim(x$data)[1]+1):(2*dim(x$data)[1])]
