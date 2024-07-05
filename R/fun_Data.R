@@ -2350,6 +2350,11 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
   # dim(a.vec) <- nlevels_a
   # dim(c.vec) <- nlevels_c
 
+  if(obs.min[1] < obs.max[1]){
+    bmr = q
+  }else{
+    bmr = -q
+  }
 
   if(covariate == 'BMD_d' | covariate == 'all') {
 
@@ -2366,7 +2371,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       }else{
         RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
                             predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-          (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+          (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
         bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
         bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
       }
@@ -2430,7 +2435,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     }else{
       RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
                           predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
       bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
       bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
     }
@@ -3131,6 +3136,11 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
   # dim(a.vec) <- nlevels_a
   # dim(c.vec) <- nlevels_c
 
+  if(obs.min[1] < obs.max[1]){
+    bmr = q
+  }else{
+    bmr = -q
+  }
 
   if(covariate == 'BMD_d' | covariate == 'all') {
 
@@ -3147,7 +3157,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       }else{
         RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
                             predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-          (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+          (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
         bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
         bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
       }
@@ -3211,7 +3221,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     }else{
       RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
                           predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
-        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))-q
+        (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
       bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
       bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
     }

@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.1.1
+
+* changed mistake in BMD start value calculation in covariate analysis
+
 ## BMABMDR 0.1.0
 
 * fixed error in basic.plot()

@@ -299,6 +299,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
     prior.weightsCov[1] <- 0
     ll_asigma2 <- NA
   }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$theta_tilde))){
+  # }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$par))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_asigma2 <- NA
