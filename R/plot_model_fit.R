@@ -90,10 +90,14 @@ basic.plot <- function(x, model_name, increasing){
                   paste0('par2[',i,']'),
                   'par3',
                   paste0('par4[',i,']'))
+
+        dgr <- (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose
+        # dgr2 <- dgr[dgr > (x$data$x2[1] - ((x$data$x2[1] - dgr[1])/2))]
+
         if(grepl('_LN',model_name)){
-          temp1 <- c(temp1, exp(DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift)))
+          temp1 <- c(temp1, exp(DRM(par = model_pars[pars], dgr, x$q, x$shift)))
         }else{
-          temp1 <- c(temp1, DRM(par = model_pars[pars], (10^(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))))/maxDose, x$q, x$shift))
+          temp1 <- c(temp1, DRM(par = model_pars[pars], dgr, x$q, x$shift))
         }
       }
       if(grepl('_LN',model_name)){
@@ -108,9 +112,14 @@ basic.plot <- function(x, model_name, increasing){
           #               size = 1, width = NA, linetype = 'dotted') + #, position = position_dodge(width=0.2)) +
           scale_x_continuous(trans = 'identity', labels = plot.labs, breaks = plot.breaks)
       }else{
+        # dgrplot <- log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01))
+        # dgrplot <- dgrplot[dgrplot > (x$data$x2[1])]
         dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
                                y = temp1,
                                cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
+        # dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)),
+        #                        y = temp1,
+        #                        cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
           geom_point(data = x$data, aes(x = x2, y = y + s, colour = cov, fill = cov), shape = 25) +

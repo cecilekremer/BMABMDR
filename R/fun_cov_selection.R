@@ -293,7 +293,8 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
 
   # fit all four submodels
   optMod_asigma2 <- fun_optimCov(model, data_asigma2$data,
-                                 data_asigma2$start, ndraws, seed, pvec)
+                                 data_asigma2$start,
+                                 ndraws, seed, pvec)
 
   if(is.na(optMod_asigma2[1][1])){
     prior.weightsCov[1] <- 0
