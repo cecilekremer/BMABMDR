@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.1.2
+
+* fixed start value BMD if 0
+
 ## BMABMDR 0.1.1
 
 * changed mistake in BMD start value calculation in covariate analysis
