@@ -1,5 +1,11 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.1.3
+
+* fixed covariates likelihood fold change parameter
+
+* fixed null model start values
+
 ## BMABMDR 0.1.2
 
 * fixed start value BMD if 0

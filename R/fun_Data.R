@@ -2376,13 +2376,13 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
       if(class(fpfit)[1] == 'try-error'){
         message('could not fit fractional polynomial, BMD start value is set to 0.05')
-        bmd.sv[i] = 0.05
+        bmd.sv[i] = 0.5
       }else{
         RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
                             predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
           (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
         bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-        bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+        bmd.sv[i]=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.5)
         bmd.sv[i]=ifelse(bmd.sv[i] < 0.001, 0.001, bmd.sv[i])
 
       }
@@ -2442,13 +2442,13 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
     if(class(fpfit)[1] == 'try-error'){
       message('could not fit fractional polynomial, BMD start value is set to 0.05')
-      bmd.sv = 0.05
+      bmd.sv = 0.5
     }else{
       RISK=function(x) (predict(fpfit,newdata=data.frame(xx=c((x))),data=datf)-
                           predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf))/
         (predict(fpfit,newdata=data.frame(xx=c(0.00000000000001)),data=datf)) - bmr
       bmd.svh=try(uniroot(RISK, interval=c(0,1))$root,silent=T)
-      bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.05)
+      bmd.sv=ifelse((mode(bmd.svh)=="numeric"),(bmd.svh),0.5)
       bmd.sv=ifelse(bmd.sv < 0.001, 0.001, bmd.sv)
 
     }
