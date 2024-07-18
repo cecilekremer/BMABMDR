@@ -2159,6 +2159,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
         if(flat(dose.a, mean.a, n.a, inc=F) == F & is.null(maxy)){
           mode.max[i] = 0.5*obs.max[i]
           min.max[i]  = 0.1*obs.max[i]
+          # min.max[i] = 0.001
           max.max[i] = obs.min[i]*(1-q-0.01)
         }
 
@@ -2281,6 +2282,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       if(flat(dose.a2, mean.a2, n.a2, inc=F) == F & is.null(maxy)){
         mode.max = 0.5*obs.max
         min.max = 0.1*obs.max
+        # min.max = 0.001
         max.max = obs.min*(1-q-0.01)
       }
 
@@ -2949,6 +2951,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
         if(flat(dose.a, mean.a, n.a, inc=F) == F & is.null(maxy)){
           mode.max[i] = 0.5*obs.max[i]
           min.max[i]  = 0.1*obs.max[i]
+          # min.max[i] = 0.001
           max.max[i] = obs.min[i]*(1-q-0.01)
         }
 
@@ -3071,6 +3074,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       if(flat(dose.a2, mean.a2, n.a2, inc=F) == F & is.null(maxy)){
         mode.max = 0.5*obs.max
         min.max = 0.1*obs.max
+        # min.max = 0.001
         max.max = obs.min*(1-q-0.01)
       }
 
