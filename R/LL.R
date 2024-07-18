@@ -1631,7 +1631,7 @@ llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.E4_NI(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
+                             0.5*n*((m - DRM.E4_NI(c(a[mn], bmd[1], c[mn], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -1642,7 +1642,7 @@ llfE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.E4_NI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval))^2)*
+                             0.5*n*((m - DRM.E4_NI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -1702,7 +1702,7 @@ llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.IE4_NI(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
+                             0.5*n*((m - DRM.IE4_NI(c(a[mn], bmd[1], c[mn], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -1713,7 +1713,7 @@ llfIE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.IE4_NI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval))^2)*
+                             0.5*n*((m - DRM.IE4_NI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -1773,7 +1773,7 @@ llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m-DRM.H4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m-DRM.H4_NI(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -1784,7 +1784,7 @@ llfH4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m-DRM.H4_NI(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m-DRM.H4_NI(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -1844,7 +1844,7 @@ llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.LN4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.LN4_NI(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -1855,7 +1855,7 @@ llfLN4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m-DRM.LN4_NI(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m-DRM.LN4_NI(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -1915,7 +1915,7 @@ llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.G4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.G4_NI(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -1926,7 +1926,7 @@ llfG4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.G4_NI(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.G4_NI(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -1986,7 +1986,7 @@ llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.QE4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.QE4_NI(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -1997,7 +1997,7 @@ llfQE4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.QE4_NI(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.QE4_NI(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2057,7 +2057,7 @@ llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.P4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.P4_NI(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -2068,7 +2068,7 @@ llfP4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.P4_NI(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.P4_NI(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2127,7 +2127,7 @@ llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.L4_NI(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.L4_NI(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -2138,7 +2138,7 @@ llfL4_NI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.L4_NI(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.L4_NI(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2198,7 +2198,7 @@ llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.E4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.E4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2209,7 +2209,7 @@ llfE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.E4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.E4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2271,7 +2271,7 @@ llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.IE4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.IE4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2282,7 +2282,7 @@ llfIE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.IE4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.IE4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2342,7 +2342,7 @@ llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.H4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.H4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2353,7 +2353,7 @@ llfH4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.H4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.H4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2414,7 +2414,7 @@ llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.LN4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.LN4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2425,7 +2425,7 @@ llfLN4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.LN4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.LN4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2485,7 +2485,7 @@ llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.G4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.G4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2496,7 +2496,7 @@ llfG4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.G4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.G4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2556,7 +2556,7 @@ llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.QE4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.QE4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2567,7 +2567,7 @@ llfQE4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.QE4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.QE4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2628,7 +2628,7 @@ llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.P4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.P4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2639,7 +2639,7 @@ llfP4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.P4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.P4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2700,7 +2700,7 @@ llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.L4_LNI(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.L4_LNI(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -2711,7 +2711,7 @@ llfL4_LNI_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.L4_LNI(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.L4_LNI(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2771,7 +2771,7 @@ llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.E4_ND(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
+                             0.5*n*((m - DRM.E4_ND(c(a[mn], bmd[1], c[mn], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -2782,7 +2782,7 @@ llfE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.E4_ND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval))^2)*
+                             0.5*n*((m - DRM.E4_ND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2842,7 +2842,7 @@ llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.IE4_ND(c(a[mn], bmd[1], c[1], d[1]), x, qval))^2)*
+                             0.5*n*((m - DRM.IE4_ND(c(a[mn], bmd[1], c[mn], d[1]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -2853,7 +2853,7 @@ llfIE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.IE4_ND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval))^2)*
+                             0.5*n*((m - DRM.IE4_ND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2913,7 +2913,7 @@ llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m-DRM.H4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m-DRM.H4_ND(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -2924,7 +2924,7 @@ llfH4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m-DRM.H4_ND(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m-DRM.H4_ND(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -2984,7 +2984,7 @@ llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.LN4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.LN4_ND(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -2995,7 +2995,7 @@ llfLN4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m-DRM.LN4_ND(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m-DRM.LN4_ND(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3055,7 +3055,7 @@ llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.G4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.G4_ND(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -3066,7 +3066,7 @@ llfG4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.G4_ND(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.G4_ND(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3126,7 +3126,7 @@ llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.QE4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.QE4_ND(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -3137,7 +3137,7 @@ llfQE4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.QE4_ND(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.QE4_ND(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3197,7 +3197,7 @@ llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.P4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.P4_ND(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -3208,7 +3208,7 @@ llfP4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.P4_ND(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.P4_ND(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3267,7 +3267,7 @@ llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m - DRM.L4_ND(c(a[mn], bmd[1], c[1], d[1]),x,qval))^2)*
+                             0.5*n*((m - DRM.L4_ND(c(a[mn], bmd[1], c[mn], d[1]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
 
     }
@@ -3278,7 +3278,7 @@ llfL4_ND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 'B
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m- DRM.L4_ND(c(a[mn], bmd[mn], c[1], d[mn]),x,qval))^2)*
+                             0.5*n*((m- DRM.L4_ND(c(a[mn], bmd[mn], c[mn], d[mn]),x,qval))^2)*
                              exp(s[mn]))*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3338,7 +3338,7 @@ llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.E4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.E4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3349,7 +3349,7 @@ llfE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.E4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.E4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3411,7 +3411,7 @@ llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.IE4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.IE4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3422,7 +3422,7 @@ llfIE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.IE4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.IE4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3482,7 +3482,7 @@ llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.H4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.H4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3493,7 +3493,7 @@ llfH4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.H4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.H4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3554,7 +3554,7 @@ llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.LN4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.LN4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3565,7 +3565,7 @@ llfLN4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.LN4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.LN4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3625,7 +3625,7 @@ llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.G4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.G4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3636,7 +3636,7 @@ llfG4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.G4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.G4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3696,7 +3696,7 @@ llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.QE4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.QE4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3707,7 +3707,7 @@ llfQE4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', 
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.QE4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.QE4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3768,7 +3768,7 @@ llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.P4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.P4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3779,7 +3779,7 @@ llfP4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.P4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.P4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
@@ -3840,7 +3840,7 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.L4_LND(c(a[mn], bmd[1], c[1], d[1]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.L4_LND(c(a[mn], bmd[1], c[mn], d[1]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
 
     }
@@ -3851,7 +3851,7 @@ llfL4_LND_Cov = function(pars, x, n, m, s2, qval, shift, covar = c('a_sigma2', '
     for(mn in 1:nlevels){
       ll.level[mn] <- sum((-0.5*n*log(2*pi)+0.5*n*s[mn]-
                              0.5*(n-1)*s2*exp(s[mn])-
-                             0.5*n*((m+shift - DRM.L4_LND(c(a[mn], bmd[mn], c[1], d[mn]), x, qval, shift))^2)*
+                             0.5*n*((m+shift - DRM.L4_LND(c(a[mn], bmd[mn], c[mn], d[mn]), x, qval, shift))^2)*
                              exp(s[mn]))*trt_ind[,mn]) - sum((m+shift)*n*trt_ind[,mn])
     }
     ll <- sum(ll.level)
