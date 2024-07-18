@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.1.4
+
+* added option for informative priors in covariate analysis (not to be included in WebApp)
+
 ## BMABMDR 0.1.3
 
 * fixed covariates likelihood fold change parameter
