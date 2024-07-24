@@ -1,5 +1,9 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+## BMABMDR 0.1.5
+
+* included option to compare all Quantal models to saturated model
+
 ## BMABMDR 0.1.4
 
 * added option for informative priors in covariate analysis (not to be included in WebApp)

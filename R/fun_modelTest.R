@@ -511,11 +511,6 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
                                    control = list(adapt_delta = delta, max_treedepth =treedepth),
                                    show_messages = F, refresh = 0)
 
-
-
-
-
-
     }else if(data.Q$data$is_betabin == 1){
 
       fitstanSM = rstan::sampling(stanmodels$mSM_Qc, data = data.modstanSM, iter = nriterations,

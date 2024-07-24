@@ -4900,7 +4900,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       ndraws = 30000,nrchains=3,
                       nriterations=5000,warmup=1000,
-                      delta=0.8,treedepth=10,seed=123,pvec=c(0.025,0.5,0.975)){
+                      delta=0.8,treedepth=10,seed=123,pvec=c(0.025,0.5,0.975),
+                      testallmodels = FALSE){
 
   prior.weights.orig = prior.weights
 
@@ -6354,6 +6355,61 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                        seed, ndraws, nrchains, nriterations, warmup, delta, treedepth)
   #print(warning(bfTest$warn.bf))
 
+  bf.mods <- c()
+  if(testallmodels == TRUE){
+
+    dose.a = data.Q$data$x
+    y.a = data.Q$data$y
+    n.a = data.Q$data$n
+
+    if(length(data.Q$data$x) != length(unique(data.Q$data$x))){
+      dose = sort(unique(data.Q$data$x))
+      N = length(dose)
+      y=rep(NA,N)
+      n=rep(NA,N)
+      for (iu in (1:N)){
+        y[iu] = sum(data.Q$data$y[data.Q$data$x == dose[iu]])
+        n[iu] = sum(data.Q$data$n[data.Q$data$x == dose[iu]])
+      }
+      y.a = y
+      dose.a = dose
+      n.a = n
+    }
+
+    N <- length(unique(data.Q$data$x))
+    Ndose <- length(unique(dose.a))
+
+    data.modstanSM = list(N = N, Y = y.a, trials = n.a, K = 2, X = cbind(rep(1, N), dose.a), Kc = 1)
+
+    fitstanSM <- rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, iter = nriterations,
+                                 chains = nrchains, warmup = warmup, seed = seed,
+                                 control = list(adapt_delta = delta, max_treedepth =treedepth),
+                                 show_messages = F, refresh = 0)
+
+    for(i in 1:8){
+
+      if(weight[i] > 0){
+
+        best.fit <- modelnames[i]
+        stanBest <- get(paste0('fitstan', best.fit, '_Q'))
+
+        bridge_best <- bridgesampling::bridge_sampler(stanBest, silent=T)
+        bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
+        # BF_brms_bridge = bridgesampling::bf(bridge_H0,bridge_SM)
+        BF_brms_bridge = bridgesampling::bf(bridge_SM, bridge_best) # BF in favor of SM
+        bf.fit = BF_brms_bridge$bf
+
+        bf.mods <- c(bf.mods, bf.fit)
+
+      }else{
+
+        bf.mods <- c(bf.mods, NA)
+
+      }
+    }
+
+  }
+
   ## Covariances
   covs = t(data.frame(
     E4_Q = E4covQ,
@@ -6421,6 +6477,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       is_bin = data.Q$data$is_bin,
                       is_betabin = data.Q$data$is_betabin,
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
+                      bf.mods = bf.mods,
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       w.msg = w.msg, p.msg = p.msg
