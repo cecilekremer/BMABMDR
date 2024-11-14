@@ -2393,7 +2393,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
           BIC.bestfit = - 2 * llBestfit + (5 * log(sum(data.LN$data$n)))
           BIC.SM = - 2 * llSM + ((data.LN$data$N + 1) * log(sum(data.LN$data$n)))
 
-          bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in favor of SM if bf < 1/10
+          bf.fit = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in favor of SM if bf < 1/10
 
 
         }
@@ -4900,7 +4900,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       ndraws = 30000,nrchains=3,
                       nriterations=5000,warmup=1000,
-                      delta=0.8,treedepth=10,seed=123,pvec=c(0.025,0.5,0.975),
+                      delta=0.8,treedepth=10,seed=123,pvec=c(0.05,0.5,0.95),
                       testallmodels = FALSE){
 
   prior.weights.orig = prior.weights

@@ -381,7 +381,7 @@ DRM.L4_LND=function(par,x,q,shift){
   c = logit((log(mu_inf)-shift)/(log(mu_0)-shift));
   d = exp(par[4])
   k = log(par[2])
-  b=exp(-k*d)*(logit(expit(c)-log(1-q)/a)-c)
+  b=exp(-k*d)*(logit(expit(c)-(log(1-q)/a))-c)
   (a*(1+expit(c)))-(a*expit(c+(b*(x^d)))) + shift
 }
 

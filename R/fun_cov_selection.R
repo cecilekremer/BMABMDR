@@ -43,6 +43,7 @@ fun.w <- function(optMod, lld, min.ll, nlevels,
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
     bmd <- pars[nmpar == "par2"]
+    # c <- pars[nmpar == "c"]
     c <- pars[nmpar == "par3"]
     d <- pars[nmpar == "par4"]
     s2 <- pars[nmpar == "par5"]
@@ -68,7 +69,7 @@ fun.w <- function(optMod, lld, min.ll, nlevels,
                 # BMD
                 mc2d::dpert(bmd, min = dataMod$data$priorlb[2,1], max = dataMod$data$priorub[2,1],
                             mode = dataMod$data$priormu[2,1], shape = dataMod$data$shape.BMD)*
-                # c
+                # par3
                 mc2d::dpert(c, min = dataMod$data$priorlb[3,], max = dataMod$data$priorub[3,],
                             mode = dataMod$data$priormu[3,], shape = dataMod$data$shape.c))
 
@@ -158,6 +159,7 @@ fun.w.QE4 <- function(optMod, lld, min.ll, nlevels,
     a <- pars[nmpar == "par1"]
     #b <- pars[nmpar == "b"]
     bmd <- pars[nmpar == "par2"]
+    # c <- pars[nmpar == "c"]
     c <- pars[nmpar == "par3"]
     d <- pars[nmpar == "par4"]
     s2 <- pars[nmpar == "par5"]
@@ -300,7 +302,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
     prior.weightsCov[1] <- 0
     ll_asigma2 <- NA
   }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$theta_tilde))){
-  # }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$par))){
+    # }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$par))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_asigma2 <- NA
@@ -366,7 +368,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
                       m = data_none$data$m, s2 = data_none$data$s2,
                       qval = data_none$data$q, shift = data_none$data$shift, covar = 'none',
                       nlevels = 1,
-                      trt_ind = data_none$data$trt_ind)
+                      trt_ind = data_all$data$trt_ind)
   }
 
   lls <- c(ll_asigma2, ll_dBMD, ll_all, ll_none)
@@ -429,31 +431,37 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
       lpw.sub=(prior.weightsCov*w)/sum(prior.weightsCov*w)
     }
 
-    if(max(lpw.sub) == lpw.sub[4]){
-      best.submodel <- optMod_none
-      best.submodel.name <- 'none'
-    }else if(max(lpw.sub) == lpw.sub[1]){
-      best.submodel <- optMod_asigma2
-      best.submodel.name <- 'a_sigma2'
-    }else if(max(lpw.sub) == lpw.sub[2]){
-      best.submodel <- optMod_dBMD
-      best.submodel.name <- 'BMD_d'
-    }else if(max(lpw.sub) == lpw.sub[3]){
-      best.submodel <- optMod_all
-      best.submodel.name <- 'all'
+    if(all(lpw.sub == 'NaN')){
+      warning(gettextf('Problems fitting model %1$s, this model was excluded from the analysis', model_name))
+      return(NULL)
+    }else{
+
+      if(max(lpw.sub, na.rm = T) == lpw.sub[4]){
+        best.submodel <- optMod_none
+        best.submodel.name <- 'none'
+      }else if(max(lpw.sub, na.rm = T) == lpw.sub[1]){
+        best.submodel <- optMod_asigma2
+        best.submodel.name <- 'a_sigma2'
+      }else if(max(lpw.sub, na.rm = T) == lpw.sub[2]){
+        best.submodel <- optMod_dBMD
+        best.submodel.name <- 'BMD_d'
+      }else if(max(lpw.sub, na.rm = T) == lpw.sub[3]){
+        best.submodel <- optMod_all
+        best.submodel.name <- 'all'
+      }
+
+      return(list(Weights = data.frame(Covariate = c('a_sigma2', 'BMD_d', 'all', 'none'), Loglik = lls,
+                                       # BIC = c(BIC.asigma2, BIC.dBMD, BIC.all, BIC.none)
+                                       Weights = lpw.sub),
+                  a_sigma2 = optMod_asigma2,
+                  BMD_d = optMod_dBMD,
+                  all = optMod_all,
+                  none = optMod_none,
+                  best.submodel = best.submodel,
+                  best.submodel.name = best.submodel.name
+
+      ))
     }
-
-    return(list(Weights = data.frame(Covariate = c('a_sigma2', 'BMD_d', 'all', 'none'), Loglik = lls,
-                                     # BIC = c(BIC.asigma2, BIC.dBMD, BIC.all, BIC.none)
-                                     Weights = lpw.sub),
-                a_sigma2 = optMod_asigma2,
-                BMD_d = optMod_dBMD,
-                all = optMod_all,
-                none = optMod_none,
-                best.submodel = best.submodel,
-                best.submodel.name = best.submodel.name
-
-    ))
   }
 }
 
@@ -707,7 +715,7 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
                       n = data_none$data$n, y = data_none$data$y,
                       qval = data_none$data$q, covar = 'none',
                       nlevels = 1,
-                      trt_ind = data_none$data$trt_ind)
+                      trt_ind = data_all$data$trt_ind)
   }
 
   lls <- c(ll_bkg, ll_dBMD, ll_all, ll_none)
@@ -767,32 +775,39 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
       lpw.sub=(prior.weightsCov*w)/sum(prior.weightsCov*w)
     }
 
-    if(max(lpw.sub) == lpw.sub[4]){
-      best.submodel <- optMod_none
-      best.submodel.name <- 'none'
-    }else if(max(lpw.sub) == lpw.sub[1]){
-      best.submodel <- optMod_bkg
-      best.submodel.name <- 'background'
-    }else if(max(lpw.sub) == lpw.sub[2]){
-      best.submodel <- optMod_dBMD
-      best.submodel.name <- 'BMD_d'
-    }else if(max(lpw.sub) == lpw.sub[3]){
-      best.submodel <- optMod_all
-      best.submodel.name <- 'all'
+    if(all(lpw.sub == 'NaN')){
+      warning(gettextf('Problems fitting model %1$s, this model was excluded from the analysis', model_name))
+      return(NULL)
+    }else{
+
+      if(max(lpw.sub, na.rm = T) == lpw.sub[4]){
+        best.submodel <- optMod_none
+        best.submodel.name <- 'none'
+      }else if(max(lpw.sub, na.rm = T) == lpw.sub[1]){
+        best.submodel <- optMod_bkg
+        best.submodel.name <- 'background'
+      }else if(max(lpw.sub, na.rm = T) == lpw.sub[2]){
+        best.submodel <- optMod_dBMD
+        best.submodel.name <- 'BMD_d'
+      }else if(max(lpw.sub, na.rm = T) == lpw.sub[3]){
+        best.submodel <- optMod_all
+        best.submodel.name <- 'all'
+      }
+
+
+      return(list(Weights = data.frame(Covariate = c('background', 'BMD_d', 'all', 'none'), Loglik = lls,
+                                       # BIC = c(BIC.bkg, BIC.dBMD, BIC.all, BIC.none)
+                                       Weights = lpw.sub),
+                  bkg = optMod_bkg,
+                  BMD_d = optMod_dBMD,
+                  all = optMod_all,
+                  none = optMod_none,
+                  best.submodel = best.submodel,
+                  best.submodel.name = best.submodel.name
+
+      ))
     }
 
-
-    return(list(Weights = data.frame(Covariate = c('background', 'BMD_d', 'all', 'none'), Loglik = lls,
-                                     # BIC = c(BIC.bkg, BIC.dBMD, BIC.all, BIC.none)
-                                     Weights = lpw.sub),
-                bkg = optMod_bkg,
-                BMD_d = optMod_dBMD,
-                all = optMod_all,
-                none = optMod_none,
-                best.submodel = best.submodel,
-                best.submodel.name = best.submodel.name
-
-    ))
   }
 
 

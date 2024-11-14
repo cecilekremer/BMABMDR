@@ -100,8 +100,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
       warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
@@ -211,8 +211,8 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in favor of SM if bf < 1/10
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
       warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
@@ -332,8 +332,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
       warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
@@ -440,8 +440,8 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
-      # warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
       warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
@@ -463,103 +463,159 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
 
 #' @rdname modelTest
 #' @export
+
 modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains, nriterations,
-                       warmup, delta, treedepth){
+                       warmup, delta, treedepth, force = 0){
 
   N = data.Q$data$N
 
-
   if(data.Q$data$is_betabin == 1){
 
-    data.modstanSM = list(N = data.Q$data$N, Y = data.Q$data$y, trials = data.Q$data$n, K = 2,
-                           X = cbind(rep(1,data.Q$data$N), data.Q$data$x), Kc = 1,
-                           N_1 = length(data.Q$data$x), M_1 = 1, J_1 = 1:length(data.Q$data$x), Z_1_1 = data.Q$data$x)
+    y.a <- data.Q$data$y
+    n.a <- data.Q$data$n
+    dose.a <- data.Q$data$x
 
-  } else if(data.Q$data$is_bin == 1){
+    yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
+    nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
+    yamean <- yasum/nasum
+    ydiff <- diff(yasum/nasum)
+    lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
+                  .Machine$double.xmin)
+    ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
+    N <- length(dose.a)
+    datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
+    fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
+                  silent = TRUE)
+    rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    dim(rhohat) <- 1
 
-    dose.a = data.Q$data$x
-    y.a = data.Q$data$y
-    n.a = data.Q$data$n
+    priorSM = list(
+      priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
+      priorlb = lbs,
+      priorub = c(ubs, min(max(abs(ydiff))*10, 1))
+    )
+    ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
 
-    if(length(data.Q$data$x) != length(unique(data.Q$data$x))){
-      dose = sort(unique(data.Q$data$x))
-      N = length(dose)
-      y=rep(NA,N)
-      n=rep(NA,N)
-      for (iu in (1:N)){
-        y[iu] = sum(data.Q$data$y[data.Q$data$x == dose[iu]])
-        n[iu] = sum(data.Q$data$n[data.Q$data$x == dose[iu]])
-      }
-      y.a = y
-      dose.a = dose
-      n.a = n
+    dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
+    nl = c() # number of litters per dose group (vector of size N)
+    Ndose = length(unique(dose.a))
+    doses = unique(dose.a)
+    for(i in 1:Ndose){
+      cnt = plyr::count(dat$litter[dat$x==doses[i]])
+      nl[i] = length(unique(cnt$x))
     }
 
-    N <- length(unique(data.Q$data$x))
-    Ndose <- length(unique(dose.a))
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, n=n.a, y=y.a,
+                          # yint=y.a, nint=n.a,
+                          priormu = priorSM$priormu,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin,
+                          force_monotone = force
+    )
+    svSM = list(par = ddy, rho = rhohat)
 
-    data.modstanSM = list(N = N, Y = y.a, trials = n.a, K = 2, X = cbind(rep(1, N), dose.a), Kc = 1)
+  }else if(data.Q$data$is_bin == 1){
 
-  } else stop("data must be either clustered or independent")
+    N <- length(data.Q$data$x)
+    y.a <- data.Q$data$y
+    n.a <- data.Q$data$n
+
+    priorSM = list(
+      priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), 0.0),
+      priorlb = ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
+                       .Machine$double.xmin),
+      priorub = c(min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1]))), min(max(abs(diff(y.a/n.a)))*10, 1))
+    )
+    data.modstanSM = list(N=N,Ndose=length(unique(data.Q$data$x)),n_litter=rep(0,length(unique(data.Q$data$x))),n=n.a,y=y.a,
+                          # yint=y.a, nint=n.a,
+                          priormu = priorSM$priormu,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin,
+                          force_monotone = force
+    )
+    svSM = list(par = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
+                        diff(y.a/n.a)
+    ))
+
+
+
+  }else stop("data must be either clustered or independent")
 
   if(type == 'MCMC'){
 
-    if(data.Q$data$is_bin == 1){
+    svH1=optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+    if(data.modstanSM$is_bin == 1){
+      initf2 <- function(chain_id = 1) {
+        nns <- which(stringr::str_detect(names(svH1),'par'))
+        list(par=svH1[nns] +
+               rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
+      }
+    } else if(data.modstanSM$is_betabin == 1) {
+      initf2 <- function(chain_id = 1) {
+        nns <- which(stringr::str_detect(names(svH1),'par'))
+        nns_rho <- which(stringr::str_detect(names(svH1),'rho'))
 
-      fitstanSM <- rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, iter = nriterations,
-                                   chains = nrchains, warmup = warmup, seed = seed,
-                                   control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                   show_messages = F, refresh = 0)
-
-    }else if(data.Q$data$is_betabin == 1){
-
-      fitstanSM = rstan::sampling(stanmodels$mSM_Qc, data = data.modstanSM, iter = nriterations,
-                                  chains = nrchains, warmup = warmup, seed = seed,
-                                  control = list(adapt_delta = delta, max_treedepth =treedepth),
-                                  show_messages = F, refresh = 0)
-
+        rho = svH1[nns_rho]; dim(rho)=1
+        list(par=svH1[nns] +
+               rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
+             rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
+      }
     }
 
-  bridge_best <- bridgesampling::bridge_sampler(stanBest, silent=T)
-  bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-  # BF_brms_bridge = bridgesampling::bf(bridge_H0,bridge_SM)
-  BF_brms_bridge = bridgesampling::bf(bridge_SM, bridge_best) # BF in favor of SM
-  bf = BF_brms_bridge$bf
-  llSM = NA
+    init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+    fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init = init_ll, iter = nriterations, chains = nrchains, warmup=warmup, seed=seed,
+                                control = list(adapt_delta = delta, max_treedepth = treedepth), refresh = 0)
+    while(is.na(dim(fitstanSM)[1])){
 
-  } else if(type == 'Laplace'){
+      init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
+
+      fitstanSM = rstan::sampling(stanmodels$mSM_Q, data = data.modstanSM, init=init_ll, iter = nriterations, chains = nrchains, warmup=warmup, seed=seed,
+                                  control = list(adapt_delta = delta, max_treedepth = treedepth),
+                                  show_messages = F, refresh = 0)
+    }
+
+    bridge_best <- bridgesampling::bridge_sampler(stanBest, silent=T)
+    bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
+    # BF_brms_bridge = bridgesampling::bf(bridge_H0,bridge_SM)
+    BF_brms_bridge = bridgesampling::bf(bridge_SM, bridge_best) # BF in favor of SM
+    bf = BF_brms_bridge$bf
+    llSM = NA
+
+  }else if(type == 'Laplace'){
 
     if(data.Q$data$is_bin == 1){
 
-      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, hessian = T, draws = ndraws)
-      llSM <- llfSM_Q(b = optSM$par[1], Intercept = optSM$par[4], # non-centered intercept
-                      Y = data.modstanSM$Y, trials = data.modstanSM$trials, Xc = as.matrix(data.Q$data$x))
+      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = ndraws)
+      # llSM <- llfSM_Q(b = optSM$par[1], Intercept = optSM$par[4], # non-centered intercept
+      #                 Y = data.modstanSM$Y, trials = data.modstanSM$trials, Xc = as.matrix(data.Q$data$x))
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
+                                            paste0('par[', data.Q$data$N, ']'))], 2, median)
+      llSM = llfSM_Q(pars.SM, data.Q$data$n, data.Q$data$x, data.Q$data$y)
+
       llfun = paste0('llf',best.fit,'_Q')
       llBestfitf = get(llfun)
       llBestfit <- llBestfitf(x = stanBest$par[1:3], nvec = data.Q$data$n, dvec = data.Q$data$x,
                               yvec = data.Q$data$y, qval = data.Q$data$q)
 
       BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n))) # parms: a, b, d
-      BIC.SM = - 2 * llSM + (2 * log(sum(data.Q$data$n)))
-
+      BIC.SM = - 2 * llSM + (data.Q$data$N * log(sum(data.Q$data$n)))
 
     }else if(data.Q$data$is_betabin == 1){
 
-      optSM <- rstan::optimizing(stanmodels$mSM_Qc, data = data.modstanSM, hessian = T, draws = ndraws)
-      llSM <- llfSM2_Q(b = optSM$par[1], Intercept = optSM$par[length(optSM$par)],
-                        r_1_1 = optSM$par[(data.Q$data$N + 4):(2*data.Q$data$N + 3)],
-                        Y = data.Q$data$y,
-                        trials = data.Q$data$n, Xc = as.matrix(data.Q$data$x),
-                        J_1 = 1:length(data.Q$data$x), Z_1_1 = data.Q$data$x, N = data.Q$data$N)
+      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = ndraws)
+      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.modstanSM$Ndose, ']'),
+                                            'rho[1]')], 2, median)
+      llSM = llfSM2_Q(x = pars.SM[1:data.modstanSM$Ndose], nclust = data.modstanSM$n_litter,
+                      nvec = data.Q$data$n, dvec = data.Q$data$x, yvec = data.Q$data$y, qval = data.Q$data$q,
+                      rho = pars.SM[data.modstanSM$Ndose+1])
 
       llfun = paste0('llf',best.fit,'2_Q')
       llBestfitf = get(llfun)
-      llBestfit <- llBestfitf(x = stanBest$par[1:3], nvec = data.Q$data$n, dvec = data.Q$data$x, yvec = data.Q$data$y,
-                            qval = data.Q$data$q, rho = stanBest$par[stringr::str_detect(names(stanBest$par),'rho') &
-                                                                           !stringr::str_detect(names(stanBest$par),'eta')])
+      llBestfit <- llBestfitf(x = stanBest$par[1:3], nvec = data.Q$data$n, dvec = data.Q$data$x,
+                              yvec = data.Q$data$y, qval = data.Q$data$q, rho = stanBest$par[4])
 
-      BIC.bestfit = - 2 * llBestfit + (4 * log(sum(data.Q$data$n)))
-      BIC.SM = - 2 * llSM + ((2+data.Q$data$N) * log(sum(data.Q$data$n)))
+      BIC.bestfit = - 2 * llBestfit + (4 * log(sum(data.Q$data$n))) # parms: a, b, d, rho
+      BIC.SM = - 2 * llSM + ((data.modstanSM$Ndose + 1) * log(sum(data.Q$data$n)))
 
     }
 
@@ -568,7 +624,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   }
 
   if(bf > 10){
-    warn.bf = paste0('None of the models provide an adequate fit do the data (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
+    warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
   }else{
     warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
   }
@@ -581,6 +637,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
               llSM = llSM,
               warn.bf = warn.bf)
   )
+
 
 }
 
