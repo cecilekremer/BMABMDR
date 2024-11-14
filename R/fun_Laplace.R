@@ -4498,6 +4498,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
 #'
 full.laplace_MA_Cov = function(data, # the summary data
                                sumstats = TRUE,
+                               geom.stats = FALSE,
                                sd = TRUE,
                                q = 0.05,
                                bkg = NULL,
@@ -4520,6 +4521,7 @@ full.laplace_MA_Cov = function(data, # the summary data
   data_NCOV_all <- PREP_DATA_NCOV(
     data = data,
     sumstats = sumstats,
+    geom.stats = geom.stats,
     sd = sd,
     q = q,
     bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4532,6 +4534,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 
   data_N_noCOV <- PREP_DATA_N(data = data,
                               sumstats = sumstats,
+                              geom.stats = geom.stats,
                               sd = sd,
                               q = q,
                               bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4544,6 +4547,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     data_NCOV_asigma2 <- PREP_DATA_NCOV(
       data = data,
       sumstats = sumstats,
+      geom.stats = geom.stats,
       sd = sd,
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4557,6 +4561,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     data_NCOV_dBMD <- PREP_DATA_NCOV(
       data = data,
       sumstats = sumstats,
+      geom.stats = geom.stats,
       sd = sd,
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4573,6 +4578,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     data_LNCOV_all <- PREP_DATA_LNCOV(
       data = data,
       sumstats = sumstats,
+      geom.stats = geom.stats,
       sd = sd,
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4586,6 +4592,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     data_LNCOV_asigma2 <- PREP_DATA_LNCOV(
       data = data,
       sumstats = sumstats,
+      geom.stats = geom.stats,
       sd = sd,
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4599,6 +4606,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     data_LNCOV_dBMD <- PREP_DATA_LNCOV(
       data = data,
       sumstats = sumstats,
+      geom.stats = geom.stats,
       sd = sd,
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4611,6 +4619,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 
     data_LN_noCOV <- PREP_DATA_LN(data = data,
                                   sumstats = sumstats,
+                                  geom.stats = geom.stats,
                                   sd = sd,
                                   q = q,
                                   bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
@@ -4645,7 +4654,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                      prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                      pvec = pvec,
                                      ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_E4_N') & !is.null(select_E4_N)){
+    if(ifelse(!exists('select_E4_N'), FALSE, !is.null(select_E4_N))){
       best.sub.which <- c(best.sub.which, select_E4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_E4_N$Weights$Loglik[select_E4_N$Weights$Covariate == select_E4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_E4_N$Weights$Weights[select_E4_N$Weights$Covariate == select_E4_N$best.submodel.name])
@@ -4679,7 +4688,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_IE4_N') & !is.null(select_IE4_N)){
+    if(ifelse(!exists('select_IE4_N'), FALSE, !is.null(select_IE4_N))){
       best.sub.which <- c(best.sub.which, select_IE4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_IE4_N$Weights$Loglik[select_IE4_N$Weights$Covariate == select_IE4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_IE4_N$Weights$Weights[select_IE4_N$Weights$Covariate == select_IE4_N$best.submodel.name])
@@ -4713,7 +4722,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                      prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                      pvec = pvec,
                                      ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_H4_N') & !is.null(select_H4_N)){
+    if(ifelse(!exists('select_H4_N'), FALSE, !is.null(select_H4_N))){
       best.sub.which <- c(best.sub.which, select_H4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_H4_N$Weights$Loglik[select_H4_N$Weights$Covariate == select_H4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_H4_N$Weights$Weights[select_H4_N$Weights$Covariate == select_H4_N$best.submodel.name])
@@ -4747,7 +4756,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_LN4_N') & !is.null(select_LN4_N)){
+    if(ifelse(!exists('select_LN4_N'), FALSE, !is.null(select_LN4_N))){
       best.sub.which <- c(best.sub.which, select_LN4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_LN4_N$Weights$Loglik[select_LN4_N$Weights$Covariate == select_LN4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_LN4_N$Weights$Weights[select_LN4_N$Weights$Covariate == select_LN4_N$best.submodel.name])
@@ -4781,7 +4790,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                      prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                      pvec = pvec,
                                      ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_G4_N') & !is.null(select_G4_N)){
+    if(ifelse(!exists('select_G4_N'), FALSE, !is.null(select_G4_N))){
       best.sub.which <- c(best.sub.which, select_G4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_G4_N$Weights$Loglik[select_G4_N$Weights$Covariate == select_G4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_G4_N$Weights$Weights[select_G4_N$Weights$Covariate == select_G4_N$best.submodel.name])
@@ -4815,7 +4824,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_NCOV_all$data$truncdQ, seed = seed)
-    if(exists('select_QE4_N') & !is.null(select_QE4_N)){
+    if(ifelse(!exists('select_QE4_N'), FALSE, !is.null(select_QE4_N))){
       best.sub.which <- c(best.sub.which, select_QE4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_QE4_N$Weights$Loglik[select_QE4_N$Weights$Covariate == select_QE4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_QE4_N$Weights$Weights[select_QE4_N$Weights$Covariate == select_QE4_N$best.submodel.name])
@@ -4849,7 +4858,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                      prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                      pvec = pvec,
                                      ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_P4_N') & !is.null(select_P4_N)){
+    if(ifelse(!exists('select_P4_N'), FALSE, !is.null(select_P4_N))){
       best.sub.which <- c(best.sub.which, select_P4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_P4_N$Weights$Loglik[select_P4_N$Weights$Covariate == select_P4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_P4_N$Weights$Weights[select_P4_N$Weights$Covariate == select_P4_N$best.submodel.name])
@@ -4883,7 +4892,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                      prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                      pvec = pvec,
                                      ndraws = ndraws, td = data_NCOV_all$data$truncd, seed = seed)
-    if(exists('select_L4_N') & !is.null(select_L4_N)){
+    if(ifelse(!exists('select_L4_N'), FALSE, !is.null(select_L4_N))){
       best.sub.which <- c(best.sub.which, select_L4_N$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_L4_N$Weights$Loglik[select_L4_N$Weights$Covariate == select_L4_N$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_L4_N$Weights$Weights[select_L4_N$Weights$Covariate == select_L4_N$best.submodel.name])
@@ -4917,7 +4926,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_E4_LN') & !is.null(select_E4_LN)){
+    if(ifelse(!exists('select_E4_LN'), FALSE, !is.null(select_E4_LN))){
       best.sub.which <- c(best.sub.which, select_E4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_E4_LN$Weights$Loglik[select_E4_LN$Weights$Covariate == select_E4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_E4_LN$Weights$Weights[select_E4_LN$Weights$Covariate == select_E4_LN$best.submodel.name])
@@ -4951,7 +4960,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                        prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                        pvec = pvec,
                                        ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_IE4_LN') & !is.null(select_IE4_LN)){
+    if(ifelse(!exists('select_IE4_LN'), FALSE, !is.null(select_IE4_LN))){
       best.sub.which <- c(best.sub.which, select_IE4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_IE4_LN$Weights$Loglik[select_IE4_LN$Weights$Covariate == select_IE4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_IE4_LN$Weights$Weights[select_IE4_LN$Weights$Covariate == select_IE4_LN$best.submodel.name])
@@ -4985,7 +4994,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_H4_LN') & !is.null(select_H4_LN)){
+    if(ifelse(!exists('select_H4_LN'), FALSE, !is.null(select_H4_LN))){
       best.sub.which <- c(best.sub.which, select_H4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_H4_LN$Weights$Loglik[select_H4_LN$Weights$Covariate == select_H4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_H4_LN$Weights$Weights[select_H4_LN$Weights$Covariate == select_H4_LN$best.submodel.name])
@@ -5019,7 +5028,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                        prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                        pvec = pvec,
                                        ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_LN4_LN') & !is.null(select_LN4_LN)){
+    if(ifelse(!exists('select_LN4_LN'), FALSE, !is.null(select_LN4_LN))){
       best.sub.which <- c(best.sub.which, select_LN4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_LN4_LN$Weights$Loglik[select_LN4_LN$Weights$Covariate == select_LN4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_LN4_LN$Weights$Weights[select_LN4_LN$Weights$Covariate == select_LN4_LN$best.submodel.name])
@@ -5053,7 +5062,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_G4_LN') & !is.null(select_G4_LN)){
+    if(ifelse(!exists('select_G4_LN'), FALSE, !is.null(select_G4_LN))){
       best.sub.which <- c(best.sub.which, select_G4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_G4_LN$Weights$Loglik[select_G4_LN$Weights$Covariate == select_G4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_G4_LN$Weights$Weights[select_G4_LN$Weights$Covariate == select_G4_LN$best.submodel.name])
@@ -5087,7 +5096,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                        prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                        pvec = pvec,
                                        ndraws = ndraws, td = data_LNCOV_all$data$truncdQ, seed = seed)
-    if(exists('select_QE4_LN') & !is.null(select_QE4_LN)){
+    if(ifelse(!exists('select_QE4_LN'), FALSE, !is.null(select_QE4_LN))){
       best.sub.which <- c(best.sub.which, select_QE4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_QE4_LN$Weights$Loglik[select_QE4_LN$Weights$Covariate == select_QE4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_QE4_LN$Weights$Weights[select_QE4_LN$Weights$Covariate == select_QE4_LN$best.submodel.name])
@@ -5121,7 +5130,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_P4_LN') & !is.null(select_P4_LN)){
+    if(ifelse(!exists('select_P4_LN'), FALSE, !is.null(select_P4_LN))){
       best.sub.which <- c(best.sub.which, select_P4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_P4_LN$Weights$Loglik[select_P4_LN$Weights$Covariate == select_P4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_P4_LN$Weights$Weights[select_P4_LN$Weights$Covariate == select_P4_LN$best.submodel.name])
@@ -5155,7 +5164,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_LNCOV_all$data$truncd, seed = seed)
-    if(exists('select_L4_LN') & !is.null(select_L4_LN)){
+    if(ifelse(!exists('select_L4_LN'), FALSE, !is.null(select_L4_LN))){
       best.sub.which <- c(best.sub.which, select_L4_LN$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_L4_LN$Weights$Loglik[select_L4_LN$Weights$Covariate == select_L4_LN$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_L4_LN$Weights$Weights[select_L4_LN$Weights$Covariate == select_L4_LN$best.submodel.name])
@@ -6117,7 +6126,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_E4_Q') & !is.null(select_E4_Q)){
+    if(ifelse(!exists('select_E4_Q'), FALSE, !is.null(select_E4_Q))){
       best.sub.which <- c(best.sub.which, select_E4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_E4_Q$Weights$Loglik[select_E4_Q$Weights$Covariate == select_E4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_E4_Q$Weights$Weights[select_E4_Q$Weights$Covariate == select_E4_Q$best.submodel.name])
@@ -6150,7 +6159,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                        prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                        pvec = pvec,
                                        ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_IE4_Q') & !is.null(select_IE4_Q)){
+    if(ifelse(!exists('select_IE4_Q'), FALSE, !is.null(select_IE4_Q))){
       best.sub.which <- c(best.sub.which, select_IE4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_IE4_Q$Weights$Loglik[select_IE4_Q$Weights$Covariate == select_IE4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_IE4_Q$Weights$Weights[select_IE4_Q$Weights$Covariate == select_IE4_Q$best.submodel.name])
@@ -6183,7 +6192,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_H4_Q') & !is.null(select_H4_Q)){
+    if(ifelse(!exists('select_H4_Q'), FALSE, !is.null(select_H4_Q))){
       best.sub.which <- c(best.sub.which, select_H4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_H4_Q$Weights$Loglik[select_H4_Q$Weights$Covariate == select_H4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_H4_Q$Weights$Weights[select_H4_Q$Weights$Covariate == select_H4_Q$best.submodel.name])
@@ -6216,7 +6225,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                        prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                        pvec = pvec,
                                        ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_LN4_Q') & !is.null(select_LN4_Q)){
+    if(ifelse(!exists('select_LN4_Q'), FALSE, !is.null(select_LN4_Q))){
       best.sub.which <- c(best.sub.which, select_LN4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_LN4_Q$Weights$Loglik[select_LN4_Q$Weights$Covariate == select_LN4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_LN4_Q$Weights$Weights[select_LN4_Q$Weights$Covariate == select_LN4_Q$best.submodel.name])
@@ -6249,7 +6258,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_G4_Q') & !is.null(select_G4_Q)){
+    if(ifelse(!exists('select_G4_Q'), FALSE, !is.null(select_G4_Q))){
       best.sub.which <- c(best.sub.which, select_G4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_G4_Q$Weights$Loglik[select_G4_Q$Weights$Covariate == select_G4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_G4_Q$Weights$Weights[select_G4_Q$Weights$Covariate == select_G4_Q$best.submodel.name])
@@ -6282,7 +6291,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                        prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                        pvec = pvec,
                                        ndraws = ndraws, td = data_all$data$truncdQ, seed = seed)
-    if(exists('select_QE4_Q') & !is.null(select_QE4_Q)){
+    if(ifelse(!exists('select_QE4_Q'), FALSE, !is.null(select_QE4_Q))){
       best.sub.which <- c(best.sub.which, select_QE4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_QE4_Q$Weights$Loglik[select_QE4_Q$Weights$Covariate == select_QE4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_QE4_Q$Weights$Weights[select_QE4_Q$Weights$Covariate == select_QE4_Q$best.submodel.name])
@@ -6315,7 +6324,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_P4_Q') & !is.null(select_P4_Q)){
+    if(ifelse(!exists('select_P4_Q'), FALSE, !is.null(select_P4_Q))){
       best.sub.which <- c(best.sub.which, select_P4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_P4_Q$Weights$Loglik[select_P4_Q$Weights$Covariate == select_P4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_P4_Q$Weights$Weights[select_P4_Q$Weights$Covariate == select_P4_Q$best.submodel.name])
@@ -6348,7 +6357,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
                                       prior.weightsCov = rep(1, 4), # weights for the 4 sub-models
                                       pvec = pvec,
                                       ndraws = ndraws, td = data_all$data$truncd, seed = seed)
-    if(exists('select_L4_Q') & !is.null(select_L4_Q)){
+    if(ifelse(!exists('select_L4_Q'), FALSE, !is.null(select_L4_Q))){
       best.sub.which <- c(best.sub.which, select_L4_Q$best.submodel.name)
       best.sub.loglik <- c(best.sub.loglik, select_L4_Q$Weights$Loglik[select_L4_Q$Weights$Covariate == select_L4_Q$best.submodel.name])
       best.sub.weight <- c(best.sub.weight, select_L4_Q$Weights$Weights[select_L4_Q$Weights$Covariate == select_L4_Q$best.submodel.name])

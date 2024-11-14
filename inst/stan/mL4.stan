@@ -94,7 +94,7 @@ transformed parameters{
   k = log(par2);
 
   if(data_type == 1){
-     b=exp(-k*d)*(pow(3,0.5)/pi()*logit(inv_logit(pi()/pow(3,0.5)*c)*(1+q))-c);
+    b=exp(-k*d)*(pow(3,0.5)/pi()*logit(inv_logit(pi()/pow(3,0.5)*c)*(1+q))-c);
   }else if(data_type == 2){
     b=exp(-k*d)*(pow(3,0.5)/pi()*logit(inv_logit(pi()/pow(3,0.5)*c)+log(1+q)/a)-c);
   }else if(data_type == 3){

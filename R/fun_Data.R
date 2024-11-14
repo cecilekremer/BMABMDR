@@ -486,6 +486,10 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
     n.a = data[, 4]
     N = length(dose.a)
     dose.a = dose.a/maxDose
+
+    mean.a = LNtoN(exp(gmean.a), exp(gsd.a))[1:N]
+    sd.a = LNtoN(exp(gmean.a), exp(gsd.a))[(N+1):(2*N)]
+
     testNLN <- NA
   }else if(sumstats == FALSE){
     data = data[order(data[, 1]), ]
@@ -845,12 +849,10 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
     dplyr::mutate(cluster = dplyr::cur_group_id(),
                   count = n())
 
-  ## Check if each litter contains >1 observation
-  if(0 %in% as.vector(unname(table(indiv.data$litter))) || 1 %in% as.vector(unname(table(indiv.data$litter)))){
-    stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
-  }
-
-
+  # ## Check if each litter contains >1 observation
+  # if(0 %in% as.vector(unname(table(indiv.data$litter))) || 1 %in% as.vector(unname(table(indiv.data$litter)))){
+  #   stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
+  # }
 
   dose.a = indiv.data$dose
   maxDose = max(dose.a)
@@ -1265,10 +1267,10 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     dplyr::mutate(cluster = dplyr::cur_group_id(),
                   count = dplyr::n())
 
-  ## Check if each litter contains >1 observation
-  if(0 %in% as.vector(unname(table(indiv.data$litter))) || 1 %in% as.vector(unname(table(indiv.data$litter)))){
-    stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
-  }
+  # ## Check if each litter contains >1 observation
+  # if(0 %in% as.vector(unname(table(indiv.data$litter))) || 1 %in% as.vector(unname(table(indiv.data$litter)))){
+  #   stop("Some litters contain no or only one observation(s). These rows need to be removed from the data.")
+  # }
 
   dose.a = indiv.data$dose
   maxDose = max(dose.a)
@@ -1329,7 +1331,8 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   ## Overall mean for test of flatness
   means.all <- indiv.data %>%
     dplyr::group_by(dose) %>%
-    dplyr::summarise(mresp = mean(log(response)))
+    # dplyr::summarise(mresp = mean(log(response)))
+    dplyr::summarise(mresp = mean(response)) # log is taken in stan model, data should be passed on original scale
   dose.a = unique(indiv.data$dose)
   mean.a = c()
   for(m in 1:length(dose.a)){
@@ -1986,6 +1989,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     dose.a = dose.a/maxDose
     covar = data[,5]
 
+    testNLN <- NA
+
   }else if(sumstats == TRUE & geom.stats == TRUE){
 
     data = as.data.frame(data[order(data[, 1]), ])
@@ -2005,6 +2010,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
     mean.a = LNtoN(gmean.a,gsd.a)[1:N]
     sd.a = LNtoN(gmean.a,gsd.a)[(N+1):(2*N)]
+
+    testNLN <- NA
 
   }else if(sumstats == FALSE){
     data = data[order(data[, 1]), ]
@@ -2670,7 +2677,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
                                par2=bmd.sv, pars3i=pars3i, pars3d=pars3d,
                                par4=prmean.dQE4,
                                par5=par5),
-                   test.var = test.var
+                   test.var = test.var,
+                   test.NLN = testNLN
   )
   dim(ret.list$start$par2) <- nlevels_BMD
   dim(ret.list$start$par1) <- nlevels_a
@@ -2748,6 +2756,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
     # }
 
+    testNLN <- NA
+
   }else if(sumstats == TRUE & geom.stats == TRUE){
 
     data = data[order(data[, 1]), ]
@@ -2759,8 +2769,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     }else if(sd == FALSE){
       sd.a = data[,3]*sqrt(data[, 4]) # SD = SE * sqrt(n.a)
     }
-    gsd.a = sd.a
-    gmean.a2 = mean.a
+    gsd.a = log(sd.a)
+    gmean.a2 = log(mean.a)
     shift = 0
     if (min(gmean.a2)<0) {gmean.a = gmean.a2-20*min(gmean.a2); shift = 20*min(gmean.a2)}
     if (min(gmean.a2)>=0) gmean.a = gmean.a2
@@ -2781,11 +2791,20 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       sd.a2[iu] = mean(sd.a[dose.a == dose.a2[iu]])
       n.a2[iu] = sum(n.a[dose.a == dose.a2[iu]])
     }
-    gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
+    # gmean.a3 = log(NtoLN(mean.a2,sd.a2))[1:N2]
+    gmean.a3 = log(mean.a2)
     if (min(gmean.a3)<0) {gmean.a4 = gmean.a3-shift}
     if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
-    gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
+    # gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
+    gsd.a2 = log(sd.a2)
     # }
+
+    mean.a = LNtoN(exp(gmean.a), exp(gsd.a))[1:N]
+    sd.a = LNtoN(exp(gmean.a), exp(gsd.a))[(N+1):(2*N)]
+    mean.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[1:N]
+    sd.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[(N+1):(2*N)]
+
+    testNLN <- NA
 
   }else if(sumstats == FALSE){
     data = data[order(data[, 1]), ]
@@ -2812,7 +2831,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                          y = data$resp)
     testNLN <- NLN_test(datind)
 
-    mean.a = exp(gmean.a2); sd.a = exp(gsd.a)
+    # mean.a = exp(gmean.a2); sd.a = exp(gsd.a)
+    mean.a = LNtoN(exp(gmean.a), exp(gsd.a))[1:N]
+    sd.a = LNtoN(exp(gmean.a), exp(gsd.a))[(N+1):(2*N)]
     gmean.a2 = gmean.a
 
     # if(covariate == 'BMD_d' | covariate == 'none'){
@@ -2833,7 +2854,9 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     # if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
     # gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
     # }
-    mean.a2 = exp(gmean.a3)
+    mean.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[1:N]
+    sd.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[(N+1):(2*N)]
+    # mean.a2 = exp(gmean.a3)
   }
 
   original.data <- data.frame(x = dose.a*maxDose,
@@ -3462,7 +3485,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
                                par2=bmd.sv, pars3i=pars3i, pars3d=pars3d,
                                par4=prmean.dQE4,
                                par5=par5),
-                   test.var = test.var
+                   test.var = test.var,
+                   test.NLN = testNLN
   )
   dim(ret.list$start$par2) <- nlevels_BMD
   dim(ret.list$start$par1) <- nlevels_a

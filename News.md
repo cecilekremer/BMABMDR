@@ -1,5 +1,27 @@
 # EFSA Bayesian Benchmark Dose Response Platform
 
+Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
+
+## BMABMDR 0.1.6
+
+* fixed covariates weights calculation: fold change parameter
+
+* fixed covariate analysis throwing error when model was not fit
+
+* fixed covariates likelihood fold change parameter
+
+* fixed mistake in data passed to saturated model for clustered LN data prep: **litters of size 1 can be included in the analysis**
+
+* for testallmodels = TRUE, fixed bayes factor for lognormal models
+
+* covariate analysis (continuous): added option to give geometric summary statistics as input in full.laplace_MA_Cov()
+
+* adjusted default pvec in samplingQ_MA() to give 90%CrI instead of 95%CrI
+
+* change of quantal data saturated model: this may impact results of the DR test and bayes factors for GOF
+
+* added option to enforce monotonicity in the saturated model (quantal)
+
 ## BMABMDR 0.1.5
 
 * included option to compare all Quantal models to saturated model
