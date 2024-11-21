@@ -56,7 +56,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
 
       initf2 <- function(chain_id = 1) {
-        list(par=sv[1:(data.N$data$N+1)] + rnorm(data.N$data$N+1, sd = 0.01*abs(sv[1:(data.N$data$N+1)])) ,alpha = chain_id)
+        list(par=sv[1:(data.N$data$N+1)] + rnorm(data.N$data$N+1, sd = 0.001*abs(sv[1:(data.N$data$N+1)])) ,alpha = chain_id)
       }
       init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
       fitstanSM = rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
@@ -143,7 +143,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
 
       initf2 <- function(chain_id = 1) {
-        list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.01*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
+        list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.001*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
       }
       init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
       fitstanSM = try(rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
@@ -162,7 +162,7 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
         )
         sv=rstan::optimizing(stanmodels$mSM,data = data.modstanSM,init=svSM)$par
         initf2 <- function(chain_id = 1) {
-          list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.01*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
+          list(par=sv[1:(data.LN$data$N+1)] + rnorm(data.LN$data$N+1, sd = 0.001*abs(sv[1:(data.LN$data$N+1)])) ,alpha = chain_id)
         }
         init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
         fitstanSM = try(rstan::sampling(stanmodels$mSM, data = data.modstanSM, init=init_ll, iter = nriterations,
@@ -276,7 +276,7 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
 
       initf2 <- function(chain_id = 1) {
-        list(par=sv[1:(data.N$data$N+2)] + rnorm(data.N$data$N+2, sd = 0.01*abs(sv[1:(data.N$data$N+2)])) ,alpha = chain_id)
+        list(par=sv[1:(data.N$data$N+2)] + rnorm(data.N$data$N+2, sd = 0.001*abs(sv[1:(data.N$data$N+2)])) ,alpha = chain_id)
       }
       init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
       fitstanSM = rstan::sampling(stanmodels$mSMc, data = data.modstanSM, init=init_ll, iter = nriterations,
@@ -381,7 +381,7 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
       sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
 
       initf2 <- function(chain_id = 1) {
-        list(par=sv[1:(data.LN$data$N+2)] + rnorm(data.LN$data$N+2, sd = 0.01*abs(sv[1:(data.LN$data$N+2)])) ,alpha = chain_id)
+        list(par=sv[1:(data.LN$data$N+2)] + rnorm(data.LN$data$N+2, sd = 0.001*abs(sv[1:(data.LN$data$N+2)])) ,alpha = chain_id)
       }
       init_ll <- lapply(1:nrchains, function(id) initf2(chain_id = id))
       fitstanSM = rstan::sampling(stanmodels$mSMc, data = data.modstanSM, init=init_ll, iter = nriterations,
@@ -548,7 +548,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       initf2 <- function(chain_id = 1) {
         nns <- which(stringr::str_detect(names(svH1),'par'))
         list(par=svH1[nns] +
-               rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
+               rnorm(length(nns), sd = 0.001*abs(svH1[nns])), alpha = chain_id)
       }
     } else if(data.modstanSM$is_betabin == 1) {
       initf2 <- function(chain_id = 1) {
@@ -557,8 +557,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
         rho = svH1[nns_rho]; dim(rho)=1
         list(par=svH1[nns] +
-               rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
-             rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
+               rnorm(length(nns), sd = 0.001*abs(svH1[nns])),
+             rho = rho + rnorm(length(nns_rho), sd = 0.001*abs(svH1[nns_rho])), alpha = chain_id)
       }
     }
 

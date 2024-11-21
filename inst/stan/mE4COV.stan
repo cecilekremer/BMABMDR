@@ -168,7 +168,6 @@ transformed parameters{
 
   }
 
-
 }
 model{
 

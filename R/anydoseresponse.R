@@ -584,12 +584,12 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     svNM=rstan::optimizing(stanmodels$mH0_Q,data = data.modstanH0,init=svH0)$par
     if(data.modstanH0$is_bin == 1){
       initf2 <- function(chain_id = 1) {
-        list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])) ,alpha = chain_id)
+        list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[2])) ,alpha = chain_id)
       }
     } else if(data.modstanH0$is_betabin == 1) {
       initf2 <- function(chain_id = 1) {
         rho = svNM[2]; dim(rho)=1
-        list(par=svNM[1] + rnorm(1, sd = 0.01*abs(svNM[2])), rho = rho ,alpha = chain_id)
+        list(par=svNM[1] + rnorm(1, sd = 0.001*abs(svNM[2])), rho = rho ,alpha = chain_id)
       }
     }
 
@@ -611,7 +611,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
       initf2 <- function(chain_id = 1) {
         nns <- which(stringr::str_detect(names(svH1),'par'))
         list(par=svH1[nns] +
-               rnorm(length(nns), sd = 0.01*abs(svH1[nns])), alpha = chain_id)
+               rnorm(length(nns), sd = 0.001*abs(svH1[nns])), alpha = chain_id)
       }
     } else if(data.modstanSM$is_betabin == 1) {
       initf2 <- function(chain_id = 1) {
@@ -620,8 +620,8 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
         rho = svH1[nns_rho]; dim(rho)=1
         list(par=svH1[nns] +
-               rnorm(length(nns), sd = 0.01*abs(svH1[nns])),
-             rho = rho + rnorm(length(nns_rho), sd = 0.01*abs(svH1[nns_rho])), alpha = chain_id)
+               rnorm(length(nns), sd = 0.001*abs(svH1[nns])),
+             rho = rho + rnorm(length(nns_rho), sd = 0.001*abs(svH1[nns_rho])), alpha = chain_id)
       }
     }
 
@@ -641,7 +641,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     set.seed(1234)
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
     bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-    bf=bf(bridge_H0,bridge_SM)
+    bf=bf(bridge_SM,bridge_H0)
     bf = bf$bf
 
   }else{
@@ -677,11 +677,11 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
     }
 
-    bf = exp(0.5 * (BIC.SM - BIC.H0))
+    bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
 
   }
 
-  if (bf<10){
+  if (bf>=10){
     mess = "there is sufficient evidence that there is a substantial dose-effect"#; therefore models are fitted and the BMDL is calculated"
   } else{
     mess = "attention: there is insufficient evidence that there is a substantial dose-effect"
