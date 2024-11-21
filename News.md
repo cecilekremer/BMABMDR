@@ -2,6 +2,10 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.7
+
+* fixed modelTest() for lognormal distribution
+
 ## BMABMDR 0.1.6
 
 * fixed covariates weights calculation: fold change parameter
