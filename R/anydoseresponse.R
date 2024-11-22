@@ -444,7 +444,8 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
     BIC.SM = - 2 * llSM + (N+2 * log(sum(y!=0))) # N mean parameters + variance + rho
 
     # bf = exp(-0.5 * (BIC.H0 - BIC.SM))
-    bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
+    # bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
+    bf = 1/(exp(0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
 
   }
 
@@ -677,7 +678,8 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
     }
 
-    bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
+    # bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
+    bf = 1/exp(0.5 * (BIC.SM - BIC.H0))
 
   }
 
