@@ -2461,7 +2461,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       shift = data.LN$data$shift,
-                      w.msg = w.msg, p.msg = p.msg
+                      w.msg = w.msg, p.msg = p.msg,
+                      pvec = pvec
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")
@@ -4884,7 +4885,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
                       shift = data.LN$data$shift,
-                      w.msg = w.msg, p.msg = p.msg
+                      w.msg = w.msg, p.msg = p.msg,
+                      pvec = pvec
   )
 
   attr(ret_results, "class") <- c("BMADR", "BS")
@@ -6555,7 +6557,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                       bf.mods = bf.mods,
                       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
                       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-                      w.msg = w.msg, p.msg = p.msg
+                      w.msg = w.msg, p.msg = p.msg,
+                      pvec = pvec
   )
 
   attr(ret_results, "class") <- c("BMADRQ", "BS")

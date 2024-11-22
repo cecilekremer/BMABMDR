@@ -1762,7 +1762,8 @@ full.laplace_MA=function(data.N, data.LN,
       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
       shift = data.LN$data$shift,
-      w.msg = w.msg, p.msg = p.msg
+      w.msg = w.msg, p.msg = p.msg,
+      pvec = pvec
     )
 
     attr(ret_results, "class") <- c("BMADR", "LP")
@@ -3352,7 +3353,8 @@ full.laplace_MAc=function(data.N, data.LN,
       # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
       # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
       shift = data.LN$data$shift,
-      w.msg = w.msg, p.msg = p.msg
+      w.msg = w.msg, p.msg = p.msg,
+      pvec = pvec
     )
 
     attr(ret_results, "class") <- c("BMADR", "LP")
@@ -4425,7 +4427,8 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
     # means.SM = bfTest$means.SM, parBestFit = bfTest$par.best,
     # BIC.bestfit = bfTest$BIC.bestfit, BIC.SM = bfTest$BIC.SM,
-    w.msg = w.msg, p.msg = p.msg
+    w.msg = w.msg, p.msg = p.msg,
+    pvec = pvec
   )
 
   attr(ret_results, "class") <- c("BMADRQ", "LP")

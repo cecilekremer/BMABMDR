@@ -1,5 +1,5 @@
 Package: BMABMDR
-Version: 0.1.7
+Version: 0.1.8
 Title: Bayesian Model Averaging for Benchmark Dose Analysis
 Authors@R: c(
     person(given = "C\'ecile",

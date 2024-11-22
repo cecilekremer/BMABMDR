@@ -2,6 +2,12 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.8
+
+* corrected label in plots for XX% CrI (added 'pvec' to output from Laplace and Sampling methods)
+
+* fixed plot.BMADR() for continuous clustered data
+
 ## BMABMDR 0.1.7
 
 * fixed modelTest() for lognormal distribution
