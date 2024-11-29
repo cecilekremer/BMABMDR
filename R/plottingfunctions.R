@@ -779,7 +779,7 @@ plot.BMADR <- function(mod.obj,
                 show.legend = TRUE, linetype = 2) +
       labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
            y = expression(response),
-           caption = paste0("data and vertical bars based on arithmetic sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
+           caption = paste0("data and vertical bars based on geometric sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
                             (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
       geom_segment(data = preds_min[preds_min$Distribution=="LN",],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -1122,17 +1122,18 @@ plot.BMADR <- function(mod.obj,
 
   ylim.prim <- c(cmin, cmax)
   # ylim.sec <- c(min(BMDMixture2$y2), max(BMDMixture2$y2))
-  ylim.sec <- c(min(BMDMixture2$y,na.rm=T), max(BMDMixture2$y,na.rm=T))
+  ylim.sec <- c(min(BMDMixture2$y,na.rm=T), max(BMDMixture2$y[BMDMixture2$y!='Inf'],na.rm=T))
   b <- diff(ylim.prim)/diff(ylim.sec)
   a <- ylim.prim[1] - b*ylim.sec[1]
 
   # BMDMixture2$yres = a + BMDMixture2$y2*b
   BMDMixture2$yres = a + BMDMixture2$y*b
-  BMDMixture2 = BMDMixture2[!is.na(BMDMixture2$yres), ]
+  BMDMixture2 = BMDMixture2[!is.na(BMDMixture2$yres) & !is.infinite(BMDMixture2$yres), ]
 
   dplot <- ggplot(data = preds$model_averaged, aes(x = Dose*mod.obj$max.dose, y = model_averaged,
                                                    group = 1)) +
     geom_line(show.legend = FALSE, linetype = "dashed", size = 3) +
+    # ylim(min(preds$model_averaged$model_averaged), max(preds$model_averaged$model_averaged)) +
     #geom_col(data = BMDMixture2, aes(x = Dose2, y = yres, fill = Model), alpha = 0.6,
     #         inherit.aes = FALSE, color = NA) +
     #geom_area(data = BMDMixture2,
@@ -1284,7 +1285,7 @@ plot.BMADR <- function(mod.obj,
                    size = 2, color = 1, shape = 21,
                    fill = brewer.pal(9, "Set1")[2],
                    inherit.aes = FALSE) +
-        labs(caption = paste0("data and vertical bars based on ", w.data, " sample means +- standard deviation /n
+        labs(caption = paste0("data and vertical bars based on ", w.data, " sample means +- standard deviation \n
                               red dot and horizontal green bar indicate the model-averaged BMD and its ", (mod.obj$pvec[3]-mod.obj$pvec[1])*100, "%CI"))
 
     }else if(clustered == T){
@@ -1931,7 +1932,7 @@ plot.BMADRQ <- function(mod.obj,
 
       pts1 <- ggpubr::ggarrange(pBMDs, pWeights, pplot2, pplot3,
                                 dplot2, dplot3,
-                                nrow = 2, ncol = 2)
+                                nrow = 3, ncol = 2)
       pts2 <- ggpubr::annotate_figure(pts1, top = text_grob(title,
                                                             color = "red", face = "bold", size = 14))
 

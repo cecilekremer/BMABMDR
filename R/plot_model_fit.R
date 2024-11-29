@@ -67,9 +67,9 @@ basic.plot <- function(x, model_name, increasing){
                                cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y + geom.s, colour = cov, fill = cov), shape = 25) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y - geom.s, colour = cov, fill = cov), shape = 24) +
-          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) + log(geom.s)), colour = cov, fill = cov), shape = 25) +
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) - log(geom.s)), colour = cov, fill = cov), shape = 24) +
+          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = exp(log(geom.y) - log(geom.s)), ymax = exp(log(geom.y) + log(geom.s)), colour = cov),
           #               size = 1, width = NA, linetype = 'dashed') +
           scale_x_continuous(trans = 'identity', labels = plot.labs, breaks = plot.breaks)
       }else{
@@ -106,9 +106,9 @@ basic.plot <- function(x, model_name, increasing){
                                cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) + #, position = position_dodge(width=0.2)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov))          +
-          geom_point(data = x$data, aes(x = x2, y = geom.y + geom.s, colour = cov, fill = cov), shape = 25) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y - geom.s, colour = cov, fill = cov), shape = 24) +
-          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) + log(geom.s)), colour = cov, fill = cov), shape = 25) +
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) - log(geom.s)), colour = cov, fill = cov), shape = 24) +
+          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = exp(log(geom.y) - log(geom.s)), ymax = exp(log(geom.y) + log(geom.s)), colour = cov),
           #               size = 1, width = NA, linetype = 'dotted') + #, position = position_dodge(width=0.2)) +
           scale_x_continuous(trans = 'identity', labels = plot.labs, breaks = plot.breaks)
       }else{
@@ -151,9 +151,9 @@ basic.plot <- function(x, model_name, increasing){
                                cov = rep(covar, each = length(log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)))))
         p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y, colour = cov)) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y + geom.s, colour = cov, fill = cov), shape = 25) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y - geom.s, colour = cov, fill = cov), shape = 24) +
-          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) + log(geom.s)), colour = cov, fill = cov), shape = 25) +
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) - log(geom.s)), colour = cov, fill = cov), shape = 24) +
+          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = exp(log(geom.y) - log(geom.s)), ymax = exp(log(geom.y) + log(geom.s)), colour = cov),
           #               size = 1, width = NA, linetype = 'dashed') +
           scale_x_continuous(trans = 'identity', labels = plot.labs, breaks = plot.breaks)
       }else{
@@ -175,9 +175,9 @@ basic.plot <- function(x, model_name, increasing){
         dataTemp <- data.frame(x = log10(seq(ifelse(min(x$data$x) == 0, min(x$data$x[x$data$x != 0])/4, min(x$data$x)), maxDose, 0.01)), y = temp3)
         p <- ggplot() + geom_point(data = x$data, aes(x = x2, y = geom.y, colour = cov)) +
           geom_line(data = dataTemp, aes(x = x, y = y)) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y + geom.s, colour = cov, fill = cov), shape = 25) +
-          geom_point(data = x$data, aes(x = x2, y = geom.y - geom.s, colour = cov, fill = cov), shape = 24) +
-          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = geom.y - geom.s, ymax = geom.y + geom.s, colour = cov),
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) + log(geom.s)), colour = cov, fill = cov), shape = 25) +
+          geom_point(data = x$data, aes(x = x2, y = exp(log(geom.y) - log(geom.s)), colour = cov, fill = cov), shape = 24) +
+          # geom_errorbar(data = x$data, mapping = aes(x = x2, ymin = exp(log(geom.y) - log(geom.s)), ymax = exp(log(geom.y) + log(geom.s)), colour = cov),
           #               size = 1, width = NA, linetype = 'dashed') +
           scale_x_continuous(trans = 'identity', labels = plot.labs, breaks = plot.breaks)
       }else{

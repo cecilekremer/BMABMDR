@@ -408,7 +408,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
     # pb=post_prob(bridge_sampler(fitstanH0, silent=T),bridge_sampler(fitstanSM, silent=T))
     # print(bf)
     # print(pb)
-    bf = bridge_sampling::bf(bridge_SM, bridge_H0)
+    bf = bridgesampling::bf(bridge_SM, bridge_H0)
     bf = bf$bf
 
 

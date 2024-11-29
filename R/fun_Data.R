@@ -1767,12 +1767,12 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
 
   datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
   if(cluster == FALSE) {
-    fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BI(mu.link = 'logit'),data=datf)
+    fpfit = gamlss::gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BI(mu.link = 'logit'),data=datf)
 
   } else if(cluster == TRUE) {
-    fpfit = gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BB(),
+    fpfit = gamlss::gamlss(cbind(yy, n.a-yy)~fp(xx),family=gamlss.dist::BB(),
                    sigma.formula = ~1,data=datf)
-    fpfit2 <- try(gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=gamlss.dist::BB(), data=datf),
+    fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=gamlss.dist::BB(), data=datf),
                   silent = TRUE)
     rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
 
@@ -2129,7 +2129,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       if(obs.min[i] < obs.max[i]) {
 
         # for a
-        min.min = rep(0.001, nlevels)
+        min.min[i] = 0.001
         mode.min[i] = obs.min[i]
         max.min[i] = 2*obs.min[i]
 
@@ -2231,6 +2231,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
     for(i in 1:nlevels){
       if(c.vec[i,1] == 0) c.vec[i,1] = 0.0001
       if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = c.vec[i,3] - 0.05
+      # if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = (c.vec[i,3] - c.vec[i,1])/2
 
       shape.a1[i] <- fun.alpha(a = a.vec[i,1], b = a.vec[i,2],
                                c = a.vec[i,3], g = shape.a)
@@ -2937,7 +2938,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       if(obs.min[i] < obs.max[i]) {
 
         # for a
-        min.min = rep(0.001, nlevels)
+        min.min[i] = 0.001
         mode.min[i] = obs.min[i]
         max.min[i] = 2*obs.min[i]
 
@@ -3039,6 +3040,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     for(i in 1:nlevels){
       if(c.vec[i,1] == 0) c.vec[i,1] = 0.0001
       if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = c.vec[i,3] - 0.05
+      # if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = (c.vec[i,3] - c.vec[i,1])/2
 
       shape.a1[i] <- fun.alpha(a = a.vec[i,1], b = a.vec[i,2],
                                c = a.vec[i,3], g = shape.a)
@@ -3159,6 +3161,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
 
     if(c.vec[1] == 0) c.vec[1] = 0.0001
     if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
+    # if(c.vec[2] >= c.vec[3]) c.vec[2] = (c.vec[3] - c.vec[1]) / 2
+
 
     shape.a1 <- fun.alpha(a = a.vec[1], b = a.vec[2],
                           c = a.vec[3], g = shape.a)
