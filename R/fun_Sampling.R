@@ -5395,7 +5395,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
                                  pars = c('a', 'b', 'd', 'BMD', 'par1', 'par2', 'par3'))
       } else {
         parsQE4Q <- parq_extract(fitstanQE4_Q, model_name = "QE4_Q",
-                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'))
+                                 pars = c('a', 'b', 'd', 'BMD', 'rho[1]', 'par1', 'par2', 'par3'),
+                                 rho = TRUE)
       }
       QE4resQ <-  quantile(parsQE4Q$BMD, pvec, na.rm = T)*data$maxD
 

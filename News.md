@@ -2,6 +2,16 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.9
+
+* fixed sporadic error in plot.BMADR()
+
+* fixed error in plot.BMADRQ() for clustered quantal data (when updating ggplot to 3.5.1)
+
+* fixed data (SD) in basic.plot() for lognormal models
+
+* fixed estimate of rho (was not given in output) for Quantal clustered model QE4
+
 ## BMABMDR 0.1.8
 
 * corrected label in plots for XX% CrI (added 'pvec' to output from Laplace and Sampling methods)
@@ -14,11 +24,9 @@ Whenever changes are expected to influence modeling results, this is explicitly 
 
 ## BMABMDR 0.1.6
 
-* fixed covariates weights calculation: fold change parameter
+* fixed covariates weights calculation / likelihood: fold change parameter
 
 * fixed covariate analysis throwing error when model was not fit
-
-* fixed covariates likelihood fold change parameter
 
 * fixed mistake in data passed to saturated model for clustered LN data prep: **litters of size 1 can be included in the analysis**
 
