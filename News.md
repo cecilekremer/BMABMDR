@@ -2,6 +2,12 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.10
+
+* fixed modelTestQ() for data with multiple observations per dose (w/o litter effect)
+
+* fixed plot.BMADR() for continuous data (mistake in plot of dose levels introduced in 0.1.9)
+
 ## BMABMDR 0.1.9
 
 * fixed sporadic error in plot.BMADR()

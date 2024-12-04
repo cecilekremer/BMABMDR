@@ -526,7 +526,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
                        .Machine$double.xmin),
       priorub = c(min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1]))), min(max(abs(diff(y.a/n.a)))*10, 1))
     )
-    data.modstanSM = list(N=N,Ndose=length(unique(data.Q$data$x)),n_litter=rep(0,length(unique(data.Q$data$x))),n=n.a,y=y.a,
+    data.modstanSM = list(N=N,Ndose=length((data.Q$data$x)),n_litter=rep(0,length((data.Q$data$x))),n=n.a,y=y.a,
                           # yint=y.a, nint=n.a,
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
