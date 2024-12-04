@@ -187,7 +187,8 @@ plot.BMADR <- function(mod.obj,
                        log10(min(dose[dose > 0])/4))
     ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
                      # min(mod.obj$MA_post/mod.obj$max.dose)/2,
-                     min(exp(bmdl), na.rm = T),
+                     # min(exp(bmdl), na.rm = T),
+                     min(bmdlo, na.rm = T),
                      min(dose[dose > 0])/4)
   }else{
     ddd <- c(min(dose)/4, dose)
@@ -206,7 +207,8 @@ plot.BMADR <- function(mod.obj,
                        log10(min(dose)/4))
     ddd[1] <- ifelse(min(bmdlo, na.rm=T) < ddd[1],
                      # min(mod.obj$MA_post/mod.obj$max.dose)/2,
-                     min(exp(bmdl), na.rm = T),
+                     # min(exp(bmdl), na.rm = T),
+                     min(bmdlo, na.rm = T),
                      min(dose)/4)
   }
 
