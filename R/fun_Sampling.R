@@ -2355,7 +2355,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     for(i in 1:16){
 
-      if(weight[i] > 0){
+      if(prior.weights[i] > 0){
 
         best.fit <- modelnames[i]
         stanBest <- get(paste0('fitstan', best.fit))
@@ -4767,7 +4767,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     for(i in 1:16){
 
-      if(weight[i] > 0){
+      if(prior.weights[i] > 0){
 
         best.fit <- modelnames[i]
         stanBest <- get(paste0('fitstan', best.fit))
@@ -6363,7 +6363,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     for(i in 1:8){
 
-      if(weight[i] > 0){
+      if(prior.weights[i] > 0){
 
         best.fit <- modelnames[i]
         # stanBest <- get(paste0('fitstan', best.fit, '_Q'))

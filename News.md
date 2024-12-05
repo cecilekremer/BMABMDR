@@ -8,6 +8,8 @@ Whenever changes are expected to influence modeling results, this is explicitly 
 
 * fixed plot.BMADR() for continuous data (mistake in plot of dose levels introduced in 0.1.9)
 
+* fixed testallmodels option to include all models with prior.weight > 0
+
 ## BMABMDR 0.1.9
 
 * fixed sporadic error in plot.BMADR()
