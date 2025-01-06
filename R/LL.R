@@ -1542,13 +1542,13 @@ llfSM2_Q=function(x,nclust,nvec,dvec,yvec,qval,rho){
   # abet = m*((1/rho)-1)
   # bbet = (1.0 - m)*((1/rho)-1)
   abet <- c(); bbet <- c()
-  j <- 1
+  # j <- 1
   for(i in 1:length(x)){
-    for(k in 1:nclust[i]){
-      abet[j] <- x[i]*((1/rho) - 1)
-      bbet[j] <- (1 - x[i])*((1/rho) - 1)
-      j <- j + 1
-    }
+    # for(k in 1:nclust[i]){
+      abet[i] <- x[i]*((1/rho) - 1)
+      bbet[i] <- (1 - x[i])*((1/rho) - 1)
+      # j <- j + 1
+    # }
   }
   sum(lchoose(nvec, yvec) + lgamma(abet+yvec+1.0E-05) + lgamma(bbet+nvec-yvec+1.0E-05) -
         lgamma(abet+bbet+nvec+1.0E-05) - lgamma(abet+1.0E-05) -
