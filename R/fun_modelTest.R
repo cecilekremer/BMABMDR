@@ -471,10 +471,36 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
   if(data.Q$data$is_betabin == 1){
 
+    N <- length(data.Q$data$x)
+    dose.a <- data.Q$data$x
     y.a <- data.Q$data$y
     n.a <- data.Q$data$n
-    dose.a <- data.Q$data$x
 
+    dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
+    dat <- dat %>%
+      group_by(x) %>%
+      mutate(litter2 = row_number())
+    nl = c() # number of litters per dose group (vector of size N)
+    Ndose = length(unique(dose.a))
+    doses = unique(dose.a)
+    for(i in 1:Ndose){
+      cnt = plyr::count(dat$litter[dat$x==doses[i]])
+      nl[i] = length(unique(cnt$x))
+    }
+    maxl = max(nl)
+
+    # Create input matrices
+    nmat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    ymat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:length(unique(dat$x))){
+      for(j in 1:nl[i]){
+        d <- unique(dat$x)[i]
+        nmat[i, j] <- dat$n[dat$x == d & dat$litter2 == j]
+        ymat[i, j] <- dat$y[dat$x == d & dat$litter2 == j]
+      }
+    }
+
+    # Data for priors
     yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
     nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
     yamean <- yasum/nasum
@@ -482,7 +508,6 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
                   .Machine$double.xmin)
     ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
-    N <- length(dose.a)
     datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
                   silent = TRUE)
@@ -494,9 +519,28 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       priorlb = lbs,
       priorub = c(ubs, min(max(abs(ydiff))*10, 1))
     )
+
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat,
+                          # yint=y.a, nint=n.a,
+                          priormu = priorSM$priormu,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin,
+                          force_monotone = 0
+    )
     ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
+    svSM = list(par = ddy, rho = rhohat)
+
+  }else if(data.Q$data$is_bin == 1){
+
+    N <- length(data.Q$data$x)
+    dose.a <- data.Q$data$x
+    y.a <- data.Q$data$y
+    n.a <- data.Q$data$n
 
     dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
+    dat <- dat %>%
+      group_by(x) %>%
+      mutate(litter2 = row_number())
     nl = c() # number of litters per dose group (vector of size N)
     Ndose = length(unique(dose.a))
     doses = unique(dose.a)
@@ -504,46 +548,53 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       cnt = plyr::count(dat$litter[dat$x==doses[i]])
       nl[i] = length(unique(cnt$x))
     }
+    maxl = max(nl)
 
-    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, n=n.a, y=y.a,
-                          # yint=y.a, nint=n.a,
-                          priormu = priorSM$priormu,
-                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
-                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin,
-                          force_monotone = force
-    )
-    svSM = list(par = ddy, rho = rhohat)
+    # Create input matrices
+    nmat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    ymat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:length(unique(dat$x))){
+      for(j in 1:nl[i]){
+        d <- unique(dat$x)[i]
+        nmat[i, j] <- dat$n[dat$x == d & dat$litter2 == j]
+        ymat[i, j] <- dat$y[dat$x == d & dat$litter2 == j]
+      }
+    }
 
-  }else if(data.Q$data$is_bin == 1){
-
-    N <- length(data.Q$data$x)
-    y.a <- data.Q$data$y
-    n.a <- data.Q$data$n
-
+    # Data for priors
+    yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
+    nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
+    yamean <- yasum/nasum
+    ydiff <- diff(yasum/nasum)
+    lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
+                  .Machine$double.xmin)
+    ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
+    datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
+    # fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
+    #               silent = TRUE)
+    # rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    # dim(rhohat) <- 1
     priorSM = list(
-      priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), 0.0),
-      priorlb = ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
-                       .Machine$double.xmin),
-      priorub = c(min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1]))), min(max(abs(diff(y.a/n.a)))*10, 1))
+      priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), 0),
+      priorlb = lbs,
+      priorub = c(ubs, min(max(abs(ydiff))*10, 1))
     )
-    data.modstanSM = list(N=N,Ndose=length((data.Q$data$x)),n_litter=rep(0,length((data.Q$data$x))),n=n.a,y=y.a,
+
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat,
                           # yint=y.a, nint=n.a,
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                           is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin,
-                          force_monotone = force
+                          force_monotone = 0
     )
-    svSM = list(par = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
-                        diff(y.a/n.a)
-    ))
-
-
+    ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
+    svSM = list(par = ddy)
 
   }else stop("data must be either clustered or independent")
 
   if(type == 'MCMC'){
 
-    svH1=optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+    svH1=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
     if(data.modstanSM$is_bin == 1){
       initf2 <- function(chain_id = 1) {
         nns <- which(stringr::str_detect(names(svH1),'par'))
@@ -581,16 +632,23 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     bf = BF_brms_bridge$bf
     llSM = NA
 
+
   }else if(type == 'Laplace'){
 
     if(data.Q$data$is_bin == 1){
 
-      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = ndraws)
-      # llSM <- llfSM_Q(b = optSM$par[1], Intercept = optSM$par[4], # non-centered intercept
-      #                 Y = data.modstanSM$Y, trials = data.modstanSM$trials, Xc = as.matrix(data.Q$data$x))
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.Q$data$N, ']'),
-                                            paste0('par[', data.Q$data$N, ']'))], 2, median)
-      llSM = llfSM_Q(pars.SM, data.Q$data$n, data.Q$data$x, data.Q$data$y)
+      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = 30000)
+      # optSM$par
+
+      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+
+      parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
+      parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
+      colnames(parsed_indices) <- c("row", "col")
+      sorted_order <- order(parsed_indices[, 1], parsed_indices[, 2])
+      pars.SM <- pars.SM[sorted_order]
+
+      llSM = llfSM_Q(x = pars.SM, nvec = data.Q$data$n, dvec = data.Q$data$x, yvec = data.Q$data$y, qval = data.Q$data$q)
 
       llfun = paste0('llf',best.fit,'_Q')
       llBestfitf = get(llfun)
@@ -598,16 +656,27 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
                               yvec = data.Q$data$y, qval = data.Q$data$q)
 
       BIC.bestfit = - 2 * llBestfit + (3 * log(sum(data.Q$data$n))) # parms: a, b, d
-      BIC.SM = - 2 * llSM + (data.Q$data$N * log(sum(data.Q$data$n)))
+      BIC.SM = - 2 * llSM + (data.modstanSM$Ndose * log(sum(data.Q$data$n))) # parms = one per dose group; in this case unique dose groups since they are the same parameter?
+
 
     }else if(data.Q$data$is_betabin == 1){
 
-      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = ndraws)
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.modstanSM$Ndose, ']'),
-                                            'rho[1]')], 2, median)
-      llSM = llfSM2_Q(x = pars.SM[1:data.modstanSM$Ndose], nclust = data.modstanSM$n_litter,
+      optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = 30000)
+      # optSM$par
+
+      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
+      parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
+      colnames(parsed_indices) <- c("row", "col")
+      sorted_order <- order(parsed_indices[, 1], parsed_indices[, 2])
+      pars.SM <- pars.SM[sorted_order]
+
+      pars.SM <- c(pars.SM,
+                   median(optSM$theta_tilde[,"rho[1]"]))
+
+      llSM = llfSM2_Q(x = pars.SM[1:data.modstanSM$N], nclust = data.modstanSM$n_litter,
                       nvec = data.Q$data$n, dvec = data.Q$data$x, yvec = data.Q$data$y, qval = data.Q$data$q,
-                      rho = pars.SM[data.modstanSM$Ndose+1])
+                      rho = pars.SM[data.modstanSM$N+1])
 
       llfun = paste0('llf',best.fit,'2_Q')
       llBestfitf = get(llfun)
@@ -630,14 +699,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   }
 
   return(list(bayesFactor = bf,
-              # means.SM = means.SM,
-              # par.best = pars.bestfit,
-              # BIC.bestfit = BIC.bestfit,
-              # BIC.SM = BIC.SM,
               llSM = llSM,
               warn.bf = warn.bf)
   )
-
 
 }
 

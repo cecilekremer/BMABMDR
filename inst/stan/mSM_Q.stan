@@ -21,8 +21,15 @@ data{
   int N;  // the total number of observations
   int Ndose; // the total number of distinct dose group
   int n_litter[Ndose]; // number of litters per dose group
-  int n[N];  // the sample size for each dose group
-  int y[N];  // the arithmetic mean of the response values for each dose group
+  int maxl; // max number of litters per dose
+
+  // matrix[Ndose, maxl] n;
+  // matrix[Ndose, maxl] y;
+  int n[Ndose, maxl];
+  int y[Ndose, maxl];
+
+  // int n[N];  // the sample size for each dose group
+  // int y[N];  // the arithmetic mean of the response values for each dose group
 
   real priormu[2];
   real priorlb; //lower bound
@@ -34,49 +41,59 @@ data{
   int<lower=0, upper=1> force_monotone;
 }
 parameters{
-  vector[Ndose] par; // par[1]=background, par[2:N]=increment per dose group
+  row_vector[Ndose] par; // par[1]=background, par[2:N]=increment per dose group
   real<lower=0, upper=1> rho[is_betabin]; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
-  vector[Ndose] a; // at the dose level
-  real abet[N];
-  real bbet[N];
+  // vector[Ndose] a; // at the dose level
+  matrix[Ndose, maxl] a;
+
+  // real abet[N];
+  // real bbet[N];
+  row_vector[N] abet;
+  row_vector[N] bbet;
 
   // mean in lowest dose
-  a[1] = par[1];
+  // a[1] = par[1];
+  //
+  // for(k in 2:Ndose){
+    //   a[k] = a[k-1] + par[k];
+    //   if(a[k] <= 0){
+      //     a[k] = 0.0001;
+      //   }
+      //   if(a[k] >= 1){
+        //     a[k] = 0.9999;
+        //   }
+        // }
+        a[1, ] = rep_row_vector(par[1], n_litter[1]);
 
-  for(k in 2:Ndose){
-    a[k] = a[k-1] + par[k];
-    if(a[k] <= 0){
-      a[k] = 0.0001;
-    }
-    if(a[k] >= 1){
-      a[k] = 0.9999;
-    }
-  }
-
-
-  if(is_bin == 0) {
-
-    // for(i in 1:N){
-      // abet[i] = (y[i]/n[i])*((1/rho[is_betabin])-1.0);
-      // bbet[i] = (1.0 - (y[i]/n[i]))*((1.0/rho[is_betabin])-1);
-      // }
-      int j = 1;
-      for(i in 1:Ndose){
-        for(k in 1:n_litter[i]){
-          abet[j] = (a[i])*((1/rho[is_betabin])-1.0);
-          bbet[j] = (1.0 - (a[i]))*((1.0/rho[is_betabin])-1);
-          j = j + 1;
+        for(k in 2:Ndose){
+          a[k, ] = a[k-1, ] + par[k];
+          // if(a[k, ] <= 0){
+            //   a[k, ] = rep_row_vector(0.0001, n_litter[k]);
+            // }
+            // if(a[k, ] >= 1){
+              //   a[k, ] = rep_row_vector(0.9999, n_litter[k]);
+              // }
         }
-      }
 
-  }else {
-    for(i in 1:N){
-      abet[i] = 0.0;
-      bbet[i] = 0.0;
-    }
-  }
+        if(is_bin == 0) {
+
+          int j = 1;
+          for(i in 1:Ndose){
+            for(k in 1:n_litter[i]){
+              abet[j] = (a[i,k])*((1/rho[is_betabin])-1.0);
+              bbet[j] = (1.0 - (a[i,k]))*((1.0/rho[is_betabin])-1);
+              j = j + 1;
+            }
+          }
+
+        }else {
+          for(i in 1:N){
+            abet[i] = 0.0;
+            bbet[i] = 0.0;
+          }
+        }
 }
 model{
 
@@ -94,20 +111,34 @@ model{
 
   if(is_bin == 1) {
 
-    for (i in 1:N){
-      // target += lchoose(n[i], y[i]) + y[i]*log(a[i]+eps) + (n[i] - y[i])*log(1 - a[i]+eps);
-      target += binomial_lpmf(y[i] | n[i], a[i]);
-
-    }
+    // for (i in 1:N){
+      //   // target += lchoose(n[i], y[i]) + y[i]*log(a[i]+eps) + (n[i] - y[i])*log(1 - a[i]+eps);
+      //   target += binomial_lpmf(y[i] | n[i], a[i]);
+      //
+      // }
+      for(k in 1:Ndose){
+        for(i in 1:n_litter[k]){
+          target += binomial_lpmf(y[k, i] | n[k, i], a[k, i]);
+        }
+      }
 
   } else if(is_betabin == 1) {
 
     rho[is_betabin] ~ pert_dist(0.0, priormu[2], 1.0, 4.0);
-    for (i in 1:N){
-      // target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
-      // lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
-      // lgamma(abet[i]+bbet[i]+eps);
-      target += beta_binomial_lpmf(y[i] | n[i], abet[i], bbet[i]);
+    // for (i in 1:N){
+    //   // target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
+    //   // lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+    //   // lgamma(abet[i]+bbet[i]+eps);
+    //
+    //   target += beta_binomial_lpmf(y[i] | n[i], abet[i], bbet[i]);
+    // }
+
+    int j = 1;
+    for(k in 1:Ndose){
+      for(i in 1:n_litter[k]){
+        target += beta_binomial_lpmf(y[k, i] | n[k, i], abet[j], bbet[j]);
+        j = j + 1;
+      }
     }
   }
 

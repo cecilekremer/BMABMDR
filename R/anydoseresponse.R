@@ -607,7 +607,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     }
 
     ## Saturated model
-    svH1=optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
+    svH1=rstan::optimizing(stanmodels$mSM_Q,data = data.modstanSM,init=svSM)$par
     if(data.modstanSM$is_bin == 1){
       initf2 <- function(chain_id = 1) {
         nns <- which(stringr::str_detect(names(svH1),'par'))
