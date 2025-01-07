@@ -478,8 +478,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
     dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
     dat <- dat %>%
-      group_by(x) %>%
-      mutate(litter2 = row_number())
+      dplyr::group_by(x) %>%
+      dplyr::mutate(litter2 = row_number())
     nl = c() # number of litters per dose group (vector of size N)
     Ndose = length(unique(dose.a))
     doses = unique(dose.a)
@@ -551,8 +551,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
 
     dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
     dat <- dat %>%
-      group_by(x) %>%
-      mutate(litter2 = row_number())
+      dplyr::group_by(x) %>%
+      dplyr::mutate(litter2 = row_number())
     nl = c() # number of litters per dose group (vector of size N)
     Ndose = length(unique(dose.a))
     doses = unique(dose.a)
