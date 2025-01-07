@@ -499,6 +499,18 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
         ymat[i, j] <- dat$y[dat$x == d & dat$litter2 == j]
       }
     }
+    # Set NAs to Inf
+    nmat <- ifelse(is.na(nmat), Inf, nmat)
+    ymat <- ifelse(is.na(ymat), Inf, ymat)
+    use_data <- matrix(1, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:dim(ymat)[1]){
+      for(j in 1:dim(ymat)[2]){
+        use_data[i,j] <- ifelse(ymat[i,j] == Inf, 0, 1)
+      }
+    }
+    # Set Infs to -1 because must be integer; data is not used because of use_data
+    nmat <- ifelse(is.infinite(nmat), -1, nmat)
+    ymat <- ifelse(is.infinite(ymat), -1, ymat)
 
     # Data for priors
     yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
@@ -520,7 +532,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       priorub = c(ubs, min(max(abs(ydiff))*10, 1))
     )
 
-    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat,
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat, use_data=use_data,
                           # yint=y.a, nint=n.a,
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
@@ -560,6 +572,18 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
         ymat[i, j] <- dat$y[dat$x == d & dat$litter2 == j]
       }
     }
+    # Set NAs to Inf
+    nmat <- ifelse(is.na(nmat), Inf, nmat)
+    ymat <- ifelse(is.na(ymat), Inf, ymat)
+    use_data <- matrix(1, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:dim(ymat)[1]){
+      for(j in 1:dim(ymat)[2]){
+        use_data[i,j] <- ifelse(ymat[i,j] == Inf, 0, 1)
+      }
+    }
+    # Set Infs to -1 because must be integer; data is not used because of use_data
+    nmat <- ifelse(is.infinite(nmat), -1, nmat)
+    ymat <- ifelse(is.infinite(ymat), -1, ymat)
 
     # Data for priors
     yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
@@ -580,7 +604,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       priorub = c(ubs, min(max(abs(ydiff))*10, 1))
     )
 
-    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat,
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat, use_data=use_data,
                           # yint=y.a, nint=n.a,
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
@@ -647,6 +671,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       colnames(parsed_indices) <- c("row", "col")
       sorted_order <- order(parsed_indices[, 1], parsed_indices[, 2])
       pars.SM <- pars.SM[sorted_order]
+      # remove 'parameters' not in use_data
+      pars.SM <- pars.SM[pars.SM != (-1)]
 
       llSM = llfSM_Q(x = pars.SM, nvec = data.Q$data$n, dvec = data.Q$data$x, yvec = data.Q$data$y, qval = data.Q$data$q)
 
@@ -670,6 +696,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       colnames(parsed_indices) <- c("row", "col")
       sorted_order <- order(parsed_indices[, 1], parsed_indices[, 2])
       pars.SM <- pars.SM[sorted_order]
+      # remove 'parameters' not in use_data
+      pars.SM <- pars.SM[pars.SM != (-1)]
 
       pars.SM <- c(pars.SM,
                    median(optSM$theta_tilde[,"rho[1]"]))

@@ -27,6 +27,7 @@ data{
   // matrix[Ndose, maxl] y;
   int n[Ndose, maxl];
   int y[Ndose, maxl];
+  int use_data[Ndose, maxl];
 
   // int n[N];  // the sample size for each dose group
   // int y[N];  // the arithmetic mean of the response values for each dose group
@@ -94,6 +95,17 @@ transformed parameters{
             bbet[i] = 0.0;
           }
         }
+
+
+    // Adjust parameter matrix for data not used
+    for(i in 1:Ndose){
+      for(j in 1:maxl){
+        if(use_data[i, j] == 0){
+          a[i, j] = -1;
+        }
+      }
+    }
+
 }
 model{
 
@@ -118,7 +130,9 @@ model{
       // }
       for(k in 1:Ndose){
         for(i in 1:n_litter[k]){
-          target += binomial_lpmf(y[k, i] | n[k, i], a[k, i]);
+          if(use_data[k, i] == 1){
+            target += binomial_lpmf(y[k, i] | n[k, i], a[k, i]);
+          }
         }
       }
 
@@ -126,20 +140,22 @@ model{
 
     rho[is_betabin] ~ pert_dist(0.0, priormu[2], 1.0, 4.0);
     // for (i in 1:N){
-    //   // target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
-    //   // lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
-    //   // lgamma(abet[i]+bbet[i]+eps);
-    //
-    //   target += beta_binomial_lpmf(y[i] | n[i], abet[i], bbet[i]);
-    // }
+      //   // target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
+      //   // lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
+      //   // lgamma(abet[i]+bbet[i]+eps);
+      //
+      //   target += beta_binomial_lpmf(y[i] | n[i], abet[i], bbet[i]);
+      // }
 
-    int j = 1;
-    for(k in 1:Ndose){
-      for(i in 1:n_litter[k]){
-        target += beta_binomial_lpmf(y[k, i] | n[k, i], abet[j], bbet[j]);
-        j = j + 1;
+      int j = 1;
+      for(k in 1:Ndose){
+        for(i in 1:n_litter[k]){
+          if(use_data[k, i] == 1){
+            target += beta_binomial_lpmf(y[k, i] | n[k, i], abet[j], bbet[j]);
+            j = j + 1;
+          }
+        }
       }
-    }
   }
 
 

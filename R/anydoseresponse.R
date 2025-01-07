@@ -468,6 +468,45 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     ##---------------------------------------------------
     ## Null model
 
+    N <- length(dose.a)
+
+    dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
+    dat <- dat %>%
+      group_by(x) %>%
+      mutate(litter2 = row_number())
+    nl = c() # number of litters per dose group (vector of size N)
+    Ndose = length(unique(dose.a))
+    doses = unique(dose.a)
+    for(i in 1:Ndose){
+      cnt = plyr::count(dat$litter[dat$x==doses[i]])
+      nl[i] = length(unique(cnt$x))
+    }
+    maxl = max(nl)
+
+    # Create input matrices
+    nmat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    ymat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:length(unique(dat$x))){
+      for(j in 1:nl[i]){
+        d <- unique(dat$x)[i]
+        nmat[i, j] <- dat$n[dat$x == d & dat$litter2 == j]
+        ymat[i, j] <- dat$y[dat$x == d & dat$litter2 == j]
+      }
+    }
+    # Set NAs to Inf
+    nmat <- ifelse(is.na(nmat), Inf, nmat)
+    ymat <- ifelse(is.na(ymat), Inf, ymat)
+    use_data <- matrix(1, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:dim(ymat)[1]){
+      for(j in 1:dim(ymat)[2]){
+        use_data[i,j] <- ifelse(ymat[i,j] == Inf, 0, 1)
+      }
+    }
+    # Set Infs to -1 because must be integer; data is not used because of use_data
+    nmat <- ifelse(is.infinite(nmat), -1, nmat)
+    ymat <- ifelse(is.infinite(ymat), -1, ymat)
+
+    # Data for priors
     yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
     nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
     yamean <- yasum/nasum
@@ -475,7 +514,6 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
                   .Machine$double.xmin)
     ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
-    N <- length(dose.a)
     datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
                   silent = TRUE)
@@ -503,9 +541,25 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
       priorlb = lbs,
       priorub = c(ubs, min(max(abs(ydiff))*10, 1))
     )
+
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat, use_data = use_data,
+                          # yint=y.a, nint=n.a,
+                          priormu = priorSM$priormu,
+                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
+                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin,
+                          force_monotone = 0
+    )
     ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
+    svSM = list(par = ddy, rho = rhohat)
+
+  }else{
+
+    N <- length(dose.a)
 
     dat <- data.frame(x = dose.a, y = y.a, n = n.a, litter = c(1:length(dose.a)))
+    dat <- dat %>%
+      group_by(x) %>%
+      mutate(litter2 = row_number())
     nl = c() # number of litters per dose group (vector of size N)
     Ndose = length(unique(dose.a))
     doses = unique(dose.a)
@@ -513,31 +567,40 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
       cnt = plyr::count(dat$litter[dat$x==doses[i]])
       nl[i] = length(unique(cnt$x))
     }
+    maxl = max(nl)
 
-    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, n=n.a, y=y.a,
-                          # yint=y.a, nint=n.a,
-                          priormu = priorSM$priormu,
-                          priorlb=priorSM$priorlb, priorub=priorSM$priorub,
-                          is_bin=0, is_betabin = 1, priorgama = 4, eps = .Machine$double.xmin,
-                          force_monotone = 0
-    )
-    svSM = list(par = ddy, rho = rhohat)
-
-  }else{
-
-    if(length(dose.a) != length(unique(dose.a))){
-      dat <- data.frame(x = dose.a, y = y.a, n = n.a)
-      dose.a <- unique(dat$x)
-      y.a <- c(); n.a <- c()
-      for(i in 1:length(dose.a)){
-        y.a[i] <- sum(dat$y[dat$x == dose.a[i]])
-        n.a[i] <- sum(dat$n[dat$x == dose.a[i]])
+    # Create input matrices
+    nmat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    ymat <- matrix(NA, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:length(unique(dat$x))){
+      for(j in 1:nl[i]){
+        d <- unique(dat$x)[i]
+        nmat[i, j] <- dat$n[dat$x == d & dat$litter2 == j]
+        ymat[i, j] <- dat$y[dat$x == d & dat$litter2 == j]
       }
     }
+    # Set NAs to Inf
+    nmat <- ifelse(is.na(nmat), Inf, nmat)
+    ymat <- ifelse(is.na(ymat), Inf, ymat)
+    use_data <- matrix(1, nrow = length(unique(dat$x)), ncol = maxl)
+    for(i in 1:dim(ymat)[1]){
+      for(j in 1:dim(ymat)[2]){
+        use_data[i,j] <- ifelse(ymat[i,j] == Inf, 0, 1)
+      }
+    }
+    # Set Infs to -1 because must be integer; data is not used because of use_data
+    nmat <- ifelse(is.infinite(nmat), -1, nmat)
+    ymat <- ifelse(is.infinite(ymat), -1, ymat)
 
-    maxDose = max(dose.a)
-    N = length(dose.a)
-    dose.a = dose.a/maxDose
+    # Data for priors
+    yasum <- tapply(y.a, dose.a, sum, na.rm = TRUE)
+    nasum <- tapply(n.a, dose.a, sum, na.rm = TRUE)
+    yamean <- yasum/nasum
+    ydiff <- diff(yasum/nasum)
+    lbs <- ifelse(yamean[1] != 0, max(c(prop.test(yasum[1], nasum[1])$conf.int[1]/2, 1/(10*nasum[1]))),
+                  .Machine$double.xmin)
+    ubs <- min(c(3*prop.test(yasum[1], nasum[1])$conf.int[2]/2, 1 - 1/(10*nasum[1])))
+    datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
 
     ##---------------------------------------------------
     ## Null model
@@ -561,21 +624,20 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     ## Saturated model
 
     priorSM = list(
-      priormu = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))), 0.0),
-      priorlb = ifelse(y.a[1] != 0, max(c(prop.test(y.a[1], n.a[1])$conf.int[1]/2, 1/(10*n.a[1]))),
-                       .Machine$double.xmin),
-      priorub = c(min(c(3*prop.test(y.a[1], n.a[1])$conf.int[2]/2, 1 - 1/(10*n.a[1]))), min(max(abs(diff(y.a/n.a)))*10, 1))
+      priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), 0),
+      priorlb = lbs,
+      priorub = c(ubs, min(max(abs(ydiff))*10, 1))
     )
-    data.modstanSM = list(N=N,Ndose=length(unique(dose.a)),n_litter=rep(0,length(unique(dose.a))),n=n.a,y=y.a,
+
+    data.modstanSM = list(N=N, Ndose=Ndose, n_litter=nl, maxl = maxl, n=nmat, y=ymat, use_data=use_data,
                           # yint=y.a, nint=n.a,
                           priormu = priorSM$priormu,
                           priorlb=priorSM$priorlb, priorub=priorSM$priorub,
                           is_bin=1, is_betabin = 0, priorgama = 4, eps = .Machine$double.xmin,
                           force_monotone = 0
     )
-    svSM = list(par = c(max(c(y.a[1]/n.a[1], 1/(5*n.a[1]))),
-                        diff(y.a/n.a)
-    ))
+    ddy <- c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))),diff(yamean))
+    svSM = list(par = ddy)
 
   }
 
@@ -642,7 +704,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     set.seed(1234)
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
     bridge_SM <- bridgesampling::bridge_sampler(fitstanSM, silent=T)
-    bf=bf(bridge_SM,bridge_H0)
+    bf=bridgesampling::bf(bridge_SM,bridge_H0) # BF in favor saturated model
     bf = bf$bf
 
   }else{
@@ -652,23 +714,41 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
     if(cluster == FALSE){
 
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:length(dose.a), ']'),
-                                            paste0('par[', length(dose.a), ']'))], 2, median)
-      llSM = llfSM_Q(pars.SM, n.a, dose.a, y.a)
+      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+
+      parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
+      parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
+      colnames(parsed_indices) <- c("row", "col")
+      sorted_order <- order(parsed_indices[, 1], parsed_indices[, 2])
+      pars.SM <- pars.SM[sorted_order]
+      # remove 'parameters' not in use_data
+      pars.SM <- pars.SM[pars.SM != (-1)]
+
+      llSM = llfSM_Q(x = pars.SM, nvec = n.a, dvec = dose.a, yvec = y.a, qval = 0)
 
       pars.H0 = median(optH0$theta_tilde[,c('a')])
       llH0 = llfH0_Q(pars.H0, n.a, dose.a, y.a)
 
       BIC.H0 = - 2 * llH0 + (1 * log(sum(n.a))) # parms: a, b, d
-      BIC.SM = - 2 * llSM + (length(dose.a) * log(sum(n.a)))
+      BIC.SM = - 2 * llSM + ((data.modstanSM$Ndose) * log(sum(n.a)))
 
     }else if(cluster == TRUE){
 
-      pars.SM = apply(optSM$theta_tilde[, c(paste0('a[', 1:data.modstanSM$Ndose, ']'),
-                                            'rho[1]')], 2, median)
-      llSM = llfSM2_Q(x = pars.SM[1:data.modstanSM$Ndose], nclust = data.modstanSM$n_litter,
-                      nvec = n.a, dvec = dose.a, yvec = y.a, qval = 0.1,
-                      rho = pars.SM[data.modstanSM$Ndose+1])
+      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
+      parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
+      colnames(parsed_indices) <- c("row", "col")
+      sorted_order <- order(parsed_indices[, 1], parsed_indices[, 2])
+      pars.SM <- pars.SM[sorted_order]
+      # remove 'parameters' not in use_data
+      pars.SM <- pars.SM[pars.SM != (-1)]
+
+      pars.SM <- c(pars.SM,
+                   median(optSM$theta_tilde[,"rho[1]"]))
+
+      llSM = llfSM2_Q(x = pars.SM[1:data.modstanSM$N], nclust = data.modstanSM$n_litter,
+                      nvec = n.a, dvec = dose.a, yvec = y.a, qval = 0,
+                      rho = pars.SM[data.modstanSM$N+1])
 
       pars.H0 = apply(optH0$theta_tilde[, c('a','rho[1]')], 2, median)
       llH0 = llfH02_Q(x = pars.H0[1], nvec = n.a, dvec = dose.a, yvec = y.a, rho = pars.H0[2])
@@ -678,8 +758,8 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
     }
 
-    # bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) # bf in favor of H0 --> reverse to get in favor of SM
-    bf = 1/exp(0.5 * (BIC.SM - BIC.H0))
+    # bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) = exp(0.5*(BIC.SM - BIC.H0)) # bf in favor of H0 --> reverse to get in favor of SM
+    bf = 1/exp(0.5 * (BIC.SM - BIC.H0)) # BF in favor of saturated model
 
   }
 
