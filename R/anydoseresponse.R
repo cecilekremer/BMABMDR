@@ -724,6 +724,11 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
       # remove 'parameters' not in use_data
       pars.SM <- pars.SM[pars.SM != (-1)]
 
+      # dose.a, y.a, n.a should be in correct order (dose low to high)
+      y.a <- y.a[order(dose.a)]
+      n.a <- n.a[order(dose.a)]
+      dose.a <- dose.a[order(dose.a)]
+
       llSM = llfSM_Q(x = pars.SM, nvec = n.a, dvec = dose.a, yvec = y.a, qval = 0)
 
       pars.H0 = median(optH0$theta_tilde[,c('a')])

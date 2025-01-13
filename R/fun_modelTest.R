@@ -674,7 +674,12 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       # remove 'parameters' not in use_data
       pars.SM <- pars.SM[pars.SM != (-1)]
 
-      llSM = llfSM_Q(x = pars.SM, nvec = data.Q$data$n, dvec = data.Q$data$x, yvec = data.Q$data$y, qval = data.Q$data$q)
+      # dose.a, y.a, n.a should be in correct order (dose low to high)
+      y.a <- data.Q$data$y[order(data.Q$data$x)]
+      n.a <- data.Q$data$n[order(data.Q$data$x)]
+      dose.a <- data.Q$data$x[order(data.Q$data$x)]
+
+      llSM = llfSM_Q(x = pars.SM, nvec = n.a, dvec = x.a, yvec = y.a, qval = data.Q$data$q)
 
       llfun = paste0('llf',best.fit,'_Q')
       llBestfitf = get(llfun)
