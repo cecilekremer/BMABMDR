@@ -664,7 +664,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = 30000)
       # optSM$par
 
-      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      # pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      pars.SM = optSM$par[stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')]
 
       parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
       parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
@@ -679,7 +680,7 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       n.a <- data.Q$data$n[order(data.Q$data$x)]
       dose.a <- data.Q$data$x[order(data.Q$data$x)]
 
-      llSM = llfSM_Q(x = pars.SM, nvec = n.a, dvec = x.a, yvec = y.a, qval = data.Q$data$q)
+      llSM = llfSM_Q(x = pars.SM, nvec = n.a, dvec = dose.a, yvec = y.a, qval = data.Q$data$q)
 
       llfun = paste0('llf',best.fit,'_Q')
       llBestfitf = get(llfun)
@@ -695,7 +696,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
       optSM <- rstan::optimizing(stanmodels$mSM_Q, data = data.modstanSM, init = svSM, hessian = T, draws = 30000)
       # optSM$par
 
-      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      # pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      pars.SM = optSM$par[stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')]
+
       parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
       parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
       colnames(parsed_indices) <- c("row", "col")
