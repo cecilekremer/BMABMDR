@@ -35,6 +35,8 @@
 #'
 anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
+  require(gamlss)
+
   # for multiple observations per dose group
   if(length(dose.a) != length(unique(dose.a))){
     dose = sort(unique(dose.a))
@@ -142,6 +144,8 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 #' @rdname anydoseresponseN
 #' @export
 anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
+
+  require(gamlss)
 
   if(length(dose.a) != length(unique(dose.a))){
     dose = sort(unique(dose.a))
@@ -278,6 +282,8 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
 #' @rdname anydoseresponseN
 #' @export
 anydoseresponseC=function(data, use.mcmc = FALSE){
+
+  require(gamlss)
 
   nrch=3;nriter=300;wu=100;dl=0.8;trd=10;sd=123;delta=0.999;treedepth=15;ndr = 30000
 
@@ -460,6 +466,9 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 #' @rdname anydoseresponseN
 #' @export
 anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE){
+
+  require(gamlss)
+
 
   nrch=3;nriter=3000;wu=1000;dl=0.8;trd=10;sd=123;ndr=30000
 
@@ -714,7 +723,8 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
     if(cluster == FALSE){
 
-      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      # pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      pars.SM = optSM$par[stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')]
 
       parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
       parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))

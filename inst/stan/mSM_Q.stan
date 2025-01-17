@@ -70,12 +70,12 @@ transformed parameters{
 
         for(k in 2:Ndose){
           a[k, ] = a[k-1, ] + par[k];
-          // if(a[k, ] <= 0){
-            //   a[k, ] = rep_row_vector(0.0001, n_litter[k]);
-            // }
-            // if(a[k, ] >= 1){
-              //   a[k, ] = rep_row_vector(0.9999, n_litter[k]);
-              // }
+          // if(a[k, 1] <= 0){
+          //   a[k, ] = rep_row_vector(0.0001, n_litter[k]);
+          // }
+          // if(a[k, 1] >= 1){
+          //   a[k, ] = rep_row_vector(0.9999, n_litter[k]);
+          // }
         }
 
         if(is_bin == 0) {
@@ -102,6 +102,13 @@ transformed parameters{
       for(j in 1:maxl){
         if(use_data[i, j] == 0){
           a[i, j] = -1;
+        }else{
+          if(a[i, j] <= 0){
+            a[i, j] = 0.0001;
+          }
+          if(a[i, j] >= 1){
+            a[i, j] = 0.9999;
+          }
         }
       }
     }

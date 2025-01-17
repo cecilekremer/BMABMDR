@@ -2,6 +2,10 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.12
+
+* fixed extracted parameters of saturated model for quantal data
+
 ## BMABMDR 0.1.11
 
 * fixed modelTestQ() for data with multiple observations per dose (w/o litter effect)
