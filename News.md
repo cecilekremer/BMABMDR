@@ -2,6 +2,12 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.13
+
+* fixed error in covariate analysis when using individual data (lognormal data preparation)
+
+* 
+
 ## BMABMDR 0.1.12
 
 * fixed extracted parameters of saturated model for quantal data
