@@ -2855,8 +2855,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     # if (min(gmean.a3)>=0) gmean.a4 = gmean.a3
     # gsd.a2 = log(NtoLN(mean.a2,sd.a2))[(N2+1):(2*N2)]
     # }
-    mean.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[1:N]
-    sd.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[(N+1):(2*N)]
+    mean.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[1:N2]
+    sd.a2 = LNtoN(exp(gmean.a3), exp(gsd.a2))[(N2+1):(2*N2)]
     # mean.a2 = exp(gmean.a3)
   }
 
