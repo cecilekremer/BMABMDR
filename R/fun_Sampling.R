@@ -1319,7 +1319,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
   #-----------------------------------
 
   ### Weights based on bridge sampling are obtained by computing posterior model probabilities from the marginal likelihoods
-  p.weights = prior.weights/sum(prior.weights==1)
+  p.weights = prior.weights/sum(prior.weights)
 
   # lpwb = bridgesampling::post_prob(bridgeE4N, bridgeIE4N, bridgeH4N, bridgeLN4N, bridgeG4N, bridgeQE4N, bridgeP4N, bridgeL4N,
   #                  bridgeE4LN, bridgeIE4LN, bridgeH4LN, bridgeLN4LN, bridgeG4LN, bridgeQE4LN, bridgeP4LN, bridgeL4LN,
@@ -1455,7 +1455,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
-    p.weights.new = prior.weights.new/sum(prior.weights.new==1)
+    p.weights.new = prior.weights.new/sum(prior.weights.new)
 
     bridge.mods = c(if(p.weights.new[1]>0) bridgeE4N$logml,
                     if(p.weights.new[2]>0) bridgeIE4N$logml,
@@ -2205,7 +2205,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
-    p.weights.new = prior.weights.new/sum(prior.weights.new==1)
+    p.weights.new = prior.weights.new/sum(prior.weights.new)
 
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights
@@ -3666,7 +3666,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   #-----------------------------------
 
   ### Weights based on bridge sampling are obtained by computing posterior model probabilities from the marginal likelihoods
-  p.weights = prior.weights/sum(prior.weights==1)
+  p.weights = prior.weights/sum(prior.weights)
 
   # lpwb = bridgesampling::post_prob(bridgeE4N, bridgeIE4N, bridgeH4N, bridgeLN4N, bridgeG4N, bridgeQE4N, bridgeP4N, bridgeL4N,
   #                  bridgeE4LN, bridgeIE4LN, bridgeH4LN, bridgeLN4LN, bridgeG4LN, bridgeQE4LN, bridgeP4LN, bridgeL4LN,
@@ -3762,7 +3762,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
-    p.weights.new = prior.weights.new/sum(prior.weights.new==1)
+    p.weights.new = prior.weights.new/sum(prior.weights.new)
 
     bridge.mods = c(if(p.weights.new[1]>0) bridgeE4N$logml,
                     if(p.weights.new[2]>0) bridgeIE4N$logml,
@@ -4617,7 +4617,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
-    p.weights.new = prior.weights.new/sum(prior.weights.new==1)
+    p.weights.new = prior.weights.new/sum(prior.weights.new)
 
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights
@@ -5653,7 +5653,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   #-----------------------------------
 
   ### Weights based on bridge sampling are obtained by computing posterior model probabilities from the marginal likelihoods
-  p.weights = prior.weights/sum(prior.weights==1)
+  p.weights = prior.weights/sum(prior.weights)
 
   # lpwb = bridgesampling::post_prob(bridgeE4N, bridgeIE4N, bridgeH4N, bridgeLN4N, bridgeG4N, bridgeQE4N, bridgeP4N, bridgeL4N,
   #                  bridgeE4LN, bridgeIE4LN, bridgeH4LN, bridgeLN4LN, bridgeG4LN, bridgeQE4LN, bridgeP4LN, bridgeL4LN,
@@ -5738,7 +5738,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
-    p.weights.new = prior.weights.new/sum(prior.weights.new==1)
+    p.weights.new = prior.weights.new/sum(prior.weights.new)
 
     bridge.mods = c(if(p.weights.new[1]>0) bridgeE4Q$logml,
                     if(p.weights.new[2]>0) bridgeIE4Q$logml,
@@ -6265,7 +6265,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
     prior.weights.new = prior.weights
     div.models = which(converged == 0)
     prior.weights.new[div.models] = 0
-    p.weights.new = prior.weights.new/sum(prior.weights.new==1)
+    p.weights.new = prior.weights.new/sum(prior.weights.new)
 
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights

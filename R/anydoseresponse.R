@@ -394,8 +394,8 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
     }
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
     fitstanH0=rstan::sampling(stanmodels$mH0c,data = data.modstanH0,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                       control = list(adapt_delta = delta,max_treedepth =treedepth),
-                       show_messages = F, refresh = 0)
+                              control = list(adapt_delta = delta,max_treedepth =treedepth),
+                              show_messages = F, refresh = 0)
 
     # Fitting the saturated ANOVA model
     sv=rstan::optimizing(stanmodels$mSMc,data = data.modstanSM,init=svSM)$par
@@ -404,8 +404,8 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
     }
     init_ll <- lapply(1:nrch, function(id) initf2(chain_id = id))
     fitstanSM=rstan::sampling(stanmodels$mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
-                       control = list(adapt_delta = delta,max_treedepth =treedepth),
-                       show_messages = F, refresh = 0)
+                              control = list(adapt_delta = delta,max_treedepth =treedepth),
+                              show_messages = F, refresh = 0)
 
 
     bridge_H0 <- bridgesampling::bridge_sampler(fitstanH0, silent=T)
@@ -741,7 +741,8 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
       llSM = llfSM_Q(x = pars.SM, nvec = n.a, dvec = dose.a, yvec = y.a, qval = 0)
 
-      pars.H0 = median(optH0$theta_tilde[,c('a')])
+      # pars.H0 = median(optH0$theta_tilde[,c('a')])
+      pars.H0 = optH0$par[c('a')]
       llH0 = llfH0_Q(pars.H0, n.a, dose.a, y.a)
 
       BIC.H0 = - 2 * llH0 + (1 * log(sum(n.a))) # parms: a, b, d
@@ -749,7 +750,11 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
     }else if(cluster == TRUE){
 
-      pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      # if(dim(optSM$theta_tilde)[1] > 1){
+      #   pars.SM = apply(optSM$theta_tilde[, stringr::str_detect(colnames(optSM$theta_tilde),'a\\[')], 2, median)
+      # }else{
+      pars.SM = optSM$par[stringr::str_detect(names(optSM$par),'a\\[')]
+      # }
       parsed_indices <- strsplit(gsub("a\\[|\\]", "", names(pars.SM)), ",")
       parsed_indices <- do.call(rbind, lapply(parsed_indices, as.numeric))
       colnames(parsed_indices) <- c("row", "col")
@@ -765,7 +770,11 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
                       nvec = n.a, dvec = dose.a, yvec = y.a, qval = 0,
                       rho = pars.SM[data.modstanSM$N+1])
 
-      pars.H0 = apply(optH0$theta_tilde[, c('a','rho[1]')], 2, median)
+      # if(dim(optH0$theta_tilde)[1] > 1){
+      #   pars.H0 = apply(optH0$theta_tilde[, c('a','rho[1]')], 2, median)
+      # }else{
+      pars.H0 = optH0$par[c('a','rho[1]')]
+      # }
       llH0 = llfH02_Q(x = pars.H0[1], nvec = n.a, dvec = dose.a, yvec = y.a, rho = pars.H0[2])
 
       BIC.H0 = - 2 * llH0 + (2 * log(sum(n.a))) # parms: a, b, d, rho

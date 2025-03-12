@@ -2,11 +2,19 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.15
+
+* fixed issue in anydoseresponseQ() for clustered quantal data
+
+* fixed issue in fitting for clustered quantal data with unequal litter sizes
+
+## BMABMDR 0.1.14
+
+* added possibility to use prior weights that are not 0/1
+
 ## BMABMDR 0.1.13
 
 * fixed error in covariate analysis when using individual data (lognormal data preparation)
-
-* 
 
 ## BMABMDR 0.1.12
 
