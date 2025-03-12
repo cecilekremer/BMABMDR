@@ -55,27 +55,26 @@ transformed parameters{
   row_vector[N] bbet;
 
   // mean in lowest dose
-  // a[1] = par[1];
-  //
-  // for(k in 2:Ndose){
-    //   a[k] = a[k-1] + par[k];
-    //   if(a[k] <= 0){
-      //     a[k] = 0.0001;
-      //   }
-      //   if(a[k] >= 1){
-        //     a[k] = 0.9999;
-        //   }
-        // }
-        a[1, ] = rep_row_vector(par[1], n_litter[1]);
+        a[1, ] = rep_row_vector(par[1], maxl);
 
         for(k in 2:Ndose){
           a[k, ] = a[k-1, ] + par[k];
-          // if(a[k, 1] <= 0){
-          //   a[k, ] = rep_row_vector(0.0001, n_litter[k]);
-          // }
-          // if(a[k, 1] >= 1){
-          //   a[k, ] = rep_row_vector(0.9999, n_litter[k]);
-          // }
+        }
+
+        // Adjust parameter matrix for data not used
+        for(i in 1:Ndose){
+          for(j in 1:maxl){
+            if(use_data[i, j] == 0){
+              a[i, j] = -1;
+            }else{
+              if(a[i, j] <= 0){
+                a[i, j] = 0.0001;
+              }
+              if(a[i, j] >= 1){
+                a[i, j] = 0.9999;
+              }
+            }
+          }
         }
 
         if(is_bin == 0) {
@@ -95,23 +94,6 @@ transformed parameters{
             bbet[i] = 0.0;
           }
         }
-
-
-    // Adjust parameter matrix for data not used
-    for(i in 1:Ndose){
-      for(j in 1:maxl){
-        if(use_data[i, j] == 0){
-          a[i, j] = -1;
-        }else{
-          if(a[i, j] <= 0){
-            a[i, j] = 0.0001;
-          }
-          if(a[i, j] >= 1){
-            a[i, j] = 0.9999;
-          }
-        }
-      }
-    }
 
 }
 model{

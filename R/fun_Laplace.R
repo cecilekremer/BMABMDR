@@ -1373,7 +1373,7 @@ full.laplace_MA=function(data.N, data.LN,
   w.msg <- ''
 
   max.ll = max(lls, na.rm = T)
-  if(!(1 %in% prior.weights)){
+  if(all(prior.weights == 0)){
     w.msg <- 'Laplace approximation could not be performed, problem fitting all models'
     warning('Laplace approximation could not be performed, problem fitting all models')
     out.stop <- 'not.fit'
@@ -1538,7 +1538,8 @@ full.laplace_MA=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     w <- ifelse(w == 'Inf' | is.na(w), 0, w)
-    prior.weights = prior.weights/sum(prior.weights==1)
+    # prior.weights = prior.weights/sum(prior.weights==1)
+    prior.weights = prior.weights/sum(prior.weights)
     lpw=(prior.weights*w)/sum(prior.weights*w)
 
   }
@@ -3025,7 +3026,7 @@ full.laplace_MAc=function(data.N, data.LN,
   w.msg <- ''
 
   max.ll = max(lls, na.rm = T)
-  if(!(1 %in% prior.weights)){
+  if(all(prior.weights == 0)){
     w.msg <- 'Laplace approximation could not be performed, problem fitting all models'
     warning('Laplace approximation could not be performed, problem fitting all models')
     out.stop <- 'not.fit'
@@ -3186,7 +3187,7 @@ full.laplace_MAc=function(data.N, data.LN,
     }else{w=c(w,0)}
 
     w <- ifelse(w == 'Inf' | is.na(w), 0, w)
-    prior.weights = prior.weights/sum(prior.weights==1)
+    prior.weights = prior.weights/sum(prior.weights)
     lpw=(prior.weights*w)/sum(prior.weights*w)
 
   }
@@ -4293,7 +4294,7 @@ full.laplaceQ_MA=function(data.Q, prior.weights = rep(1, 8),
     }else{w=c(w,0)}
 
     w <- ifelse(w == 'Inf' | is.na(w), 0, w)
-    prior.weights = prior.weights/sum(prior.weights==1) # in case this has changed for G4
+    prior.weights = prior.weights/sum(prior.weights) # in case this has changed for G4
     lpw=(prior.weights*w)/sum(prior.weights*w)
 
   }
@@ -4545,7 +4546,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                               prior.d = prior.d,
                               extended = extended)
 
-  if(1 %in% prior.weights[1:8]){
+  if(!(all(prior.weights[1:8] == 0))){
 
     data_NCOV_asigma2 <- PREP_DATA_NCOV(
       data = data,
@@ -4577,7 +4578,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 
   }
 
-  if(1 %in% prior.weights[9:16]){
+  if(!(all(prior.weights[9:16] == 0))){
     data_LNCOV_all <- PREP_DATA_LNCOV(
       data = data,
       sumstats = sumstats,
@@ -5548,7 +5549,7 @@ full.laplace_MA_Cov = function(data, # the summary data
   }
 
   w <- ifelse(w == 'Inf', 0, w)
-  prior.weights = prior.weights/sum(prior.weights==1)
+  prior.weights = prior.weights/sum(prior.weights)
   lpw=(prior.weights*w)/sum(prior.weights*w)
 
   #####################################
@@ -6045,7 +6046,7 @@ full.laplace_MA_Cov = function(data, # the summary data
               parQE4_LN = parQE4_LN,
               parP4_LN = parP4_LN,
               parL4_LN = parL4_LN,
-              shift = ifelse((1 %in% prior.weights[9:16]), data_LNCOV_all$data$shift, 0),
+              shift = ifelse((!(all(prior.weights[9:16] == 0))), data_LNCOV_all$data$shift, 0),
               q = data_NCOV_all$data$q
   ))
 
@@ -6565,7 +6566,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
   }
 
   w <- ifelse(w == 'Inf', 0, w)
-  prior.weights = prior.weights/sum(prior.weights==1)
+  prior.weights = prior.weights/sum(prior.weights)
   lpw=(prior.weights*w)/sum(prior.weights*w)
 
   #####################################
