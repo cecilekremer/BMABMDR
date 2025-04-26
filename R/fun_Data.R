@@ -346,6 +346,7 @@ PREP_DATA_N <- function(data, # a dataframe with input data, order of columns sh
   c.vec = c(min.max/mode.min, mode.max/mode.min, max.max/mode.min)
   if(c.vec[1] == 0) c.vec[1] = 0.0001
   if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
+  if(c.vec[2] <= c.vec[1]) c.vec[2] = c.vec[1] + 0.05
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
   priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s)
@@ -703,6 +704,7 @@ PREP_DATA_LN <- function(data, # a dataframe with input data, order of columns s
   c.vec = c(min.max/mode.min, mode.max/mode.min, max.max/mode.min)
   if(c.vec[1] == 0) c.vec[1] = 0.0001
   if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
+  if(c.vec[2] <= c.vec[1]) c.vec[2] = c.vec[1] + 0.05
 
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s)
@@ -1081,6 +1083,7 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
   c.vec = c(min.max/mode.min, mode.max/mode.min, max.max/mode.min)
   if(c.vec[1] == 0) c.vec[1] = 0.0001
   if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
+  if(c.vec[2] <= c.vec[1]) c.vec[2] = c.vec[1] + 0.05
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s,0.5)
   priormu1bQ=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.dQE4,prmean.s,0.5)
@@ -1514,6 +1517,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   if(c.vec[1] == 0) c.vec[1] = 0.0001
   if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
   # if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[1] + (c.vec[3] - c.vec[1])/2 - 0.01
+  if(c.vec[2] <= c.vec[1]) c.vec[2] = c.vec[1] + 0.05
 
 
   priormu1a=c(a.vec[2],BMD.vec[2],c.vec[2],prmean.d,prmean.s,0.5)
@@ -1775,6 +1779,7 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=gamlss.dist::BB(), data=datf),
                   silent = TRUE)
     rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    rhohat <- ifelse(rhohat == 0, 0.001, rhohat)
 
   } else stop('provide cluster to be TRUE or FALSE')
 
@@ -2232,6 +2237,8 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
       if(c.vec[i,1] == 0) c.vec[i,1] = 0.0001
       if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = c.vec[i,3] - 0.05
       # if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = (c.vec[i,3] - c.vec[i,1])/2
+      if(c.vec[i,2] <= c.vec[i,1]) c.vec[i,2] = c.vec[i,1] + 0.05
+
 
       shape.a1[i] <- fun.alpha(a = a.vec[i,1], b = a.vec[i,2],
                                c = a.vec[i,3], g = shape.a)
@@ -2352,6 +2359,7 @@ PREP_DATA_NCOV <- function(data, # a dataframe with input data, order of columns
 
     if(c.vec[1] == 0) c.vec[1] = 0.0001
     if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
+    if(c.vec[2] <= c.vec[1]) c.vec[2] = c.vec[1] + 0.05
 
     shape.a1 <- fun.alpha(a = a.vec[1], b = a.vec[2],
                           c = a.vec[3], g = shape.a)
@@ -3041,6 +3049,7 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
       if(c.vec[i,1] == 0) c.vec[i,1] = 0.0001
       if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = c.vec[i,3] - 0.05
       # if(c.vec[i,2] >= c.vec[i,3]) c.vec[i,2] = (c.vec[i,3] - c.vec[i,1])/2
+      if(c.vec[i,2] <= c.vec[i,1]) c.vec[i,2] = c.vec[i,1] + 0.05
 
       shape.a1[i] <- fun.alpha(a = a.vec[i,1], b = a.vec[i,2],
                                c = a.vec[i,3], g = shape.a)
@@ -3162,6 +3171,8 @@ PREP_DATA_LNCOV <- function(data, # a dataframe with input data, order of column
     if(c.vec[1] == 0) c.vec[1] = 0.0001
     if(c.vec[2] >= c.vec[3]) c.vec[2] = c.vec[3] - 0.05
     # if(c.vec[2] >= c.vec[3]) c.vec[2] = (c.vec[3] - c.vec[1]) / 2
+    if(c.vec[2] <= c.vec[1]) c.vec[2] = c.vec[1] + 0.05
+
 
 
     shape.a1 <- fun.alpha(a = a.vec[1], b = a.vec[2],

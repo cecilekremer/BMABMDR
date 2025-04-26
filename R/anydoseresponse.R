@@ -527,6 +527,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
                   silent = TRUE)
     rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    rhohat <- ifelse(rhohat == 0, 0.001, rhohat)
     dim(rhohat) <- 1
 
     priorH0 = list(

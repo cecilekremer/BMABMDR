@@ -524,7 +524,8 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
                   silent = TRUE)
     rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
-    dim(rhohat) <- 1
+    rhohat <- ifelse(rhohat == 0, 0.001, rhohat)
+        dim(rhohat) <- 1
 
     priorSM = list(
       priormu = c(max(c(yasum[1]/nasum[1], 1/(5*nasum[1]))), rhohat),
