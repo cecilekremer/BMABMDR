@@ -2,6 +2,12 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.16
+
+* fixed issue in PREP_DATA() for fold change parameter (error 'negative shape parameter')
+
+* fixed starting value for rho (>0 for clustered quantal data)
+
 ## BMABMDR 0.1.15
 
 * fixed issue in anydoseresponseQ() for clustered quantal data

@@ -71,6 +71,8 @@ model{
 
   } else {
     rho[is_betabin] ~ pert_dist(0.0, priormu[2], 1.0, 4.0);
+    // rho[is_betabin] ~ pert_dist(0.0, priormu[2], 1.0, 0.0001);
+
     for(i in 1:N){
       // target += lchoose(n[i], y[i]) + lgamma(abet[i]+y[i]+eps) + lgamma(bbet[i]+n[i]-y[i]+eps) -
       // lgamma(abet[i]+bbet[i]+n[i]+eps) - lgamma(abet[i]+eps) - lgamma(bbet[i]+eps) +
