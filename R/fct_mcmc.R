@@ -227,7 +227,7 @@ fun_samplingC = function(mod, data, stv,
     ## for increasing, par[3] > 0
 
     ## BMD between 0 and 1
-    if(par[2] > 1) par[2] = 0.9
+    # if(par[2] > 1) par[2] = 0.9
 
 
     if(data$data_type==1|data$data_type==2){
@@ -283,7 +283,7 @@ fun_samplingC = function(mod, data, stv,
     par[4:6] = par[4:6] + rnorm(3, sd = 0.01*abs(par[4:6]))
 
     ## BMD between 0 and 1
-    if(par[2] > 1) par[2] = 0.9
+    # if(par[2] > 1) par[2] = 0.9
 
     if(data$data_type==1|data$data_type==2){
       pars3d = numeric()

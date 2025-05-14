@@ -1534,7 +1534,7 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
     bmr = -q
   }
 
-  datf = data.frame(yy=data$response,xx=(data$dose/max(data$dose))+0.00000000000001)
+  datf = data.frame(yy=indiv.data$response,xx=(indiv.data$dose/max(indiv.data$dose))+0.00000000000001)
   fpfit=try(gamlss::gamlss(yy~fp(xx),family=gamlss.dist::NO(),data=datf), silent = T)
   if(class(fpfit)[1] == 'try-error'){
     message('could not fit fractional polynomial, BMD start value is set to 0.05')

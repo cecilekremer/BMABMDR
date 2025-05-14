@@ -345,8 +345,6 @@ plot.BMADR <- function(mod.obj,
 
   }
 
-
-
   dgr <- seq(min(lg10d), abs(min(lg10d)), by=0.01)
   dose2 <- 10^dgr[(dgr > (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]
   if(clustered == F){
