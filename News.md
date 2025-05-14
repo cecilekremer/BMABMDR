@@ -2,6 +2,12 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.17
+
+* added function to fit PERT to posterior
+
+* fixed issue with extended dose range for continuous data w/ litter effect
+
 ## BMABMDR 0.1.16
 
 * fixed issue in PREP_DATA() for fold change parameter (error 'negative shape parameter')

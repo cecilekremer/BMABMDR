@@ -38,7 +38,7 @@ data{
 }
 parameters{
   real<lower=0> par1;
-  real<lower=0, upper=1> par2; // BMD
+  real<lower=0> par2; // BMD
   real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
   real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
   real par4;
