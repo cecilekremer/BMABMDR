@@ -2,6 +2,10 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.1.18
+
+* fixed issue with covariate ordering
+
 ## BMABMDR 0.1.17
 
 * added function to fit PERT to posterior
