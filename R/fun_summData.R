@@ -21,6 +21,8 @@
 summarize.indiv.data <- function(data,
                                  type = c('continuous','quantal'), cluster = FALSE, covar = FALSE){
 
+  require(dplyr)
+
   if(type == 'continuous'){
 
     if(cluster == FALSE && covar == FALSE){
@@ -53,10 +55,23 @@ summarize.indiv.data <- function(data,
       data$dose = data[,1]
       data$resp = data[,2]
       data$cov = data[,3]
-      indiv.data <- data %>%
-        dplyr::group_by(dose, cov) %>%
-        dplyr::arrange(by_group = dose) %>%
-        dplyr::summarise(mean = mean(resp, na.rm = T), sd = sd(resp, na.rm=T), n = n())
+
+      group_order <- data %>%
+        distinct(dose, cov) %>%
+        dplyr::mutate(order_id = row_number())
+
+      data_with_order <- data %>%
+        left_join(group_order, by = c("dose","cov"))
+
+      # indiv.data <- data %>%
+      indiv.data <- data_with_order %>%
+        # dplyr::group_by(dose, cov) %>%
+        dplyr::group_by(dose, cov, order_id) %>%
+        # dplyr::arrange(by_group = dose) %>%
+        dplyr::summarise(mean = mean(resp, na.rm = T), sd = sd(resp, na.rm=T), n = dplyr::n(), .groups = "drop") %>%
+        dplyr::arrange(order_id) %>%
+        dplyr::select(-order_id)
+      indiv.data$dose = as.numeric(as.character(indiv.data$dose))
       dose.a = indiv.data$dose
       maxDose = max(dose.a)
       mean.a = indiv.data$mean
@@ -127,10 +142,27 @@ summarize.indiv.data <- function(data,
       data$dose = data[,1]
       data$ybin = data[,2]
       data$cov = data[,3]
-      indiv.data <- data %>%
-        dplyr::group_by(dose, cov) %>%
-        dplyr::arrange(by_group = dose) %>%
-        dplyr::summarise(y.a = sum(ybin, na.rm = T), n.a = n())
+
+      group_order <- data %>%
+        distinct(dose, cov) %>%
+        dplyr::mutate(order_id = row_number())
+
+      data_with_order <- data %>%
+        left_join(group_order, by = c("dose","cov"))
+
+      # indiv.data <- data %>%
+      indiv.data <- data_with_order %>%
+        # dplyr::group_by(dose, cov) %>%
+        dplyr::group_by(dose, cov, order_id) %>%
+        # dplyr::arrange(by_group = dose) %>%
+        dplyr::summarise(y.a = sum(ybin, na.rm = T), n = dplyr::n(), .groups = "drop") %>%
+        dplyr::arrange(order_id) %>%
+        dplyr::select(-order_id)
+
+      # indiv.data <- data %>%
+      #   dplyr::group_by(dose, cov) %>%
+      #   dplyr::arrange(by_group = dose) %>%
+      #   dplyr::summarise(y.a = sum(ybin, na.rm = T), n.a = n())
       dose.a = indiv.data$dose
       maxDose = max(dose.a)
       y.a = indiv.data$y.a
