@@ -67,8 +67,14 @@ jobs:
           MAKEVARS <- file.path(dotR, "Makevars")
           if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
           cat("\nCXX=g++ -std=c++1y",
-            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
+            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic -Wno-missing-template-arg-list-after-template-kw",
             "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
+          ## Also append to src/Makevars so the suppression flag appears after -Wall -pedantic
+          ## from StanHeaders::CxxFlags() in PKG_CXXFLAGS (needed for Apple Clang 17+ on macOS)
+          if (file.exists("src/Makevars")) {
+            cat("\nPKG_CXXFLAGS += -Wno-missing-template-arg-list-after-template-kw\n",
+              file = "src/Makevars", append = TRUE)
+          }
         shell: Rscript {0}
       - name: make 'configure' script executable
         run: chmod +x configure
