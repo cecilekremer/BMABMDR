@@ -104,7 +104,8 @@ plot.BMADR <- function(mod.obj,
                        clustered = FALSE,
                        weight_type = c("BS", "LP"),
                        include_data = TRUE,
-                       all = FALSE, title, log = FALSE, conv = FALSE
+                       all = FALSE, title, log = FALSE, conv = FALSE,
+                       dose_lab = "", resp_lab = "Response"
 ) {
   type <- match.arg(type)
   weight_type <- match.arg(weight_type)
@@ -173,8 +174,16 @@ plot.BMADR <- function(mod.obj,
   dose <- sort(unique(mod.obj$dataN$dose)/max(mod.obj$dataN$dose))
   if(weight_type == 'BS'){
     mindose <- min(mod.obj$BMDMixtureBS/mod.obj$max.dose)
+    mindose <- ifelse(mindose > dose[2],
+                      dose[2]/2,
+                      mindose
+    )
   }else{
     mindose <- min(mod.obj$BMDMixture/mod.obj$max.dose)
+    mindose <- ifelse(mindose > dose[2],
+                      dose[2]/2,
+                      mindose
+    )
   }
 
   if(min(dose) == 0){
@@ -532,7 +541,7 @@ plot.BMADR <- function(mod.obj,
     labs(x = expression(BMD), y = "", fill = "Distribution") +
     scale_fill_manual(values = dist_fills,
                       labels = dist_names) +
-    labs(x="BMD on original scale") +
+    labs(x=paste0("Dose (", dose_lab, ")")) +
     #labs(x = "BMD", y = "Models", title = "BMDs per Model") +
     # scale_x_continuous(breaks = seq(min(log10(respBMDBMDW$BMDL)),
     #                                 max(log10(respBMDBMDW$BMDU)), by = 0.08)
@@ -730,10 +739,11 @@ plot.BMADR <- function(mod.obj,
       geom_line(alpha = 0.6,
                 size = 1,
                 show.legend = TRUE, linetype = 1) +
-      labs(color = "Model", x = expression(dose),
-           y = expression(response), title = "Normal distribution",
-           caption = paste0("data and vertical bars based on arithmetic sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                            (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+      labs(color = "Model", x = paste0("Dose (", dose_lab, ")"),
+           y = resp_lab, title = "Normal distribution"#,
+           # caption = paste0("data and vertical bars based on arithmetic sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                            # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+           ) +
 
       geom_segment(data = preds_min[preds_min$Distribution=="N" & paste0(preds_min$Model,"_N") %in% mod.obj$models_included,],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -809,10 +819,11 @@ plot.BMADR <- function(mod.obj,
       geom_line(alpha = 0.6,
                 size = 1,
                 show.legend = TRUE, linetype = 2) +
-      labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
-           y = expression(response),
-           caption = paste0("data and vertical bars based on geometric sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                            (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+      labs(color = "Model", title = "LogNormal distribution", x = paste0("Dose (", dose_lab, ")"),
+           y = resp_lab#,
+           # caption = paste0("data and vertical bars based on geometric sample means +- standard deviation \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                            # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+           ) +
       geom_segment(data = preds_min[preds_min$Distribution=="LN" & paste0(preds_min$Model,"_LN") %in% mod.obj$models_included,],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
                                  xend = max(Dose*mod.obj$max.dose), #max(dgr[(dgr <= (lg10d[2]-((lg10d[2]-lg10d[1])/2)))]),
@@ -875,9 +886,11 @@ plot.BMADR <- function(mod.obj,
       geom_line(alpha = 0.6,
                 size = 1,
                 show.legend = TRUE) +
-      labs(color = "Model", linetype = "Distribution", x = expression(dose),
-           y = expression(response), title = "", caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                                                                  (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+      labs(color = "Model", linetype = "Distribution", x = paste0("Dose (", dose_lab, ")"),
+           y = resp_lab, title = ""#,
+           # caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                                                                  # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+           ) +
 
       geom_segment(data = preds_min[which(paste(preds_min$Model, preds_min$Distribution, sep = '_') %in% mod.obj$models_included),],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -941,10 +954,11 @@ plot.BMADR <- function(mod.obj,
       geom_line(alpha = 0.6,
                 linewidth = 1,
                 show.legend = TRUE, linetype = 1) +
-      labs(color = "Model", x = expression(dose),
-           y = expression(response), title = "Normal distribution",
-           caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the arithmetic sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                            (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+      labs(color = "Model", x = paste0("Dose (", dose_lab, ")"),
+           y = resp_lab, title = "Normal distribution"#,
+           # caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the arithmetic sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                            # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+           ) +
 
       geom_segment(data = preds_min[preds_min$Distribution=="N" & paste0(preds_min$Model,"_N") %in% mod.obj$models_included,],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response, # dotted line starts at estimated background response
@@ -1014,10 +1028,11 @@ plot.BMADR <- function(mod.obj,
       geom_line(alpha = 0.6,
                 size = 1,
                 show.legend = TRUE, linetype = 2) +
-      labs(color = "Model", title = "LogNormal distribution", x = expression(dose),
-           y = expression(response),
-           caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the arithmetic sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                            (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+      labs(color = "Model", title = "LogNormal distribution", x = paste0("Dose (", dose_lab, ")"),
+           y = resp_lab#,
+           # caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the arithmetic sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                            # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+           ) +
 
       geom_segment(data = preds_min[preds_min$Distribution=="LN" & paste0(preds_min$Model,"_LN") %in% mod.obj$models_included,],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -1091,9 +1106,11 @@ plot.BMADR <- function(mod.obj,
       geom_line(alpha = 0.6,
                 size = 1,
                 show.legend = TRUE) +
-      labs(color = "Model", linetype = "Distribution", x = expression(dose),
-           y = expression(response), title = "", caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                                                                  (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+      labs(color = "Model", linetype = "Distribution", x = paste0("Dose (", dose_lab, ")"),
+           y = resp_lab, title = ""#,
+           # caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                                                                  # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+           ) +
 
       geom_segment(data = preds_min[which(paste(preds_min$Model, preds_min$Distribution, sep = '_') %in% mod.obj$models_included),],
                    mapping = aes(x = Dose[1]*mod.obj$max.dose, y = min_response,
@@ -1230,14 +1247,14 @@ plot.BMADR <- function(mod.obj,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
                inherit.aes = FALSE)  +
-    scale_y_continuous(expression(response),
+    scale_y_continuous(resp_lab,
                        sec.axis = sec_axis(#~.*1.2,
                          # ~ ((. /max(BMDMixture$y)) *(cmax*1.2)),
                          ~ (. - a)/b,
                          name = "Rescaled Density", #trans = 'log10',
                          labels = scales::comma)
     ) +
-    labs(x = expression(dose)) +
+    labs(x = paste0("Dose (", dose_lab, ")"), y = resp_lab) +
     theme_minimal() +
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose),
@@ -1341,9 +1358,9 @@ plot.BMADR <- function(mod.obj,
         geom_point(data = data.plot, mapping = aes(x = dose2*mod.obj$max.dose, y = m) ,
                    size = 2, color = 1, shape = 21,
                    fill = brewer.pal(9, "Set1")[2],
-                   inherit.aes = FALSE) +
-        labs(caption = paste0("data and vertical bars based on ", w.data, " sample means +- standard deviation \n
-                              red dot and horizontal green bar indicate the model-averaged BMD and its ", (mod.obj$pvec[3]-mod.obj$pvec[1])*100, "%CI"))
+                   inherit.aes = FALSE) #+
+        # labs(caption = paste0("data and vertical bars based on ", w.data, " sample means +- standard deviation \n
+                              # red dot and horizontal green bar indicate the model-averaged BMD and its ", (mod.obj$pvec[3]-mod.obj$pvec[1])*100, "%CI"))
 
     }else if(clustered == T){
       dplot2 <- dplot +
@@ -1449,7 +1466,8 @@ plot.BMADR <- function(mod.obj,
 plot.BMADRQ <- function(mod.obj,
                         weight_type = c("BS", "LP"),
                         include_data = TRUE,
-                        all = FALSE, title, conv = FALSE
+                        all = FALSE, title, conv = FALSE,
+                        dose_lab = "Dose", resp_lab = expression(P(y==1))
 ) {
   type <- 'quantal'
   weight_type <- match.arg(weight_type)
@@ -1489,9 +1507,17 @@ plot.BMADRQ <- function(mod.obj,
 
   dose <- sort(unique(mod.obj$data$dose)/max(mod.obj$data$dose))
   if(weight_type == 'BS'){
-    mindose <- min(mod.obj$BMDMixtureBS)/2
+    mindose <- min(mod.obj$BMDMixtureBS/mod.obj$max.dose)/2
+    mindose <- ifelse(mindose > dose[2],
+                      dose[2]/2,
+                      mindose
+                      )
   }else{
-    mindose <- min(mod.obj$BMDMixture)/2
+    mindose <- min(mod.obj$BMDMixture/mod.obj$max.dose)/2
+    mindose <- ifelse(mindose > dose[2],
+                      dose[2]/2,
+                      mindose
+    )
   }
   if(min(dose) == 0){
     ddd <- c(mindose, dose[2:length(dose)])
@@ -1684,8 +1710,8 @@ plot.BMADRQ <- function(mod.obj,
     geom_point(aes(x = BMD, y = Model), fill = "#0073C2FF",
                size = 7, color = 1, shape = 21) +
     theme_minimal() +
-    labs(x = expression(BMD), y = "") +
-    labs(x="BMD on original scale") +
+    labs(x = paste0("Dose (", dose_lab, ")"), y = "") +
+    # labs(x="BMD on original scale") +
     theme(strip.text = element_text(size = 15, face = "bold"),
           axis.text = element_text(size = 10, face = "bold"),
           axis.title = element_text(size = 15, face = "bold"),
@@ -1837,9 +1863,11 @@ plot.BMADRQ <- function(mod.obj,
     geom_line(#alpha = 0.6,
       size = 1,
       show.legend = TRUE) +
-    labs(color = "Model",  x = expression(dose),
-         y = expression(p(y==1)), title = "", caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                                                               (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+    labs(color = "Model",  x = paste0("Dose (", dose_lab, ")"),
+         y = resp_lab, title = ""#,
+         # caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                                                               # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+         ) +
 
     geom_segment(data = preds_min, mapping = aes(x = Dose[1]*mod.obj$max.dose, y = a,
                                                  xend = max(Dose*mod.obj$max.dose),
@@ -1933,15 +1961,17 @@ plot.BMADRQ <- function(mod.obj,
                color = brewer.pal(9, "Set1")[1],
                show.legend = FALSE,
                inherit.aes = FALSE)  +
-    scale_y_continuous(expression(p(y==1)),
+    scale_y_continuous(resp_lab,
                        sec.axis = sec_axis(#~.*1.2,
                          # ~ ((. /max(BMDMixture$y)) *(cmax*1.2)),
                          ~ (. - a)/b,
                          name = "Rescaled Density",
                          labels = scales::comma)
     ) +
-    labs(x = expression(dose), caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                                                (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")) +
+    labs(x = paste0("Dose (", dose_lab, ")")#,
+         # caption = paste0("red dot and horizontal green bar indicate the model-averaged BMD and its ",
+                                                # (mod.obj$pvec[3]-mod.obj$pvec[1])*100 ,"%CI")
+         ) +
     theme_minimal() +
     coord_cartesian(xlim = c(min(preds_min$Dose*mod.obj$max.dose),
                              2*mod.obj$max.dose),

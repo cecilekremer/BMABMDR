@@ -1,21 +1,19 @@
 functions{
    vector algebra_system(vector y_est,        // unknowns
                vector theta,    // parameters
-               real[] x_r,      // data (real)
-               int[] x_i) {     // data (integer)
+               real q,          // data (real)
+               int data_type){  // data (integer)
    vector[1] x;
-   real q = x_r[1];
-   real data_ty_estpe = x_i[1];
-   if(data_ty_estpe == 1){
+   if(data_type == 1){
        if(y_est[1]>0) x[1] = gamma_p(theta[3],y_est[1]*theta[1]) - (q/(theta[2]-1));
        else if(y_est[1]<=0) x[1]=1;
-   }else if(data_ty_estpe == 2){
+   }else if(data_type == 2){
        if(y_est[1]>0) x[1] = gamma_p(theta[3],y_est[1]*theta[1]) - (log(1+q)/(theta[4]*(theta[2]-1)));
        else if(y_est[1]<=0) x[1]=1;
-   }else if(data_ty_estpe == 3){
+   }else if(data_type == 3){
        if(y_est[1]>0) x[1] = gamma_p(theta[3],y_est[1]*theta[1]) - ((-q)/(theta[2]-1));
        else if(y_est[1]<=0) x[1]=1;
-   }else if(data_ty_estpe == 4){
+   }else if(data_type == 4){
       if(y_est[1]>0) x[1] = gamma_p(theta[3],y_est[1]*theta[1]) - (log(1-q)/(theta[4]*(theta[2]-1)));
       else if(y_est[1]<=0) x[1]=1;
    }
@@ -37,11 +35,11 @@ functions{
 }
 data{
   int N;  // the total number of distinct dose groups
-  int n[N]; // number of litters per dose group
+  array[N] int n; // number of litters per dose group
   int nc; // number of unique dose x litter combinations (i.e. clusters)
   int maxN; // max number of obs per cluster
   int maxNc; // max number of litters per dose group
-  int nij[N, maxNc]; // dose x litter matrix with the number of fetuses for each combination
+  array[N, maxNc] int nij; // dose x litter matrix with the number of fetuses for each combination
   matrix[nc, maxN] y; // responses
   vector[N] x;  // the dose level of each dose group
   real q;       // the BMR
@@ -60,15 +58,11 @@ data{
   int<lower=0, upper=1> is_decreasing; // indicator for decreasing data
   real U; // upper bound for decreasing data
 }
-transformed data{
-   real x_r[1] = {q};
-   int x_i[1] = {data_type};
-}
 parameters{
   real<lower=0> par1;
   real<lower=0> par2; // BMD
-  real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
-  real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
+ array[is_increasing] real<lower=0> pars3i; // will be size one if is_increasing
+ array[is_decreasing] real<lower=0,upper=1> pars3d; // will be size one if is_decreasing
   real par4;
   real par5; // variance constant across cluster and dose groups
   real par6; // correlation parameter rho
@@ -122,7 +116,8 @@ transformed parameters{
    theta[4] = a;
    y_guess[1] = init_b;
 
-   y_est = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+   y_est = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q, data_type);
+
    b = y_est[1];
 
 }
@@ -148,7 +143,7 @@ model{
     int nl;
     real mx;
 
-    mx = a + a*(c-1)*gamma_cdf(x[i],d,b);
+    mx = a + a*(c-1)*gamma_cdf(x[i] | d,b);
 
     nl = n[i]; // number of litters in dose group i
 
@@ -198,7 +193,7 @@ model{
     int nl;
     real mx;
 
-    mx = a + a*(c-1)*gamma_cdf(x[i],d,b);
+    mx = a + a*(c-1)*gamma_cdf(x[i] | d,b);
 
     nl = n[i]; // number of litters in dose group i
 

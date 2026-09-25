@@ -1,23 +1,21 @@
 functions{
    vector algebra_system(vector y,        // unknowns
                vector theta,    // parameters
-               real[] x_r,      // data (real)
-               int[] x_i) {     // data (integer)
+               real q,          // data (real)
+               int data_type){  // data (integer)
    vector[1] x;
-   real q = x_r[1];
-   real data_type = x_i[1];
    if(data_type == 1){
        if(y[1]>0) x[1] = gamma_p(theta[3],y[1]*theta[1]) - (q/(theta[2]-1));
-       else if(y[1]<=0) x[1]=1;
+       else x[1]=1;
    }else if(data_type == 2){
        if(y[1]>0) x[1] = gamma_p(theta[3],y[1]*theta[1]) - (log(1+q)/(theta[4]*(theta[2]-1)));
-       else if(y[1]<=0) x[1]=1;
+       else x[1]=1;
    }else if(data_type == 3){
        if(y[1]>0) x[1] = gamma_p(theta[3],y[1]*theta[1]) - ((-q)/(theta[2]-1));
-       else if(y[1]<=0) x[1]=1;
+       else x[1]=1;
    }else if(data_type == 4){
       if(y[1]>0) x[1] = gamma_p(theta[3],y[1]*theta[1]) - (log(1-q)/(theta[4]*(theta[2]-1)));
-      else if(y[1]<=0) x[1]=1;
+      else x[1]=1;
    }
    return x;
    }
@@ -57,15 +55,11 @@ data{
   int<lower=0, upper=1> is_decreasing; // indicator for decreasing data
   real U; // upper bound for decreasing data
  }
- transformed data{
-   real x_r[1] = {q};
-   int x_i[1] = {data_type};
- }
  parameters{
  real<lower=0> par1;
  real<lower=0> par2;
- real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
- real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
+ array[is_increasing] real<lower=0> pars3i; // will be size one if is_increasing
+ array[is_decreasing] real<lower=0,upper=1> pars3d; // will be size one if is_decreasing
  real par4;
  real par5;
 }
@@ -94,7 +88,7 @@ data{
   if(is_increasing){
     par3 = L + pars3i[1];
   }else if(is_decreasing){
-    par3 = L + (U - L) .* pars3d[1];
+    par3 = L + (U - L) * pars3d[1];
   }
 
   mu_inf = par1*par3;
@@ -113,7 +107,7 @@ data{
    theta[4] = a;
    y_guess[1] = init_b;
 
-   y = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+   y = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q, data_type);
    b = y[1];
 
  }
@@ -121,18 +115,18 @@ data{
     par1 ~ pert_dist(shape1[1], shape2[1], priorlb[1], priorub[1]);
     par2 ~ pert_dist(shape1[2], shape2[2], priorlb[2], priorub[2]);
     par3 ~ pert_dist(shape1[3], shape2[3], priorlb[3], priorub[3]);
-    par4 ~ normal(priormu[4],priorSigma[4,4])T[,truncd];
+    par4 ~ normal(priormu[4],priorSigma[4,4]) T[,truncd];
     par5 ~ normal(priormu[5],priorSigma[5,5]);
 
   if(data_type == 1 || data_type == 3){
     for (i in 1:N){
       target += -0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2)-0.5*(n[i]-1)*s2[i]*invsigma2-0.5*n[i]*square(m[i]-a-a*(c-1)*
-      gamma_cdf(x[i],d,b))*invsigma2;
+      gamma_cdf(x[i] | d, b))*invsigma2;
      }
   }else if(data_type == 2 || data_type == 4){
       for (i in 1:N){
       target += -0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2)-0.5*(n[i]-1)*s2[i]*invsigma2-0.5*n[i]*square(m[i]-a-a*(c-1)*
-      gamma_cdf(x[i],d,b))*invsigma2 - m[i]*n[i];
+      gamma_cdf(x[i] | d, b))*invsigma2 - m[i]*n[i];
      }
   }
 

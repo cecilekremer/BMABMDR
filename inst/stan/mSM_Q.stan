@@ -20,21 +20,21 @@ functions {
 data{
   int N;  // the total number of observations
   int Ndose; // the total number of distinct dose group
-  int n_litter[Ndose]; // number of litters per dose group
+  array[Ndose] int n_litter; // number of litters per dose group
   int maxl; // max number of litters per dose
 
   // matrix[Ndose, maxl] n;
   // matrix[Ndose, maxl] y;
-  int n[Ndose, maxl];
-  int y[Ndose, maxl];
-  int use_data[Ndose, maxl];
+  array[Ndose, maxl] int n;
+  array[Ndose, maxl] int y;
+  array[Ndose, maxl] int use_data;
 
   // int n[N];  // the sample size for each dose group
   // int y[N];  // the arithmetic mean of the response values for each dose group
 
-  real priormu[2];
+  array[2] real priormu;
   real priorlb; //lower bound
-  real priorub[2]; //upper bound
+  array[2] real priorub; //upper bound
   real priorgama;
   real eps;
   int<lower=0, upper=1> is_bin;  //model type 1 = Binomial 0 = otherwise
@@ -43,14 +43,12 @@ data{
 }
 parameters{
   row_vector[Ndose] par; // par[1]=background, par[2:N]=increment per dose group
-  real<lower=0, upper=1> rho[is_betabin]; //will be defined if beta-binomial is to be fitted
+  array[is_betabin] real<lower=0, upper=1> rho; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
   // vector[Ndose] a; // at the dose level
   matrix[Ndose, maxl] a;
 
-  // real abet[N];
-  // real bbet[N];
   row_vector[N] abet;
   row_vector[N] bbet;
 

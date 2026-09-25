@@ -18,7 +18,7 @@
 #' @export plot_prior
 #'
 plot_prior <- function(mod.obj, data, model_name,
-                       parms = TRUE, clustered = FALSE){ # pars = T for parameters, F for background & fold change
+                       parms = TRUE, clustered = FALSE, dose_lab = NULL, resp_lab = NULL){ # pars = T for parameters, F for background & fold change
 
   names(mod.obj$parsN) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N")
   names(mod.obj$parsLN) = c("E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
@@ -97,7 +97,8 @@ plot_prior <- function(mod.obj, data, model_name,
                        aes(x = value, group = as.factor(dist), fill = as.factor(dist))) +
       geom_density(alpha = .3, color = NA) +
       geom_vline(xintercept = obs.bkg, linetype = "dashed", alpha = 0.5) +
-      xlab("Background response") + ylab("Density") +
+      labs(x = paste0("Background response (", resp_lab, ")"),
+           y = "Density") +
       #xlim(quantile(bkg.prior, 0.01), quantile(bkg.prior, 0.99)) +
       coord_cartesian(xlim = c(quantile(bkg.prior, 0.01), quantile(bkg.prior, 0.99))) +
       scale_fill_manual(name = "", breaks = c("posterior","prior"),
@@ -111,7 +112,8 @@ plot_prior <- function(mod.obj, data, model_name,
                        aes(x = value, group = as.factor(dist), fill = as.factor(dist))) +
       geom_density(alpha = .3, color = NA) +
       geom_vline(xintercept = obs.max, linetype = "dashed", alpha = 0.5) +
-      xlab("Maximum response") + ylab("Density") +
+      labs(x = paste0("Maximum response (", resp_lab, ")"),
+           y = "Density") +
       #xlim(min(c(quantile(max.post, 0),quantile(max.prior, 0.01))), min(c(quantile(max.post,0.99),
       #                                                                    quantile(max.prior, 0.99)))) +
       coord_cartesian(xlim = c(min(c(quantile(max.post, 0),quantile(max.prior, 0.01))),
@@ -154,7 +156,8 @@ plot_prior <- function(mod.obj, data, model_name,
                        aes(x = value, group = as.factor(dist), fill = as.factor(dist))) +
       # geom_density(aes(x=value, y=..scaled.., group = as.factor(dist), fill = as.factor(dist)), alpha = .3, color = NA) +
       geom_density(alpha = .3, color = NA) +
-      xlab("BMD") + ylab("Density") +
+      labs(x = paste0("BMD (", dose_lab, ")"),
+           y = "Density") +
       xlim(0,mod.obj$max.dose) +
       # coord_cartesian(xlim = c(0,mod.obj$max.dose*2)) +
       scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
@@ -222,7 +225,7 @@ plot_prior <- function(mod.obj, data, model_name,
 
 #' @rdname plot_prior
 #' @export
-plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F for background & fold change
+plot_priorQ <- function(mod.obj, data, model_name, dose_lab = NULL, resp_lab = NULL){ # pars = T for parameters, F for background & fold change
 
   names(mod.obj$parsQ) <- c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
 
@@ -262,7 +265,8 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
     plot.a <- ggplot(data = df.par.a,
                      aes(x = x, y = value, fill = dist)) +
       geom_area(alpha = .3) +
-      xlab("Background response") + ylab("Density") +
+      labs(x = paste0("Background response (", resp_lab, ")"),
+           y = "Density") +
       geom_vline(xintercept = obs.a, linetype = "dashed", alpha = 0.5, size = 1) +
       scale_fill_manual(name = "", breaks = c("posterior","prior"),
                         labels = c("Posterior","Prior"), values = c("coral","lightblue"),
@@ -302,7 +306,8 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
     plot.BMD <- ggplot(data = df.par.BMD,
                        aes(x = x, y = value, fill = dist)) +
       geom_area(alpha = .3) +
-      xlab("Parameter BMD") + ylab("Density") +
+      labs(x = paste0("BMD (", dose_lab, ")"),
+           y = "Density") +
       scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
                         values = c("coral","lightblue")) +
       # coord_cartesian(xlim = c(quantile(c(BMD.prior*mod.obj$max.dose, BMD.post*mod.obj$max.dose), 0.01),
@@ -345,7 +350,7 @@ plot_priorQ <- function(mod.obj, data, model_name){ # pars = T for parameters, F
     plot.rho <- ggplot(data = df.par.rho,
                        aes(x = x, y = value, fill = dist)) +
       geom_area(alpha = .3) +
-      xlab("Parameter rho") + ylab("Density") +
+      xlab("Correlation rho") + ylab("Density") +
       scale_fill_manual(name = "", breaks = c("posterior","prior"), labels = c("Posterior","Prior"),
                         values = c("coral","lightblue")) +
       coord_cartesian(xlim = c(quantile(c(rho.prior, rho.post), 0.01),

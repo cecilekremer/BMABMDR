@@ -4509,7 +4509,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                maxy = NULL,
                                prior.BMD = NULL, # possible expert info on background and max response
                                shape.a = 4, shape.c = 4, shape.BMD = 0.0001, # shape for the PERT distribution,
-                               prior.d = 'N11',
+                               prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                                extended = TRUE, extended.value = 3,
                                prior.weights = rep(1,16),
                                ndraws=30000,seed=123,
@@ -4530,7 +4530,7 @@ full.laplace_MA_Cov = function(data, # the summary data
     q = q,
     bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
     shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-    prior.d = prior.d,
+    prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
     extended = extended,
     extended.value = extended.value,
     covariate = 'all'
@@ -4543,7 +4543,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                               q = q,
                               bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
                               shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-                              prior.d = prior.d,
+                              prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
                               extended = extended)
 
   if(!(all(prior.weights[1:8] == 0))){
@@ -4556,7 +4556,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
       shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-      prior.d = prior.d,
+      prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
       extended = extended,
       extended.value = extended.value,
       covariate = 'a_sigma2'
@@ -4570,7 +4570,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
       shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-      prior.d = prior.d,
+      prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
       extended = extended,
       extended.value = extended.value,
       covariate = 'BMD_d'
@@ -4587,7 +4587,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
       shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-      prior.d = prior.d,
+      prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
       extended = extended,
       extended.value = extended.value,
       covariate = 'all'
@@ -4601,7 +4601,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
       shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-      prior.d = prior.d,
+      prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
       extended = extended,
       extended.value = extended.value,
       covariate = 'a_sigma2'
@@ -4615,7 +4615,7 @@ full.laplace_MA_Cov = function(data, # the summary data
       q = q,
       bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
       shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-      prior.d = prior.d,
+      prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
       extended = extended,
       extended.value = extended.value,
       covariate = 'BMD_d'
@@ -4628,7 +4628,7 @@ full.laplace_MA_Cov = function(data, # the summary data
                                   q = q,
                                   bkg = bkg, maxy = maxy, prior.BMD = prior.BMD,
                                   shape.a = shape.a, shape.c = shape.c, shape.BMD = shape.BMD,
-                                  prior.d = prior.d,
+                                  prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
                                   extended = extended,
                                   extended.value = extended.value)
   }
@@ -6058,7 +6058,7 @@ full.laplace_MA_Cov = function(data, # the summary data
 full.laplace_MA_Q_Cov = function(data, # the summary data
                                  sumstats = TRUE,
                                  q = 0.1,
-                                 prior.d = 'N11',
+                                 prior.d = 'N11', d.mean = NULL, d.std = NULL, d.trunc = NULL,
                                  extended = TRUE, extended.value = 3,
                                  prior.weights = rep(1,8),
                                  ndraws=30000,seed=123,
@@ -6071,7 +6071,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     data = data,
     sumstats = sumstats,
     q = q,
-    prior.d = prior.d,
+    prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
     extended = extended,
     extended.value = extended.value,
     covariate = 'all'
@@ -6081,7 +6081,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     data = data,
     sumstats = sumstats,
     q = q,
-    prior.d = prior.d,
+    prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
     extended = extended,
     extended.value = extended.value,
     covariate = 'background'
@@ -6091,7 +6091,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     data = data,
     sumstats = sumstats,
     q = q,
-    prior.d = prior.d,
+    prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
     extended = extended,
     extended.value = extended.value,
     covariate = 'BMD_d'
@@ -6103,7 +6103,7 @@ full.laplace_MA_Q_Cov = function(data, # the summary data
     q = q,
     extended = extended,
     extended.value = extended.value,
-    prior.d = prior.d
+    prior.d = prior.d, d.mean = d.mean, d.std = d.std, d.trunc = d.trunc,
   )
 
   #########################################

@@ -100,10 +100,10 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
@@ -211,10 +211,10 @@ modelTest <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM)) # bf in favor of SM if bf < 1/10
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
@@ -332,10 +332,10 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
@@ -440,10 +440,10 @@ modelTestC <- function(best.fit, data.N, data.LN, stanBest, type, seed,
     bf = exp(-0.5 * (BIC.bestfit - BIC.SM))
 
     if(bf < 1/10){
-      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }else if(bf >= 1/10){
-      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ').')
+      warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(1/bf, digits=2, format='e'), ' in favour of the saturated model).')
       # warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor is ', formatC(bf, digits=2, format='e'), ').')
     }
 
@@ -730,9 +730,9 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
   }
 
   if(bf > 10){
-    warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
+    warn.bf = paste0('None of the models provide an adequate fit to the data (Bayes factor in favour of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
   }else{
-    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor in favor of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
+    warn.bf = paste0('Best fitting model fits sufficiently well (Bayes factor in favour of saturated model is ', formatC(bf, digits = 2, format = 'e'), ').')
   }
 
   return(list(bayesFactor = bf,

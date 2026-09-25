@@ -1,10 +1,8 @@
  functions{
    vector algebra_system(vector yG,        // unknowns
                vector theta,    // parameters
-               real[] x_r,      // data (real)
-               int[] x_i) {     // data (integer)
+               real q){  // data (integer)
    vector[1] x;
-   real q = x_r[1];
     if(yG[1]>0) x[1] = gamma_p(theta[2],yG[1]*theta[1]) - q;
     else if(yG[1]<=0) x[1]=1;
    return x;
@@ -47,23 +45,19 @@ data{
   real eps;
   cov_matrix[3] priorSigma;
   real truncd;
- }
-transformed data{
-   real x_r[1] = {q};
-   int x_i[0];
- }
-parameters{
-  real<lower=0, upper=1> par1[nlevels_a]; //a
-  real<lower=0> par2[nlevels_BMD]; //BMD
-  real par3[nlevels_d]; // d on a log scale
 }
- transformed parameters{
-  real a[nlevels_a];
-  real b[nlevels_b];
-  real d[nlevels_d];
-  real k[nlevels_BMD];
+parameters{
+  array[nlevels_a] real<lower=0, upper=1> par1; // 1
+  array[nlevels_BMD] real<lower=0> par2; // BMD
+  array[nlevels_d] real par3; // d on a log scale
+}
+transformed parameters{
+  array[nlevels_a] real a;
+  array[nlevels_b] real b;
+  array[nlevels_d] real d;
+  array[nlevels_BMD] real k;
 //  real m[N];
-  real<lower=0> BMD[nlevels_BMD];
+  array[nlevels_BMD] real<lower=0> BMD;
   vector[2] theta;
   vector[1] y_guess;
   vector[1] yG;
@@ -86,7 +80,7 @@ parameters{
       theta[1] = BMD[1];
       theta[2] = d[1];
       y_guess[1] = init_b;
-      yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      yG = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q);
       b[mn] = yG[1];
     }
   }else if(nlevels_a > 1 && nlevels_d == 1 && nlevels_BMD == 1){
@@ -94,7 +88,7 @@ parameters{
       theta[1] = BMD[1];
       theta[2] = d[1];
       y_guess[1] = init_b;
-      yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      yG = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q);
       b[mn] = yG[1];
     }
   }else if(nlevels_a == 1 && nlevels_d > 1 && nlevels_BMD > 1){
@@ -102,7 +96,7 @@ parameters{
       theta[1] = BMD[mn];
       theta[2] = d[mn];
       y_guess[1] = init_b;
-      yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      yG = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q);
       b[mn] = yG[1];
     }
   }else if(nlevels_a > 1 && nlevels_d > 1 && nlevels_BMD > 1){
@@ -110,7 +104,7 @@ parameters{
       theta[1] = BMD[mn];
       theta[2] = d[mn];
       y_guess[1] = init_b;
-      yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      yG = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q);
       b[mn] = yG[1];
     }
   }
@@ -140,8 +134,8 @@ parameters{
                   y[i] * log(a[1]+eps) +
                   (n[i] - y[i]) * log(1 - a[1]+eps)) * trt_ind[i, mn];
         }else if(x[i] > 0) { target += ( lchoose(n[i], y[i]) +
-                                         y[i] * log((a[1] + (1-a[1])*gamma_cdf(x[i], d[mn], b[mn])) +eps) +
-                                        (n[i] - y[i]) * log(1 - (a[1] + (1-a[1])*gamma_cdf(x[i], d[mn], b[mn]))+eps)) * trt_ind[i, mn];
+                                         y[i] * log((a[1] + (1-a[1])*gamma_cdf(x[i] | d[mn], b[mn])) +eps) +
+                                        (n[i] - y[i]) * log(1 - (a[1] + (1-a[1])*gamma_cdf(x[i] | d[mn], b[mn]))+eps)) * trt_ind[i, mn];
         }
       }
     }
@@ -152,8 +146,8 @@ parameters{
                   y[i] * log(a[mn]+eps) +
                   (n[i] - y[i]) * log(1 - a[mn]+eps)) * trt_ind[i, mn];
         }else if(x[i] > 0) { target += ( lchoose(n[i], y[i]) +
-                                         y[i] * log((a[mn] + (1-a[mn])*gamma_cdf(x[i], d[1], b[1])) +eps) +
-                                        (n[i] - y[i]) * log(1 - (a[mn] + (1-a[mn])*gamma_cdf(x[i], d[1], b[1]))+eps)) * trt_ind[i, mn];
+                                         y[i] * log((a[mn] + (1-a[mn])*gamma_cdf(x[i] | d[1], b[1])) +eps) +
+                                        (n[i] - y[i]) * log(1 - (a[mn] + (1-a[mn])*gamma_cdf(x[i] | d[1], b[1]))+eps)) * trt_ind[i, mn];
         }
       }
     }
@@ -164,8 +158,8 @@ parameters{
                   y[i] * log(a[mn]+eps) +
                   (n[i] - y[i]) * log(1 - a[mn]+eps)) * trt_ind[i, mn];
         }else if(x[i] > 0) { target += ( lchoose(n[i], y[i]) +
-                                         y[i] * log((a[mn] + (1-a[mn])*gamma_cdf(x[i], d[mn], b[mn])) +eps) +
-                                        (n[i] - y[i]) * log(1 - (a[mn] + (1-a[mn])*gamma_cdf(x[i], d[mn], b[mn]))+eps)) * trt_ind[i, mn];
+                                         y[i] * log((a[mn] + (1-a[mn])*gamma_cdf(x[i] | d[mn], b[mn])) +eps) +
+                                        (n[i] - y[i]) * log(1 - (a[mn] + (1-a[mn])*gamma_cdf(x[i] | d[mn], b[mn]))+eps)) * trt_ind[i, mn];
         }
       }
     }
@@ -176,8 +170,8 @@ parameters{
                   y[i] * log(a[1]+eps) +
                   (n[i] - y[i]) * log(1 - a[1]+eps)) * trt_ind[i, mn];
         }else if(x[i] > 0) { target += ( lchoose(n[i], y[i]) +
-                                         y[i] * log((a[1] + (1-a[1])*gamma_cdf(x[i], d[1], b[1])) +eps) +
-                                        (n[i] - y[i]) * log(1 - (a[1] + (1-a[1])*gamma_cdf(x[i], d[1], b[1]))+eps)) * trt_ind[i, mn];
+                                         y[i] * log((a[1] + (1-a[1])*gamma_cdf(x[i] | d[1], b[1])) +eps) +
+                                        (n[i] - y[i]) * log(1 - (a[1] + (1-a[1])*gamma_cdf(x[i] | d[1], b[1]))+eps)) * trt_ind[i, mn];
         }
       }
     }

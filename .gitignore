@@ -1,7 +1,7 @@
 # compiled files
-/*.so
-/*.o
-/*.dll
+src/*.so
+src/*.o
+src/*.dll
 
 # project files
 *.project

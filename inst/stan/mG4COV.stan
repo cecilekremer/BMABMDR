@@ -1,13 +1,10 @@
 functions {
   vector algebra_system(vector y,        // unknowns
                         vector theta,    // parameters
-                        real[] x_r,      // data (real)
-                        int[] x_i) {     // data (integer)
+                        real q,          // data (real)
+                        int data_type){  // data (integer)
     vector[1] x;
-    real q = x_r[1];
-    real data_type = x_i[1];
     if(data_type == 1){
-
       if(y[1]>0) x[1] = gamma_p(theta[3],y[1]*theta[1]) - (q/(theta[2]-1));
       else if(y[1]<=0) x[1]=1;
     }else if(data_type == 2){
@@ -65,28 +62,24 @@ data{
   real U; // upper bound for decreasing data
   real truncd;
 }
-transformed data{
-  real x_r[1] = {q};
-  int x_i[1] = {data_type};
-}
 parameters{
-  real<lower=0> par1[nlevels_a];
-  real<lower=0> par2[nlevels_BMD]; // BMD
-  real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
-  real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
-  real par4[nlevels_d];
-  real par5[nlevels_sigma];
+  array[nlevels_a] real<lower=0> par1;
+  array[nlevels_BMD] real<lower=0> par2;
+  array[is_increasing] real<lower=0> pars3i; // will be size one if is_increasing
+  array[is_decreasing] real<lower=0,upper=1> pars3d; // will be size one if is_decreasing
+  array[nlevels_d] real par4;
+  array[nlevels_sigma] real par5;
 }
 transformed parameters{
-  real b[nlevels_b];
-  real a[nlevels_a];
-  real c[nlevels_a];
+  array[nlevels_b] real b;
+  array[nlevels_a] real a;
+  array[nlevels_a] real c;
   real par3;
-  real d[nlevels_d];
-  real k[nlevels_BMD];
-  real mu_inf[nlevels_a];
-  real invsigma2[nlevels_sigma];
-  real mu_0[nlevels_a];
+  array[nlevels_d] real d;
+  array[nlevels_BMD] real k;
+  array[nlevels_a] real mu_inf;
+  array[nlevels_sigma] real invsigma2;
+  array[nlevels_a] real mu_0;
   vector[4] theta;
   vector[1] y_guess;
   vector[1] y;
@@ -145,7 +138,7 @@ transformed parameters{
       theta[4] = a[1];
       y_guess[1] = init_b;
 
-      y = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      y = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q, data_type);
       b[1] = y[1];
 
     }
@@ -160,7 +153,7 @@ transformed parameters{
       theta[4] = a[mn];
       y_guess[1] = init_b;
 
-      y = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      y = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q, data_type);
       b[mn] = y[1];
 
     }
@@ -175,7 +168,7 @@ transformed parameters{
       theta[4] = a[1];
       y_guess[1] = init_b;
 
-      y = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      y = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q, data_type);
       b[mn] = y[1];
 
     }
@@ -190,7 +183,7 @@ transformed parameters{
       theta[4] = a[mn];
       y_guess[1] = init_b;
 
-      y = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+      y = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q, data_type);
       b[mn] = y[1];
 
     }
@@ -233,7 +226,7 @@ model{
 
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[1])-
             0.5*(n[i]-1)*s2[i]*invsigma2[1]-
-            0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i],d[mn],b[mn]))*
+            0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i] | d[mn],b[mn]))*
             invsigma2[1])*trt_ind[i,mn];
 
         }
@@ -243,7 +236,7 @@ model{
         for(mn in 1:nlevels){
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[1])-
                       0.5*(n[i]-1)*s2[i]*invsigma2[1]-
-                      0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i],d[mn],b[mn]))*
+                      0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i] | d[mn],b[mn]))*
                       invsigma2[1] - m[i]*n[i])*trt_ind[i,mn];
         }
       }
@@ -258,7 +251,7 @@ model{
 
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[mn])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[mn]-
-                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i],d[1],b[mn]))*
+                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i] | d[1],b[mn]))*
                        invsigma2[mn])*trt_ind[i,mn];
 
         }
@@ -268,7 +261,7 @@ model{
         for(mn in 1:nlevels){
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[mn])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[mn]-
-                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i],d[1],b[mn]))*
+                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i] | d[1],b[mn]))*
                        invsigma2[mn] - m[i]*n[i])*trt_ind[i,mn];
         }
       }
@@ -284,7 +277,7 @@ model{
 
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[mn])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[mn]-
-                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i],d[mn],b[mn]))*
+                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i] | d[mn],b[mn]))*
                        invsigma2[mn])*trt_ind[i,mn];
 
         }
@@ -294,7 +287,7 @@ model{
         for(mn in 1:nlevels){
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[mn])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[mn]-
-                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i],d[mn],b[mn]))*
+                       0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i] | d[mn],b[mn]))*
                        invsigma2[mn] - m[i]*n[i])*trt_ind[i,mn];
         }
       }
@@ -308,7 +301,7 @@ model{
 
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[1])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[1]-
-                       0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i],d[1],b[1]))*
+                       0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i] | d[1],b[1]))*
                        invsigma2[1])*trt_ind[i,mn];
 
         }
@@ -318,7 +311,7 @@ model{
         for(mn in 1:nlevels){
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[1])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[1]-
-                       0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i],d[1],b[1]))*
+                       0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i] | d[1],b[1]))*
                        invsigma2[1] - m[i]*n[i])*trt_ind[i,mn];
         }
       }

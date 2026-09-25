@@ -19,11 +19,11 @@ functions {
 }
 data{
   int N;  // the total number of distinct dose group
-  int n[N];  // the sample size for each dose group
-  int y[N];  // the arithmetic mean of the response values for each dose group
+  array[N] int n; // the sample size for each dose group
+  array[N] int y; // the arithmetic mean of the response values for each dose group
   // int yint[N];
   // int nint[N];
-  real priormu[2];
+  array[2] real priormu;
   real<lower=0> priorlb; //lower bound
   real<upper=1> priorub; //upper bound
   real priorgama;
@@ -33,12 +33,12 @@ data{
 }
 parameters{
   real<lower=0,upper=1> par; // par[1]=overall log(mean), par[2]=log(invsigma2)
-  real rho[is_betabin]; //will be defined if beta-binomial is to be fitted
+  array[is_betabin] real<lower=0, upper=1> rho; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
   real a;
-  real abet[N];
-  real bbet[N];
+  array[N] real abet;
+  array[N] real bbet;
 
   a=par;
 

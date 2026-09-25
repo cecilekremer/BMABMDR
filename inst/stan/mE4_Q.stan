@@ -24,9 +24,9 @@ data{
   vector[N] y;  // the number of adverse events for each dose group
   real q;       // the BMR
   vector[4] priormu;
-  real priorlb[2]; //lower bound
-  real priorub[2]; //upper bound
-  real priorgama[2];
+  array[2] real priorlb; // lower bound
+  array[2] real priorub; // upper bound
+  array[2] real priorgama;
   real eps;
   cov_matrix[3] priorSigma;
   real truncd;
@@ -38,16 +38,16 @@ parameters{
   real<lower=0, upper=1> par1; //a
   real<lower=0> par2; //BMD
   real par3; // d on a log scale
-  real rho[is_betabin]; //will be defined if beta-binomial is to be fitted
+  array[is_betabin] real rho; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
   real a;
   real b;
   real d;
   real k;
-  real m[N];
-  real abet[N];
-  real bbet[N];
+  array[N] real m;
+  array[N] real abet;
+  array[N] real bbet;
   real<lower=0> BMD;
   BMD = par2;
   a = par1;

@@ -1,10 +1,8 @@
 functions{
   vector algebra_system(vector yG,        // unknowns
   vector theta,    // parameters
-  real[] x_r,      // data (real)
-  int[] x_i) {     // data (integer)
+        real q){  // data (integer)
   vector[1] x;
-  real q = x_r[1];
   if(yG[1]>0) x[1] = gamma_p(theta[2],yG[1]*theta[1]) - q;
   else if(yG[1]<=0) x[1]=1;
   return x;
@@ -36,36 +34,32 @@ data{
   real q;       // the BMR
   real init_b;
   vector[4] priormu;
-  real priorlb[2]; //lower bound
-  real priorub[2]; //upper bound
-  real priorgama[2];
+  array[2] real priorlb; // lower bound
+  array[2] real priorub; // upper bound
+  array[2] real priorgama;
   real eps;
   cov_matrix[3] priorSigma;
   real truncd;
   int<lower=0, upper=1> is_bin;       //model type 1 = Binomial 0 = otherwise
   int<lower=0, upper=1> is_betabin;  //model type 1 = Beta-Binomial 0 = otherwise
 }
-transformed data{
-  real x_r[1] = {q};
-  int x_i[0];
-}
 parameters{
   real<lower=0, upper=1> par1; //a
   real<lower=0> par2; //BMD
   real par3; // d on a log scale
-  real rho[is_betabin];
+  array[is_betabin] real rho; //will be defined if beta-binomial is to be fitted
 }
 transformed parameters{
   real a;
-  real d;
   real b;
+  real d;
   real k;
+  array[N] real m;
+  array[N] real abet;
+  array[N] real bbet;
   vector[2] theta;
   vector[1] y_guess;
   vector[1] yG;
-  real m[N];
-  real abet[N];
-  real bbet[N];
   real<lower=0> BMD;
   BMD = par2;
   a = par1;
@@ -75,14 +69,14 @@ transformed parameters{
   theta[2] = d;
   y_guess[1] = init_b;
 
-  yG = algebra_solver(algebra_system, y_guess, theta, x_r, x_i, 1e-10, positive_infinity(), 1e3);
+  yG = solve_powell_tol(algebra_system, y_guess, 1e-10, positive_infinity(), 1000, theta, q);
   b = yG[1];
 
   for(i in 1:N){
     if(x[i] == 0){
       m[i] = a;
     } else if(x[i] > 0) {
-      m[i] = a + (1 - a)*gamma_cdf(x[i], d, b);
+      m[i] = a + (1 - a)*gamma_cdf(x[i] | d, b);
     }
   }
 

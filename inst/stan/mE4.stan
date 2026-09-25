@@ -36,8 +36,8 @@ data{
 parameters{
  real<lower=0> par1;
  real<lower=0> par2; // BMD
- real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
- real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
+ array[is_increasing] real<lower=0> pars3i; // will be size one if is_increasing
+ array[is_decreasing] real<lower=0, upper=1> pars3d; // will be size one if is_decreasing
  real par4;
  real par5;
 }
@@ -63,7 +63,7 @@ transformed parameters{
   if(is_increasing){
     par3 = L + pars3i[1];
   }else if(is_decreasing){
-    par3 = L + (U - L) .* pars3d[1];
+    par3 = L + (U - L) * pars3d[1];
   }
 
   mu_inf = par1*par3;
@@ -93,7 +93,7 @@ model{
     par1 ~ pert_dist(shape1[1], shape2[1], priorlb[1], priorub[1]);
     par2 ~ pert_dist(shape1[2], shape2[2], priorlb[2], priorub[2]);
     par3 ~ pert_dist(shape1[3], shape2[3], priorlb[3], priorub[3]);
-    par4 ~ normal(priormu[4],priorSigma[4,4])T[,truncd];
+    par4 ~ normal(priormu[4],priorSigma[4,4]) T[,truncd];
     par5 ~ normal(priormu[5],priorSigma[5,5]);
 
    if(data_type == 1 || data_type == 3){

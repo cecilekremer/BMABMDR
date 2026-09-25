@@ -1768,6 +1768,10 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
   #   }
   # }
 
+  if((y.a[N]/n.a[N]) < (y.a[1]/n.a[1])) warning(
+    "In case of quantal data, adverse outcomes are modelled and data should be in increasing format (increasing probability of adverse event with increasing dose)."
+  )
+
 
   datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
   if(cluster == FALSE) {

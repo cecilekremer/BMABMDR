@@ -14,11 +14,11 @@ functions {
 }
 data{
   int N;  // the total number of distinct dose groups
-  int n[N]; // number of litters per dose group
+  array[N] int n; // number of litters per dose group
   int nc; // number of unique dose x litter combinations (i.e. clusters)
   int maxN; // max number of obs per cluster
   int maxNc; // max number of litters per dose group
-  int nij[N, maxNc]; // dose x litter matrix with the number of fetuses for each combination
+  array[N, maxNc] int nij; // dose x litter matrix with the number of fetuses for each combination
   matrix[nc, maxN] y; // responses
   vector[N] x;  // the dose level of each dose group
   real q;       // the BMR
@@ -39,9 +39,9 @@ data{
 parameters{
   real<lower=0> par1;
   real<lower=0> par2; // BMD
-  real<lower=0> pars3i[is_increasing]; // will be size one if is_increasing
-  real<lower=0, upper=1> pars3d[is_decreasing]; // will be size one if is_decreasing
-  real par4;
+ array[is_increasing] real<lower=0> pars3i; // will be size one if is_increasing
+ array[is_decreasing] real<lower=0,upper=1> pars3d; // will be size one if is_decreasing
+ real par4;
   real par5; // variance constant across cluster and dose groups
   real par6; // correlation parameter rho
 }

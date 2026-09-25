@@ -778,13 +778,17 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
       # }
       llH0 = llfH02_Q(x = pars.H0[1], nvec = n.a, dvec = dose.a, yvec = y.a, rho = pars.H0[2])
 
-      BIC.H0 = - 2 * llH0 + (2 * log(sum(n.a))) # parms: a, b, d, rho
-      BIC.SM = - 2 * llSM + ((data.modstanSM$Ndose + 1) * log(sum(n.a)))
+      # BIC.H0 = - 2 * llH0 + (2 * log(sum(n.a))) # parms: a, b, d, rho
+      BIC.H0 = - 2 * llH0 + (2 * log(length(n.a))) # parms: a, b, d, rho
+      # BIC.SM = - 2 * llSM + ((data.modstanSM$Ndose + 1) * log(sum(n.a)))
+      BIC.SM = - 2 * llSM + ((data.modstanSM$Ndose + 1) * log(length(n.a)))
+
 
     }
 
     # bf = 1/(exp(-0.5 * (BIC.SM - BIC.H0))) = exp(0.5*(BIC.SM - BIC.H0)) # bf in favor of H0 --> reverse to get in favor of SM
     bf = 1/exp(0.5 * (BIC.SM - BIC.H0)) # BF in favor of saturated model
+    # bf = exp(0.5 * (BIC.SM - BIC.H0)) # BF in favor of saturated model
 
   }
 

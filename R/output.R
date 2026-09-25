@@ -764,7 +764,7 @@ predict.BMADR <- function(mod.obj, dose,
 
 
 #' @rdname predict.BMADR
-#' @export
+#' @export predict.BMADRQ
 predict.BMADRQ <- function(mod.obj, dose,
                            what = c("predicted", "resp_at_BMD"),
                            model_averaged = FALSE,

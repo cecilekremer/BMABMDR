@@ -2,6 +2,17 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+
+## BMABMDR 0.1.21
+
+* added option for custom prior on d for covariate analysis
+
+* fixed plot of model fits showing incorrect x-axis (dose levels)
+
+* fixed installation issue (updated Stan syntax) - rstan version should now be at least 2.26.x !!
+
+* included user-specific plot axis labels
+
 ## BMABMDR 0.1.20
 
 * corrected plotting functions to display BMD posterior always above 0
