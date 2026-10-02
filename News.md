@@ -5,6 +5,8 @@ Whenever changes are expected to influence modeling results, this is explicitly 
 
 ## BMABMDR 0.1.21
 
+* added more informative warning messages
+
 * added option for custom prior on d for covariate analysis
 
 * fixed plot of model fits showing incorrect x-axis (dose levels)

@@ -111,7 +111,7 @@ summarize.indiv.data <- function(data,
 
 
     }else if(cluster == TRUE && covar == TRUE){
-      stop('Covariates not implemented for clustered data')
+      stop('Covariate analysis is not implemented for clustered data')
     }
 
   }else if(type == 'quantal'){
@@ -210,7 +210,7 @@ summarize.indiv.data <- function(data,
 
 
     }else if(cluster == TRUE && covar == TRUE){
-      stop('Covariates not implemented for clustered data')
+      stop('Covariate analysis is not implemented for clustered data')
     }
 
   }

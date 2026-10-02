@@ -1420,8 +1420,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
     mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
   }else{
     p.msg = ''
   }
@@ -1509,8 +1509,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
       mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
-      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
     }else{
       p.msg = ''
     }
@@ -2178,8 +2178,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
   }else{
     p.msg = ''
   }
@@ -2237,8 +2237,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
       mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
-      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
     }else{
       p.msg = ''
     }
@@ -3727,8 +3727,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
   if(TRUE %in% (mabmd1 > data$maxD)  && data$maxD > 1){
     mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
   }else{
     p.msg = ''
   }
@@ -3816,8 +3816,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
       mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
-      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
     }else{
       p.msg = ''
     }
@@ -4590,8 +4590,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
   }else{
     p.msg = ''
   }
@@ -4649,8 +4649,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
       mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
-      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
     }else{
       p.msg = ''
     }
@@ -5707,8 +5707,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
   if(TRUE %in% (mabmd1 > data$maxD) && data$maxD > 1){
     mabmd1 = ifelse(mabmd1 > data$maxD, data$maxD, mabmd1)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
   }else{
     p.msg = ''
   }
@@ -5774,8 +5774,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(TRUE %in% (mabmd.conv1 > data$maxD) && data$maxD > 1){
       mabmd.conv1 = ifelse(mabmd.conv1 > data$maxD, data$maxD, mabmd.conv1)
-      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
     }else{
       p.msg = ''
     }
@@ -6239,8 +6239,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
   if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
     mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
-    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+    p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+    warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
   }else{
     p.msg = ''
   }
@@ -6288,8 +6288,8 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     if(TRUE %in% (mabmd.conv > data$maxD) && data$maxD > 1){
       mabmd.conv = ifelse(mabmd.conv > data$maxD, data$maxD, mabmd.conv)
-      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2')
+      p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.'
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2. You can continue but check the BMDU estimate.')
     }else{
       p.msg = ''
     }
