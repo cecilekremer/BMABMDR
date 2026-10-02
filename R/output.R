@@ -985,11 +985,11 @@ print.BMADR <- function(mod.obj, type = c('continuous', 'quantal'), conv = FALSE
 #'
 #' @export summary.BMADR
 #'
-summary.BMADR <- function(mod.obj, type = c('continuous','quantal'), clustered = FALSE) {
+summary.BMADR <- function(mod.obj, type = c('continuous','quantal'), clustered = FALSE, conv = FALSE) {
   if(type == 'continuous'){
 
     if(is.BMADR2(mod.obj)[2] == 2){
-      BMDWout <- BMDWeights(mod.obj, type = 'quantal')
+      BMDWout <- BMDWeights(mod.obj, type = 'continuous')
     }else{
       BMDWall <- BMDWeights(mod.obj, 'continuous', conv = F)
       BMDWconv <- BMDWeights(mod.obj, 'continuous', conv = T)[,c(1,5,6)]

@@ -4678,7 +4678,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
   }else if(!(1 %in% converged)){
     lpwlp.conv = NULL; macilp.conv = NULL; BMDq_ls_conv = NULL; dr.MA.ls.conv = NULL; mabmd.conv = NA;
   }else if(!(0 %in% converged)){
-    lpwlp.conv = lpwb; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
+    lpwlp.conv = lpwlp; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
   }
 
   ## Plot with weights bridge sampling
