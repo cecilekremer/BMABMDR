@@ -2,8 +2,11 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
-
 ## BMABMDR 0.1.21
+
+* added column with weights of converged models to summary.BMADR() output
+
+* fixed plotting to include only converged models in weights plot (if requested)
 
 * added more informative warning messages
 

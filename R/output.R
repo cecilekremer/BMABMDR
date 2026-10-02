@@ -249,24 +249,34 @@ parq_extract <- function(mod_obj, pars = c(letters[c(1,2,4)], "BMD",
 #'
 #' @export weightsQ_extract
 #'
-weightsQ_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
+weightsQ_extract <- function(mod.obj, type = c("BS", "LP", "both"), conv = FALSE) {
   type <- match.arg(type)
   if(is.BMADRQ2(mod.obj)[3] == 2 & type == 'BS'){
-
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling)[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)],
-                      BS_Weights = mod.obj$weights_bridge_sampling[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)]))
-
+    if(conv == FALSE){
+      return(data.frame(Model = names(mod.obj$weights_bridge_sampling)[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)],
+                        BS_Weights = mod.obj$weights_bridge_sampling[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)]))
+    }else if(conv == TRUE){
+      return(data.frame(Model = names(mod.obj$bs_weights_conv)[which(names(mod.obj$bs_weights_conv) %in% mod.obj$models_included_bridge)],
+                        BS_Weights = mod.obj$bs_weights_conv[which(names(mod.obj$bs_weights_conv) %in% mod.obj$models_included_bridge)]))
+    }else{stop('Specify `conv` to indicate whether the include converged models only.')}
   } else if(is.BMADRQ2(mod.obj)[3] == 2 & type == 'LP') {
-
+    if(conv == FALSE){
     return(data.frame(Model = names(mod.obj$weights_laplace)[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)],
                       LP_Weights = mod.obj$weights_laplace[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)]))
-
+    }else if(conv == TRUE){
+      return(data.frame(Model = names(mod.obj$ls_weights_conv)[which(names(mod.obj$ls_weights_conv) %in% mod.obj$models_included_laplace)],
+                        LP_Weights = mod.obj$ls_weights_conv[which(names(mod.obj$ls_weights_conv) %in% mod.obj$models_included_laplace)]))
+    }else{stop('Specify `conv` to indicate whether the include converged models only.')}
   } else if(is.BMADRQ2(mod.obj)[3] == 2 & type == "both") {
-
+    if(conv == FALSE){
     return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
                       BS_Weights = mod.obj$weights_bridge_sampling,
                       LP_Weights = mod.obj$weights_laplace))
-
+    }else if(conv == TRUE){
+      return(data.frame(Model = names(mod.obj$bs_weights_conv),
+                        BS_Weights = mod.obj$bs_weights_conv,
+                        LP_Weights = mod.obj$ls_weights_conv))
+    }else{stop('Specify `conv` to indicate whether the include converged models only.')}
   } else if(is.BMADRQ2(mod.obj)[2] == 2){
 
     return(data.frame(Model = names(mod.obj$weights)[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)],
@@ -279,31 +289,39 @@ weightsQ_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
 
 #' @rdname weightsQ_extract
 #' @export
-weights_extract <- function(mod.obj, type = c("BS", "LP", "both")) {
+weights_extract <- function(mod.obj, type = c("BS", "LP", "both"), conv = FALSE) {
   type <- match.arg(type)
   if(is.BMADR2(mod.obj)[3] == 2 & type == 'BS'){
-
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling)[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)],
-                      BS_Weights = mod.obj$weights_bridge_sampling[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)]))
+    if(conv == FALSE){
+      return(data.frame(Model = names(mod.obj$weights_bridge_sampling)[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)],
+                        BS_Weights = mod.obj$weights_bridge_sampling[which(names(mod.obj$weights_bridge_sampling) %in% mod.obj$models_included_bridge)]))
+    }else if(conv == TRUE){
+      return(data.frame(Model = names(mod.obj$bs_weights_conv)[which(names(mod.obj$bs_weights_conv) %in% mod.obj$models_included_bridge)],
+                        BS_Weights = mod.obj$bs_weights_conv[which(names(mod.obj$bs_weights_conv) %in% mod.obj$models_included_bridge)]))
+    }else{stop('Specify `conv` to indicate whether the include converged models only.')}
 
   } else if(is.BMADR2(mod.obj)[3] == 2 & type == 'LP') {
-
-    return(data.frame(Model = names(mod.obj$weights_laplace)[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)],
-                      LP_Weights = mod.obj$weights_laplace[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)]))
-
+    if(conv == FALSE){
+      return(data.frame(Model = names(mod.obj$weights_laplace)[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)],
+                        LP_Weights = mod.obj$weights_laplace[which(names(mod.obj$weights_laplace) %in% mod.obj$models_included_laplace)]))
+    }else if(conv == TRUE){
+      return(data.frame(Model = names(mod.obj$ls_weights_conv)[which(names(mod.obj$ls_weights_conv) %in% mod.obj$models_included_laplace)],
+                        LP_Weights = mod.obj$ls_weights_conv[which(names(mod.obj$ls_weights_conv) %in% mod.obj$models_included_laplace)]))
+    }else{stop('Specify `conv` to indicate whether the include converged models only.')}
   } else if(is.BMADR2(mod.obj)[3] == 2 & type == "both"){
-
-    return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
-                      BS_Weights = mod.obj$weights_bridge_sampling,
-                      LP_Weights = mod.obj$weights_laplace))
-
+    if(conv == FALSE){
+      return(data.frame(Model = names(mod.obj$weights_bridge_sampling),
+                        BS_Weights = mod.obj$weights_bridge_sampling,
+                        LP_Weights = mod.obj$weights_laplace))
+    }else if(conv == TRUE){
+      return(data.frame(Model = names(mod.obj$bs_weights_conv),
+                        BS_Weights = mod.obj$bs_weights_conv,
+                        LP_Weights = mod.obj$ls_weights_conv))
+    }else{stop('Specify `conv` to indicate whether the include converged models only.')}
   } else if(is.BMADR2(mod.obj)[2] == 2){
-
     return(data.frame(Model = names(mod.obj$weights)[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)],
                       LP_Weights = mod.obj$weights[which(names(mod.obj$weights) %in% mod.obj$models_included_laplace)]))
-
   }else stop('please check mod.obj or provide type')
-
 }
 
 #' Function to extract BMD mixture
@@ -670,7 +688,7 @@ predict.BMADR <- function(mod.obj, dose,
     preds <- do.call(rbind.data.frame,preds)
     if(model_averaged == TRUE & is.BMADR2(mod.obj)[3] == 2 & weight_type == "BS") {
 
-      wts <- weights_extract(mod.obj, type = "both")
+      wts <- weights_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- dplyr::summarise(dplyr::group_by(pred_wts, Dose),
                                   model_averaged = sum(predicted*BS_Weights)
@@ -681,7 +699,7 @@ predict.BMADR <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADR2(mod.obj)[3] == 2 & weight_type == "LP") {
 
-      wts <- weights_extract(mod.obj, type = "both")
+      wts <- weights_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- dplyr::summarise(dplyr::group_by(pred_wts, Dose),
                                   model_averaged = sum(predicted*LP_Weights)
@@ -692,7 +710,7 @@ predict.BMADR <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADR2(mod.obj)[2] == 2 & weight_type == "LP") {
 
-      wts <- weights_extract(mod.obj)
+      wts <- weights_extract(mod.obj, conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- dplyr::summarise(dplyr::group_by(pred_wts, Dose),
                                   model_averaged = sum(predicted*LP_Weights)
@@ -727,7 +745,7 @@ predict.BMADR <- function(mod.obj, dose,
 
     if(model_averaged == TRUE & is.BMADR2(mod.obj)[3] == 2 & weight_type == "BS") {
 
-      wts <- weights_extract(mod.obj, type = "both")
+      wts <- weights_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
 
       MA_pred <- data.frame(dplyr::filter(BMDMA, Type == "BS"),
@@ -738,7 +756,7 @@ predict.BMADR <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADR2(mod.obj)[3] == 2 & weight_type == "LP") {
 
-      wts <- weights_extract(mod.obj, type = "both")
+      wts <- weights_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- data.frame(dplyr::filter(BMDMA, Type == "LP"),
                             model_averaged_response = sum(pred_wts$resp_at_BMD*pred_wts$LP_Weights))
@@ -748,7 +766,7 @@ predict.BMADR <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADR2(mod.obj)[2] == 2 & weight_type == "LP") {
 
-      wts <- weights_extract(mod.obj)
+      wts <- weights_extract(mod.obj, conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- data.frame(dplyr::filter(BMDMA, Type == "LP"),
                             model_averaged_response = sum(pred_wts$resp_at_BMD*pred_wts$LP_Weights))
@@ -797,7 +815,7 @@ predict.BMADRQ <- function(mod.obj, dose,
     preds <- do.call(rbind.data.frame,preds)
     if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[3] == 2 & weight_type == "BS") {
 
-      wts <- weightsQ_extract(mod.obj, type = "both")
+      wts <- weightsQ_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- dplyr::summarise(dplyr::group_by(pred_wts, Dose),
                                   model_averaged = sum(predicted*BS_Weights)
@@ -808,7 +826,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[3] == 2 & weight_type == "LP") {
 
-      wts <- weightsQ_extract(mod.obj, type = "both")
+      wts <- weightsQ_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- dplyr::summarise(dplyr::group_by(pred_wts, Dose),
                                   model_averaged = sum(predicted*LP_Weights)
@@ -819,7 +837,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[2] == 2 & weight_type == "LP") {
 
-      wts <- weightsQ_extract(mod.obj)
+      wts <- weightsQ_extract(mod.obj, conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- dplyr::summarise(dplyr::group_by(pred_wts, Dose),
                                   model_averaged = sum(predicted*LP_Weights)
@@ -854,7 +872,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
     if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[3] == 2 & weight_type == "BS") {
 
-      wts <- weightsQ_extract(mod.obj, type = "both")
+      wts <- weightsQ_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
 
       MA_pred <- data.frame(dplyr::filter(BMDMA, Type == "BS"),
@@ -865,7 +883,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[3] == 2 & weight_type == "LP") {
 
-      wts <- weightsQ_extract(mod.obj, type = "both")
+      wts <- weightsQ_extract(mod.obj, type = "both", conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- data.frame(dplyr::filter(BMDMA, Type == "LP"),
                             model_averaged_response = sum(pred_wts$resp_at_BMD*pred_wts$LP_Weights))
@@ -875,7 +893,7 @@ predict.BMADRQ <- function(mod.obj, dose,
 
     } else if(model_averaged == TRUE & is.BMADRQ2(mod.obj)[2] == 2 & weight_type == "LP") {
 
-      wts <- weightsQ_extract(mod.obj)
+      wts <- weightsQ_extract(mod.obj, conv = conv)
       pred_wts <- merge(preds, wts, by = "Model")
       MA_pred <- data.frame(dplyr::filter(BMDMA, Type == "LP"),
                             model_averaged_response = sum(pred_wts$resp_at_BMD*pred_wts$LP_Weights))
@@ -898,38 +916,38 @@ predict.BMADRQ <- function(mod.obj, dose,
 #'
 #' @export BMDWeights
 #'
-BMDWeights <- function(mod.obj, type = c('continuous', 'quantal')) {
+BMDWeights <- function(mod.obj, type = c('continuous', 'quantal'), conv = FALSE) {
   type <-  match.arg(type)
   BMDs <- BMDLU(mod.obj, type = type)
   if(type == 'continuous') {
 
     if(is.BMADR2(mod.obj)[3] == 2 ) {
-      wts_BS <- weights_extract(mod.obj, type = "BS")
-      wts_LP <- weights_extract(mod.obj, type = "LP")
-      conv <- data.frame(Model = as.vector(get_models('continuous')),
+      wts_BS <- weights_extract(mod.obj, type = "BS", conv = conv)
+      wts_LP <- weights_extract(mod.obj, type = "LP", conv = conv)
+      converged <- data.frame(Model = as.vector(get_models('continuous')),
                          Converged = mod.obj$convergence)
 
       return(merge(merge(merge(BMDs, wts_BS, by = "Model", sort = FALSE, all.x = T),
-                         wts_LP, by = "Model", sort = FALSE, all.x = T), conv, by = 'Model', sort = FALSE, all.x = T))
+                         wts_LP, by = "Model", sort = FALSE, all.x = T), converged, by = 'Model', sort = FALSE, all.x = T))
     } else if(is.BMADR2(mod.obj)[2] == 2) {
 
-      wts_LP <- weights_extract(mod.obj, type = "LP")
+      wts_LP <- weights_extract(mod.obj, type = "LP", conv = conv)
       return(merge(BMDs, wts_LP, by = "Model", sort = FALSE))
     }
 
   } else if(type == 'quantal') {
 
     if(is.BMADRQ2(mod.obj)[3] == 2 ) {
-      wts_BS <- weightsQ_extract(mod.obj, type = "BS")
-      wts_LP <- weightsQ_extract(mod.obj, type = "LP")
-      conv <- data.frame(Model = as.vector(get_models('quantal')),
+      wts_BS <- weightsQ_extract(mod.obj, type = "BS", conv = conv)
+      wts_LP <- weightsQ_extract(mod.obj, type = "LP", conv = conv)
+      converged <- data.frame(Model = as.vector(get_models('quantal')),
                          Converged = mod.obj$convergence)
 
       return(merge(merge(merge(BMDs, wts_BS, by = "Model", sort = FALSE),
-                         wts_LP, by = "Model", sort = FALSE), conv, by = "Model", sort = FALSE))
+                         wts_LP, by = "Model", sort = FALSE), converged, by = "Model", sort = FALSE))
     } else if(is.BMADRQ2(mod.obj)[2] == 2) {
 
-      wts_LP <- weightsQ_extract(mod.obj, type = "LP")
+      wts_LP <- weightsQ_extract(mod.obj, type = "LP", conv = conv)
       return(merge(BMDs, wts_LP, by = "Model", sort = FALSE))
 
     }
@@ -949,9 +967,9 @@ BMDWeights <- function(mod.obj, type = c('continuous', 'quantal')) {
 #'
 #' @export print.BMADR
 #'
-print.BMADR <- function(mod.obj, type = c('continuous', 'quantal')) {
+print.BMADR <- function(mod.obj, type = c('continuous', 'quantal'), conv = FALSE) {
   # message("below are the estimated BMDs per model along with their weights")
-  print(knitr::kable(BMDWeights(mod.obj, type),
+  print(knitr::kable(BMDWeights(mod.obj, type, conv = conv),
                      row.names = FALSE))
 }
 
@@ -969,7 +987,7 @@ print.BMADR <- function(mod.obj, type = c('continuous', 'quantal')) {
 #'
 summary.BMADR <- function(mod.obj, type = c('continuous','quantal'), conv = FALSE, clustered = FALSE) {
   if(type == 'continuous'){
-    BMDWeights(mod.obj, 'continuous')
+    BMDWeights(mod.obj, 'continuous', conv = conv)
     if(clustered == F){
       par_med(mod.obj, 'continuous')
       meds <- par_med(mod.obj, 'continuous')
@@ -978,16 +996,16 @@ summary.BMADR <- function(mod.obj, type = c('continuous','quantal'), conv = FALS
       meds <- par_med(mod.obj, 'continuous', clustered = T)
     }
     BMDMA_extract(mod.obj, conv = conv)
-    return(list(BMDWeights = BMDWeights(mod.obj, 'continuous'),
+    return(list(BMDWeights = BMDWeights(mod.obj, 'continuous', conv = conv),
                 ModelAverage = BMDMA_extract(mod.obj, conv = conv),
                 ModelParameter = meds
 
     ))
   }else if(type == 'quantal'){
-    BMDWeights(mod.obj, type = 'quantal')
+    BMDWeights(mod.obj, type = 'quantal', conv = conv)
     par_med(mod.obj, type = 'quantal')
 
-    return(list(BMDWeights = BMDWeights(mod.obj, type = 'quantal'),
+    return(list(BMDWeights = BMDWeights(mod.obj, type = 'quantal', conv = conv),
                 ModelAverage = BMDMAQ_extract(mod.obj, conv = conv),
                 ModelParameters = par_med(mod.obj, type = 'quantal')
 

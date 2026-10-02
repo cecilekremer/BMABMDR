@@ -2209,6 +2209,8 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights
+    names(lpwlp.conv) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+
 
     # the model average posterior as a mixture
     count=round(lpwlp.conv*ndraws)
@@ -2273,7 +2275,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
   weight = c(rep(0,16),1)
   names(weight) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN","MA")
-  for(i in names(lpwb)){
+  for(i in names(lpwb)){ # lpwb = original bridge sampling weights
     weight[names(weight)==i] = lpwb[names(lpwb)==i]
   }
 
@@ -2414,13 +2416,14 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       E4_LN=E4outLNI,IE4_LN=IE4outLNI,H4_LN=H4outLNI,LN4_LN=LN4outLNI,
                       G4_LN=G4outLNI,QE4_LN=QE4outLNI,P4_LN=P4outLNI,L4_LN=L4outLNI,
                       covs = covs, corrs = corrs,
-                      weights_bridge_sampling=w.bs,
-                      weights_laplace=lpwlp,
+                      weights_bridge_sampling=w.bs, # bridge sampling weights
+                      weights_laplace=lpwlp, # hybrid laplace weights
                       MA_bridge_sampling=macib,
                       MA_laplace=macilp,
                       llN=llN, llLN=llLN,
-                      convergence=converged, bs_weights_conv=w.bs.conv,
-                      ls_weights_conv=lpwlp.conv,
+                      convergence=converged,
+                      bs_weights_conv=w.bs.conv, # BS weights of converged models
+                      ls_weights_conv=lpwlp.conv, # LP weights of converged models
                       MA_bs_conv=macib.conv,
                       MA_ls_conv=macilp.conv,
                       MA_post_bs = BMDq_bs,
@@ -2454,7 +2457,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
                       max.dose = data.N$data$maxD,
                       q = data.N$data$q,
                       # increasing = T,
-                      models_included_bridge = modelnames[p.weights > 0],
+                      models_included_bridge = modelnames[p.weights > 0], # i.e. those models that could be fitted, regardless of convergence
                       models_included_laplace = modelnames[lpwlp > 0],
                       bf = bfTest$bayesFactor, gof_check = bfTest$warn.bf,
                       bf.mods = bf.mods,
@@ -4621,6 +4624,8 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights
+    names(lpwlp.conv) = c("E4_N","IE4_N","H4_N","LN4_N","G4_N","QE4_N","P4_N","L4_N","E4_LN","IE4_LN","H4_LN","LN4_LN","G4_LN","QE4_LN","P4_LN","L4_LN")
+
 
     # the model average posterior as a mixture
     count=round(lpwlp.conv*ndraws)
@@ -6269,6 +6274,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     lpwlp.conv=(p.weights.new*w)/sum(p.weights.new*w)
     # lpwlp = lpwlp*prior.weights
+    names(lpwlp.conv) = c("E4_Q","IE4_Q","H4_Q","LN4_Q","G4_Q","QE4_Q","P4_Q","L4_Q")
 
     # the model average posterior as a mixture
     count=round(lpwlp.conv*ndraws)
@@ -6311,7 +6317,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   }else if(!(1 %in% converged)){
     lpwlp.conv = NULL; macilp.conv = NULL; BMDq_ls_conv = NULL; dr.MA.ls.conv = NULL; mabmd.conv = NA;
   }else if(!(0 %in% converged)){
-    lpwlp.conv = lpwb; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
+    lpwlp.conv = lpwlp; macilp.conv = macilp; BMDq_ls_conv = BMDq_ls; dr.MA.ls.conv = dr.MA.ls; mabmd.conv = mabmd;
   }
 
   ## Plot with weights bridge sampling

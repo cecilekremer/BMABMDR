@@ -151,7 +151,7 @@ plot.BMADR <- function(mod.obj,
 
   }
 
-  BMDW <- BMDWeights(mod.obj)
+  BMDW <- BMDWeights(mod.obj, conv = conv)
   BMDW <- BMDW[BMDW$Model %in% mod.obj$models_included,]
   BMDBMA <- BMDMA_extract(mod.obj, conv = conv)
 
@@ -176,13 +176,13 @@ plot.BMADR <- function(mod.obj,
     mindose <- min(mod.obj$BMDMixtureBS/mod.obj$max.dose)
     mindose <- ifelse(mindose > dose[2],
                       dose[2]/2,
-                      mindose
+                      ifelse(mindose == 0, dose[2]/4, mindose)
     )
   }else{
     mindose <- min(mod.obj$BMDMixture/mod.obj$max.dose)
     mindose <- ifelse(mindose > dose[2],
                       dose[2]/2,
-                      mindose
+                      ifelse(mindose == 0, dose[2]/4, mindose)
     )
   }
 
@@ -425,11 +425,11 @@ plot.BMADR <- function(mod.obj,
                              length(dgrprime))
   )
   if(weight_type=='BS'){
-    wts_BS <- weights_extract(mod.obj, type = "BS")
+    wts_BS <- weights_extract(mod.obj, type = "BS", conv = conv)
     min_model <- as.vector(as_per_model$min_response[as_per_model$Model %in% wts_BS$Model])
     preds_min2$min_response <- sum(min_model*wts_BS$BS_Weights)
   }else{
-    wts_LP <- weights_extract(mod.obj, type = "LP")
+    wts_LP <- weights_extract(mod.obj, type = "LP", conv = conv)
     min_model <- as.vector(as_per_model$min_response[as_per_model$Model %in% wts_LP$Model])
     preds_min2$min_response <- sum(min_model*wts_LP$LP_Weights)
   }
@@ -441,13 +441,13 @@ plot.BMADR <- function(mod.obj,
     respBMD <- predict.BMADR(mod.obj, type = type,
                              what = "resp_at_BMD",
                              model_averaged = TRUE,
-                             weight_type = weight_type)
+                             weight_type = weight_type, conv = conv)
   }else if(clustered == T){
     respBMD <- predict.BMADR(mod.obj, type = type,
                              what = "resp_at_BMD",
                              model_averaged = TRUE,
                              clustered = TRUE,
-                             weight_type = weight_type)
+                             weight_type = weight_type, conv = conv)
   }
 
   respBMD$resp_at_BMD$lg10bmd <- log10(respBMD$resp_at_BMD$BMD)
@@ -455,7 +455,7 @@ plot.BMADR <- function(mod.obj,
   #print(respBMD)
   #respBMD <- refactor(respBMD)
 
-  BMDMixture <- BMDmixture_extract(mod.obj, weight_type, conv=conv) # BMD values
+  BMDMixture <- BMDmixture_extract(mod.obj, weight_type, conv = conv) # BMD values
   BMDMixture$BMDMixture2 <- log10(BMDMixture$BMDMixture/mod.obj$max.dose)
 
   # gghst2 <- hist(BMDMixture$BMDMixture, breaks = sqrt(nrow(BMDMixture)), plot = FALSE) #hist on original scale
@@ -1493,7 +1493,7 @@ plot.BMADRQ <- function(mod.obj,
 
   }
 
-  BMDW <- BMDWeights(mod.obj, type = type)
+  BMDW <- BMDWeights(mod.obj, type = type, conv = conv)
   BMDBMA <- BMDMAQ_extract(mod.obj, conv = conv)
   mod.obj$data <- mod.obj$data[order(mod.obj$data$dose), ]
 
@@ -1510,13 +1510,13 @@ plot.BMADRQ <- function(mod.obj,
     mindose <- min(mod.obj$BMDMixtureBS/mod.obj$max.dose)/2
     mindose <- ifelse(mindose > dose[2],
                       dose[2]/2,
-                      mindose
+                      ifelse(mindose == 0, dose[2]/4, mindose)
                       )
   }else{
     mindose <- min(mod.obj$BMDMixture/mod.obj$max.dose)/2
     mindose <- ifelse(mindose > dose[2],
                       dose[2]/2,
-                      mindose
+                      ifelse(mindose == 0, dose[2]/4, mindose)
     )
   }
   if(min(dose) == 0){

@@ -1621,7 +1621,7 @@ full.laplace_MA=function(data.N, data.LN,
     if(TRUE %in% (mabmd > data$maxD) && data$maxD > 1){
       mabmd = ifelse(mabmd > data$maxD, data$maxD, mabmd)
       p.msg = 'The model averaged posterior distribution has been truncated at max(Dose)^2 for plotting functionality. You can continue but check the BMDU estimate. Bridge sampling might perform better.'
-      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2 for plotting functionality. You can continue but check the BMDU estimate. Bridge sampling might perform better.'')
+      warnings('The model averaged posterior distribution has been truncated at max(Dose)^2 for plotting functionality. You can continue but check the BMDU estimate. Bridge sampling might perform better.')
     }else{
       p.msg = ''
     }
