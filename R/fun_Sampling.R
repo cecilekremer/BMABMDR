@@ -5508,7 +5508,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
         P4outQ <- outLPQ(parsP4Q, pvec, data$maxD, rho=TRUE)
       }
 
-      DRM_P4_Q <- DRM.P4_Q(E4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
+      DRM_P4_Q <- DRM.P4_Q(P4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')], data$x, data$q)
 
       # Covariance between b-d and between BMD-d
       P4covQ = c(cov(parsP4Q[,c("b","d")], use="na.or.complete")["b","d"],
@@ -5598,7 +5598,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
         L4outQ <- outLPQ(parsL4Q, pvec, data$maxD, rho=TRUE)
       }
 
-      DRM_L4_Q <- DRM.L4_Q(E4resQ[names(P4resQ) %in% c('p1', 'p2', 'p3')],
+      DRM_L4_Q <- DRM.L4_Q(L4resQ[names(L4resQ) %in% c('p1', 'p2', 'p3')],
                            data$x, data$q)
 
       # Covariance between b-d and between BMD-d
