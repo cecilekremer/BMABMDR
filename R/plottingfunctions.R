@@ -1376,10 +1376,10 @@ plot.BMADR <- function(mod.obj,
         geom_point(data = data.all, mapping = aes(x = dose*mod.obj$max.dose, y = resp),
                    size = 3, color = 2, shape = 23,
                    fill = 2,
-                   inherit.aes = FALSE) +
-        labs(caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the ", w.data, " sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
-                              (mod.obj$pvec[3]-mod.obj$pvec[1])*100 , "%CI"
-        ))
+                   inherit.aes = FALSE) #+
+        # labs(caption = paste0("green dots show the individual data, black dots represent the litter means \n diamonds represent the ", w.data, " sample mean \n red dot and horizontal green bar indicate the model-averaged BMD and its ",
+        #                       (mod.obj$pvec[3]-mod.obj$pvec[1])*100 , "%CI"
+        # ))
     }
 
     if((TRUE %in% grepl('_LN', mod.obj$models_included)) && (TRUE %in% grepl('_N', mod.obj$models_included))){
