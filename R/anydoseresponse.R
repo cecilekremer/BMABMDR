@@ -457,7 +457,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
   if(bf >= 10){
     mess = paste0("There is sufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
   } else{
-    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf$bf)
+    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
   }
 
   return(list(bf = bf, bf.message = mess))
@@ -794,7 +794,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
   if(bf >= 10){
     mess = paste0("There is sufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
   } else{
-    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf$bf)
+    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
   }
 
   return(list(bf = bf, bf.message = mess))
