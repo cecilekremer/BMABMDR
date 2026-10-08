@@ -18,6 +18,18 @@ Whenever changes are expected to influence modeling results, this is explicitly 
 
 * included user-specific plot axis labels
 
+**MAJOR BUG FIX**: 
+
+* fixed bug in the lognormal Stan models: the Jacobian term was computed on the
+  shifted log-scale data, which made the log marginal likelihoods of all lognormal
+  models too low when at least one geometric mean is < 1. **This influences modeling
+  results:** model weights and model-averaged BMD/BMDL/BMDU from sampling_MA()
+  (incl. clustered and covariate versions) were biased towards the normal models
+  for such data. Laplace results and fits of individual models are not affected.
+
+* fixed missing Jacobian term for the control group in the lognormal model
+  LN4 with covariates (BMD & d on covariate), which affects its model weight
+
 ## BMABMDR 0.1.20
 
 * corrected plotting functions to display BMD posterior always above 0
