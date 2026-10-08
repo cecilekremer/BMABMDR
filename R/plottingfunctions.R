@@ -1467,7 +1467,7 @@ plot.BMADRQ <- function(mod.obj,
                         weight_type = c("BS", "LP"),
                         include_data = TRUE,
                         all = FALSE, title, conv = FALSE,
-                        dose_lab = "Dose", resp_lab = expression(P(y==1))
+                        dose_lab = "", resp_lab = expression(P(y==1))
 ) {
   type <- 'quantal'
   weight_type <- match.arg(weight_type)
