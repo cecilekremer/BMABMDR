@@ -7,16 +7,16 @@
 summary.BMADR(
   mod.obj,
   type = c("continuous", "quantal"),
-  conv = FALSE,
-  clustered = FALSE
+  clustered = FALSE,
+  conv = FALSE
 )
 }
 \arguments{
 \item{type}{type of endpoint, can be 'continuous' or 'quantal'}
 
-\item{conv}{logical indicating if only converged models should be summarized. Defaults to FALSE}
-
 \item{clustered}{logical indicating if data are clustered (T) or not (F, default)}
+
+\item{conv}{logical indicating if only converged models should be summarized. Defaults to FALSE}
 
 \item{mod_obj}{BMDBMA model object}
 }

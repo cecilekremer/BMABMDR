@@ -124,7 +124,7 @@ DRM.P4_Q(par, x, q)
 DRM.L4_Q(par, x, q)
 }
 \arguments{
-\item{par}{parameters in the order min response, BMD, fold change (for continuous data only), d}
+\item{par}{parameters in the order min response, BMD, fold change (for continuous data only), log(d)}
 
 \item{x}{unique rescaled ordered dose levels}
 

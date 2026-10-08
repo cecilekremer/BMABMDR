@@ -5,9 +5,9 @@
 \alias{weights_extract}
 \title{Function to turn the vector of weights into dataframe}
 \usage{
-weightsQ_extract(mod.obj, type = c("BS", "LP", "both"))
+weightsQ_extract(mod.obj, type = c("BS", "LP", "both"), conv = FALSE)
 
-weights_extract(mod.obj, type = c("BS", "LP", "both"))
+weights_extract(mod.obj, type = c("BS", "LP", "both"), conv = FALSE)
 }
 \arguments{
 \item{type}{type of weight to be extracted. It can be either of BS (bridge sampling), LP (Laplace) and

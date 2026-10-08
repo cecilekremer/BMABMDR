@@ -5,9 +5,17 @@
 \alias{plot_priorQ}
 \title{Plot function for the prior and posterior distribution of model parameters}
 \usage{
-plot_prior(mod.obj, data, model_name, parms = TRUE, clustered = FALSE)
+plot_prior(
+  mod.obj,
+  data,
+  model_name,
+  parms = TRUE,
+  clustered = FALSE,
+  dose_lab = NULL,
+  resp_lab = NULL
+)
 
-plot_priorQ(mod.obj, data, model_name)
+plot_priorQ(mod.obj, data, model_name, dose_lab = NULL, resp_lab = NULL)
 }
 \arguments{
 \item{mod.obj}{BMDBMA model object}

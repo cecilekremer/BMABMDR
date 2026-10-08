@@ -4,7 +4,7 @@
 \alias{BMDWeights}
 \title{Function to get BMDs and weights}
 \usage{
-BMDWeights(mod.obj, type = c("continuous", "quantal"))
+BMDWeights(mod.obj, type = c("continuous", "quantal"), conv = FALSE)
 }
 \arguments{
 \item{type}{type of endpoint, either 'continuous' or 'quantal'}

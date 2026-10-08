@@ -1493,7 +1493,8 @@ public:
                             stan::model::index_uni(mn)))))))))) *
                     stan::model::rvalue(invsigma2, "invsigma2",
                       stan::model::index_uni(1)))) -
-                    (stan::model::rvalue(m, "m", stan::model::index_uni(i)) *
+                    ((stan::model::rvalue(m, "m", stan::model::index_uni(i))
+                    + shift) *
                     stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                     *
                     stan::model::rvalue(trt_ind, "trt_ind",
@@ -1610,8 +1611,8 @@ public:
                               stan::model::index_uni(1)))))))))) *
                       stan::model::rvalue(invsigma2, "invsigma2",
                         stan::model::index_uni(mn)))) -
-                      (stan::model::rvalue(m, "m", stan::model::index_uni(i))
-                      *
+                      ((stan::model::rvalue(m, "m", stan::model::index_uni(i))
+                      + shift) *
                       stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                       *
                       stan::model::rvalue(trt_ind, "trt_ind",
@@ -1730,8 +1731,8 @@ public:
                                 stan::model::index_uni(mn)))))))))) *
                         stan::model::rvalue(invsigma2, "invsigma2",
                           stan::model::index_uni(mn)))) -
-                        (stan::model::rvalue(m, "m",
-                           stan::model::index_uni(i)) *
+                        ((stan::model::rvalue(m, "m",
+                            stan::model::index_uni(i)) + shift) *
                         stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                         *
                         stan::model::rvalue(trt_ind, "trt_ind",
@@ -1839,8 +1840,8 @@ public:
                                 stan::model::index_uni(1)))))))))) *
                         stan::model::rvalue(invsigma2, "invsigma2",
                           stan::model::index_uni(1)))) -
-                        (stan::model::rvalue(m, "m",
-                           stan::model::index_uni(i)) *
+                        ((stan::model::rvalue(m, "m",
+                            stan::model::index_uni(i)) + shift) *
                         stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                         *
                         stan::model::rvalue(trt_ind, "trt_ind",

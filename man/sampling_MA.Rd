@@ -17,7 +17,8 @@ sampling_MA(
   delta = 0.8,
   treedepth = 10,
   seed = 123,
-  pvec = c(0.05, 0.5, 0.95)
+  pvec = c(0.05, 0.5, 0.95),
+  testallmodels = FALSE
 )
 
 sampling_MAc(
@@ -31,7 +32,8 @@ sampling_MAc(
   delta = 0.8,
   treedepth = 10,
   seed = 123,
-  pvec = c(0.05, 0.5, 0.95)
+  pvec = c(0.05, 0.5, 0.95),
+  testallmodels = FALSE
 )
 
 samplingQ_MA(
@@ -44,7 +46,8 @@ samplingQ_MA(
   delta = 0.8,
   treedepth = 10,
   seed = 123,
-  pvec = c(0.025, 0.5, 0.975)
+  pvec = c(0.05, 0.5, 0.95),
+  testallmodels = FALSE
 )
 }
 \arguments{
@@ -69,6 +72,8 @@ samplingQ_MA(
 \item{seed}{random seed, default 123}
 
 \item{pvec}{vector specifying the three BMD quantiles of interest (default 90\% CrI)}
+
+\item{testallmodels}{logical specifying whether all model fits should be compared to a saturated model (default FALSE)}
 
 \item{data.Q}{the input data as returned by function PREP_DATA_Q}
 }

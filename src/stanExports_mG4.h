@@ -83,7 +83,7 @@ static constexpr std::array<const char*, 126> locations_array__ =
   " (in 'string', line 109, column 4 to column 57)",
   " (in 'string', line 109, column 49 to column 55)",
   " (in 'string', line 110, column 4 to column 46)",
-  " (in 'string', line 118, column 6 to line 119, column 52)",
+  " (in 'string', line 118, column 6 to line 119, column 62)",
   " (in 'string', line 117, column 20 to line 120, column 6)",
   " (in 'string', line 117, column 6 to line 120, column 6)",
   " (in 'string', line 116, column 44 to line 121, column 3)",
@@ -961,7 +961,8 @@ public:
                   stan::math::gamma_cdf(
                     stan::model::rvalue(x, "x", stan::model::index_uni(i)),
                     d, b))))) * invsigma2)) -
-                (stan::model::rvalue(m, "m", stan::model::index_uni(i)) *
+                ((stan::model::rvalue(m, "m", stan::model::index_uni(i)) +
+                shift) *
                 stan::model::rvalue(n, "n", stan::model::index_uni(i)))));
             }
           }

@@ -47,7 +47,8 @@ modelTestQ(
   nriterations,
   warmup,
   delta,
-  treedepth
+  treedepth,
+  force = 0
 )
 }
 \arguments{

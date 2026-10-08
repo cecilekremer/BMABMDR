@@ -13,7 +13,7 @@ anydoseresponseLN(dose.a, mean.a, sd.a, n.a)
 
 anydoseresponseC(data, use.mcmc = FALSE)
 
-anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE)
+anydoseresponseQ(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE)
 }
 \arguments{
 \item{dose.a}{ordered dose levels}

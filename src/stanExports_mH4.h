@@ -85,7 +85,7 @@ static constexpr std::array<const char*, 102> locations_array__ =
   " (in 'string', line 87, column 2 to column 59)",
   " (in 'string', line 87, column 51 to column 57)",
   " (in 'string', line 88, column 2 to column 46)",
-  " (in 'string', line 101, column 6 to line 108, column 30)",
+  " (in 'string', line 101, column 6 to line 108, column 40)",
   " (in 'string', line 100, column 21 to line 109, column 5)",
   " (in 'string', line 100, column 4 to line 109, column 5)",
   " (in 'string', line 99, column 47 to line 110, column 3)",
@@ -779,7 +779,8 @@ public:
                   stan::math::pow(
                     stan::model::rvalue(x, "x", stan::model::index_uni(i)), d))))))))
                 * invsigma2)) -
-                (stan::model::rvalue(m, "m", stan::model::index_uni(i)) *
+                ((stan::model::rvalue(m, "m", stan::model::index_uni(i)) +
+                shift) *
                 stan::model::rvalue(n, "n", stan::model::index_uni(i)))));
             }
           }

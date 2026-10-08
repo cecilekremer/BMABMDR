@@ -14,7 +14,9 @@ plot.BMADR(
   all = FALSE,
   title,
   log = FALSE,
-  conv = FALSE
+  conv = FALSE,
+  dose_lab = "",
+  resp_lab = "Response"
 )
 
 plot.BMADRQ(
@@ -23,7 +25,9 @@ plot.BMADRQ(
   include_data = TRUE,
   all = FALSE,
   title,
-  conv = FALSE
+  conv = FALSE,
+  dose_lab = "",
+  resp_lab = expression(P(y == 1))
 )
 }
 \arguments{

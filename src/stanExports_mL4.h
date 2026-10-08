@@ -105,7 +105,7 @@ static constexpr std::array<const char*, 136> locations_array__ =
   " (in 'string', line 113, column 2 to column 59)",
   " (in 'string', line 113, column 51 to column 57)",
   " (in 'string', line 114, column 2 to column 46)",
-  " (in 'string', line 161, column 8 to line 172, column 32)",
+  " (in 'string', line 161, column 8 to line 172, column 42)",
   " (in 'string', line 160, column 23 to line 173, column 7)",
   " (in 'string', line 160, column 6 to line 173, column 7)",
   " (in 'string', line 159, column 31 to line 174, column 5)",
@@ -117,7 +117,7 @@ static constexpr std::array<const char*, 136> locations_array__ =
   " (in 'string', line 145, column 4 to line 174, column 5)",
   " (in 'string', line 144, column 33 to line 175, column 3)",
   " (in 'string', line 144, column 9 to line 175, column 3)",
-  " (in 'string', line 131, column 8 to line 141, column 32)",
+  " (in 'string', line 131, column 8 to line 141, column 42)",
   " (in 'string', line 130, column 23 to line 142, column 7)",
   " (in 'string', line 130, column 6 to line 142, column 7)",
   " (in 'string', line 129, column 31 to line 143, column 5)",
@@ -875,7 +875,8 @@ public:
                       stan::math::pow(
                         stan::model::rvalue(x, "x", stan::model::index_uni(i)),
                         d))))))))) * invsigma2)) -
-                  (stan::model::rvalue(m, "m", stan::model::index_uni(i)) *
+                  ((stan::model::rvalue(m, "m", stan::model::index_uni(i)) +
+                  shift) *
                   stan::model::rvalue(n, "n", stan::model::index_uni(i)))));
               }
             }
@@ -936,7 +937,8 @@ public:
                           stan::model::rvalue(x, "x",
                             stan::model::index_uni(i)), d)))))))))) *
                     invsigma2)) -
-                    (stan::model::rvalue(m, "m", stan::model::index_uni(i)) *
+                    ((stan::model::rvalue(m, "m", stan::model::index_uni(i))
+                    + shift) *
                     stan::model::rvalue(n, "n", stan::model::index_uni(i)))));
                 }
               }

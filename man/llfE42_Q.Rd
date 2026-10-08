@@ -29,7 +29,7 @@ llfP42_Q(x, nvec, dvec, yvec, qval, rho)
 
 llfL42_Q(x, nvec, dvec, yvec, qval, rho)
 
-llfSM2_Q(x, nvec, dvec, yvec, qval, rho)
+llfSM2_Q(x, nclust, nvec, dvec, yvec, qval, rho)
 
 llfH02_Q(x, nvec, dvec, yvec, qval, rho)
 }

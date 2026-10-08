@@ -123,7 +123,7 @@ static constexpr std::array<const char*, 184> locations_array__ =
   " (in 'string', line 150, column 6 to line 158, column 7)",
   " (in 'string', line 159, column 6 to column 30)",
   " (in 'string', line 160, column 6 to column 51)",
-  " (in 'string', line 161, column 6 to column 29)",
+  " (in 'string', line 161, column 6 to column 40)",
   " (in 'string', line 162, column 4 to column 18)",
   " (in 'string', line 142, column 18 to line 163, column 5)",
   " (in 'string', line 142, column 4 to line 163, column 5)",
@@ -1036,7 +1036,7 @@ public:
                 lp_accum__.add(stan::math::multi_normal_lpdf<false>(resp, m,
                                  Sigma));
                 current_statement__ = 95;
-                lp_accum__.add(-stan::math::sum(resp));
+                lp_accum__.add(-(stan::math::sum(resp) + (lt * shift)));
                 current_statement__ = 96;
                 cnt = (cnt + 1);
               }

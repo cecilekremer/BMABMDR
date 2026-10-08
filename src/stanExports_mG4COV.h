@@ -138,7 +138,7 @@ static constexpr std::array<const char*, 264> locations_array__ =
   " (in 'string', line 177, column 23 to line 179, column 3)",
   " (in 'string', line 177, column 2 to line 179, column 3)",
   " (in 'string', line 181, column 2 to column 73)",
-  " (in 'string', line 259, column 10 to line 262, column 63)",
+  " (in 'string', line 259, column 10 to line 262, column 73)",
   " (in 'string', line 258, column 28 to line 263, column 9)",
   " (in 'string', line 258, column 8 to line 263, column 9)",
   " (in 'string', line 257, column 20 to line 264, column 7)",
@@ -153,7 +153,7 @@ static constexpr std::array<const char*, 264> locations_array__ =
   " (in 'string', line 247, column 40 to line 256, column 5)",
   " (in 'string', line 247, column 4 to line 265, column 5)",
   " (in 'string', line 245, column 9 to line 266, column 3)",
-  " (in 'string', line 238, column 10 to line 241, column 64)",
+  " (in 'string', line 238, column 10 to line 241, column 74)",
   " (in 'string', line 237, column 28 to line 242, column 9)",
   " (in 'string', line 237, column 8 to line 242, column 9)",
   " (in 'string', line 236, column 20 to line 243, column 7)",
@@ -169,7 +169,7 @@ static constexpr std::array<const char*, 264> locations_array__ =
   " (in 'string', line 226, column 4 to line 244, column 5)",
   " (in 'string', line 224, column 85 to line 245, column 3)",
   " (in 'string', line 224, column 9 to line 266, column 3)",
-  " (in 'string', line 217, column 10 to line 220, column 64)",
+  " (in 'string', line 217, column 10 to line 220, column 74)",
   " (in 'string', line 216, column 28 to line 221, column 9)",
   " (in 'string', line 216, column 8 to line 221, column 9)",
   " (in 'string', line 215, column 20 to line 222, column 7)",
@@ -185,7 +185,7 @@ static constexpr std::array<const char*, 264> locations_array__ =
   " (in 'string', line 205, column 4 to line 223, column 5)",
   " (in 'string', line 203, column 86 to line 224, column 3)",
   " (in 'string', line 203, column 9 to line 266, column 3)",
-  " (in 'string', line 196, column 10 to line 199, column 62)",
+  " (in 'string', line 196, column 10 to line 199, column 72)",
   " (in 'string', line 195, column 28 to line 200, column 9)",
   " (in 'string', line 195, column 8 to line 200, column 9)",
   " (in 'string', line 194, column 20 to line 201, column 7)",
@@ -1556,7 +1556,8 @@ public:
                           stan::model::index_uni(mn))))))) *
                     stan::model::rvalue(invsigma2, "invsigma2",
                       stan::model::index_uni(1)))) -
-                    (stan::model::rvalue(m, "m", stan::model::index_uni(i)) *
+                    ((stan::model::rvalue(m, "m", stan::model::index_uni(i))
+                    + shift) *
                     stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                     *
                     stan::model::rvalue(trt_ind, "trt_ind",
@@ -1669,8 +1670,8 @@ public:
                             stan::model::index_uni(mn))))))) *
                       stan::model::rvalue(invsigma2, "invsigma2",
                         stan::model::index_uni(mn)))) -
-                      (stan::model::rvalue(m, "m", stan::model::index_uni(i))
-                      *
+                      ((stan::model::rvalue(m, "m", stan::model::index_uni(i))
+                      + shift) *
                       stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                       *
                       stan::model::rvalue(trt_ind, "trt_ind",
@@ -1787,8 +1788,8 @@ public:
                               stan::model::index_uni(mn))))))) *
                         stan::model::rvalue(invsigma2, "invsigma2",
                           stan::model::index_uni(mn)))) -
-                        (stan::model::rvalue(m, "m",
-                           stan::model::index_uni(i)) *
+                        ((stan::model::rvalue(m, "m",
+                            stan::model::index_uni(i)) + shift) *
                         stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                         *
                         stan::model::rvalue(trt_ind, "trt_ind",
@@ -1894,8 +1895,8 @@ public:
                               stan::model::index_uni(1))))))) *
                         stan::model::rvalue(invsigma2, "invsigma2",
                           stan::model::index_uni(1)))) -
-                        (stan::model::rvalue(m, "m",
-                           stan::model::index_uni(i)) *
+                        ((stan::model::rvalue(m, "m",
+                            stan::model::index_uni(i)) + shift) *
                         stan::model::rvalue(n, "n", stan::model::index_uni(i))))
                         *
                         stan::model::rvalue(trt_ind, "trt_ind",

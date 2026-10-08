@@ -4,7 +4,7 @@
 \alias{print.BMADR}
 \title{Function to print estimated BMDs and model weights for a BMDBMA model object}
 \usage{
-\method{print}{BMADR}(mod.obj, type = c("continuous", "quantal"))
+\method{print}{BMADR}(mod.obj, type = c("continuous", "quantal"), conv = FALSE)
 }
 \arguments{
 \item{type}{type of endpoint, either 'continuous' or 'quantal'}
