@@ -202,7 +202,7 @@ model{
 
       target += multi_normal_lpdf(resp | m, Sigma);
 
-      target += -(sum(resp));
+      target += -(sum(resp) + lt*shift);
 
      // target += par4 - exp(par4);
 

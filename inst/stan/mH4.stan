@@ -115,7 +115,7 @@ model {
                            m[i] - a
                            - a * (c - 1) * (1 - (b / (b + pow(x[i], d)))))
                   * invsigma2
-                - m[i] * n[i];
+                - (m[i] + shift) * n[i];
     }
   }
 }

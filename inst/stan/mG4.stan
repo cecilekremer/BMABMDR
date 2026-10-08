@@ -126,7 +126,7 @@ data{
   }else if(data_type == 2 || data_type == 4){
       for (i in 1:N){
       target += -0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2)-0.5*(n[i]-1)*s2[i]*invsigma2-0.5*n[i]*square(m[i]-a-a*(c-1)*
-      gamma_cdf(x[i] | d, b))*invsigma2 - m[i]*n[i];
+      gamma_cdf(x[i] | d, b))*invsigma2 - (m[i] + shift)*n[i];
      }
   }
 

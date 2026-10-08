@@ -152,7 +152,7 @@ model{
 
     target += multi_normal_lpdf(resp | m, Sigma);
 
-    target += -(sum(resp));
+    target += -(sum(resp) + lt*shift);
 
     cnt = cnt + 1; // next cluster
 

@@ -149,7 +149,7 @@ model {
                                             pi() / pow(3, 0.5)
                                             * (c + b * pow(x[i], d)))))
                     * invsigma2
-                  - m[i] * n[i];
+                  - (m[i] + shift) * n[i];
       }
     }
   } else if (is_decreasing == 1) {
@@ -180,7 +180,7 @@ model {
                                                pi() / pow(3, 0.5)
                                                * (c + b * pow(x[i], d))))))
                     * invsigma2
-                  - m[i] * n[i];
+                  - (m[i] + shift) * n[i];
       }
     }
   }

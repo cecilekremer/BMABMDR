@@ -237,7 +237,7 @@ model{
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[1])-
                       0.5*(n[i]-1)*s2[i]*invsigma2[1]-
                       0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i] | d[mn],b[mn]))*
-                      invsigma2[1] - m[i]*n[i])*trt_ind[i,mn];
+                      invsigma2[1] - (m[i] + shift)*n[i])*trt_ind[i,mn];
         }
       }
     }
@@ -262,7 +262,7 @@ model{
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[mn])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[mn]-
                        0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i] | d[1],b[mn]))*
-                       invsigma2[mn] - m[i]*n[i])*trt_ind[i,mn];
+                       invsigma2[mn] - (m[i] + shift)*n[i])*trt_ind[i,mn];
         }
       }
     }
@@ -288,7 +288,7 @@ model{
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[mn])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[mn]-
                        0.5*n[i]*square(m[i]-a[mn]-a[mn]*(c[mn]-1)*gamma_cdf(x[i] | d[mn],b[mn]))*
-                       invsigma2[mn] - m[i]*n[i])*trt_ind[i,mn];
+                       invsigma2[mn] - (m[i] + shift)*n[i])*trt_ind[i,mn];
         }
       }
     }
@@ -312,7 +312,7 @@ model{
           target += (-0.5*n[i]*log(2*pi())+0.5*n[i]*log(invsigma2[1])-
                        0.5*(n[i]-1)*s2[i]*invsigma2[1]-
                        0.5*n[i]*square(m[i]-a[1]-a[1]*(c[1]-1)*gamma_cdf(x[i] | d[1],b[1]))*
-                       invsigma2[1] - m[i]*n[i])*trt_ind[i,mn];
+                       invsigma2[1] - (m[i] + shift)*n[i])*trt_ind[i,mn];
         }
       }
     }

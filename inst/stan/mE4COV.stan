@@ -332,7 +332,7 @@ model {
 
                        * invsigma2[1]
 
-                     - m[i] * n[i])
+                     - (m[i] + shift) * n[i])
 
                     * trt_ind[i, mn];
 
@@ -402,7 +402,7 @@ model {
 
                        * invsigma2[mn]
 
-                     - m[i] * n[i])
+                     - (m[i] + shift) * n[i])
 
                     * trt_ind[i, mn];
 
@@ -472,7 +472,7 @@ model {
 
                        * invsigma2[mn]
 
-                     - m[i] * n[i])
+                     - (m[i] + shift) * n[i])
 
                     * trt_ind[i, mn];
 
@@ -538,7 +538,7 @@ model {
 
                      * invsigma2[1]
 
-                   - m[i] * n[i])
+                   - (m[i] + shift) * n[i])
 
                   * trt_ind[i, mn];
 
