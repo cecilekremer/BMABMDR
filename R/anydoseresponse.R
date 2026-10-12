@@ -133,9 +133,9 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
 
   # if (bf$bf<10){
   if(bf$bf >= 10){
-    mess = paste0("There is sufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf$bf)
+    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model).")
   } else{
-    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf$bf)
+    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
 
   return(list(bf = bf, bf.message = mess))
@@ -270,9 +270,9 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   bf = bridgesampling::bf(bridge_SM, bridge_H0)
 
   if(bf$bf >= 10){
-    mess = paste0("There is sufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf$bf)
+    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model).")
   } else{
-    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf$bf)
+    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
 
   return(list(bf = bf, bf.message = mess))
@@ -455,9 +455,9 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
   }
 
   if(bf >= 10){
-    mess = paste0("There is sufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
+    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model).")
   } else{
-    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
+    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
 
   return(list(bf = bf, bf.message = mess))
@@ -792,9 +792,9 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
   }
 
   if(bf >= 10){
-    mess = paste0("There is sufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
+    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model).")
   } else{
-    mess = paste0("Attention: there is insufficient evidence that there is a substantial dose-effect. Estimated bayes factor in favor of the saturated model is ", bf)
+    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
 
   return(list(bf = bf, bf.message = mess))
