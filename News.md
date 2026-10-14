@@ -2,6 +2,20 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.2.0
+
+**MAJOR BUG FIX**: 
+
+* fixed bug in the lognormal Stan models: the Jacobian term was computed on the
+  shifted log-scale data, which made the log marginal likelihoods of all lognormal
+  models too low when at least one geometric mean is < 1. **This influences modeling
+  results:** model weights and model-averaged BMD/BMDL/BMDU from sampling_MA()
+  (incl. clustered and covariate versions) were biased towards the normal models
+  for such data. Laplace results and fits of individual models are not affected.
+
+* fixed missing Jacobian term for the control group in the lognormal model
+  LN4 with covariates (BMD & d on covariate), which affects its model weight
+
 ## BMABMDR 0.1.21
 
 * added column with weights of converged models to summary.BMADR() output
@@ -20,17 +34,7 @@ Whenever changes are expected to influence modeling results, this is explicitly 
 
 * fixed issue with continuous clustered data when no between-litter variation is present
 
-**MAJOR BUG FIX**: 
-
-* fixed bug in the lognormal Stan models: the Jacobian term was computed on the
-  shifted log-scale data, which made the log marginal likelihoods of all lognormal
-  models too low when at least one geometric mean is < 1. **This influences modeling
-  results:** model weights and model-averaged BMD/BMDL/BMDU from sampling_MA()
-  (incl. clustered and covariate versions) were biased towards the normal models
-  for such data. Laplace results and fits of individual models are not affected.
-
-* fixed missing Jacobian term for the control group in the lognormal model
-  LN4 with covariates (BMD & d on covariate), which affects its model weight
+* changed cutoff for bayes factor in dose-response test 
 
 ## BMABMDR 0.1.20
 
