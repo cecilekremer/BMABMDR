@@ -43,7 +43,7 @@ parameters{
  array[is_decreasing] real<lower=0,upper=1> pars3d; // will be size one if is_decreasing
  real par4;
   real par5; // variance constant across cluster and dose groups
-  real par6; // correlation parameter rho
+  real<lower=0, upper=1> par6; // correlation parameter rho
 }
 
 transformed parameters{

@@ -1164,10 +1164,28 @@ PREP_DATA_N_C <- function(data, # a dataframe with input data, order of columns 
                         priorg=4, data_type=data_type
   )
 
-  optSM = rstan::optimizing(stanmodels$mSMc, data = data.modstanSM,
+  optSM = try(rstan::optimizing(stanmodels$mSMc, data = data.modstanSM,
                             seed=as.integer(123), draws = 30000,
-                            init = svSM, hessian=TRUE)
-  means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:N, ']')], 2, median)
+                            init = svSM, hessian=TRUE))
+  if(class(optSM) == 'try-error'){
+    initf2 <- function(chain_id = 1) {
+      list(par=svSM$par[1:(N+2)] + rnorm(N+2, sd = 0.001*abs(svSM$par[1:(N+2)])) ,alpha = chain_id)
+    }
+    init_ll <- lapply(1:3, function(id) initf2(chain_id = id))
+    optSM <- try(rstan::sampling(stanmodels$mSMc,data = data.modstanSM,init=init_ll,iter = nriter,chains = nrch,warmup=wu,seed=sd,
+                             control = list(adapt_delta = delta,max_treedepth =treedepth),
+                             show_messages = F, refresh = 0))
+    if(class(optSM) != 'try-error'){
+      means.SM = apply((as.matrix(optSM))[,paste0('mu[', 1:N, ']')], 2, median)
+    }
+
+  }else{
+    if(dim(optSM$theta_tilde)[1] > 1){
+      means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:N, ']')], 2, median)
+    }else{
+      means.SM = optSM$theta_tilde[, paste0('mu[', 1:N, ']')]
+    }
+  }
 
   means.all$pred = means.SM
 
@@ -1601,7 +1619,11 @@ PREP_DATA_LN_C <- function(data, # a dataframe with input data, order of columns
   optSM = rstan::optimizing(stanmodels$mSMc, data = data.modstanSM,
                             seed=as.integer(123), draws = 30000,
                             init = svSM, hessian=TRUE)
-  means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:N, ']')], 2, median)
+  if(dim(optSM$theta_tilde)[1] > 1){
+    means.SM = apply(optSM$theta_tilde[, paste0('mu[', 1:N, ']')], 2, median)
+  }else{
+    means.SM = optSM$theta_tilde[, paste0('mu[', 1:N, ']')]
+  }
 
   means.all$pred = means.SM
 

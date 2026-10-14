@@ -424,9 +424,13 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
                                           paste0('rho_cluster'))], 2, median)
 
     fitSM = rstan::optimizing(stanmodels$mSMc, data = data.modstanSM, seed = as.integer(sd), draws = ndr, init = svSM, hessian = T)
-    pars.SM = apply(fitSM$theta_tilde[, c(paste0('a[', 1:N, ']'), paste0('par[', N+1, ']'),
-                                          paste0('par[', N+2, ']'))], 2, median)
-
+    if(dim(fitSM$theta_tilde)[1] > 1){
+      pars.SM = apply(fitSM$theta_tilde[, c(paste0('a[', 1:N, ']'), paste0('par[', N+1, ']'),
+                                            paste0('par[', N+2, ']'))], 2, median)
+    }else{
+      pars.SM = fitSM$theta_tilde[, c(paste0('a[', 1:N, ']'), paste0('par[', N+1, ']'),
+                                      paste0('par[', N+2, ']'))]
+    }
 
 
     llSM = llfSM_Nc(pars.SM,

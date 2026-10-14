@@ -18,6 +18,8 @@ Whenever changes are expected to influence modeling results, this is explicitly 
 
 * included user-specific plot axis labels
 
+* fixed issue with continuous clustered data when no between-litter variation is present
+
 **MAJOR BUG FIX**: 
 
 * fixed bug in the lognormal Stan models: the Jacobian term was computed on the

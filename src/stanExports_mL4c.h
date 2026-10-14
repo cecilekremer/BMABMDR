@@ -35,7 +35,7 @@ static constexpr std::array<const char*, 206> locations_array__ =
   " (in 'string', line 42, column 1 to column 51)",
   " (in 'string', line 43, column 2 to column 12)",
   " (in 'string', line 44, column 2 to column 12)",
-  " (in 'string', line 45, column 2 to column 12)",
+  " (in 'string', line 45, column 2 to column 30)",
   " (in 'string', line 48, column 2 to column 9)",
   " (in 'string', line 49, column 2 to column 9)",
   " (in 'string', line 50, column 2 to column 9)",
@@ -711,7 +711,8 @@ public:
       par5 = in__.template read<local_scalar_t__>();
       local_scalar_t__ par6 = DUMMY_VAR__;
       current_statement__ = 7;
-      par6 = in__.template read<local_scalar_t__>();
+      par6 = in__.template read_constrain_lub<local_scalar_t__,
+               jacobian__>(0, 1, lp__);
       local_scalar_t__ b = DUMMY_VAR__;
       local_scalar_t__ a = DUMMY_VAR__;
       local_scalar_t__ c = DUMMY_VAR__;
@@ -1213,7 +1214,8 @@ public:
       par5 = in__.template read<local_scalar_t__>();
       double par6 = std::numeric_limits<double>::quiet_NaN();
       current_statement__ = 7;
-      par6 = in__.template read<local_scalar_t__>();
+      par6 = in__.template read_constrain_lub<local_scalar_t__,
+               jacobian__>(0, 1, lp__);
       double b = std::numeric_limits<double>::quiet_NaN();
       double a = std::numeric_limits<double>::quiet_NaN();
       double c = std::numeric_limits<double>::quiet_NaN();
@@ -1446,7 +1448,7 @@ public:
       local_scalar_t__ par6 = DUMMY_VAR__;
       current_statement__ = 7;
       par6 = in__.read<local_scalar_t__>();
-      out__.write(par6);
+      out__.write_free_lub(0, 1, par6);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
@@ -1514,7 +1516,7 @@ public:
       local_scalar_t__ par6 = DUMMY_VAR__;
       current_statement__ = 7;
       par6 = context__.vals_r("par6")[(1 - 1)];
-      out__.write(par6);
+      out__.write_free_lub(0, 1, par6);
     } catch (const std::exception& e) {
       stan::lang::rethrow_located(e, locations_array__[current_statement__]);
     }
