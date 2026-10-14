@@ -131,11 +131,18 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
   # print(pb)
   bf = bridgesampling::bf(bridge_SM, bridge_H0)
 
-  # if (bf$bf<10){
-  if(bf$bf >= 10){
-    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model).")
+  # if(bf$bf >= 10){
+  #   mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model).")
+  # } else{
+  #   mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+  # }
+
+  # 1/bf = BF in favor of NULL model
+
+  if(1/(bf$bf) <= 10){
+    mess = paste0("Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : ", round(1/(bf$bf), 3), " in favor of the NULL (no dose effect) model).")
   } else{
-    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+    mess = paste0("Preliminary analysis found strong evidence of no dose effect (Bayes factor : ", round(1/(bf$bf), 3), " in favor of the NULL (no dose effect) model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
 
   return(list(bf = bf, bf.message = mess))
@@ -269,11 +276,18 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   # print(pb)
   bf = bridgesampling::bf(bridge_SM, bridge_H0)
 
-  if(bf$bf >= 10){
-    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model).")
+  # if(bf$bf >= 10){
+  #   mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model).")
+  # } else{
+  #   mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+  # }
+
+  if(1/(bf$bf) <= 10){
+    mess = paste0("Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : ", round(1/(bf$bf), 3), " in favor of the NULL (no dose effect) model).")
   } else{
-    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf$bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+    mess = paste0("Preliminary analysis found strong evidence of no dose effect (Bayes factor : ", round(1/(bf$bf), 3), " in favor of the NULL (no dose effect) model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
+
 
   return(list(bf = bf, bf.message = mess))
 
@@ -458,11 +472,19 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
 
   }
 
-  if(bf >= 10){
-    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model).")
+  # if(bf >= 10){
+  #   mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model).")
+  # } else{
+  #   mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+  # }
+
+
+  if(1/(bf) <= 10){
+    mess = paste0("Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : ", round(1/(bf), 3), " in favor of the NULL (no dose effect) model).")
   } else{
-    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+    mess = paste0("Preliminary analysis found strong evidence of no dose effect (Bayes factor : ", round(1/(bf), 3), " in favor of the NULL (no dose effect) model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
+
 
   return(list(bf = bf, bf.message = mess))
 }
@@ -795,11 +817,18 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
 
   }
 
-  if(bf >= 10){
-    mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model).")
+  # if(bf >= 10){
+  #   mess = paste0("Preliminary analysis found evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model).")
+  # } else{
+  #   mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+  # }
+
+  if(1/(bf) <= 10){
+    mess = paste0("Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : ", round(1/(bf), 3), " in favor of the NULL (no dose effect) model).")
   } else{
-    mess = paste0("Preliminary analysis found limited evidence of a substantial dose-response effect (Bayes factor : ", bf, " in favor of the saturated model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
+    mess = paste0("Preliminary analysis found strong evidence of no dose effect (Bayes factor : ", round(1/(bf), 3), " in favor of the NULL (no dose effect) model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
+
 
   return(list(bf = bf, bf.message = mess))
 
