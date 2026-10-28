@@ -145,7 +145,7 @@ anydoseresponseN=function(dose.a,mean.a,sd.a,n.a){
     mess = paste0("Preliminary analysis found strong evidence of no dose effect (Bayes factor : ", round(1/(bf$bf), 3), " in favor of the NULL (no dose effect) model). BMD analysis may proceed, but expert review is recommended if estimates appear unstable or implausible.")
   }
 
-  return(list(bf = bf, bf.message = mess))
+  return(list(bf = 1/bf$bf, bf.message = mess))
 
 }
 #' @rdname anydoseresponseN
@@ -289,7 +289,7 @@ anydoseresponseLN=function(dose.a,mean.a,sd.a,n.a){
   }
 
 
-  return(list(bf = bf, bf.message = mess))
+  return(list(bf = 1/bf$bf, bf.message = mess))
 
 }
 #' @rdname anydoseresponseN
@@ -486,7 +486,7 @@ anydoseresponseC=function(data, use.mcmc = FALSE){
   }
 
 
-  return(list(bf = bf, bf.message = mess))
+  return(list(bf = 1/bf, bf.message = mess))
 }
 #' @rdname anydoseresponseN
 #' @export
@@ -830,7 +830,7 @@ anydoseresponseQ <- function(dose.a, y.a, n.a, cluster = FALSE, use.mcmc = FALSE
   }
 
 
-  return(list(bf = bf, bf.message = mess))
+  return(list(bf = 1/bf, bf.message = mess))
 
 
 }

@@ -27,12 +27,28 @@ BMABMDR is an R package for Bayesian model averaging in benchmark dose estimatio
 
 ## Installation
 
-You can install the development version of BMABMDR from [GitHub](https://github.com/) with:
+You can install the latest development version (0.2.1) of the R package from GitHub:
 
-``` r
-# install.packages("devtools")
-devtools::install_github("cecilekremer/BMABMDR")
+```r
+# install.packages("remotes")
+remotes::install_github("cecilekremer/BMABMDR@testing")
 ```
+
+This currently works with the combination of **rstan 2.32.7** and
+**StanHeaders 2.32.10**. If you have a different StanHeaders version, you can
+install the compatible one with:
+
+```r
+remotes::install_version("StanHeaders", version = "2.32.10", type = "source")
+```
+
+### Requirements
+
+- A C++17 toolchain: [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
+  matching your R version on Windows, or a recent GCC/Clang on Linux/macOS.
+- Installation compiles all Stan models and can take a long time and several GB of RAM.
+- Restart R and make sure `rstan`/`BMABMDR` are not loaded before installing,
+  otherwise Windows may fail to overwrite locked DLLs.
 
 ## Example
 

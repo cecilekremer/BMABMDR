@@ -2,6 +2,10 @@
 
 Whenever changes are expected to influence modeling results, this is explicitly mentioned here.
 
+## BMABMDR 0.2.1
+
+* dose response test: changed output to give BF in favor of the NULL model
+
 ## BMABMDR 0.2.0
 
 **MAJOR BUG FIX**: 
