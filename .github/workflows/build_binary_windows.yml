@@ -50,40 +50,53 @@ jobs:
           extra-packages: |
             pkgbuild
             remotes
+            rstantools
       - name: set compiler flags
         run: |
-          ## install old version rstantools
-          if(!Sys.getenv("R_VER") %in% c("4.0", "4.1")) {
-            remotes::install_version("rstantools", "2.2.0")
-          }
-          ## update src files
-          rstantools::rstan_config()
-          Rcpp::compileAttributes()
           ## edit global Makevars.win
           dotR <- file.path(Sys.getenv("HOME"), ".R")
           if (!file.exists(dotR)) { dir.create(dotR) }
           MAKEVARS <- file.path(dotR, "Makevars.win")
-          if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
-          cat("\nCXX14=g++ -std=c++1y",
-            "CXX14FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
-            "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
+          writeLines(c(
+            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic -ftemplate-backtrace-limit=1"
+          ), MAKEVARS)
+          cat("R_MAKEVARS_USER=", MAKEVARS, "\n", file = Sys.getenv("GITHUB_ENV"), sep = "", append = TRUE)
         shell: Rscript {0}
+
+      - name: regenerate Stan exports and DLL export list
+        run: |
+          rstantools::rstan_config()
+          Rcpp::compileAttributes()
+          ## limit DLL exports (Windows allows at most 65535 symbols)
+          files <- list.files("src", pattern = "^stanExports_.*\\.(h|cc)$", full.names = TRUE)
+          mods <- unique(unlist(lapply(files, function(f) {
+            l <- readLines(f, warn = FALSE)
+            m <- regmatches(l, regexpr("RCPP_MODULE\\([A-Za-z0-9_]+\\)", l))
+            sub("RCPP_MODULE\\((.*)\\)", "\\1", m)
+          })))
+          cat("number of Stan modules:", length(mods), "\n")
+          writeLines(c("EXPORTS", "R_init_BMABMDR", paste0("_rcpp_module_boot_", mods)),
+                     "src/BMABMDR-win.def")
+        shell: Rscript {0}
+      
       - name: build source R-package
         id: build-source
         run: |
-          ## build source pkg
           pkg <- pkgbuild::build()
-          cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
-          if(Sys.getenv("BUILD_SOURCE") == "true") {
+          cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n",
+              file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
+          if (Sys.getenv("BUILD_SOURCE") == "true") {
             dir.create("pkg_source")
             file.copy(from = pkg, to = file.path("pkg_source", basename(pkg)))
           }
         shell: Rscript {0}
         env:
           BUILD_SOURCE: ${{ inputs.build_source }}
+          
       - name: make artifact folder
         run: mkdir ${{ inputs.rver }}
         shell: cmd
+        
       - name: upload source R-package
         if: inputs.build_source
         uses: actions/upload-artifact@v4
@@ -91,11 +104,13 @@ jobs:
           name: src
           path: pkg_source
           if-no-files-found: ignore
+          
       - name: build binary R-package
         id: build-binary
         if: inputs.build_binary
         run: pkgbuild::build(binary = TRUE, dest_path = Sys.getenv("R_VER"))
         shell: Rscript {0}
+        
       - name: upload binary R-package
         if: success() && inputs.build_binary
         uses: actions/upload-artifact@v4
