@@ -56,47 +56,41 @@ jobs:
           extra-packages: |
             pkgbuild
             remotes
+            rstantools
       - name: set compiler flags
         run: |
-          ## update src files
-          rstantools::rstan_config()
-          Rcpp::compileAttributes()
-          ## edit global Makevars
           dotR <- file.path(Sys.getenv("HOME"), ".R")
-          if (!file.exists(dotR)) { dir.create(dotR) }
+          dir.create(dotR, showWarnings = FALSE, recursive = TRUE)
           MAKEVARS <- file.path(dotR, "Makevars")
-          if (!file.exists(MAKEVARS)) { file.create(MAKEVARS) }
-          cat("\nCXX=g++ -std=c++1y",
-            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic",
-            "PKG_CPPFLAGS += -DUSE_STANC3\n", file = MAKEVARS, sep = "\n", append = TRUE)
+          writeLines(
+            "CXX17FLAGS += -Wno-unused-variable -Wno-unused-function -Wno-unknown-pragmas -Wno-ignored-attributes -Wno-deprecated -Wno-pedantic -ftemplate-backtrace-limit=1",
+            MAKEVARS)
+          cat("R_MAKEVARS_USER=", MAKEVARS, "\n", file = Sys.getenv("GITHUB_ENV"), sep = "", append = TRUE)
         shell: Rscript {0}
+        
       - name: make 'configure' script executable
         run: chmod +x configure
-      - name: re-install specific versions rstan, StanHeaders, brms
-        if: ${{ inputs.rver != '4.0' && inputs.rver != '4.1' }}
+
+      - name: regenerate Stan exports
         run: |
-          invisible(
-            mapply(
-              remotes::install_version,
-              package = c("StanHeaders", "rstan", "brms"),
-              version = c("2.26.28", "2.32.3", "2.20.4"),
-              upgrade = FALSE
-            )
-          )
-        shell: Rscript {0}
+          rstantools::rstan_config()
+          Rcpp::compileAttributes()
+        shell: Rscript {0}      
+
       - name: build source R-package
         id: build-source
         run: |
-          ## build source pkg
           pkg <- pkgbuild::build()
-          cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n", file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
-          if(Sys.getenv("BUILD_SOURCE") == "true") {
+          cat("name=", basename(pkg), "\n", "path=", file.path(pkg), "\n",
+              file = Sys.getenv("GITHUB_OUTPUT"), sep = "", append = TRUE)
+          if (Sys.getenv("BUILD_SOURCE") == "true") {
             dir.create("pkg_source")
             file.copy(from = pkg, to = file.path("pkg_source", basename(pkg)))
           }
         shell: Rscript {0}
         env:
           BUILD_SOURCE: ${{ inputs.build_source }}
+          
       - name: make artifact folder
         run: mkdir ${{ inputs.rver }}
       - name: upload source R-package
