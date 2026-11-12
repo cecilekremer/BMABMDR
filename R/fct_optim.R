@@ -87,12 +87,10 @@ fun_optim = function(mod, data, stv,
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
+  }else{
+    attr(opt, "class") <- "stanfitOptim"
   }
-  # else{
-  #   message('All errors related to \'chol.default()\' can be ignored')
-  # }
 
-  attr(opt, "class") <- "stanfitOptim"
   return(opt)
 
 }
@@ -167,9 +165,10 @@ fun_optimC = function(mod, data, stv,
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
+  }else{
+    attr(opt, "class") <- "stanfitOptim"
   }
 
-  attr(opt, "class") <- "stanfitOptim"
   return(opt)
 
 }
@@ -259,9 +258,10 @@ fun_optimQ = function(mod, data, stv,
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
+  }else{
+    attr(opt, "class") <- "stanfitOptim"
   }
 
-  attr(opt, "class") <- "stanfitOptim"
   return(opt)
 
 }
@@ -383,9 +383,10 @@ fun_optimCov = function(mod, data, stv,
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
+  }else{
+    attr(opt, "class") <- "stanfitOptim"
   }
 
-  attr(opt, "class") <- "stanfitOptim"
   return(opt)
 
 }
@@ -465,9 +466,10 @@ fun_optimQCov = function(mod, data, stv,
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
+  }else{
+    attr(opt, "class") <- "stanfitOptim"
   }
 
-  attr(opt, "class") <- "stanfitOptim"
   return(opt)
 
 }

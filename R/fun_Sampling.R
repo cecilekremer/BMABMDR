@@ -1561,7 +1561,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optE4_NI <- fun_optim(stanmodels$mE4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
+    if(class(optE4_NI) != 'stanfitOptim'){
       prior.weights[1] <- 0
       warning('difficulties fitting the Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1586,7 +1586,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optIE4_NI <- fun_optim(stanmodels$mIE4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
+    if(class(optIE4_NI) != 'stanfitOptim'){
       prior.weights[2] <- 0
       warning('difficulties fitting the Inverse Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1610,7 +1610,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optH4_NI <- fun_optim(stanmodels$mH4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
+    if(class(optH4_NI) != 'stanfitOptim'){
       prior.weights[3] <- 0
       warning('difficulties fitting the Hill (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1634,7 +1634,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optLN4_NI <- fun_optim(stanmodels$mLN4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
+    if(class(optLN4_NI) != 'stanfitOptim'){
       prior.weights[4] <- 0
       warning('difficulties fitting the Lognormal (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1659,7 +1659,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optG4_NI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
+    if(class(optG4_NI) != 'stanfitOptim'){
       prior.weights[5] <- 0
       warning('difficulties fitting the Gamma (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1684,7 +1684,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optQE4_NI <- fun_optim(stanmodels$mQE4, data, startQ, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
+    if(class(optQE4_NI) != 'stanfitOptim'){
       prior.weights[6] <- 0
       warning('difficulties fitting the Quadratic Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1709,7 +1709,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optP4_NI <- fun_optim(stanmodels$mP4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
+    if(class(optP4_NI) != 'stanfitOptim'){
       prior.weights[7] <- 0
       warning('difficulties fitting the Probit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1733,7 +1733,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optL4_NI <- fun_optim(stanmodels$mL4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
+    if(class(optL4_NI) != 'stanfitOptim'){
       prior.weights[8] <- 0
       warning('difficulties fitting the Logit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1766,7 +1766,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optE4_LNI <- fun_optim(stanmodels$mE4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
+    if(class(optE4_LNI) != 'stanfitOptim'){
       prior.weights[9] <- 0
       warning('difficulties fitting the Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1791,7 +1791,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optIE4_LNI <- fun_optim(stanmodels$mIE4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
+    if(class(optIE4_LNI) != 'stanfitOptim'){
       prior.weights[10] <- 0
       warning('difficulties fitting the Inverse Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1816,7 +1816,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optH4_LNI <- fun_optim(stanmodels$mH4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
+    if(class(optH4_LNI) != 'stanfitOptim'){
       prior.weights[11] <- 0
       warning('difficulties fitting the Hill (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1840,7 +1840,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optLN4_LNI <- fun_optim(stanmodels$mLN4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
+    if(class(optLN4_LNI) != 'stanfitOptim'){
       prior.weights[12] <- 0
       warning('difficulties fitting the Lognormal (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1864,7 +1864,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optG4_LNI <- fun_optim(stanmodels$mG4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
+    if(class(optG4_LNI) != 'stanfitOptim'){
       prior.weights[13] <- 0
       warning('difficulties fitting the Gamma (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1888,7 +1888,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optQE4_LNI <- fun_optim(stanmodels$mQE4, data, startQ, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
+    if(class(optQE4_LNI) != 'stanfitOptim'){
       prior.weights[14] <- 0
       warning('difficulties fitting the Quadratic Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1912,7 +1912,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optP4_LNI <- fun_optim(stanmodels$mP4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
+    if(class(optP4_LNI) != 'stanfitOptim'){
       prior.weights[15] <- 0
       warning('difficulties fitting the Probit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -1936,7 +1936,7 @@ sampling_MA=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optL4_LNI <- fun_optim(stanmodels$mL4, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
+    if(class(optL4_LNI) != 'stanfitOptim'){
       prior.weights[16] <- 0
       warning('difficulties fitting the Logit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -3871,7 +3871,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optE4_NI <- fun_optimC(stanmodels$mE4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optE4_NI[[3]]),TRUE,(optE4_NI[[3]]!=0)) | length(optE4_NI)!=9)){
+    if(class(optE4_NI) != 'stanfitOptim'){
       prior.weights[1] <- 0
       warning('difficulties fitting the Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -3901,7 +3901,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optIE4_NI <- fun_optimC(stanmodels$mIE4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optIE4_NI[[3]]),TRUE,(optIE4_NI[[3]]!=0)) | length(optIE4_NI)!=9)){
+    if(class(optIE4_NI) != 'stanfitOptim'){
       prior.weights[2] <- 0
       warning('difficulties fitting the Inverse Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -3930,7 +3930,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optH4_NI <- fun_optimC(stanmodels$mH4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optH4_NI[[3]]),TRUE,(optH4_NI[[3]]!=0)) | length(optH4_NI)!=9)){
+    if(class(optH4_NI) != 'stanfitOptim'){
       prior.weights[3] <- 0
       warning('difficulties fitting the Hill (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -3959,7 +3959,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optLN4_NI <- fun_optimC(stanmodels$mLN4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optLN4_NI[[3]]),TRUE,(optLN4_NI[[3]]!=0)) | length(optLN4_NI)!=9)){
+    if(class(optLN4_NI) != 'stanfitOptim'){
       prior.weights[4] <- 0
       warning('difficulties fitting the Lognormal (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -3989,7 +3989,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optG4_NI <- fun_optimC(stanmodels$mG4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optG4_NI[[3]]),TRUE,(optG4_NI[[3]]!=0)) | length(optG4_NI)!=9)){
+    if(class(optG4_NI) != 'stanfitOptim'){
       prior.weights[5] <- 0
       warning('difficulties fitting the Gamma (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4019,7 +4019,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optQE4_NI <- fun_optimC(stanmodels$mQE4c, data, startQ, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optQE4_NI[[3]]),TRUE,(optQE4_NI[[3]]!=0)) | length(optQE4_NI)!=9)){
+    if(class(optQE4_NI) != 'stanfitOptim'){
       prior.weights[6] <- 0
       warning('difficulties fitting the Quadratic Exponential (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4049,7 +4049,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optP4_NI <- fun_optimC(stanmodels$mP4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optP4_NI[[3]]),TRUE,(optP4_NI[[3]]!=0)) | length(optP4_NI)!=9)){
+    if(class(optP4_NI) != 'stanfitOptim'){
       prior.weights[7] <- 0
       warning('difficulties fitting the Probit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4078,7 +4078,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optL4_NI <- fun_optimC(stanmodels$mL4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optL4_NI[[3]]),TRUE,(optL4_NI[[3]]!=0)) | length(optL4_NI)!=9)){
+    if(class(optL4_NI) != 'stanfitOptim'){
       prior.weights[8] <- 0
       warning('difficulties fitting the Logit (Normal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4116,7 +4116,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optE4_LNI <- fun_optimC(stanmodels$mE4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optE4_LNI[[3]]),TRUE,(optE4_LNI[[3]]!=0)) | length(optE4_LNI)!=9)){
+    if(class(optE4_LNI) != 'stanfitOptim'){
       prior.weights[9] <- 0
       warning('difficulties fitting the Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4148,7 +4148,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optIE4_LNI <- fun_optimC(stanmodels$mIE4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optIE4_LNI[[3]]),TRUE,(optIE4_LNI[[3]]!=0)) | length(optIE4_LNI)!=9)){
+    if(class(optIE4_LNI) != 'stanfitOptim'){
       prior.weights[10] <- 0
       warning('difficulties fitting the Inverse Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4180,7 +4180,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optH4_LNI <- fun_optimC(stanmodels$mH4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optH4_LNI[[3]]),TRUE,(optH4_LNI[[3]]!=0)) | length(optH4_LNI)!=9)){
+    if(class(optH4_LNI) != 'stanfitOptim'){
       prior.weights[11] <- 0
       warning('difficulties fitting the Hill (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4211,7 +4211,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optLN4_LNI <- fun_optimC(stanmodels$mLN4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optLN4_LNI[[3]]),TRUE,(optLN4_LNI[[3]]!=0)) | length(optLN4_LNI)!=9)){
+    if(class(optLN4_LNI) != 'stanfitOptim'){
       prior.weights[12] <- 0
       warning('difficulties fitting the Lognormal (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4242,7 +4242,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optG4_LNI <- fun_optimC(stanmodels$mG4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optG4_LNI[[3]]),TRUE,(optG4_LNI[[3]]!=0)) | length(optG4_LNI)!=9)){
+    if(class(optG4_LNI) != 'stanfitOptim'){
       prior.weights[13] <- 0
       warning('difficulties fitting the Gamma (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4273,7 +4273,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optQE4_LNI <- fun_optimC(stanmodels$mQE4c, data, startQ, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optQE4_LNI[[3]]),TRUE,(optQE4_LNI[[3]]!=0)) | length(optQE4_LNI)!=9)){
+    if(class(optQE4_LNI) != 'stanfitOptim'){
       prior.weights[14] <- 0
       warning('difficulties fitting the Quadratic Exponential (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4304,7 +4304,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optP4_LNI <- fun_optimC(stanmodels$mP4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optP4_LNI[[3]]),TRUE,(optP4_LNI[[3]]!=0)) | length(optP4_LNI)!=9)){
+    if(class(optP4_LNI) != 'stanfitOptim'){
       prior.weights[15] <- 0
       warning('difficulties fitting the Probit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -4335,7 +4335,7 @@ sampling_MAc=function(data.N,data.LN,prior.weights = rep(1,16),
 
     optL4_LNI <- fun_optimC(stanmodels$mL4c, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optL4_LNI[[3]]),TRUE,(optL4_LNI[[3]]!=0)) | length(optL4_LNI)!=9)){
+    if(class(optL4_LNI) != 'stanfitOptim'){
       prior.weights[16] <- 0
       warning('difficulties fitting the Logit (Lognormal) model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5823,7 +5823,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     optE4_Q <- fun_optimQ(stanmodels$mE4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optE4_Q[[3]]),TRUE,(optE4_Q[[3]]!=0)) | length(optE4_Q)!=9)){
+    if(class(optE4_Q) != 'stanfitOptim'){
       prior.weights[1] <- 0
       warning('difficulties fitting the Exponential model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5850,7 +5850,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[2]>0){
     optIE4_Q = fun_optimQ(stanmodels$mIE4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optIE4_Q[[3]]),TRUE,(optIE4_Q[[3]]!=0)) | length(optIE4_Q)!=9)){
+    if(class(optIE4_Q) != 'stanfitOptim'){
       prior.weights[2] <- 0
       warning('difficulties fitting the Inverse Exponential model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5877,7 +5877,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[3]>0){
     optH4_Q = fun_optimQ(stanmodels$mH4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optH4_Q[[3]]),TRUE,(optH4_Q[[3]]!=0)) | length(optH4_Q)!=9)){
+    if(class(optH4_Q) != 'stanfitOptim'){
       prior.weights[3] <- 0
       warning('difficulties fitting the Hill model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5904,7 +5904,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[4]>0){
     optLN4_Q = fun_optimQ(stanmodels$mLN4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optLN4_Q[[3]]),TRUE,(optLN4_Q[[3]]!=0)) | length(optLN4_Q)!=9)){
+    if(class(optLN4_Q) != 'stanfitOptim'){
       prior.weights[4] <- 0
       warning('difficulties fitting the Lognormal model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5932,7 +5932,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
 
     optG4_Q = fun_optimQ(stanmodels$mG4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optG4_Q[[3]]),TRUE,(optG4_Q[[3]]!=0)) | length(optG4_Q)!=9)){
+    if(class(optG4_Q) != 'stanfitOptim'){
       prior.weights[5] <- 0
       warning('difficulties fitting the Gamma model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5959,7 +5959,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[6]>0){
     optQE4_Q = fun_optimQ(stanmodels$mQE4_Q, data, startQ, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optQE4_Q[[3]]),TRUE,(optQE4_Q[[3]]!=0)) | length(optQE4_Q)!=9)){
+    if(class(optQE4_Q) != 'stanfitOptim'){
       prior.weights[6] <- 0
       warning('difficulties fitting the Quadratic Exponential model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -5986,7 +5986,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[7]>0){
     optP4_Q = fun_optimQ(stanmodels$mP4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optP4_Q[[3]]),TRUE,(optP4_Q[[3]]!=0)) | length(optP4_Q)!=9)){
+    if(class(optP4_Q) != 'stanfitOptim'){
       prior.weights[7] <- 0
       warning('difficulties fitting the Probit model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
@@ -6013,7 +6013,7 @@ samplingQ_MA=function(data.Q,prior.weights = rep(1,8),
   if(prior.weights[8]>0){
     optL4_Q = fun_optimQ(stanmodels$mL4_Q, data, start, ndraws, 123, pvec)
 
-    if((ifelse(is.na(optL4_Q[[3]]),TRUE,(optL4_Q[[3]]!=0)) | length(optL4_Q)!=9)){
+    if(class(optL4_Q) != 'stanfitOptim'){
       prior.weights[8] <- 0
       warning('difficulties fitting the Logit model using Laplace; prior weight was set to 0 and the model is not included in model averaging')
     }else{
