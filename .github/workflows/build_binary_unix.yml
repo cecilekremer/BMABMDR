@@ -57,6 +57,7 @@ jobs:
             pkgbuild
             remotes
             rstantools
+            roxygen2
       - name: set compiler flags
         run: |
           dotR <- file.path(Sys.getenv("HOME"), ".R")
@@ -67,7 +68,7 @@ jobs:
             MAKEVARS)
           cat("R_MAKEVARS_USER=", MAKEVARS, "\n", file = Sys.getenv("GITHUB_ENV"), sep = "", append = TRUE)
         shell: Rscript {0}
-        
+
       - name: make 'configure' script executable
         run: chmod +x configure
 
@@ -75,7 +76,20 @@ jobs:
         run: |
           rstantools::rstan_config()
           Rcpp::compileAttributes()
-        shell: Rscript {0}      
+        shell: Rscript {0}
+
+      - name: update documentation (roxygen)
+        run: |
+          ok <- tryCatch({
+            roxygen2::roxygenise(load_code = roxygen2::load_source)
+            TRUE
+          }, error = function(e) {
+            message("load_source failed: ", conditionMessage(e))
+            FALSE
+          })
+          ## fallback: full load (compiles the Stan models, slower)
+          if (!ok) roxygen2::roxygenise()
+        shell: Rscript {0}
 
       - name: build source R-package
         id: build-source
@@ -90,7 +104,7 @@ jobs:
         shell: Rscript {0}
         env:
           BUILD_SOURCE: ${{ inputs.build_source }}
-          
+
       - name: make artifact folder
         run: mkdir ${{ inputs.rver }}
       - name: upload source R-package
@@ -112,4 +126,4 @@ jobs:
           name: ${{ inputs.os }}_R-${{ inputs.rver }}
           path: ${{ inputs.rver }}
           if-no-files-found: error
-          
+
