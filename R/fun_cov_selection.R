@@ -298,7 +298,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
                                  data_asigma2$start,
                                  ndraws, seed, pvec)
 
-  if(class(optMod_asigma2 != 'stanfitOptim') | (class(optMod_asigma2 == 'stanfitOptim') & is.na(optMod_asigma2$par[1])) | (class(optMod_asigma2 == 'stanfitOptim') & 'Inf' %in% optMod_asigma2$theta_tilde)){
+  if(class(optMod_asigma2 != 'stanfitOptim') | (class(optMod_asigma2 == 'stanfitOptim') & 'Inf' %in% optMod_asigma2$theta_tilde)){
     prior.weightsCov[1] <- 0
     ll_asigma2 <- NA
   }else{
@@ -313,7 +313,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_dBMD <- fun_optimCov(model, data_dBMD$data,
                               data_dBMD$start, ndraws, seed, pvec)
 
-  if(class(optMod_dBMD != 'stanfitOptim') | (class(optMod_dBMD == 'stanfitOptim') & is.na(optMod_dBMD$par[1])) | (class(optMod_dBMD == 'stanfitOptim') & 'Inf' %in% optMod_dBMD$theta_tilde)){
+  if(class(optMod_dBMD != 'stanfitOptim') | (class(optMod_dBMD == 'stanfitOptim') & 'Inf' %in% optMod_dBMD$theta_tilde)){
     prior.weightsCov[2] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_dBMD <- NA
@@ -327,7 +327,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
 
   optMod_all <- fun_optimCov(model, data_all$data,
                              data_all$start, ndraws, seed, pvec)
-  if(class(optMod_all != 'stanfitOptim') | (class(optMod_all == 'stanfitOptim') & is.na(optMod_all$par[1])) | (class(optMod_all == 'stanfitOptim') & 'Inf' %in% optMod_all$theta_tilde)){
+  if(class(optMod_all != 'stanfitOptim') | (class(optMod_all == 'stanfitOptim') & 'Inf' %in% optMod_all$theta_tilde)){
     prior.weightsCov[3] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_all <- NA
@@ -342,7 +342,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_none <- fun_optim(model.none, data_none$data,
                            data_none$start, ndraws, seed, pvec)
 
-  if(class(optMod_none != 'stanfitOptim') | (class(optMod_none == 'stanfitOptim') & is.na(optMod_none$par[1])) | (class(optMod_none == 'stanfitOptim') & 'Inf' %in% optMod_none$theta_tilde)){
+  if(class(optMod_none != 'stanfitOptim') | (class(optMod_none == 'stanfitOptim') & 'Inf' %in% optMod_none$theta_tilde)){
     prior.weightsCov[4] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA
@@ -628,7 +628,7 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_bkg <- fun_optimQCov(model, data_bkg$data,
                               data_bkg$start, ndraws, seed, pvec)
 
-  if(class(optMod_bkg != 'stanfitOptim') | (class(optMod_bkg == 'stanfitOptim') & is.na(optMod_bkg$par[1])) | (class(optMod_bkg == 'stanfitOptim') & 'Inf' %in% optMod_bkg$theta_tilde)){
+  if(class(optMod_bkg != 'stanfitOptim') | (class(optMod_bkg == 'stanfitOptim') & 'Inf' %in% optMod_bkg$theta_tilde)){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_bkg <- NA
@@ -643,7 +643,7 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_dBMD <- fun_optimQCov(model, data_dBMD$data,
                                data_dBMD$start, ndraws, seed, pvec)
 
-  if(class(optMod_dBMD != 'stanfitOptim') | (class(optMod_dBMD == 'stanfitOptim') & is.na(optMod_dBMD$par[1])) | (class(optMod_dBMD == 'stanfitOptim') & 'Inf' %in% optMod_dBMD$theta_tilde)){
+  if(class(optMod_dBMD != 'stanfitOptim') | (class(optMod_dBMD == 'stanfitOptim') & 'Inf' %in% optMod_dBMD$theta_tilde)){
     prior.weightsCov[2] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_dBMD <- NA
@@ -658,7 +658,7 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_all <- fun_optimQCov(model, data_all$data,
                               data_all$start, ndraws, seed, pvec)
 
-  if(class(optMod_all != 'stanfitOptim') | (class(optMod_all == 'stanfitOptim') & is.na(optMod_all$par[1])) | (class(optMod_all == 'stanfitOptim') & 'Inf' %in% optMod_all$theta_tilde)){
+  if(class(optMod_all != 'stanfitOptim') | (class(optMod_all == 'stanfitOptim') & 'Inf' %in% optMod_all$theta_tilde)){
     prior.weightsCov[3] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_all <- NA
@@ -673,7 +673,7 @@ fun_cov_selectionQ <- function(model, model_name, model.none, loglik, data_bkg, 
   optMod_none <- fun_optimQ(model.none, data_none$data,
                             data_none$start, ndraws, seed, pvec)
 
-  if(class(optMod_none != 'stanfitOptim') | (class(optMod_none == 'stanfitOptim') & is.na(optMod_none$par[1])) | (class(optMod_none == 'stanfitOptim') & 'Inf' %in% optMod_none$theta_tilde)){
+  if(class(optMod_none != 'stanfitOptim') | (class(optMod_none == 'stanfitOptim') & 'Inf' %in% optMod_none$theta_tilde)){
     prior.weightsCov[4] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA

@@ -227,7 +227,7 @@ fun_optimQ = function(mod, data, stv,
 
   } else {
 
-    while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
+    while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
       svh = stv
       par = unname(unlist(svh))
 
