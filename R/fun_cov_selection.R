@@ -346,7 +346,7 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
     prior.weightsCov[4] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA
-  }}else{
+  }else{
     ll_none <- loglik(pars = optMod_none$par, x = data_none$data$x, n = data_none$data$n,
                       m = data_none$data$m, s2 = data_none$data$s2,
                       qval = data_none$data$q, shift = data_none$data$shift, covar = 'none',
