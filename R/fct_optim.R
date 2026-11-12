@@ -23,7 +23,7 @@ fun_optim = function(mod, data, stv,
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(length(opt)!=9) {
+  if(is.null(opt)) {
 
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
@@ -32,7 +32,7 @@ fun_optim = function(mod, data, stv,
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9) & n.attempts < 100){
+  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -104,7 +104,7 @@ fun_optimC = function(mod, data, stv,
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(length(opt)!=9) {
+  if(is.null(opt)) {
 
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
@@ -113,7 +113,7 @@ fun_optimC = function(mod, data, stv,
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9) & n.attempts < 100){
+  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -182,7 +182,7 @@ fun_optimQ = function(mod, data, stv,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
   # if(is.na(opt$return_code) | opt$return_code != 0) {
-  if(length(opt)!=9){
+  if(is.null(opt)){
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
@@ -220,7 +220,7 @@ fun_optimQ = function(mod, data, stv,
 
       if(class(opt) == 'try-error') {
         next
-      } else if((!is.na(opt[[3]]) | opt[[3]]==0 & length(opt)==9) | n.attempts == 100){
+      } else if(ifelse(is.null(opt),TRUE,(opt$converged %in% c(-1, 40))) | n.attempts == 100){
         break
       } else next
       # print(n.attempts)
@@ -228,7 +228,7 @@ fun_optimQ = function(mod, data, stv,
 
   } else {
 
-    while((ifelse(is.na(opt[[3]]),TRUE,(opt[[3]]!=0)) | length(opt)!=9) & n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
+    while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
       svh = stv
       par = unname(unlist(svh))
 
@@ -273,15 +273,17 @@ fun_optimCov = function(mod, data, stv,
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(length(opt)!=9) {
+  if(is.null(opt)) {
 
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-
+  if(class(opt) == 'try-error'){
+    opt = c(NA, NA, NA)
+  }
   if(class(opt)!='try-error'){
-    if(opt$return_code != 0){
-      par = opt$theta_tilde
+    if(opt$return_code != 0){ # issue with optimizing
+      par = opt$par
       a = par[1:data$nlevels_a]
       bmd = par[(data$nlevels_a+1):(data$nlevels_a+data$nlevels_BMD)]
       c = par[(data$nlevels_a+data$nlevels_BMD+1+data$nlevels_d+data$nlevels_a+data$nlevels+data$nlevels_a+1):
@@ -296,7 +298,7 @@ fun_optimCov = function(mod, data, stv,
         dim(pars3i)=1
         svh = list(par1=a,par2=bmd,pars3i=pars3i,pars3d=pars3d,par4=d,par5=s)
       }else if(data$data_type==3|data$data_type==4){
-        pars3d = par[3]
+        pars3d = c
         pars3i = numeric()
         dim(pars3d)=1
         dim(pars3i)=0
@@ -313,11 +315,8 @@ fun_optimCov = function(mod, data, stv,
                                 init=svh,hessian=TRUE),silent=T)
     }
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
   n.attempts <- 1
-  while((ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9) & n.attempts < 10){
+  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 10){
     svh=stv
     par = unname(unlist(svh))
 
@@ -326,8 +325,6 @@ fun_optimCov = function(mod, data, stv,
     c = par[(data$nlevels_a+data$nlevels_BMD+1):(data$nlevels_a+data$nlevels_BMD+1)]
     d = par[(data$nlevels_a+data$nlevels_BMD+2):(data$nlevels_a+data$nlevels_BMD+1+data$nlevels_d)]
     s = par[(data$nlevels_a+data$nlevels_BMD+1+data$nlevels_d+1):(length(par))]
-
-
 
     if(data$is_informative_a == 1){
       a = runif(length(a), data$priorlb[1], data$priorub[1])
@@ -366,7 +363,7 @@ fun_optimCov = function(mod, data, stv,
       dim(pars3i)=1
       svh = list(par1=a,par2=bmd,pars3i=pars3i,pars3d=pars3d,par4=d,par5=s)
     }else if(data$data_type==3|data$data_type==4){
-      pars3d = par[3]
+      pars3d = c
       pars3i = numeric()
       dim(pars3d)=1
       dim(pars3i)=0
@@ -400,10 +397,12 @@ fun_optimQCov = function(mod, data, stv,
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(length(opt)!=9) {
+  if(is.null(opt)) {
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-
+  if(class(opt) == 'try-error'){
+    opt = c(NA, NA, NA)
+  }
   if(class(opt)!='try-error'){
     if(opt$return_code != 0){
 
@@ -428,7 +427,7 @@ fun_optimQCov = function(mod, data, stv,
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) | length(opt)!=9) & n.attempts < 10){
+  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt))  & n.attempts < 10){
 
     svh=stv
     par = unname(unlist(svh))

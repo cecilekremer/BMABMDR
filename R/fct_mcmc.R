@@ -29,14 +29,14 @@ fun_sampling = function(mod, data, stv,
 
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
-  if(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
+  if(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) & n.attempts < 100){
+  while(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0)) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -189,13 +189,13 @@ fun_samplingC = function(mod, data, stv,
 
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
-  if(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
+  if(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
   }
-  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
+  while(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
     svh=stv
     par = unname(unlist(svh))
 
@@ -347,14 +347,14 @@ fun_samplingQ = function(mod, data, stv,
 
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
-  if(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
+  if(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
   if(class(opt) == 'try-error'){
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while(ifelse(is.na(opt[3]),TRUE,(opt[3]!=0)) & n.attempts < 100){
+  while(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0)) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -380,7 +380,7 @@ fun_samplingQ = function(mod, data, stv,
     n.attempts <- n.attempts + 1
   }
 
-  # if(!ifelse(is.na(opt[3]),TRUE,(opt[3]!=0))){
+  # if(!ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
   if(data$is_bin == 1) {
 
 

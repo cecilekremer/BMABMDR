@@ -298,10 +298,10 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
                                  data_asigma2$start,
                                  ndraws, seed, pvec)
 
-  if(is.na(optMod_asigma2[1][1])){
+  if(is.na(optMod_asigma2$par[1])){
     prior.weightsCov[1] <- 0
     ll_asigma2 <- NA
-  }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$theta_tilde))){
+  }else if((ifelse(is.na(optMod_asigma2$converged),TRUE,(optMod_asigma2$converged%in%c(-1, 40))) | optMod_asigma2$return_code!=0 | ('Inf' %in% optMod_asigma2$theta_tilde))){
     # }else if((ifelse(is.na(optMod_asigma2[[3]]),TRUE,(optMod_asigma2[[3]]!=0)) | length(optMod_asigma2)!=9 | ('Inf' %in% optMod_asigma2$par))){
     prior.weightsCov[1] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
@@ -318,11 +318,11 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_dBMD <- fun_optimCov(model, data_dBMD$data,
                               data_dBMD$start, ndraws, seed, pvec)
 
-  if(is.na(optMod_dBMD[1][1])){
+  if(is.na(optMod_dBMD$par[1])){
     prior.weightsCov[2] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_dBMD <- NA
-  }else if((ifelse(is.na(optMod_dBMD[[3]]),TRUE,(optMod_dBMD[[3]]!=0)) | length(optMod_dBMD)!=9 | ('Inf' %in% optMod_dBMD$theta_tilde))){
+  }else if((ifelse(is.na(optMod_dBMD$converged),TRUE,(optMod_dBMD$converged%in%c(-1, 40))) | optMod_dBMD$return_code!=0 | ('Inf' %in% optMod_dBMD$theta_tilde))){
     prior.weightsCov[2] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_dBMD <- NA
@@ -336,11 +336,11 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
 
   optMod_all <- fun_optimCov(model, data_all$data,
                              data_all$start, ndraws, seed, pvec)
-  if(is.na(optMod_all[1][1])){
+  if(is.na(optMod_all$par[1])){
     prior.weightsCov[3] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_all <- NA
-  }else if((ifelse(is.na(optMod_all[[3]]),TRUE,(optMod_all[[3]]!=0)) | length(optMod_all)!=9 | ('Inf' %in% optMod_all$theta_tilde))){
+  }else if((ifelse(is.na(optMod_all$converged),TRUE,(optMod_all$converged%in%c(-1, 40))) | optMod_all$return_code!=0 | ('Inf' %in% optMod_all$theta_tilde))){
     prior.weightsCov[3] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_all <- NA
@@ -355,11 +355,11 @@ fun_cov_selection <- function(model, model_name, model.none, loglik, data_asigma
   optMod_none <- fun_optim(model.none, data_none$data,
                            data_none$start, ndraws, seed, pvec)
 
-  if(is.na(optMod_none[1][1])){
+  if(is.na(optMod_none$par[1])){
     prior.weightsCov[4] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA
-  }else if((ifelse(is.na(optMod_none[[3]]),TRUE,(optMod_none[[3]]!=0)) | length(optMod_none)!=9 | ('Inf' %in% optMod_none$theta_tilde))){
+  }else if((ifelse(is.na(optMod_none$converged),TRUE,(optMod_none$converged%in%c(-1, 40))) | optMod_none$return_code!=0 | ('Inf' %in% optMod_none$theta_tilde))){
     prior.weightsCov[4] <- 0
     # warning('Difficulties fitting the Probit (Lognormal) model; prior weight was set to 0 and the model is not included in model averaging')
     ll_none <- NA
