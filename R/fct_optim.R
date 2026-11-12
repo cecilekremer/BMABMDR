@@ -32,7 +32,7 @@ fun_optim = function(mod, data, stv,
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 100){
+  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -111,7 +111,7 @@ fun_optimC = function(mod, data, stv,
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 100){
+  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -219,7 +219,7 @@ fun_optimQ = function(mod, data, stv,
 
       if(class(opt) == 'try-error') {
         next
-      } else if(ifelse(is.null(opt),TRUE,(opt$converged %in% c(-1, 40))) | n.attempts == 100){
+      } else if(opt$return_code != 0 | n.attempts == 100){
         break
       } else next
       # print(n.attempts)
@@ -316,7 +316,7 @@ fun_optimCov = function(mod, data, stv,
     }
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt)) & n.attempts < 10){
+  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 10){
     svh=stv
     par = unname(unlist(svh))
 
@@ -428,7 +428,7 @@ fun_optimQCov = function(mod, data, stv,
     opt = c(NA, NA, NA)
   }
   n.attempts <- 1
-  while((ifelse(is.na(opt$converged),TRUE,(opt$converged %in% c(-1, 40))) | is.null(opt))  & n.attempts < 10){
+  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 10){
 
     svh=stv
     par = unname(unlist(svh))
