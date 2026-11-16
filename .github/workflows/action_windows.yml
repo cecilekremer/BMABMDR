@@ -3,12 +3,12 @@ name: build-binary-windows
 on:
   push:
     branches:
-      - 'main'
+      - 'testing'
   pull_request:
     branches:
-      - 'main'
+      - 'testing'
   workflow_dispatch:
-  
+
 jobs:
   check-upload:
     strategy:

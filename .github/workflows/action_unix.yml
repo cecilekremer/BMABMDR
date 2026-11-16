@@ -3,10 +3,10 @@ name: build-binary-unix
 on:
   push:
     branches:
-      - 'main'
+      - 'testing'
   pull_request:
     branches:
-      - 'main'
+      - 'testing'
   workflow_dispatch:
 
 jobs:
@@ -23,4 +23,4 @@ jobs:
       rver: ${{ matrix.config.r}}
       build_source: ${{ matrix.config.source }}
       build_binary: ${{ matrix.config.binary }}
-      
+
