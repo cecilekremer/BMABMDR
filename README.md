@@ -17,20 +17,12 @@ estimation. Its two main functions are:
 
 ## Installation
 
-You can install the latest development version (0.2.1) of the R package
+You can install the latest development version (0.2.2) of the R package
 from GitHub:
 
 ``` r
 # install.packages("remotes")
 remotes::install_github("cecilekremer/BMABMDR@testing")
-```
-
-This currently works with the combination of **rstan 2.32.7** and
-**StanHeaders 2.32.10**. If you have a different StanHeaders version,
-you can install the compatible one with:
-
-``` r
-remotes::install_version("StanHeaders", version = "2.32.10", type = "source")
 ```
 
 ### Requirements
@@ -75,13 +67,13 @@ anydoseresponseN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
 #> For more on GAMLSS look at https://www.gamlss.com/
 #> Type gamlssNews() to see new features/changes/bug fixes.
 #> $bf
-#> Estimated Bayes factor in favor of bridge_SM over bridge_H0: 750498364556829503128828460444260660864404060844828884082000648.00000
+#> [1] 1.335563e-63
 #> 
 #> $bf.message
 #> [1] "Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : 0 in favor of the NULL (no dose effect) model)."
 anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
 #> $bf
-#> Estimated Bayes factor in favor of bridge_SM over bridge_H0: 1162596138617800377222628442884666686602606440604248448006020428.00000
+#> [1] 8.572044e-64
 #> 
 #> $bf.message
 #> [1] "Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : 0 in favor of the NULL (no dose effect) model)."
