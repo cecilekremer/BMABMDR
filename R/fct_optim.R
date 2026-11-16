@@ -20,19 +20,25 @@
 fun_optim = function(mod, data, stv,
                      ndraws,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(is.null(opt)) {
+  if(!is.list(opt)) {
 
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   n.attempts <- 1
-  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){
+  # while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){
+  while(!opt_ok(opt) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -85,7 +91,8 @@ fun_optim = function(mod, data, stv,
 
     n.attempts <- n.attempts + 1
   }
-  if(class(opt) == 'try-error'){
+
+  if(!is.list(opt) || inherits(opt, "try-error")){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -99,19 +106,24 @@ fun_optim = function(mod, data, stv,
 fun_optimC = function(mod, data, stv,
                       ndraws,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(is.null(opt)) {
+  if(!is.list(opt)) {
 
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   n.attempts <- 1
-  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){
+  while(!opt_ok(opt) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -163,7 +175,7 @@ fun_optimC = function(mod, data, stv,
                               init=svh,hessian=TRUE),silent=T)
     n.attempts <- n.attempts + 1
   }
-  if(class(opt) == 'try-error'){
+  if(!is.list(opt) || inherits(opt, "try-error")){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -177,17 +189,22 @@ fun_optimC = function(mod, data, stv,
 fun_optimQ = function(mod, data, stv,
                       ndraws, seed, pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
   # if(is.na(opt$return_code) | opt$return_code != 0) {
-  if(is.null(opt)){
+  if(!is.list(opt)){
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   n.attempts <- 1
   if(class(opt) == 'try-error') {
 
@@ -219,7 +236,7 @@ fun_optimQ = function(mod, data, stv,
 
       if(class(opt) == 'try-error') {
         next
-      } else if(opt$return_code != 0 | n.attempts == 100){
+      } else if(isTRUE(opt$return_code != 0) || n.attempts == 100){
         break
       } else next
       # print(n.attempts)
@@ -227,7 +244,7 @@ fun_optimQ = function(mod, data, stv,
 
   } else {
 
-    while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
+    while(!opt_ok(opt) && n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
       svh = stv
       par = unname(unlist(svh))
 
@@ -256,7 +273,7 @@ fun_optimQ = function(mod, data, stv,
     }
 
   }
-  if(class(opt) == 'try-error'){
+  if(!is.list(opt) || inherits(opt, "try-error")){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -270,19 +287,24 @@ fun_optimQ = function(mod, data, stv,
 fun_optimCov = function(mod, data, stv,
                         ndraws,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(is.null(opt)) {
+  if(!is.list(opt)) {
 
     # svh = try(list(par=as.vector(rstan::optimizing(mod,data = data)$par[1:5])),silent=T)
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   if(class(opt)!='try-error'){
-    if(opt$return_code != 0){ # issue with optimizing
+    if(is.list(opt) && isTRUE(opt$return_code != 0)){ # issue with optimizing
       par = opt$par
       a = par[1:data$nlevels_a]
       bmd = par[(data$nlevels_a+1):(data$nlevels_a+data$nlevels_BMD)]
@@ -316,7 +338,7 @@ fun_optimCov = function(mod, data, stv,
     }
   }
   n.attempts <- 1
-  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 10){
+  while(!opt_ok(opt) && n.attempts < 10){
     svh=stv
     par = unname(unlist(svh))
 
@@ -381,7 +403,7 @@ fun_optimCov = function(mod, data, stv,
 
     n.attempts <- n.attempts + 1
   }
-  if(class(opt) == 'try-error'){
+  if(!is.list(opt) || inherits(opt, "try-error")){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -395,17 +417,22 @@ fun_optimCov = function(mod, data, stv,
 fun_optimQCov = function(mod, data, stv,
                          ndraws,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
-  if(is.null(opt)) {
+  if(!is.list(opt)) {
     opt=try(rstan::optimizing(mod,data = data,seed=as.integer(seed),draws=ndraws,hessian=TRUE),silent=T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   if(class(opt)!='try-error'){
-    if(opt$return_code != 0){
+    if(is.list(opt) && isTRUE(opt$return_code != 0)){
 
       par = opt$par
 
@@ -424,11 +451,11 @@ fun_optimQCov = function(mod, data, stv,
                                 init=svh,hessian=TRUE),silent=T)
     }
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   n.attempts <- 1
-  while((opt$return_code != 0 || is.null(opt)) && n.attempts < 10){
+  while(!opt_ok(opt) && n.attempts < 10){
 
     svh=stv
     par = unname(unlist(svh))
@@ -464,7 +491,7 @@ fun_optimQCov = function(mod, data, stv,
 
     n.attempts <- n.attempts + 1
   }
-  if(class(opt) == 'try-error'){
+  if(!is.list(opt) || inherits(opt, "try-error")){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"

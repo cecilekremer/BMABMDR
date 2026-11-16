@@ -27,16 +27,22 @@ fun_sampling = function(mod, data, stv,
                         nriterations,warmup,
                         delta,treedepth,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
-  if(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
+
+  if(!opt_ok(opt)){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   n.attempts <- 1
-  while(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0)) & n.attempts < 100){
+  while(!opt_ok(opt) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -91,7 +97,7 @@ fun_sampling = function(mod, data, stv,
 
   }
 
-  if(class(opt) != 'try-error'){
+  if(is.list(opt) && !inherits(opt, "try-error") && !is.null(opt$par)){
     sv = opt$par
   }else{
     sv = unlist(stv)
@@ -187,15 +193,22 @@ fun_samplingC = function(mod, data, stv,
                          nriterations,warmup,
                          delta,treedepth,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
-  if(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
+
+  if(!opt_ok(opt)){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
-  while(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
+  n.attempts <- 1
+  while(!opt_ok(opt) & n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -245,9 +258,11 @@ fun_samplingC = function(mod, data, stv,
     }
     opt=try(rstan::optimizing(mod,data = data,
                               seed=as.integer(seed),init=svh),silent=T)
+
+    n.attempts <- n.attempts + 1
   }
 
-  if(class(opt) != 'try-error'){
+  if(is.list(opt) && !inherits(opt, "try-error") && !is.null(opt$par)){
     sv = opt$par
   }else{
     sv = unlist(stv)
@@ -345,16 +360,21 @@ fun_samplingQ = function(mod, data, stv,
                          nriterations,warmup,
                          delta,treedepth,seed,pvec){
 
+  opt_ok <- function(o) {
+    is.list(o) && !inherits(o, "try-error") &&
+      !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  }
+
   if(exists("opt")) rm(opt)
   opt = try(rstan::optimizing(mod,data = data,init=stv), silent = T)
-  if(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0))){
+  if(!opt_ok(opt)){
     opt = try(rstan::optimizing(mod, data = data), silent = T)
   }
-  if(class(opt) == 'try-error'){
-    opt = c(NA, NA, NA)
-  }
+  # if(class(opt) == 'try-error'){
+  #   opt = c(NA, NA, NA)
+  # }
   n.attempts <- 1
-  while(ifelse(is.na(opt$return_code),TRUE,(opt$return_code!=0)) & n.attempts < 100){
+  while(!opt_ok(opt) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -384,7 +404,7 @@ fun_samplingQ = function(mod, data, stv,
   if(data$is_bin == 1) {
 
 
-    if(class(opt) != 'try-error'){
+    if(opt_ok(opt)){
       # sv = opt$par
       sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3')]
     }else{
@@ -410,7 +430,7 @@ fun_samplingQ = function(mod, data, stv,
 
   } else if(data$is_betabin == 1) {
 
-    if(class(opt) != 'try-error'){
+    if(opt_ok(opt)){
       # sv = opt$par
       sv <- opt$par[names(opt$par) %in% c('par1', 'par2', 'par3', 'rho[1]')]
     }else{
