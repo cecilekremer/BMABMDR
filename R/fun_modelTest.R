@@ -523,7 +523,11 @@ modelTestQ <- function(best.fit, data.Q, stanBest, type, seed, ndraws, nrchains,
     datf = data.frame(yy = y.a, n.a = n.a, xx = dose.a)
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=BB, data=datf),
                   silent = TRUE)
-    rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    if (inherits(fpfit2, "try-error")) {
+      rhohat <- 0.1
+    } else {
+      rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    }
     rhohat <- ifelse(rhohat == 0, 0.001, rhohat)
         dim(rhohat) <- 1
 

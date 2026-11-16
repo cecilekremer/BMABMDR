@@ -1778,7 +1778,11 @@ PREP_DATA_QA <- function(data, # a dataframe with input data, order of columns s
                    sigma.formula = ~1,data=datf)
     fpfit2 <- try(gamlss::gamlss(cbind(yy,n.a-yy)~as.factor(xx), sigma.formula=~1, family=gamlss.dist::BB(), data=datf),
                   silent = TRUE)
-    rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    if (inherits(fpfit2, "try-error")) {
+      rhohat <- 0.1
+    } else {
+      rhohat <- exp(fpfit2$sigma.coefficients)/(exp(fpfit2$sigma.coefficients)+1)
+    }
     rhohat <- ifelse(rhohat == 0, 0.001, rhohat)
 
   } else stop('provide cluster to be TRUE or FALSE')

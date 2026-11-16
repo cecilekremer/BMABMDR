@@ -1,0 +1,470 @@
+---
+title: "Introduction to BMABMDR: Bayesian Model Averaging for Benchmark Dose Analysis"
+output: rmarkdown::html_vignette
+vignette: >
+  %\VignetteIndexEntry{Introduction to BMABMDR: Bayesian Model Averaging for Benchmark Dose Analysis}
+  %\VignetteEngine{knitr::rmarkdown}
+  %\VignetteEncoding{UTF-8}
+---
+
+```{r, include = FALSE}
+knitr::opts_chunk$set(
+  collapse = TRUE,
+  comment = "#>",
+  warning = FALSE,
+  eval = TRUE # set FALSE to keep build times short; flip to TRUE with a fast machine
+)
+```
+
+```{r setup}
+library(BMABMDR)
+```
+
+## Background
+
+**Benchmark Dose (BMD) analysis** is the standard approach in toxicology and risk assessment
+for characterising dose-response relationships and deriving safe exposure levels. The BMD
+is the dose at which the expected response changes by a pre-specified amount (the *Benchmark
+Response*, BMR, expressed as a proportion `q`) relative to background.
+
+A long-standing problem is that the estimated BMD can differ substantially across plausible
+dose-response models, and choosing a single model introduces model-selection uncertainty that
+is not reflected in the final confidence/credible interval. **Bayesian Model Averaging (BMA)**
+addresses this by fitting a collection of candidate models simultaneously and combining their
+posteriors with evidence-based weights.
+
+**BMABMDR** implements BMA-based BMD estimation for:
+
+- Continuous endpoints (normally or lognormally distributed), including clustered data with
+  a litter/intra-class correlation effect.
+- Quantal (binary/count) endpoints, including overdispersed data via a beta-binomial model.
+- Continuous or quantal data with a single covariate (group or arm indicator).
+
+Two inference engines are provided:
+
+| Engine | Function | Speed | Accuracy |
+|---|---|---|---|
+| Laplace approximation | `full.laplace_MA()` | Fast (seconds) | Good |
+| Full Bayesian (HMC + bridge sampling) | `sampling_MA()` | Slow (minutes) | Best |
+
+---
+
+## Package workflow
+
+```
+Raw data
+  │
+  ├─ PREP_DATA_N()   ──┐
+  ├─ PREP_DATA_LN()  ──┤   data objects
+  └─ PREP_DATA_QA()  ──┘
+                        │
+          [optional] anydoseresponseN()  ← Bayes factor test: is there a dose effect?
+                        │
+          full.laplace_MA()  or  sampling_MA()
+                        │
+          plot.BMADR()  /  summary.BMADR()  /  print.BMADR()
+```
+
+---
+
+## Candidate models
+
+Use `get_models()` to inspect model names and their index positions, which correspond to
+the positions in the `prior.weights` vector.
+
+```{r models}
+get_models(type = "continuous")   # 16 models: 8 shapes × {Normal, Lognormal}
+get_models(type = "quantal")      # 8 models
+```
+
+The eight dose-response shapes are:
+
+| Code | Shape |
+|---|---|
+| `E4` | Exponential |
+| `IE4` | Inverse Exponential |
+| `H4` | Hill |
+| `LN4` | Log-normal CDF |
+| `G4` | Gamma CDF |
+| `QE4` | Quadratic Exponential |
+| `P4` | Probit |
+| `L4` | Logit |
+
+
+
+## Continuous data — Laplace approximation
+
+### Step 1 — Test for a dose-response effect (optional but recommended)
+
+The function runs full HMC via rstan::sampling() on two Stan models (null and saturated). 
+
+```{r anydose}
+data("immunotoxicityData")
+
+# Use summary statistics from first 5 dose groups
+dat5 <- as.data.frame(immunotoxicityData[1:5, ])
+
+bf <- anydoseresponseN(
+  dose.a = dat5[, 1],   # original dose, NOT rescaled
+  mean.a = dat5[, 2],
+  sd.a   = dat5[, 3],
+  n.a    = dat5[, 4]
+)
+bf$bf.message
+```
+
+### Step 2 — Prepare data objects
+
+Two data objects are always required for continuous BMA: one assuming a Normal
+distribution on the response scale (`PREP_DATA_N`) and one assuming a Log-normal
+distribution (`PREP_DATA_LN`).
+
+```{r prep}
+# q = 0.1 means a 10% change in mean response relative to background
+data_N <- PREP_DATA_N(
+  data     = dat5,
+  sumstats = TRUE,    # summary data (mean, SD, n per group)
+  sd       = TRUE,    # column 3 is SD (not SE)
+  q        = 0.1
+)
+
+data_LN <- PREP_DATA_LN(
+  data     = dat5,
+  sumstats = TRUE,
+  sd       = TRUE,
+  q        = 0.1
+)
+```
+
+Two warnings commonly appear here and are both benign:
+
+**Warning 1 — asymptote prior**
+
+```
+the data do not contain information on the asymptote, and the default prior for
+fold change has been based on 3 times the observed maximum
+```
+
+The fold-change parameter `c` (ratio of asymptotic to background response) cannot
+be estimated from dose-response data alone when the curve has not yet reached its
+plateau. `PREP_DATA_N/LN` automatically sets an upper bound of `3 × max(response)`
+as a conservative default. If domain knowledge exists, supply it via `maxy`:
+
+```{r maxy_example, eval=FALSE}
+# Inform the asymptote: response is known to saturate around 4.5 units
+data_LN <- PREP_DATA_LN(
+  data  = dat5, sumstats = TRUE, sd = TRUE, q = 0.1,
+  maxy  = c(3.5, NA, 5.5)    # c(min, mode, max); mode can be NA for a flat prior
+)
+```
+
+**Warning 2 — fp() origin shift**
+
+```
+In fp(xx) : The origing of the x variable has been shifted by 1e-14
+```
+
+This comes from the `gamlss` fractional polynomial fit that `PREP_DATA_N/LN` runs
+internally to derive data-driven starting values and prior bounds. A shift of
+`1e-14` is a numerical micro-adjustment applied when the dose vector contains an
+exact zero (the control group), which fractional polynomials require to be strictly
+positive. It has no effect on results and can be safely ignored.
+
+`PREP_DATA_N()` returns a list with three elements:
+
+- `$data`   — formatted data and prior specifications
+- `$start`  — starting values for optimization
+- `$startQ` — starting values specific to the Quadratic Exponential model
+
+### Step 3 — Run BMA (Laplace)
+
+```{r laplace_all}
+# Include all 16 models (default)
+fit_lp <- full.laplace_MA(data_N, data_LN)
+
+# Model-averaged BMD credible interval
+fit_lp$MA
+
+# Per-model weights
+fit_lp$weights
+```
+
+To restrict the model set — for example, to the four Exponential-family models under
+both distributional assumptions — set unused weights to zero:
+
+```{r laplace_subset}
+pw           <- rep(0, 16)
+pw[c(1, 9)]  <- 1   # E4 (Normal) and E4 (Lognormal) only
+
+fit_lp2 <- full.laplace_MA(data_N, data_LN, prior.weights = pw)
+fit_lp2$MA
+```
+
+Note that **models with `prior.weights[k] == 0` are never fitted** — the Stan optimizer is never called for them. This makes restricting the model set via `prior.weights` a genuine computational saving, not just a post-hoc reweighting.
+
+The same pattern holds in `sampling_MA()` — the HMC chains are only launched for models with `prior.weights[k] > 0`, so excluding models there saves even more time (each chain takes ~30–60 seconds).
+
+**Practical implication**: if you know the response is sigmoidal and want only Hill-family models, this runs roughly 4× faster than the default:
+
+```{r}
+pw        <- rep(0, 16)
+pw[c(3, 11)] <- 1   # H4_N and H4_LN only
+
+fit_lp <- full.laplace_MA(data_N, data_LN, prior.weights = pw)
+```
+
+### Step 4 — Plots
+
+`plot.BMADR()` returns a named list of `ggplot2` objects.
+
+```{r plot_lp, fig.width=6, fig.height=4}
+plots <- plot.BMADR(
+  fit_lp,
+  type        = "increasing",   # or "decreasing"
+  weight_type = "LP",           # "LP" for Laplace, "BS" for bridge sampling
+  title       = "Immunotoxicity — BMA (Laplace)"
+)
+
+plots$BMDs        # credible intervals per model and for MA
+plots$weights     # model weight bar chart
+plots$model_fit_N # individual Normal model fits
+plots$MA_fit      # model-averaged dose-response curve
+```
+
+
+
+## Continuous data — Full Bayesian (bridge sampling)
+
+The interface is identical; the computation is substantially slower because it runs
+full HMC chains and then calculates marginal likelihoods via bridge sampling.
+
+```{r bridge}
+fit_bs <- sampling_MA(
+  data_N, data_LN,
+  prior.weights  = c(rep(1, 4), rep(0, 12)),   # Family-1 models only
+  nrchains       = 3,
+  nriterations   = 3000,
+  warmup         = 1000,
+  delta          = 0.8,
+  treedepth      = 10,
+  seed           = 123
+)
+
+# Bridge-sampling MA result
+fit_bs$MA_bridge_sampling
+
+# Hybrid Laplace MA result (model parameters from MCMC, weights from Laplace)
+fit_bs$MA_laplace
+
+# Convergence diagnostics
+fit_bs$convergence    # 1 = converged, 0 = not
+fit_bs$divergences    # proportion of divergent transitions per model
+```
+
+```{r plot_bs, fig.width=6, fig.height=4}
+plots_bs <- plot.BMADR(
+  fit_bs,
+  type        = "increasing",
+  weight_type = "BS",
+  title = "Immunotoxicity — BMA (Bridge Sampling)"
+)
+plots_bs$BMDs
+plots_bs$weights
+```
+
+
+
+## Quantal data
+
+```{r quantal}
+data("data_quantal")
+
+data_Q <- PREP_DATA_QA(data = data_quantal, sumstats = TRUE, q = 0.1)
+
+fit_q <- full.laplaceQ_MA(data.Q = data_Q, prior.weights = rep(1, 8))
+fit_q$MA
+```
+
+For clustered quantal data (e.g., developmental toxicology with litter effects):
+
+```{r quantal_litter}
+data("data_quantal_litter")
+
+data_QL <- PREP_DATA_QA(data = data_quantal_litter, sumstats = TRUE, q = 0.1, cluster = TRUE)
+
+fit_ql <- full.laplaceQ_MA(data.Q = data_QL, prior.weights = rep(1, 8))
+fit_ql$MA
+```
+
+
+
+When `cluster = TRUE` is set, the **likelihood model switches from Binomial to Beta-Binomial** for every one of the 8 quantal dose-response shapes. Here's what that means:
+
+**Without litter (`cluster = FALSE`) — Binomial:**
+
+Each animal responds independently. Given dose-response probability $\pi_i$ at dose $x_i$:
+
+$$y_i \sim \text{Binomial}(n_i,\; \pi_i)$$
+
+**With litter (`cluster = TRUE`) — Beta-Binomial:**
+
+Animals within the same litter are correlated — they share the same dam, uterine environment, etc. The response probability itself varies across litters as a Beta distribution with mean $\pi_i$ and an overdispersion parameter $\rho$:
+
+$$y_i \sim \text{BetaBinomial}(n_i,\; \alpha_i,\; \beta_i)$$
+
+where $\alpha_i = \pi_i \left(\frac{1}{\rho} - 1\right)$, $\quad \beta_i = (1-\pi_i)\left(\frac{1}{\rho} - 1\right)$
+
+$\rho \in (0,1)$ is the **intra-litter correlation** (ICC): how similar littermates are relative to animals from different litters. It gets a PERT prior `pert_dist(0, mode, 1, 4)` and is estimated from the data alongside all other parameters.
+
+**Practical consequence:** ignoring litter when it's present underestimates variance → overestimates precision → BMD confidence interval is artificially too narrow. The Beta-Binomial accounts for this extra variance, producing honest (wider) uncertainty intervals.
+
+
+## Informative priors
+
+The default priors are weakly informative, derived from the data. Expert knowledge can be
+incorporated via the `bkg`, `maxy`, and `prior.BMD` arguments in `PREP_DATA_N()`.
+
+```{r informative}
+# Inform on background response (min, mode, max of PERT distribution)
+data_N_inf <- PREP_DATA_N(
+  data      = dat5,
+  sumstats  = TRUE, sd = TRUE, q = 0.1,
+  bkg       = c(0.5, 1.0, 2.0)    # background response range
+)
+
+# Peaked informative prior on the BMD
+data_N_bmd <- PREP_DATA_N(
+  data      = dat5,
+  sumstats  = TRUE, sd = TRUE, q = 0.1,
+  prior.BMD = c(0.05, 0.25, 1.0),  # BMDL, mode, BMDU
+  shape.BMD = 4                     # 4 = peaked, 0.0001 ≈ uniform
+)
+```
+
+The prior on `d` (the slope parameter) can also be changed:
+
+```{r prior_d}
+# EPA-recommended prior for d
+data_N_epa <- PREP_DATA_N(
+  data    = dat5,
+  sumstats = TRUE, sd = TRUE, q = 0.1,
+  prior.d  = "EPA"      # N(0.4, sqrt(0.5)), truncated at 5
+)
+
+# Custom prior on d
+data_N_custom <- PREP_DATA_N(
+  data    = dat5,
+  sumstats = TRUE, sd = TRUE, q = 0.1,
+  prior.d  = "custom",
+  d.mean   = 0.5,
+  d.std    = 0.5,
+  d.trunc  = 4
+)
+```
+
+
+
+## Individual-level data
+
+If you have raw individual observations rather than group summary statistics, pass
+`sumstats = FALSE`:
+
+```{r individual}
+# PREP_DATA_N(sumstats = FALSE) expects a 2-column data frame:
+#   column 1 = dose, column 2 = response (one row per animal)
+#
+# We simulate individual-level data from the immunotoxicity summary statistics
+# to demonstrate the workflow.
+set.seed(42)
+indiv_data <- do.call(rbind, lapply(seq_len(nrow(dat5)), function(i) {
+  data.frame(
+    dose     = rep(dat5$Dose[i], dat5$n[i]),
+    response = rnorm(dat5$n[i], mean = dat5$Mean[i], sd = dat5$SD[i])
+  )
+}))
+
+data_N_indiv <- PREP_DATA_N(
+  data     = indiv_data,
+  sumstats = FALSE,
+  q        = 0.05
+)
+```
+
+
+
+## Extracting and printing results
+
+```{r results}
+## ummary(fit_lp$H4_LN)
+# Posterior draws from the MA distribution (on original dose scale)
+hist(fit_lp$BMDMixture, breaks = 50,
+     main = "Model-averaged BMD posterior",
+     xlab = "BMD")
+
+# Per-model parameter estimates (median + 95% CrI)
+fit_lp$E4_N     # Exponential + Normal
+fit_lp$H4_LN    # Hill + Lognormal
+
+# Model-averaged dose-response at each observed dose level
+fit_lp$MA_dr
+
+# Goodness-of-fit check (Bayes factor vs saturated model)
+fit_lp$gof_check
+```
+
+
+
+## Working with covariates
+
+For data with a single binary covariate (e.g., sex, treatment arm), use the `_COV`
+variants of the preparation and fitting functions:
+
+```{r covariate}
+data("continuous_cov")
+# Note: the .rda file contains an object named 'data_cont_covariate'
+
+# full.laplace_MA_Cov() takes raw data and calls PREP_DATA_NCOV() internally
+fit_cov <- full.laplace_MA_Cov(
+  data     = data_cont_covariate,
+  sumstats = TRUE,
+  sd       = TRUE,
+  q        = 0.1
+)
+fit_cov$MA
+```
+
+Note that he function expects the data frame columns by position, not by name:
+
+- Column 1: Dose
+- Column 2: Response (Mean)
+- Column 3: SD
+- Column 4: N
+- Column 5: Covariate
+
+So the covariate is simply the 5th column — no separate argument needed. `data_cont_covariate` already has Covariate as column 5, which matches this expectation.
+
+## Summary of key functions
+
+| Task | Function |
+|---|---|
+| Check for dose-response | `anydoseresponseN()`, `anydoseresponseLN()` |
+| Prepare continuous data | `PREP_DATA_N()`, `PREP_DATA_LN()` |
+| Prepare quantal data | `PREP_DATA_QA()` |
+| Prepare clustered continuous data | `PREP_DATA_N_C()`, `PREP_DATA_LN_C()` |
+| BMA — Laplace (continuous) | `full.laplace_MA()`, `full.laplace_MAc()` |
+| BMA — Laplace (quantal) | `full.laplaceQ_MA()` |
+| BMA — Bridge sampling (continuous) | `sampling_MA()`, `sampling_MAc()` |
+| BMA — Bridge sampling (quantal) | `samplingQ_MA()` |
+| Plots | `plot.BMADR()` |
+| Print/summarise | `print.BMADR()`, `summary.BMADR()` |
+| Prior visualisation | `plot_prior()` |
+| MCMC diagnostics | `posterior_diag()` |
+| List model names/order | `get_models()` |
+
+---
+
+## Session info
+
+```{r session}
+sessionInfo()
+```
