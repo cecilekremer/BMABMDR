@@ -236,7 +236,7 @@ fun_optimQ = function(mod, data, stv,
 
       if(class(opt) == 'try-error') {
         next
-      } else if(isTRUE(opt$return_code != 0) || n.attempts == 100){
+      } else if(opt_ok(opt) || n.attempts == 100){
         break
       } else next
       # print(n.attempts)
@@ -304,7 +304,7 @@ fun_optimCov = function(mod, data, stv,
   #   opt = c(NA, NA, NA)
   # }
   if(class(opt)!='try-error'){
-    if(is.list(opt) && isTRUE(opt$return_code != 0)){ # issue with optimizing
+    if(!opt_ok(opt)){ # issue with optimizing
       par = opt$par
       a = par[1:data$nlevels_a]
       bmd = par[(data$nlevels_a+1):(data$nlevels_a+data$nlevels_BMD)]
@@ -432,7 +432,7 @@ fun_optimQCov = function(mod, data, stv,
   #   opt = c(NA, NA, NA)
   # }
   if(class(opt)!='try-error'){
-    if(is.list(opt) && isTRUE(opt$return_code != 0)){
+    if(!opt_ok(opt)){
 
       par = opt$par
 
