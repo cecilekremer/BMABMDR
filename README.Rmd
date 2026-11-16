@@ -29,6 +29,7 @@ BMABMDR is an R package for Bayesian model averaging in benchmark dose estimatio
 
 You can install the latest development version (0.2.2) of the R package from GitHub:
 
+
 ```r
 # install.packages("remotes")
 remotes::install_github("cecilekremer/BMABMDR@testing")

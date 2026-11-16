@@ -67,13 +67,13 @@ anydoseresponseN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
 #> For more on GAMLSS look at https://www.gamlss.com/
 #> Type gamlssNews() to see new features/changes/bug fixes.
 #> $bf
-#> [1] 1.335563e-63
+#> [1] 1.337046e-63
 #> 
 #> $bf.message
 #> [1] "Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : 0 in favor of the NULL (no dose effect) model)."
 anydoseresponseLN(summ.data$x, summ.data$y, summ.data$s, summ.data$n)
 #> $bf
-#> [1] 8.572044e-64
+#> [1] 8.598861e-64
 #> 
 #> $bf.message
 #> [1] "Preliminary analysis found insufficient evidence of no dose effect (Bayes factor : 0 in favor of the NULL (no dose effect) model)."
