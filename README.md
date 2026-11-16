@@ -23,14 +23,6 @@ You can install the latest development version (0.2.1) of the R package from Git
 remotes::install_github("cecilekremer/BMABMDR@testing")
 ```
 
-This currently works with the combination of **rstan 2.32.7** and
-**StanHeaders 2.32.10**. If you have a different StanHeaders version, you can
-install the compatible one with:
-
-```r
-remotes::install_version("StanHeaders", version = "2.32.10", type = "source")
-```
-
 ### Requirements
 
 - A C++17 toolchain: [Rtools](https://cran.r-project.org/bin/windows/Rtools/)
