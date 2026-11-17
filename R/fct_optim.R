@@ -1,4 +1,31 @@
 
+#' Check whether an optimization result is usable
+#'
+#' Internal helper that tests whether the output of
+#' \code{rstan::optimizing()} (possibly wrapped in \code{try()}) is a
+#' converged fit with a valid matrix of approximate posterior draws. It never
+#' throws an error, so it is safe to use in \code{while} and \code{if}
+#' conditions.
+#'
+#' @param o Result of \code{try(rstan::optimizing(...), silent = TRUE)}. This
+#'   can be a list, a \code{"try-error"} object, or any other object.
+#' @param ndraws Integer. Number of draws requested from
+#'   \code{rstan::optimizing()} (argument \code{draws}). The element
+#'   \code{theta_tilde} must have exactly this many rows.
+#'
+#' @return A single logical value: \code{TRUE} if \code{o} is a list with
+#'   \code{return_code == 0} and a matrix \code{theta_tilde} with
+#'   \code{ndraws} rows, and \code{FALSE} otherwise.
+#'
+#' @keywords internal
+#' @noRd
+opt_ok <- function(o, ndraws) {
+  is.list(o) && !inherits(o, "try-error") &&
+    !is.null(o$return_code) && isTRUE(o$return_code == 0) &&
+    is.matrix(o$theta_tilde) && nrow(o$theta_tilde) == ndraws
+}
+
+
 #' Function to perform Laplace approximation for a given dose-response model (used internally).
 #'
 #' @param mod stan model
@@ -20,11 +47,6 @@
 fun_optim = function(mod, data, stv,
                      ndraws,seed,pvec){
 
-  opt_ok <- function(o) {
-    is.list(o) && !inherits(o, "try-error") &&
-      !is.null(o$return_code) && isTRUE(o$return_code == 0)
-  }
-
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
                             init=stv, hessian=TRUE),silent=T)
@@ -38,7 +60,7 @@ fun_optim = function(mod, data, stv,
   # }
   n.attempts <- 1
   # while((opt$return_code != 0 || is.null(opt)) && n.attempts < 100){
-  while(!opt_ok(opt) && n.attempts < 100){
+  while(!opt_ok(opt, ndraws) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -92,7 +114,9 @@ fun_optim = function(mod, data, stv,
     n.attempts <- n.attempts + 1
   }
 
-  if(!is.list(opt) || inherits(opt, "try-error")){
+  good <- is.list(opt) && !inherits(opt, "try-error") &&
+    is.matrix(opt$theta_tilde) && nrow(opt$theta_tilde) == ndraws
+  if(!good){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -123,7 +147,7 @@ fun_optimC = function(mod, data, stv,
   #   opt = c(NA, NA, NA)
   # }
   n.attempts <- 1
-  while(!opt_ok(opt) && n.attempts < 100){
+  while(!opt_ok(opt, ndraws) && n.attempts < 100){
     svh=stv
     par = unname(unlist(svh))
 
@@ -175,7 +199,10 @@ fun_optimC = function(mod, data, stv,
                               init=svh,hessian=TRUE),silent=T)
     n.attempts <- n.attempts + 1
   }
-  if(!is.list(opt) || inherits(opt, "try-error")){
+
+  good <- is.list(opt) && !inherits(opt, "try-error") &&
+    is.matrix(opt$theta_tilde) && nrow(opt$theta_tilde) == ndraws
+  if(!good){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -236,7 +263,7 @@ fun_optimQ = function(mod, data, stv,
 
       if(class(opt) == 'try-error') {
         next
-      } else if(opt_ok(opt) || n.attempts == 100){
+      } else if(opt_ok(opt, ndraws) || n.attempts == 100){
         break
       } else next
       # print(n.attempts)
@@ -244,7 +271,7 @@ fun_optimQ = function(mod, data, stv,
 
   } else {
 
-    while(!opt_ok(opt) && n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
+    while(!opt_ok(opt, ndraws) && n.attempts < 100){ # set limit at 100 because takes longer if there are difficulties
       svh = stv
       par = unname(unlist(svh))
 
@@ -273,7 +300,10 @@ fun_optimQ = function(mod, data, stv,
     }
 
   }
-  if(!is.list(opt) || inherits(opt, "try-error")){
+
+  good <- is.list(opt) && !inherits(opt, "try-error") &&
+    is.matrix(opt$theta_tilde) && nrow(opt$theta_tilde) == ndraws
+  if(!good){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -304,7 +334,7 @@ fun_optimCov = function(mod, data, stv,
   #   opt = c(NA, NA, NA)
   # }
   if(class(opt)!='try-error'){
-    if(!opt_ok(opt)){ # issue with optimizing
+    if(!opt_ok(opt, ndraws)){ # issue with optimizing
       par = opt$par
       a = par[1:data$nlevels_a]
       bmd = par[(data$nlevels_a+1):(data$nlevels_a+data$nlevels_BMD)]
@@ -338,7 +368,7 @@ fun_optimCov = function(mod, data, stv,
     }
   }
   n.attempts <- 1
-  while(!opt_ok(opt) && n.attempts < 10){
+  while(!opt_ok(opt, ndraws) && n.attempts < 10){
     svh=stv
     par = unname(unlist(svh))
 
@@ -403,7 +433,10 @@ fun_optimCov = function(mod, data, stv,
 
     n.attempts <- n.attempts + 1
   }
-  if(!is.list(opt) || inherits(opt, "try-error")){
+
+  good <- is.list(opt) && !inherits(opt, "try-error") &&
+    is.matrix(opt$theta_tilde) && nrow(opt$theta_tilde) == ndraws
+  if(!good){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
@@ -432,7 +465,7 @@ fun_optimQCov = function(mod, data, stv,
   #   opt = c(NA, NA, NA)
   # }
   if(class(opt)!='try-error'){
-    if(!opt_ok(opt)){
+    if(!opt_ok(opt, ndraws)){
 
       par = opt$par
 
@@ -455,7 +488,7 @@ fun_optimQCov = function(mod, data, stv,
   #   opt = c(NA, NA, NA)
   # }
   n.attempts <- 1
-  while(!opt_ok(opt) && n.attempts < 10){
+  while(!opt_ok(opt, ndraws) && n.attempts < 10){
 
     svh=stv
     par = unname(unlist(svh))
@@ -491,7 +524,10 @@ fun_optimQCov = function(mod, data, stv,
 
     n.attempts <- n.attempts + 1
   }
-  if(!is.list(opt) || inherits(opt, "try-error")){
+
+  good <- is.list(opt) && !inherits(opt, "try-error") &&
+    is.matrix(opt$theta_tilde) && nrow(opt$theta_tilde) == ndraws
+  if(!good){
     opt = c(NA, NA, NA)
   }else{
     attr(opt, "class") <- "stanfitOptim"
