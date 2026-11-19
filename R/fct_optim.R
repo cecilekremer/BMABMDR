@@ -130,10 +130,10 @@ fun_optim = function(mod, data, stv,
 fun_optimC = function(mod, data, stv,
                       ndraws,seed,pvec){
 
-  opt_ok <- function(o) {
-    is.list(o) && !inherits(o, "try-error") &&
-      !is.null(o$return_code) && isTRUE(o$return_code == 0)
-  }
+  # opt_ok <- function(o) {
+  #   is.list(o) && !inherits(o, "try-error") &&
+  #     !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  # }
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -216,10 +216,10 @@ fun_optimC = function(mod, data, stv,
 fun_optimQ = function(mod, data, stv,
                       ndraws, seed, pvec){
 
-  opt_ok <- function(o) {
-    is.list(o) && !inherits(o, "try-error") &&
-      !is.null(o$return_code) && isTRUE(o$return_code == 0)
-  }
+  # opt_ok <- function(o) {
+  #   is.list(o) && !inherits(o, "try-error") &&
+  #     !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  # }
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -317,10 +317,10 @@ fun_optimQ = function(mod, data, stv,
 fun_optimCov = function(mod, data, stv,
                         ndraws,seed,pvec){
 
-  opt_ok <- function(o) {
-    is.list(o) && !inherits(o, "try-error") &&
-      !is.null(o$return_code) && isTRUE(o$return_code == 0)
-  }
+  # opt_ok <- function(o) {
+  #   is.list(o) && !inherits(o, "try-error") &&
+  #     !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  # }
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
@@ -450,10 +450,10 @@ fun_optimCov = function(mod, data, stv,
 fun_optimQCov = function(mod, data, stv,
                          ndraws,seed,pvec){
 
-  opt_ok <- function(o) {
-    is.list(o) && !inherits(o, "try-error") &&
-      !is.null(o$return_code) && isTRUE(o$return_code == 0)
-  }
+  # opt_ok <- function(o) {
+  #   is.list(o) && !inherits(o, "try-error") &&
+  #     !is.null(o$return_code) && isTRUE(o$return_code == 0)
+  # }
 
   opt=try(rstan::optimizing(mod,data = data,
                             seed=as.integer(seed),draws=ndraws,
